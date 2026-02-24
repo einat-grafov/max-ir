@@ -62,7 +62,7 @@ export function AdminSidebar() {
       className={`${collapsed ? "w-14" : "w-60"} bg-maxir-dark border-r border-white/10`}
       collapsible="icon"
     >
-      <div className="p-4 border-b border-white/10">
+      <div className="p-4 border-b border-white/10 bg-maxir-dark">
         <Link to="/admin/orders" className="flex items-center gap-2">
           <svg width="24" height="24" viewBox="0 0 40 40" fill="none">
             <path d="M5 35L20 5L25 15L15 35H5Z" fill="hsl(348,100%,61%)" />
