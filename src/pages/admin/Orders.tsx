@@ -1,5 +1,17 @@
-import { ShoppingCart, Calendar, FileText } from "lucide-react";
+import { useState } from "react";
+import { ShoppingCart, Calendar, FileText, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const timeFilters = [
+  { label: "Today", description: "Compared to yesterday up to current hour" },
+  { label: "Last 7 days", description: "Compared to the previous 7 days" },
+  { label: "Last 30 days", description: "Compared to the previous 30 days" },
+];
 
 const stats = [
   { label: "Orders", value: "0", change: "—" },
@@ -10,6 +22,8 @@ const stats = [
 ];
 
 const Orders = () => {
+  const [selectedFilter, setSelectedFilter] = useState("Today");
+
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
@@ -19,10 +33,34 @@ const Orders = () => {
 
       {/* Stats bar */}
       <div className="bg-background border border-border rounded-lg flex items-center divide-x divide-border mb-6">
-        <div className="flex items-center gap-2 px-5 py-3">
-          <Calendar className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm text-foreground font-medium">Today</span>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex items-center gap-2 px-5 py-3 hover:bg-muted/50 rounded-l-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30">
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-foreground font-medium">{selectedFilter}</span>
+              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-72 bg-background border border-border shadow-lg z-50 p-1">
+            {timeFilters.map((filter) => (
+              <button
+                key={filter.label}
+                onClick={() => setSelectedFilter(filter.label)}
+                className="w-full flex items-start gap-3 px-3 py-2.5 rounded-md hover:bg-muted/50 transition-colors text-left"
+              >
+                <div className={`mt-1 h-4 w-4 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedFilter === filter.label ? "border-foreground" : "border-muted-foreground/40"}`}>
+                  {selectedFilter === filter.label && (
+                    <div className="h-2 w-2 rounded-full bg-foreground" />
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">{filter.label}</p>
+                  <p className="text-xs text-muted-foreground">{filter.description}</p>
+                </div>
+              </button>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
         {stats.map((stat) => (
           <div key={stat.label} className="flex-1 px-5 py-3">
             <p className="text-sm font-semibold text-foreground">{stat.label}</p>
