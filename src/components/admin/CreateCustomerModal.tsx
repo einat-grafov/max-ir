@@ -93,12 +93,12 @@ const CreateCustomerModal = ({ open, onOpenChange, onCustomerCreated }: CreateCu
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-lg max-h-[85vh] flex flex-col p-0">
+        <DialogHeader className="px-6 pt-6 pb-4 border-b border-border shrink-0">
           <DialogTitle>Create a new customer</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="overflow-y-auto px-6 py-4 space-y-4 flex-1">
           {/* Name */}
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -202,7 +202,7 @@ const CreateCustomerModal = ({ open, onOpenChange, onCustomerCreated }: CreateCu
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 pt-2">
+        <div className="flex justify-end gap-2 px-6 py-4 border-t border-border shrink-0">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button onClick={handleSave} disabled={saving}>{saving ? "Saving..." : "Save"}</Button>
         </div>
