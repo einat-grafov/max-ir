@@ -106,6 +106,15 @@ const CreateOrder = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main content */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Customer */}
+          <Card className="p-5">
+            <h2 className="text-base font-semibold text-foreground mb-3">Customer</h2>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Search or create a customer" className="pl-9" />
+            </div>
+          </Card>
+
           {/* Products */}
           <Card className="p-5">
             <h2 className="text-base font-semibold text-foreground mb-4">Products</h2>
@@ -285,14 +294,6 @@ const CreateOrder = () => {
             </Dialog>
           </Card>
 
-          {/* Customer */}
-          <Card className="p-5">
-            <h2 className="text-base font-semibold text-foreground mb-3">Customer</h2>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search or create a customer" className="pl-9" />
-            </div>
-          </Card>
 
           {/* Markets */}
           <Card className="p-5">
