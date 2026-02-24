@@ -27,6 +27,7 @@ import { Textarea } from "@/components/ui/textarea";
 import CreateCustomerModal from "@/components/admin/CreateCustomerModal";
 import CustomerSearchModal from "@/components/admin/CustomerSearchModal";
 import SendInvoiceModal from "@/components/admin/SendInvoiceModal";
+import OrderTimeline from "@/components/admin/OrderTimeline";
 
 interface OrderProduct {
   id: string;
@@ -393,6 +394,14 @@ const CreateOrder = () => {
               </DialogContent>
             </Dialog>
           </Card>
+
+          {/* Timeline */}
+          <OrderTimeline
+            events={[
+              { id: "1", message: "You created this draft order.", timestamp: "Just now" },
+            ]}
+            onAddComment={(comment) => console.log("Comment:", comment)}
+          />
 
           {/* Discount Modal */}
           <Dialog open={discountModalOpen} onOpenChange={setDiscountModalOpen}>
