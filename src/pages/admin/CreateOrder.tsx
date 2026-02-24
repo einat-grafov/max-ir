@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { Search, X, Package, ChevronUp, ChevronDown, Pen, Link2, Info, Plus } from "lucide-react";
+import { Search, X, Package, ChevronUp, ChevronDown, Pen, Info, Plus } from "lucide-react";
 import ProductSearchModal from "@/components/admin/ProductSearchModal";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -306,45 +306,6 @@ const CreateOrder = () => {
             </Dialog>
           </Card>
 
-
-          {/* Markets */}
-          <Card className="p-5">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-base font-semibold text-foreground">Markets</h2>
-              <button className="text-muted-foreground hover:text-foreground">
-                <Link2 className="h-4 w-4" />
-              </button>
-            </div>
-            <div className="flex items-center gap-2 mb-4">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border border-border text-sm text-foreground">
-                🌐 Israel
-              </span>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-1.5">Currency</p>
-              <Select defaultValue="ils">
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ils">Israeli New Shekel (ILS ₪)</SelectItem>
-                  <SelectItem value="usd">US Dollar (USD $)</SelectItem>
-                  <SelectItem value="eur">Euro (EUR €)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </Card>
-
-          {/* Tags */}
-          <Card className="p-5">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-base font-semibold text-foreground">Tags</h2>
-              <button className="text-muted-foreground hover:text-foreground">
-                <Pen className="h-4 w-4" />
-              </button>
-            </div>
-            <Input placeholder="" className="h-9" />
-          </Card>
         </div>
       </div>
 
