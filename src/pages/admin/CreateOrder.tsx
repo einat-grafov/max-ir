@@ -137,10 +137,12 @@ const CreateOrder = () => {
 
           {/* Products */}
           <Card className="p-5">
-            <h2 className="text-base font-semibold text-foreground mb-4">Products</h2>
-            <div className="flex gap-2 mb-4">
-              <Button variant="outline" onClick={() => setBrowseModalOpen(true)}>Browse</Button>
-              <Button variant="outline">Add custom item</Button>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-base font-semibold text-foreground">Products</h2>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setBrowseModalOpen(true)}>Browse</Button>
+                <Button variant="outline">Add custom item</Button>
+              </div>
             </div>
 
             <ProductSearchModal
