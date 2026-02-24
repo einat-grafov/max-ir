@@ -46,6 +46,9 @@ const CreateOrder = () => {
   const [customerSearchOpen, setCustomerSearchOpen] = useState(false);
   const [notes, setNotes] = useState("");
   const [tempNotes, setTempNotes] = useState("");
+  const [discountModalOpen, setDiscountModalOpen] = useState(false);
+  const [discount, setDiscount] = useState<{ type: "amount" | "percentage"; value: number; reason: string } | null>(null);
+  const [tempDiscount, setTempDiscount] = useState<{ type: "amount" | "percentage"; value: number; reason: string }>({ type: "amount", value: 0, reason: "" });
   const [selectedCustomer, setSelectedCustomer] = useState<{
     id: string; first_name: string; last_name: string | null; email: string | null;
   } | null>(null);
@@ -89,8 +92,14 @@ const CreateOrder = () => {
 
   const totalItems = products.reduce((s, p) => s + p.quantity, 0);
   const subtotal = products.reduce((s, p) => s + p.price * p.quantity, 0);
-  const tax = Math.round(subtotal * 0.18 * 100) / 100;
-  const total = subtotal + tax;
+  const discountAmount = discount
+    ? discount.type === "amount"
+      ? discount.value
+      : Math.round(subtotal * (discount.value / 100) * 100) / 100
+    : 0;
+  const taxableSubtotal = subtotal - discountAmount;
+  const tax = Math.round(taxableSubtotal * 0.18 * 100) / 100;
+  const total = taxableSubtotal + tax;
 
   const fmt = (n: number) => "₪" + n.toLocaleString("en-IL", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -275,9 +284,25 @@ const CreateOrder = () => {
                 <span className="text-right text-foreground">{fmt(subtotal)}</span>
               </div>
               <div className="grid grid-cols-3 gap-4 px-4 py-3 text-sm">
-                <span className="text-primary cursor-pointer hover:underline">Add discount</span>
-                <span className="text-muted-foreground">—</span>
-                <span className="text-right text-foreground">₪0.00</span>
+                <span
+                  className="text-primary cursor-pointer hover:underline"
+                  onClick={() => {
+                    setTempDiscount(discount ?? { type: "amount", value: 0, reason: "" });
+                    setDiscountModalOpen(true);
+                  }}
+                >
+                  {discount ? "Edit discount" : "Add discount"}
+                </span>
+                <span className="text-muted-foreground">
+                  {discount
+                    ? discount.type === "percentage"
+                      ? `${discount.value}%`
+                      : "—"
+                    : "—"}
+                </span>
+                <span className="text-right text-foreground">
+                  {discountAmount > 0 ? `-${fmt(discountAmount)}` : "₪0.00"}
+                </span>
               </div>
               <div className="grid grid-cols-3 gap-4 px-4 py-3 text-sm">
                 <span className="text-primary cursor-pointer hover:underline">Add shipping or delivery</span>
@@ -308,6 +333,72 @@ const CreateOrder = () => {
               </label>
             </div>
           </Card>
+
+          {/* Discount Modal */}
+          <Dialog open={discountModalOpen} onOpenChange={setDiscountModalOpen}>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle>{discount ? "Edit discount" : "Add discount"}</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-1.5 block">Discount type</label>
+                    <Select
+                      value={tempDiscount.type}
+                      onValueChange={(v) => setTempDiscount((d) => ({ ...d, type: v as "amount" | "percentage", value: 0 }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="amount">Amount</SelectItem>
+                        <SelectItem value="percentage">Percentage</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-1.5 block">Value</label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                        {tempDiscount.type === "amount" ? "₪" : "%"}
+                      </span>
+                      <Input
+                        type="number"
+                        min={0}
+                        step={tempDiscount.type === "amount" ? "0.01" : "1"}
+                        value={tempDiscount.value || ""}
+                        onChange={(e) => setTempDiscount((d) => ({ ...d, value: parseFloat(e.target.value) || 0 }))}
+                        className="pl-8"
+                        placeholder="0.00"
+                      />
+                      {tempDiscount.type === "amount" && (
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">ILS</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-1.5 block">Reason for discount</label>
+                  <Input
+                    value={tempDiscount.reason}
+                    onChange={(e) => setTempDiscount((d) => ({ ...d, reason: e.target.value }))}
+                    placeholder=""
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Visible to customer</p>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                {discount && (
+                  <Button variant="outline" className="mr-auto text-destructive hover:text-destructive" onClick={() => { setDiscount(null); setDiscountModalOpen(false); }}>
+                    Remove
+                  </Button>
+                )}
+                <Button variant="outline" onClick={() => setDiscountModalOpen(false)}>Cancel</Button>
+                <Button onClick={() => { setDiscount(tempDiscount.value > 0 ? tempDiscount : null); setDiscountModalOpen(false); }}>Apply</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Sidebar */}
