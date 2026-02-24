@@ -103,8 +103,13 @@ const CreateOrder = () => {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <h1 className="text-2xl font-bold text-foreground mb-6">Create order</h1>
-
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-foreground">Create order</h1>
+        <div className="flex gap-3">
+          <Button variant="outline">Send invoice</Button>
+          <Button>Create order</Button>
+        </div>
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main content */}
         <div className="lg:col-span-2 space-y-6">
@@ -309,11 +314,6 @@ const CreateOrder = () => {
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-border">
-        <Button variant="outline">Send invoice</Button>
-        <Button>Create order</Button>
-      </div>
     </div>
   );
 };
