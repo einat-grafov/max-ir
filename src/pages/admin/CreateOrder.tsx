@@ -348,6 +348,48 @@ const CreateOrder = () => {
               </label>
             </div>
           </Card>
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Notes */}
+          <Card className="p-5">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-base font-semibold text-foreground">Notes</h2>
+              <button
+                className="text-muted-foreground hover:text-foreground"
+                onClick={() => { setTempNotes(notes); setNotesModalOpen(true); }}
+              >
+                <Pen className="h-4 w-4" />
+              </button>
+            </div>
+            <p className="text-sm text-muted-foreground">{notes || "No notes"}</p>
+
+            <Dialog open={notesModalOpen} onOpenChange={setNotesModalOpen}>
+              <DialogContent className="max-w-lg">
+                <DialogHeader>
+                  <DialogTitle>Add note</DialogTitle>
+                </DialogHeader>
+                <div>
+                  <div className="relative">
+                    <Textarea
+                      value={tempNotes}
+                      onChange={(e) => setTempNotes(e.target.value.slice(0, 5000))}
+                      className="min-h-[120px] resize-none"
+                      placeholder=""
+                    />
+                    <span className="absolute bottom-2 right-3 text-xs text-muted-foreground">
+                      {tempNotes.length}/5000
+                    </span>
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button variant="outline" onClick={() => setNotesModalOpen(false)}>Cancel</Button>
+                  <Button onClick={() => { setNotes(tempNotes); setNotesModalOpen(false); }}>Done</Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </Card>
 
           {/* Discount Modal */}
           <Dialog open={discountModalOpen} onOpenChange={setDiscountModalOpen}>
@@ -414,49 +456,6 @@ const CreateOrder = () => {
               </div>
             </DialogContent>
           </Dialog>
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Notes */}
-          <Card className="p-5">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-base font-semibold text-foreground">Notes</h2>
-              <button
-                className="text-muted-foreground hover:text-foreground"
-                onClick={() => { setTempNotes(notes); setNotesModalOpen(true); }}
-              >
-                <Pen className="h-4 w-4" />
-              </button>
-            </div>
-            <p className="text-sm text-muted-foreground">{notes || "No notes"}</p>
-
-            <Dialog open={notesModalOpen} onOpenChange={setNotesModalOpen}>
-              <DialogContent className="max-w-lg">
-                <DialogHeader>
-                  <DialogTitle>Add note</DialogTitle>
-                </DialogHeader>
-                <div>
-                  <div className="relative">
-                    <Textarea
-                      value={tempNotes}
-                      onChange={(e) => setTempNotes(e.target.value.slice(0, 5000))}
-                      className="min-h-[120px] resize-none"
-                      placeholder=""
-                    />
-                    <span className="absolute bottom-2 right-3 text-xs text-muted-foreground">
-                      {tempNotes.length}/5000
-                    </span>
-                  </div>
-                </div>
-                <div className="flex justify-end gap-2 pt-2">
-                  <Button variant="outline" onClick={() => setNotesModalOpen(false)}>Cancel</Button>
-                  <Button onClick={() => { setNotes(tempNotes); setNotesModalOpen(false); }}>Done</Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-          </Card>
-
         </div>
       </div>
 
