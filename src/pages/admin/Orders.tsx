@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ShoppingCart, Calendar, FileText, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +23,7 @@ const stats = [
 ];
 
 const Orders = () => {
+  const navigate = useNavigate();
   const [selectedFilter, setSelectedFilter] = useState("Today");
 
   return (
@@ -84,7 +86,7 @@ const Orders = () => {
         <p className="text-sm text-muted-foreground text-center max-w-md mb-6">
           This is where you'll fulfill orders, collect payments, and track order progress.
         </p>
-        <Button variant="default" className="bg-foreground text-background hover:bg-foreground/90">
+        <Button variant="default" className="bg-foreground text-background hover:bg-foreground/90" onClick={() => navigate("/admin/orders/create")}>
           Create order
         </Button>
       </div>

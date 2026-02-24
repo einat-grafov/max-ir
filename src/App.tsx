@@ -8,6 +8,7 @@ import Team from "./pages/Team";
 import AdminLogin from "./pages/AdminLogin";
 import AdminLayout from "./components/admin/AdminLayout";
 import Orders from "./pages/admin/Orders";
+import CreateOrder from "./pages/admin/CreateOrder";
 import Products from "./pages/admin/Products";
 import Customers from "./pages/admin/Customers";
 import Analytics from "./pages/admin/Analytics";
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Navigate to="/admin/orders" replace />} />
             <Route path="orders" element={<Orders />} />
+            <Route path="orders/create" element={<CreateOrder />} />
             <Route path="products" element={<Products />} />
             <Route path="customers" element={<Customers />} />
             <Route path="analytics" element={<Analytics />} />
