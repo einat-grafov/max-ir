@@ -276,9 +276,6 @@ const CreateOrder = () => {
                       {tempNotes.length}/5000
                     </span>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    To comment on a draft order or mention a staff member, use Timeline instead
-                  </p>
                 </div>
                 <div className="flex justify-end gap-2 pt-2">
                   <Button variant="outline" onClick={() => setNotesModalOpen(false)}>Cancel</Button>
