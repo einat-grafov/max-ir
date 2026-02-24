@@ -105,15 +105,6 @@ const CreateOrder = () => {
           <Card className="p-5">
             <h2 className="text-base font-semibold text-foreground mb-4">Products</h2>
             <div className="flex gap-2 mb-4">
-              <div className="relative flex-1 cursor-pointer" onClick={() => setBrowseModalOpen(true)}>
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search products"
-                  className="pl-9 cursor-pointer"
-                  readOnly
-                  onFocus={() => setBrowseModalOpen(true)}
-                />
-              </div>
               <Button variant="outline" onClick={() => setBrowseModalOpen(true)}>Browse</Button>
               <Button variant="outline">Add custom item</Button>
             </div>
