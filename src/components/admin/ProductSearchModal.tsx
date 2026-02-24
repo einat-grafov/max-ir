@@ -8,13 +8,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Search, Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -91,9 +84,8 @@ const ProductSearchModal = ({ open, onOpenChange, onAddProducts }: ProductSearch
           <DialogTitle>Select products</DialogTitle>
         </DialogHeader>
 
-        {/* Search bar */}
-        <div className="px-6 pt-4 flex gap-2">
-          <div className="relative flex-1">
+        <div className="px-6 pt-4">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search"
@@ -103,21 +95,6 @@ const ProductSearchModal = ({ open, onOpenChange, onAddProducts }: ProductSearch
               autoFocus
             />
           </div>
-          <Select defaultValue="all">
-            <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Search by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Search by All</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Filter */}
-        <div className="px-6 pt-2">
-          <button className="text-sm text-muted-foreground border border-dashed border-border rounded-md px-3 py-1.5 hover:bg-muted transition-colors">
-            Add filter +
-          </button>
         </div>
 
         {/* Table header */}
