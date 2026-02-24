@@ -17,7 +17,7 @@ const timeFilters = [
 const stats = [
   { label: "Orders", value: "0", change: "—" },
   { label: "Items ordered", value: "0", change: "—" },
-  { label: "Returns", value: "₪0", change: "—" },
+  { label: "Returns", value: "$0", change: "—" },
   { label: "Orders fulfilled", value: "0", change: "—" },
   { label: "Orders delivered", value: "0", change: "—" },
 ];
