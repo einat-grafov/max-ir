@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
+import { Link, useBlocker } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -22,7 +22,7 @@ import { Card } from "@/components/ui/card";
 import { Search, X, Package, ChevronUp, ChevronDown, Pen, Info, Plus } from "lucide-react";
 import ProductSearchModal from "@/components/admin/ProductSearchModal";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import CreateCustomerModal from "@/components/admin/CreateCustomerModal";
 import CustomerSearchModal from "@/components/admin/CustomerSearchModal";
@@ -52,6 +52,21 @@ const CreateOrder = () => {
   const [selectedCustomer, setSelectedCustomer] = useState<{
     id: string; first_name: string; last_name: string | null; email: string | null;
   } | null>(null);
+
+  const hasUnsavedChanges = products.length > 0 || selectedCustomer !== null || notes !== "" || discount !== null;
+
+  const blocker = useBlocker(
+    useCallback(() => hasUnsavedChanges, [hasUnsavedChanges])
+  );
+
+  useEffect(() => {
+    if (!hasUnsavedChanges) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [hasUnsavedChanges]);
 
   const canSubmit = products.length > 0 && selectedCustomer !== null;
 
@@ -445,6 +460,21 @@ const CreateOrder = () => {
         </div>
       </div>
 
+      {/* Leave confirmation */}
+      <Dialog open={blocker.state === "blocked"} onOpenChange={(open) => { if (!open) blocker.reset?.(); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Leave this page?</DialogTitle>
+            <DialogDescription>
+              Your order hasn't been saved. All changes will be lost if you leave now.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => blocker.reset?.()}>Stay</Button>
+            <Button variant="destructive" onClick={() => blocker.proceed?.()}>Leave</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
