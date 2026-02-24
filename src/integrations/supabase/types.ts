@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      customers: {
+        Row: {
+          accepts_marketing: boolean
+          address: string | null
+          apartment: string | null
+          city: string | null
+          company: string | null
+          country: string
+          created_at: string
+          email: string | null
+          first_name: string
+          id: string
+          language: string
+          last_name: string | null
+          phone: string | null
+          postal_code: string | null
+          tax_exempt: boolean
+          updated_at: string
+        }
+        Insert: {
+          accepts_marketing?: boolean
+          address?: string | null
+          apartment?: string | null
+          city?: string | null
+          company?: string | null
+          country?: string
+          created_at?: string
+          email?: string | null
+          first_name: string
+          id?: string
+          language?: string
+          last_name?: string | null
+          phone?: string | null
+          postal_code?: string | null
+          tax_exempt?: boolean
+          updated_at?: string
+        }
+        Update: {
+          accepts_marketing?: boolean
+          address?: string | null
+          apartment?: string | null
+          city?: string | null
+          company?: string | null
+          country?: string
+          created_at?: string
+          email?: string | null
+          first_name?: string
+          id?: string
+          language?: string
+          last_name?: string | null
+          phone?: string | null
+          postal_code?: string | null
+          tax_exempt?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category: string | null
