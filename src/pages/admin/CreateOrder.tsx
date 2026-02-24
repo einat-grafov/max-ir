@@ -44,6 +44,9 @@ const CreateOrder = () => {
   const [customerModalOpen, setCustomerModalOpen] = useState(false);
   const [notes, setNotes] = useState("");
   const [tempNotes, setTempNotes] = useState("");
+  const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
+
+  const canSubmit = products.length > 0 && selectedCustomer !== null;
 
   const handleAddProducts = (newProducts: { id: string; name: string; price: number; stock: number; requires_shipping: boolean; tax_exempt: boolean }[]) => {
     setProducts((prev) => {
@@ -106,8 +109,8 @@ const CreateOrder = () => {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-foreground">Create order</h1>
         <div className="flex gap-3">
-          <Button variant="outline">Send invoice</Button>
-          <Button>Create order</Button>
+          <Button variant="outline" disabled={!canSubmit}>Send invoice</Button>
+          <Button disabled={!canSubmit}>Create order</Button>
         </div>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
