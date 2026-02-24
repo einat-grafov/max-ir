@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { Search, X, Package, ChevronUp, ChevronDown, Pen, Link2, Info } from "lucide-react";
+import ProductSearchModal from "@/components/admin/ProductSearchModal";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface OrderProduct {
   id: string;
@@ -28,15 +30,29 @@ interface OrderProduct {
   price: number;
   quantity: number;
   taxExempt?: boolean;
+  outOfStock?: boolean;
 }
 
 const CreateOrder = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [products, setProducts] = useState<OrderProduct[]>([
-    { id: "1", name: "PRODUCT1", subtitle: "Requires shipping", price: 1233, quantity: 1 },
-    { id: "2", name: "PRODUCT 2", subtitle: "Tax exempt\nRequires shipping", price: 1823, quantity: 7, taxExempt: true },
-  ]);
+  const [products, setProducts] = useState<OrderProduct[]>([]);
   const [paymentDueLater, setPaymentDueLater] = useState(false);
+  const [browseModalOpen, setBrowseModalOpen] = useState(false);
+
+  const handleAddProducts = (newProducts: { id: string; name: string; price: number; stock: number; requires_shipping: boolean; tax_exempt: boolean }[]) => {
+    setProducts((prev) => {
+      const existing = new Set(prev.map((p) => p.id));
+      const toAdd = newProducts.filter((p) => !existing.has(p.id)).map((p) => ({
+        id: p.id,
+        name: p.name,
+        subtitle: [p.tax_exempt ? "Tax exempt" : "", p.requires_shipping ? "Requires shipping" : ""].filter(Boolean).join("\n"),
+        price: p.price,
+        quantity: 1,
+        taxExempt: p.tax_exempt,
+        outOfStock: p.stock === 0,
+      }));
+      return [...prev, ...toAdd];
+    });
+  };
 
   const updateQuantity = (id: string, delta: number) => {
     setProducts((prev) =>
@@ -89,18 +105,24 @@ const CreateOrder = () => {
           <Card className="p-5">
             <h2 className="text-base font-semibold text-foreground mb-4">Products</h2>
             <div className="flex gap-2 mb-4">
-              <div className="relative flex-1">
+              <div className="relative flex-1 cursor-pointer" onClick={() => setBrowseModalOpen(true)}>
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search products"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9"
+                  className="pl-9 cursor-pointer"
+                  readOnly
+                  onFocus={() => setBrowseModalOpen(true)}
                 />
               </div>
-              <Button variant="outline">Browse</Button>
+              <Button variant="outline" onClick={() => setBrowseModalOpen(true)}>Browse</Button>
               <Button variant="outline">Add custom item</Button>
             </div>
+
+            <ProductSearchModal
+              open={browseModalOpen}
+              onOpenChange={setBrowseModalOpen}
+              onAddProducts={handleAddProducts}
+            />
 
             {products.length > 0 && (
               <div>
@@ -111,54 +133,62 @@ const CreateOrder = () => {
                   <span className="w-8" />
                 </div>
                 {products.map((product) => (
-                  <div
-                    key={product.id}
-                    className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 items-center py-3 border-b border-border last:border-b-0"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
-                        <Package className="h-5 w-5 text-muted-foreground" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-foreground">{product.name}</p>
-                        {product.subtitle.split("\n").map((line, i) => (
-                          <p key={i} className="text-xs text-muted-foreground">{line}</p>
-                        ))}
-                        <p className="text-xs text-primary font-medium">{fmt(product.price)}</p>
-                      </div>
-                    </div>
-                    <div className="w-24 flex items-center border border-input rounded-md">
-                      <Input
-                        value={product.quantity}
-                        onChange={(e) => setQuantity(product.id, e.target.value)}
-                        className="border-0 text-center h-8 p-0 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                        type="number"
-                        min={1}
-                      />
-                      <div className="flex flex-col border-l border-input">
-                        <button
-                          onClick={() => updateQuantity(product.id, 1)}
-                          className="px-1.5 py-0.5 hover:bg-muted transition-colors"
-                        >
-                          <ChevronUp className="h-3 w-3 text-muted-foreground" />
-                        </button>
-                        <button
-                          onClick={() => updateQuantity(product.id, -1)}
-                          className="px-1.5 py-0.5 hover:bg-muted transition-colors border-t border-input"
-                        >
-                          <ChevronDown className="h-3 w-3 text-muted-foreground" />
-                        </button>
-                      </div>
-                    </div>
-                    <span className="w-28 text-right text-sm text-foreground">
-                      {fmt(product.price * product.quantity)}
-                    </span>
-                    <button
-                      onClick={() => removeProduct(product.id)}
-                      className="w-8 flex justify-center text-muted-foreground hover:text-foreground"
+                  <div key={product.id}>
+                    <div
+                      className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 items-center py-3 border-b border-border last:border-b-0"
                     >
-                      <X className="h-4 w-4" />
-                    </button>
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
+                          <Package className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-foreground">{product.name}</p>
+                          {product.subtitle.split("\n").map((line, i) => (
+                            <p key={i} className="text-xs text-muted-foreground">{line}</p>
+                          ))}
+                          <p className="text-xs text-primary font-medium">{fmt(product.price)}</p>
+                        </div>
+                      </div>
+                      <div className="w-24 flex items-center border border-input rounded-md">
+                        <Input
+                          value={product.quantity}
+                          onChange={(e) => setQuantity(product.id, e.target.value)}
+                          className="border-0 text-center h-8 p-0 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          type="number"
+                          min={1}
+                        />
+                        <div className="flex flex-col border-l border-input">
+                          <button
+                            onClick={() => updateQuantity(product.id, 1)}
+                            className="px-1.5 py-0.5 hover:bg-muted transition-colors"
+                          >
+                            <ChevronUp className="h-3 w-3 text-muted-foreground" />
+                          </button>
+                          <button
+                            onClick={() => updateQuantity(product.id, -1)}
+                            className="px-1.5 py-0.5 hover:bg-muted transition-colors border-t border-input"
+                          >
+                            <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                          </button>
+                        </div>
+                      </div>
+                      <span className="w-28 text-right text-sm text-foreground">
+                        {fmt(product.price * product.quantity)}
+                      </span>
+                      <button
+                        onClick={() => removeProduct(product.id)}
+                        className="w-8 flex justify-center text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                    {product.outOfStock && (
+                      <Alert variant="destructive" className="my-1">
+                        <AlertDescription className="text-xs">
+                          This product is out of stock but can still be added to the order.
+                        </AlertDescription>
+                      </Alert>
+                    )}
                   </div>
                 ))}
               </div>
