@@ -25,6 +25,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import CreateCustomerModal from "@/components/admin/CreateCustomerModal";
+import CustomerSearchModal from "@/components/admin/CustomerSearchModal";
 
 interface OrderProduct {
   id: string;
@@ -42,9 +43,12 @@ const CreateOrder = () => {
   const [browseModalOpen, setBrowseModalOpen] = useState(false);
   const [notesModalOpen, setNotesModalOpen] = useState(false);
   const [customerModalOpen, setCustomerModalOpen] = useState(false);
+  const [customerSearchOpen, setCustomerSearchOpen] = useState(false);
   const [notes, setNotes] = useState("");
   const [tempNotes, setTempNotes] = useState("");
-  const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<{
+    id: string; first_name: string; last_name: string | null; email: string | null;
+  } | null>(null);
 
   const canSubmit = products.length > 0 && selectedCustomer !== null;
 
@@ -125,10 +129,41 @@ const CreateOrder = () => {
                 Add new
               </Button>
             </div>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search or create a customer" className="pl-9" />
-            </div>
+            {selectedCustomer ? (
+              <div className="flex items-center justify-between p-3 border border-border rounded-lg">
+                <div>
+                  <p className="text-sm font-medium text-foreground">
+                    {selectedCustomer.first_name}{selectedCustomer.last_name ? ` ${selectedCustomer.last_name}` : ""}
+                  </p>
+                  {selectedCustomer.email && (
+                    <p className="text-xs text-muted-foreground">{selectedCustomer.email}</p>
+                  )}
+                </div>
+                <button
+                  onClick={() => setSelectedCustomer(null)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            ) : (
+              <div
+                className="relative cursor-pointer"
+                onClick={() => setCustomerSearchOpen(true)}
+              >
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search or create a customer"
+                  className="pl-9 pointer-events-none"
+                  readOnly
+                />
+              </div>
+            )}
+            <CustomerSearchModal
+              open={customerSearchOpen}
+              onOpenChange={setCustomerSearchOpen}
+              onSelectCustomer={(c) => setSelectedCustomer(c)}
+            />
             <CreateCustomerModal
               open={customerModalOpen}
               onOpenChange={setCustomerModalOpen}
