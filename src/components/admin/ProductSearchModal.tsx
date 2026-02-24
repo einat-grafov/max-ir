@@ -75,7 +75,7 @@ const ProductSearchModal = ({ open, onOpenChange, onAddProducts }: ProductSearch
   };
 
   const fmt = (n: number) =>
-    "₪" + n.toLocaleString("en-IL", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " ILS";
+    "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " USD";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

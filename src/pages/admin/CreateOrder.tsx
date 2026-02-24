@@ -101,7 +101,7 @@ const CreateOrder = () => {
   const tax = Math.round(taxableSubtotal * 0.18 * 100) / 100;
   const total = taxableSubtotal + tax;
 
-  const fmt = (n: number) => "₪" + n.toLocaleString("en-IL", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmt = (n: number) => "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
     <div>
@@ -301,13 +301,13 @@ const CreateOrder = () => {
                     : "—"}
                 </span>
                 <span className="text-right text-foreground">
-                  {discountAmount > 0 ? `-${fmt(discountAmount)}` : "₪0.00"}
+                  {discountAmount > 0 ? `-${fmt(discountAmount)}` : "$0.00"}
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-4 px-4 py-3 text-sm">
                 <span className="text-primary cursor-pointer hover:underline">Add shipping or delivery</span>
                 <span className="text-muted-foreground">—</span>
-                <span className="text-right text-foreground">₪0.00</span>
+                <span className="text-right text-foreground">$0.00</span>
               </div>
               <div className="grid grid-cols-3 gap-4 px-4 py-3 text-sm">
                 <span className="text-primary cursor-pointer hover:underline flex items-center gap-1">
@@ -361,7 +361,7 @@ const CreateOrder = () => {
                     <label className="text-sm font-medium text-foreground mb-1.5 block">Value</label>
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                        {tempDiscount.type === "amount" ? "₪" : "%"}
+                        {tempDiscount.type === "amount" ? "$" : "%"}
                       </span>
                       <Input
                         type="number"
@@ -373,7 +373,7 @@ const CreateOrder = () => {
                         placeholder="0.00"
                       />
                       {tempDiscount.type === "amount" && (
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">ILS</span>
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">USD</span>
                       )}
                     </div>
                   </div>
