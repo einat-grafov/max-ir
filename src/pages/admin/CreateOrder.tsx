@@ -19,11 +19,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { Search, X, Package, ChevronUp, ChevronDown, Pen, Link2, Info } from "lucide-react";
+import { Search, X, Package, ChevronUp, ChevronDown, Pen, Link2, Info, Plus } from "lucide-react";
 import ProductSearchModal from "@/components/admin/ProductSearchModal";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import CreateCustomerModal from "@/components/admin/CreateCustomerModal";
 
 interface OrderProduct {
   id: string;
@@ -40,6 +41,7 @@ const CreateOrder = () => {
   const [paymentDueLater, setPaymentDueLater] = useState(false);
   const [browseModalOpen, setBrowseModalOpen] = useState(false);
   const [notesModalOpen, setNotesModalOpen] = useState(false);
+  const [customerModalOpen, setCustomerModalOpen] = useState(false);
   const [notes, setNotes] = useState("");
   const [tempNotes, setTempNotes] = useState("");
 
@@ -108,11 +110,21 @@ const CreateOrder = () => {
         <div className="lg:col-span-2 space-y-6">
           {/* Customer */}
           <Card className="p-5">
-            <h2 className="text-base font-semibold text-foreground mb-3">Customer</h2>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-base font-semibold text-foreground">Customer</h2>
+              <Button variant="outline" size="sm" onClick={() => setCustomerModalOpen(true)}>
+                <Plus className="h-4 w-4 mr-1" />
+                Add new
+              </Button>
+            </div>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search or create a customer" className="pl-9" />
             </div>
+            <CreateCustomerModal
+              open={customerModalOpen}
+              onOpenChange={setCustomerModalOpen}
+            />
           </Card>
 
           {/* Products */}
