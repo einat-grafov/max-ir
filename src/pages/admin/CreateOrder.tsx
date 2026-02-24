@@ -22,6 +22,8 @@ import { Card } from "@/components/ui/card";
 import { Search, X, Package, ChevronUp, ChevronDown, Pen, Link2, Info } from "lucide-react";
 import ProductSearchModal from "@/components/admin/ProductSearchModal";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 interface OrderProduct {
   id: string;
@@ -37,6 +39,9 @@ const CreateOrder = () => {
   const [products, setProducts] = useState<OrderProduct[]>([]);
   const [paymentDueLater, setPaymentDueLater] = useState(false);
   const [browseModalOpen, setBrowseModalOpen] = useState(false);
+  const [notesModalOpen, setNotesModalOpen] = useState(false);
+  const [notes, setNotes] = useState("");
+  const [tempNotes, setTempNotes] = useState("");
 
   const handleAddProducts = (newProducts: { id: string; name: string; price: number; stock: number; requires_shipping: boolean; tax_exempt: boolean }[]) => {
     setProducts((prev) => {
@@ -245,11 +250,42 @@ const CreateOrder = () => {
           <Card className="p-5">
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-base font-semibold text-foreground">Notes</h2>
-              <button className="text-muted-foreground hover:text-foreground">
+              <button
+                className="text-muted-foreground hover:text-foreground"
+                onClick={() => { setTempNotes(notes); setNotesModalOpen(true); }}
+              >
                 <Pen className="h-4 w-4" />
               </button>
             </div>
-            <p className="text-sm text-muted-foreground">No notes</p>
+            <p className="text-sm text-muted-foreground">{notes || "No notes"}</p>
+
+            <Dialog open={notesModalOpen} onOpenChange={setNotesModalOpen}>
+              <DialogContent className="max-w-lg">
+                <DialogHeader>
+                  <DialogTitle>Add note</DialogTitle>
+                </DialogHeader>
+                <div>
+                  <div className="relative">
+                    <Textarea
+                      value={tempNotes}
+                      onChange={(e) => setTempNotes(e.target.value.slice(0, 5000))}
+                      className="min-h-[120px] resize-none"
+                      placeholder=""
+                    />
+                    <span className="absolute bottom-2 right-3 text-xs text-muted-foreground">
+                      {tempNotes.length}/5000
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    To comment on a draft order or mention a staff member, use Timeline instead
+                  </p>
+                </div>
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button variant="outline" onClick={() => setNotesModalOpen(false)}>Cancel</Button>
+                  <Button onClick={() => { setNotes(tempNotes); setNotesModalOpen(false); }}>Done</Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </Card>
 
           {/* Customer */}
