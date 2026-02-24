@@ -54,6 +54,7 @@ const CreateOrder = () => {
     id: string; first_name: string; last_name: string | null; email: string | null;
   } | null>(null);
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
+  const [invoiceSent, setInvoiceSent] = useState(false);
 
   const hasUnsavedChanges = products.length > 0 || selectedCustomer !== null || notes !== "" || discount !== null;
 
@@ -139,7 +140,7 @@ const CreateOrder = () => {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-foreground">Create order</h1>
         <div className="flex gap-3">
-          <Button variant="outline" disabled={!canSubmit} onClick={() => setInvoiceModalOpen(true)}>Send invoice</Button>
+          <Button variant="outline" disabled={!canSubmit} onClick={() => setInvoiceModalOpen(true)}>{invoiceSent ? "Resend invoice" : "Send invoice"}</Button>
           <Button disabled={!canSubmit}>Create order</Button>
         </div>
       </div>
@@ -467,6 +468,8 @@ const CreateOrder = () => {
         onOpenChange={setInvoiceModalOpen}
         customerEmail={selectedCustomer?.email}
         customerName={selectedCustomer ? `${selectedCustomer.first_name}${selectedCustomer.last_name ? ` ${selectedCustomer.last_name}` : ""}` : undefined}
+        invoiceSent={invoiceSent}
+        onInvoiceSent={() => setInvoiceSent(true)}
       />
 
       {/* Leave confirmation */}
