@@ -1,8 +1,8 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -19,8 +19,51 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
+import { Search, X, Package, ChevronUp, ChevronDown, Pen, Link2, Info } from "lucide-react";
+
+interface OrderProduct {
+  id: string;
+  name: string;
+  subtitle: string;
+  price: number;
+  quantity: number;
+  taxExempt?: boolean;
+}
 
 const CreateOrder = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [products, setProducts] = useState<OrderProduct[]>([
+    { id: "1", name: "PRODUCT1", subtitle: "Requires shipping", price: 1233, quantity: 1 },
+    { id: "2", name: "PRODUCT 2", subtitle: "Tax exempt\nRequires shipping", price: 1823, quantity: 7, taxExempt: true },
+  ]);
+  const [paymentDueLater, setPaymentDueLater] = useState(false);
+
+  const updateQuantity = (id: string, delta: number) => {
+    setProducts((prev) =>
+      prev.map((p) =>
+        p.id === id ? { ...p, quantity: Math.max(1, p.quantity + delta) } : p
+      )
+    );
+  };
+
+  const setQuantity = (id: string, val: string) => {
+    const num = parseInt(val);
+    if (!isNaN(num) && num >= 1) {
+      setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, quantity: num } : p)));
+    }
+  };
+
+  const removeProduct = (id: string) => {
+    setProducts((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  const totalItems = products.reduce((s, p) => s + p.quantity, 0);
+  const subtotal = products.reduce((s, p) => s + p.price * p.quantity, 0);
+  const tax = Math.round(subtotal * 0.18 * 100) / 100;
+  const total = subtotal + tax;
+
+  const fmt = (n: number) => "₪" + n.toLocaleString("en-IL", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
   return (
     <div>
       <Breadcrumb className="mb-4">
@@ -45,39 +88,132 @@ const CreateOrder = () => {
           {/* Products */}
           <Card className="p-5">
             <h2 className="text-base font-semibold text-foreground mb-4">Products</h2>
-            <div className="space-y-3">
-              <div>
-                <Label htmlFor="product-search">Search or add a product</Label>
-                <Input id="product-search" placeholder="Search products..." className="mt-1.5" />
+            <div className="flex gap-2 mb-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search products"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9"
+                />
               </div>
+              <Button variant="outline">Browse</Button>
+              <Button variant="outline">Add custom item</Button>
+            </div>
+
+            {products.length > 0 && (
+              <div>
+                <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 items-center text-sm text-muted-foreground border-b border-border pb-2 mb-2">
+                  <span>Product</span>
+                  <span className="w-24 text-center">Quantity</span>
+                  <span className="w-28 text-right">Total</span>
+                  <span className="w-8" />
+                </div>
+                {products.map((product) => (
+                  <div
+                    key={product.id}
+                    className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 items-center py-3 border-b border-border last:border-b-0"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
+                        <Package className="h-5 w-5 text-muted-foreground" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{product.name}</p>
+                        {product.subtitle.split("\n").map((line, i) => (
+                          <p key={i} className="text-xs text-muted-foreground">{line}</p>
+                        ))}
+                        <p className="text-xs text-primary font-medium">{fmt(product.price)}</p>
+                      </div>
+                    </div>
+                    <div className="w-24 flex items-center border border-input rounded-md">
+                      <Input
+                        value={product.quantity}
+                        onChange={(e) => setQuantity(product.id, e.target.value)}
+                        className="border-0 text-center h-8 p-0 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        type="number"
+                        min={1}
+                      />
+                      <div className="flex flex-col border-l border-input">
+                        <button
+                          onClick={() => updateQuantity(product.id, 1)}
+                          className="px-1.5 py-0.5 hover:bg-muted transition-colors"
+                        >
+                          <ChevronUp className="h-3 w-3 text-muted-foreground" />
+                        </button>
+                        <button
+                          onClick={() => updateQuantity(product.id, -1)}
+                          className="px-1.5 py-0.5 hover:bg-muted transition-colors border-t border-input"
+                        >
+                          <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                        </button>
+                      </div>
+                    </div>
+                    <span className="w-28 text-right text-sm text-foreground">
+                      {fmt(product.price * product.quantity)}
+                    </span>
+                    <button
+                      onClick={() => removeProduct(product.id)}
+                      className="w-8 flex justify-center text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {products.length === 0 && (
               <div className="border border-dashed border-border rounded-lg p-8 text-center">
                 <p className="text-sm text-muted-foreground">
                   Add products to this order by searching above.
                 </p>
               </div>
-            </div>
+            )}
           </Card>
 
           {/* Payment */}
           <Card className="p-5">
             <h2 className="text-base font-semibold text-foreground mb-4">Payment</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="subtotal">Subtotal</Label>
-                <Input id="subtotal" value="₪0.00" readOnly className="mt-1.5 bg-muted/50" />
+            <div className="border border-border rounded-lg divide-y divide-border">
+              <div className="grid grid-cols-3 gap-4 px-4 py-3 text-sm">
+                <span className="text-foreground">Subtotal</span>
+                <span className="text-muted-foreground">{totalItems} items</span>
+                <span className="text-right text-foreground">{fmt(subtotal)}</span>
               </div>
-              <div>
-                <Label htmlFor="shipping">Shipping</Label>
-                <Input id="shipping" placeholder="₪0.00" className="mt-1.5" />
+              <div className="grid grid-cols-3 gap-4 px-4 py-3 text-sm">
+                <span className="text-primary cursor-pointer hover:underline">Add discount</span>
+                <span className="text-muted-foreground">—</span>
+                <span className="text-right text-foreground">₪0.00</span>
               </div>
-              <div>
-                <Label htmlFor="discount">Discount</Label>
-                <Input id="discount" placeholder="₪0.00" className="mt-1.5" />
+              <div className="grid grid-cols-3 gap-4 px-4 py-3 text-sm">
+                <span className="text-primary cursor-pointer hover:underline">Add shipping or delivery</span>
+                <span className="text-muted-foreground">—</span>
+                <span className="text-right text-foreground">₪0.00</span>
               </div>
-              <div>
-                <Label htmlFor="total">Total</Label>
-                <Input id="total" value="₪0.00" readOnly className="mt-1.5 bg-muted/50 font-semibold" />
+              <div className="grid grid-cols-3 gap-4 px-4 py-3 text-sm">
+                <span className="text-primary cursor-pointer hover:underline flex items-center gap-1">
+                  Estimated tax <Info className="h-3.5 w-3.5 text-muted-foreground" />
+                </span>
+                <span className="text-muted-foreground">VAT 18%</span>
+                <span className="text-right text-foreground">{fmt(tax)}</span>
               </div>
+              <div className="grid grid-cols-3 gap-4 px-4 py-3 text-sm font-semibold">
+                <span className="text-foreground">Total</span>
+                <span />
+                <span className="text-right text-foreground">{fmt(total)}</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 mt-4 pt-4 border-t border-border">
+              <Checkbox
+                id="payment-due-later"
+                checked={paymentDueLater}
+                onCheckedChange={(checked) => setPaymentDueLater(checked as boolean)}
+              />
+              <label htmlFor="payment-due-later" className="text-sm text-foreground cursor-pointer">
+                Payment due later
+              </label>
             </div>
           </Card>
         </div>
@@ -86,39 +222,69 @@ const CreateOrder = () => {
         <div className="space-y-6">
           {/* Notes */}
           <Card className="p-5">
-            <h2 className="text-base font-semibold text-foreground mb-4">Notes</h2>
-            <Textarea placeholder="Add a note to this order..." rows={3} />
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-base font-semibold text-foreground">Notes</h2>
+              <button className="text-muted-foreground hover:text-foreground">
+                <Pen className="h-4 w-4" />
+              </button>
+            </div>
+            <p className="text-sm text-muted-foreground">No notes</p>
           </Card>
 
           {/* Customer */}
           <Card className="p-5">
-            <h2 className="text-base font-semibold text-foreground mb-4">Customer</h2>
-            <Input placeholder="Search or create a customer" />
+            <h2 className="text-base font-semibold text-foreground mb-3">Customer</h2>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Search or create a customer" className="pl-9" />
+            </div>
           </Card>
 
-          {/* Status */}
+          {/* Markets */}
           <Card className="p-5">
-            <h2 className="text-base font-semibold text-foreground mb-4">Status</h2>
-            <Select defaultValue="draft">
-              <SelectTrigger>
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="confirmed">Confirmed</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-base font-semibold text-foreground">Markets</h2>
+              <button className="text-muted-foreground hover:text-foreground">
+                <Link2 className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="flex items-center gap-2 mb-4">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border border-border text-sm text-foreground">
+                🌐 Israel
+              </span>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground mb-1.5">Currency</p>
+              <Select defaultValue="ils">
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ils">Israeli New Shekel (ILS ₪)</SelectItem>
+                  <SelectItem value="usd">US Dollar (USD $)</SelectItem>
+                  <SelectItem value="eur">Euro (EUR €)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </Card>
+
+          {/* Tags */}
+          <Card className="p-5">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-base font-semibold text-foreground">Tags</h2>
+              <button className="text-muted-foreground hover:text-foreground">
+                <Pen className="h-4 w-4" />
+              </button>
+            </div>
+            <Input placeholder="" className="h-9" />
           </Card>
         </div>
       </div>
 
       {/* Actions */}
       <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-border">
-        <Button variant="outline" asChild>
-          <Link to="/admin/orders">Discard</Link>
-        </Button>
-        <Button>Save order</Button>
+        <Button variant="outline">Send invoice</Button>
+        <Button>Create order</Button>
       </div>
     </div>
   );
