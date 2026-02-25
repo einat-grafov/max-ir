@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Link, useBlocker, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -59,10 +59,11 @@ const CreateOrder = () => {
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
   const [invoiceSent, setInvoiceSent] = useState(false);
 
+  const isSavingRef = useRef(false);
   const hasUnsavedChanges = products.length > 0 || selectedCustomer !== null || notes !== "" || discount !== null;
 
   const blocker = useBlocker(
-    useCallback(() => hasUnsavedChanges, [hasUnsavedChanges])
+    useCallback(() => !isSavingRef.current && hasUnsavedChanges, [hasUnsavedChanges])
   );
 
   useEffect(() => {
@@ -115,12 +116,7 @@ const CreateOrder = () => {
       const { error: itemsError } = await supabase.from("order_items").insert(items);
       if (itemsError) throw itemsError;
 
-      // Reset state before navigating so the blocker doesn't trigger
-      setProducts([]);
-      setSelectedCustomer(null);
-      setNotes("");
-      setDiscount(null);
-
+      isSavingRef.current = true;
       toast.success("Order created successfully");
       navigate("/admin/orders");
     } catch (err: any) {
