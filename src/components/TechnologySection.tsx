@@ -66,7 +66,7 @@ const TechnologySection = () => {
             return (
               <ScrollReveal key={f.title} delay={i * 0.1} variant="fadeUp">
                 <div
-                  className={`bg-white rounded-[16px] flex flex-col items-center text-center justify-between w-full min-h-[207px] transition-all duration-300 ${
+                  className={`bg-white rounded-[16px] flex flex-col items-center text-center justify-between w-full min-h-[207px] transition-all duration-300 hover:-translate-y-2 hover:shadow-lg cursor-pointer ${
                     isCenter ? 'lg:-translate-y-6' : isInner ? 'lg:-translate-y-3' : ''
                   }`}
                   style={{ padding: '47px 14px 30px', boxShadow: '0 18px 44px #00000014' }}
