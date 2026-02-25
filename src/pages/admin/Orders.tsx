@@ -5,7 +5,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger, PopoverClose } from "@/components/ui/popover";
 import { format } from "date-fns";
 import {
   Table,
@@ -121,6 +120,7 @@ const Orders = () => {
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   const [customFrom, setCustomFrom] = useState<Date | undefined>();
   const [customTo, setCustomTo] = useState<Date | undefined>();
+  const [showCustomPicker, setShowCustomPicker] = useState(false);
   
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -216,68 +216,63 @@ const Orders = () => {
                   {t}
                 </button>
               ))}
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button className={`block w-full text-left px-4 py-2 text-sm hover:bg-muted transition-colors ${timeRange === "Custom" ? "font-semibold text-foreground" : "text-muted-foreground"}`}>
-                    Custom range…
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" side="bottom" align="start" sideOffset={4}>
-                  <div className="p-4">
-                    {/* Date display header */}
-                    <div className="flex items-center gap-3 mb-4 text-sm">
-                      <div className="border border-border rounded-md px-3 py-1.5 min-w-[140px] text-foreground">
-                        {customFrom ? format(customFrom, "d MMMM yyyy") : "Start date"}
-                      </div>
-                      <span className="text-muted-foreground">—</span>
-                      <div className="border border-border rounded-md px-3 py-1.5 min-w-[140px] text-foreground">
-                        {customTo ? format(customTo, "d MMMM yyyy") : "End date"}
-                      </div>
-                      <button
-                        onClick={() => { setCustomFrom(undefined); setCustomTo(undefined); }}
-                        className="text-sm text-primary hover:underline ml-2"
-                      >
-                        Clear
-                      </button>
+              <button
+                onClick={() => setShowCustomPicker((v) => !v)}
+                className={`block w-full text-left px-4 py-2 text-sm hover:bg-muted transition-colors ${timeRange === "Custom" ? "font-semibold text-foreground" : "text-muted-foreground"}`}
+              >
+                Custom range…
+              </button>
+              {showCustomPicker && (
+                <div className="border-t border-border p-4">
+                  {/* Date display header */}
+                  <div className="flex items-center gap-3 mb-4 text-sm">
+                    <div className="border border-border rounded-md px-3 py-1.5 min-w-[140px] text-foreground">
+                      {customFrom ? format(customFrom, "d MMMM yyyy") : "Start date"}
                     </div>
-                    {/* Side-by-side calendars */}
-                    <div className="flex gap-6">
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground mb-2">From</p>
-                        <Calendar
-                          mode="single"
-                          selected={customFrom}
-                          onSelect={(day) => setCustomFrom(day)}
-                        />
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground mb-2">To</p>
-                        <Calendar
-                          mode="single"
-                          selected={customTo}
-                          onSelect={(day) => setCustomTo(day)}
-                          disabled={(date) => customFrom ? date < customFrom : false}
-                        />
-                      </div>
+                    <span className="text-muted-foreground">—</span>
+                    <div className="border border-border rounded-md px-3 py-1.5 min-w-[140px] text-foreground">
+                      {customTo ? format(customTo, "d MMMM yyyy") : "End date"}
                     </div>
-                    {/* Actions */}
-                    <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-border">
-                      <PopoverClose asChild>
-                        <Button variant="outline" size="sm">Cancel</Button>
-                      </PopoverClose>
-                      <PopoverClose asChild>
-                        <Button
-                          size="sm"
-                          disabled={!customFrom || !customTo}
-                          onClick={() => { setTimeRange("Custom"); setShowTimeDropdown(false); }}
-                        >
-                          Apply
-                        </Button>
-                      </PopoverClose>
+                    <button
+                      onClick={() => { setCustomFrom(undefined); setCustomTo(undefined); }}
+                      className="text-sm text-primary hover:underline ml-2"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                  {/* Side-by-side calendars */}
+                  <div className="flex gap-6">
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground mb-2">From</p>
+                      <Calendar
+                        mode="single"
+                        selected={customFrom}
+                        onSelect={(day) => setCustomFrom(day)}
+                      />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground mb-2">To</p>
+                      <Calendar
+                        mode="single"
+                        selected={customTo}
+                        onSelect={(day) => setCustomTo(day)}
+                        disabled={(date) => customFrom ? date < customFrom : false}
+                      />
                     </div>
                   </div>
-                </PopoverContent>
-              </Popover>
+                  {/* Actions */}
+                  <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-border">
+                    <Button variant="outline" size="sm" onClick={() => setShowCustomPicker(false)}>Cancel</Button>
+                    <Button
+                      size="sm"
+                      disabled={!customFrom || !customTo}
+                      onClick={() => { setTimeRange("Custom"); setShowTimeDropdown(false); setShowCustomPicker(false); }}
+                    >
+                      Apply
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
