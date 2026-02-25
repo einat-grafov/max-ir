@@ -15,7 +15,7 @@ const HeroSection = () => {
         src="/images/hero-ribbon-droplet.png"
         alt=""
         aria-hidden="true"
-        className="absolute inset-0 w-full h-full object-cover pointer-events-none z-10 object-[55%_50%] md:object-[55%_50%] max-md:object-[62%_55%]"
+        className="absolute bottom-[80px] md:bottom-[120px] left-0 right-0 w-full h-[55%] md:h-[60%] object-contain object-[50%_100%] pointer-events-none z-10"
       />
 
       {/* Content */}
