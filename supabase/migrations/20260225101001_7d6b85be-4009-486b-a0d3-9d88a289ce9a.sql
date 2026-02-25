@@ -1,0 +1,1 @@
+ALTER TABLE public.orders ADD COLUMN fulfillment_status text NOT NULL DEFAULT 'unfulfilled';

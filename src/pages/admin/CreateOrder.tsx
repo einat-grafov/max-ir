@@ -41,6 +41,23 @@ interface OrderProduct {
   outOfStock?: boolean;
 }
 
+const FULFILLMENT_CONFIG: Record<string, { label: string; color: string }> = {
+  unfulfilled: { label: "Unfulfilled", color: "bg-yellow-100 text-yellow-800 border-yellow-300" },
+  in_progress: { label: "In progress", color: "bg-blue-100 text-blue-800 border-blue-300" },
+  fulfilled: { label: "Fulfilled", color: "bg-green-100 text-green-800 border-green-300" },
+  on_hold: { label: "On hold", color: "bg-red-100 text-red-800 border-red-300" },
+  scheduled: { label: "Scheduled", color: "bg-purple-100 text-purple-800 border-purple-300" },
+};
+
+const FulfillmentBadge = ({ status }: { status: string }) => {
+  const config = FULFILLMENT_CONFIG[status] || FULFILLMENT_CONFIG.unfulfilled;
+  return (
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${config.color}`}>
+      {config.label}
+    </span>
+  );
+};
+
 const CreateOrder = () => {
   const [products, setProducts] = useState<OrderProduct[]>([]);
   const [paymentDueLater, setPaymentDueLater] = useState(false);
@@ -81,6 +98,7 @@ const CreateOrder = () => {
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
+  const [fulfillmentStatus, setFulfillmentStatus] = useState("unfulfilled");
   const canSubmit = products.length > 0 && selectedCustomer !== null;
 
   const handleCreateOrder = async () => {
@@ -212,7 +230,10 @@ const CreateOrder = () => {
       </Breadcrumb>
 
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Create order</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-foreground">Create order</h1>
+          {createdOrderId && <FulfillmentBadge status={fulfillmentStatus} />}
+        </div>
         <div className="flex gap-3">
           <Button variant="outline" disabled={!canSubmit} onClick={() => setInvoiceModalOpen(true)}>{invoiceSent ? "Resend invoice" : "Send invoice"}</Button>
           {createdOrderId ? (
