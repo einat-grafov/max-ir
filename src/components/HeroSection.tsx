@@ -10,6 +10,14 @@ const HeroSection = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-maxir-dark/40 via-transparent to-transparent" />
       </div>
 
+      {/* Decorative ribbon + droplet layer */}
+      <img
+        src="/images/hero-ribbon-droplet.png"
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full object-cover pointer-events-none z-10 object-[55%_50%] md:object-[55%_50%] max-md:object-[62%_55%]"
+      />
+
       {/* Content */}
       <div className="relative z-30 text-center px-6 max-w-4xl mx-auto">
         <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-maxir-white mb-6 tracking-tight">
