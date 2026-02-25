@@ -126,6 +126,7 @@ export type Database = {
           customer_id: string | null
           customer_name: string
           discount_amount: number
+          fulfillment_status: string
           id: string
           notes: string | null
           order_number: number
@@ -143,6 +144,7 @@ export type Database = {
           customer_id?: string | null
           customer_name: string
           discount_amount?: number
+          fulfillment_status?: string
           id?: string
           notes?: string | null
           order_number?: number
@@ -160,6 +162,7 @@ export type Database = {
           customer_id?: string | null
           customer_name?: string
           discount_amount?: number
+          fulfillment_status?: string
           id?: string
           notes?: string | null
           order_number?: number
