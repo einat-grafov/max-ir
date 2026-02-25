@@ -15,7 +15,7 @@ const HeroSection = () => {
         src="/images/drops.png"
         alt=""
         aria-hidden="true"
-        className="absolute bottom-[5%] md:bottom-[8%] left-1/2 -translate-x-1/2 w-[60%] md:w-[45%] h-auto pointer-events-none"
+        className="absolute bottom-[5%] md:bottom-[8%] left-1/2 -translate-x-1/2 w-[36%] md:w-[27%] h-auto pointer-events-none"
         style={{ zIndex: 22 }}
       />
 
