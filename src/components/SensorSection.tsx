@@ -30,22 +30,37 @@ const SensorSection = () => {
   const [activePart, setActivePart] = useState<string | null>(null);
 
   return (
-    <section id="Sensor" className="section-white py-16 lg:py-24">
-      <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
+    <section id="Sensor" className="relative section-dark py-16 lg:py-24">
+      {/* Wave divider at top */}
+      <div className="absolute top-0 left-0 right-0 z-10 h-[120px] md:h-[180px] -translate-y-[calc(100%-1px)]">
+        <svg
+          viewBox="0 0 1440 180"
+          preserveAspectRatio="none"
+          className="absolute bottom-0 w-full h-full"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M0,90 C200,130 400,170 600,160 C800,150 950,20 1100,10 C1250,0 1380,40 1440,70 L1440,180 L0,180 Z"
+            fill="hsl(var(--maxir-dark))"
+          />
+        </svg>
+      </div>
+
+      <div className="max-w-[1200px] mx-auto px-6 lg:px-10 text-center">
         <ScrollReveal>
-          <div className="accent-line mb-6" />
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-8">The Sensor</h2>
+          <div className="accent-line-center mb-6" />
+          <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-bold mb-8 leading-[1.05]">The Sensor</h2>
         </ScrollReveal>
 
         <ScrollReveal delay={0.1}>
-          <div className="max-w-4xl mb-8">
-            <p className="text-foreground/70 text-base leading-relaxed mb-4">
+          <div className="max-w-4xl mx-auto mb-8">
+            <p className="text-maxir-white/70 text-base leading-relaxed mb-4">
               Max-IR develops infrared (IR) sensors for analysis of compounds in liquids, from clear to thick and murky. Using cutting-edge patented technology, our sensors enable accurate, real-time, continuous measurements, without change or drift over time.
             </p>
-            <p className="text-foreground/70 text-base leading-relaxed mb-4">
+            <p className="text-maxir-white/70 text-base leading-relaxed mb-4">
               Max-IR's pioneering industrial grade sensor is based on infrared light passing through an immersed optical fiber.
             </p>
-            <p className="text-foreground/70 text-base leading-relaxed">
+            <p className="text-maxir-white/70 text-base leading-relaxed">
               Implementation of ion-selective material enhances differentiation between various molecules, making it ideal for on-site operations.
             </p>
           </div>
@@ -72,9 +87,9 @@ const SensorSection = () => {
                 onMouseLeave={() => setActivePart(null)}
               >
                 <h3 className="text-lg font-bold mb-3 group-hover:text-primary transition-colors">{part.title}</h3>
-                <p className="text-foreground/60 text-sm leading-relaxed">{part.description}</p>
+                <p className="text-maxir-white/60 text-sm leading-relaxed">{part.description}</p>
                 {part.extra?.map((text, j) => (
-                  <p key={j} className="text-foreground/60 text-sm leading-relaxed mt-3">
+                  <p key={j} className="text-maxir-white/60 text-sm leading-relaxed mt-3">
                     <strong>{text.split(" - ")[0]}</strong> - {text.split(" - ").slice(1).join(" - ")}
                   </p>
                 ))}
