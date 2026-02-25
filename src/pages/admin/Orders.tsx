@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar } from "@/components/ui/calendar";
+import { DateRangeCalendar } from "@/components/admin/DateRangeCalendar";
 import { format } from "date-fns";
 import {
   Table,
@@ -119,7 +119,7 @@ const Orders = () => {
   const [timeRange, setTimeRange] = useState<TimeRange>("All");
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   const [customFrom, setCustomFrom] = useState<Date | undefined>();
-  const [customTo, setCustomTo] = useState<Date | undefined>();
+  const [customTo, setCustomTo] = useState<Date | undefined>(new Date());
   const [showCustomPicker, setShowCustomPicker] = useState(false);
   
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -240,28 +240,12 @@ const Orders = () => {
                       Clear
                     </button>
                   </div>
-                  {/* Side-by-side calendars */}
-                  <div className="flex gap-6">
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground mb-2">From</p>
-                      <Calendar
-                        mode="single"
-                        selected={customFrom}
-                        onSelect={(day) => setCustomFrom(day)}
-                        classNames={{ day_today: customFrom ? "" : undefined }}
-                      />
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground mb-2">To</p>
-                      <Calendar
-                        mode="single"
-                        selected={customTo}
-                        onSelect={(day) => setCustomTo(day)}
-                        disabled={(date) => customFrom ? date < customFrom : false}
-                        classNames={{ day_today: customTo ? "" : undefined }}
-                      />
-                    </div>
-                  </div>
+                  <DateRangeCalendar
+                    from={customFrom}
+                    to={customTo}
+                    onFromChange={(d) => setCustomFrom(d)}
+                    onToChange={(d) => setCustomTo(d)}
+                  />
                   {/* Actions */}
                   <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-border">
                     <Button variant="outline" size="sm" onClick={() => setShowCustomPicker(false)}>Cancel</Button>
