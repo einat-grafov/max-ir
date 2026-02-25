@@ -30,7 +30,7 @@ const SensorSection = () => {
   const [activePart, setActivePart] = useState<string | null>(null);
 
   return (
-    <section id="Sensor" className="relative section-dark py-16 lg:py-24">
+    <section id="Sensor" className="relative section-dark pt-[calc(4rem+120px)] md:pt-[calc(6rem+180px)] pb-16 lg:pb-24 mt-[120px] md:mt-[180px]">
       {/* Wave divider at top */}
       <div className="absolute top-0 left-0 right-0 z-10 h-[120px] md:h-[180px] -translate-y-[calc(100%-1px)]">
         <svg
