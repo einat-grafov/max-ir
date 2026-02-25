@@ -15,8 +15,8 @@ const HeroSection = () => {
         src="/images/drops.png"
         alt=""
         aria-hidden="true"
-        className="absolute bottom-[5%] md:bottom-[8%] left-1/2 -translate-x-1/2 w-[36%] md:w-[27%] h-auto pointer-events-none"
-        style={{ zIndex: 22 }}
+        className="absolute bottom-[5%] md:bottom-[8%] left-1/2 -translate-x-1/2 w-full h-auto pointer-events-none"
+        style={{ zIndex: 22, transform: 'translateX(-50%) scale(0.6)' }}
       />
 
       {/* Decorative ribbon + droplet layer */}
