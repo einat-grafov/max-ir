@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 const HeroSection = () => {
   return (
     <section
@@ -30,13 +32,28 @@ const HeroSection = () => {
 
       {/* Content */}
       <div className="relative z-30 text-center px-6 max-w-4xl mx-auto">
-        <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-maxir-white mb-6 tracking-tight">
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="text-5xl md:text-6xl lg:text-7xl font-bold text-maxir-white mb-6 tracking-tight"
+        >
           Making Infrared Sense
-        </h1>
-        <div className="accent-line-center mb-8" />
-        <p className="text-maxir-white/80 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+        </motion.h1>
+        <motion.div
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
+          className="accent-line-center mb-8"
+        />
+        <motion.p
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
+          className="text-maxir-white/80 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed"
+        >
           Max-IR Labs leverages state-of-the-art infrared technologies for high-value commercial and defense applications.
-        </p>
+        </motion.p>
       </div>
 
 
