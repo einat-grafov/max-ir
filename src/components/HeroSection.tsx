@@ -21,19 +21,6 @@ const HeroSection = () => {
         </p>
       </div>
 
-      {/* Drops */}
-      <div className="absolute bottom-[3%] left-[30%] z-10">
-        <img src="/images/left-drop.png" alt="Drop" className="w-[100px] md:w-[143px]" />
-      </div>
-      <div className="absolute bottom-[0%] left-1/2 -translate-x-1/2 z-10">
-        <img src="/images/main-drop.png" alt="Main drop" className="w-[200px] md:w-[300px]" />
-      </div>
-      <div className="absolute bottom-[3%] right-[15%] z-10">
-        <img src="/images/right-drop.png" alt="Drop" className="w-[60px] md:w-[80px]" />
-      </div>
-      <div className="absolute bottom-[0%] right-[8%] z-10">
-        <img src="/images/right-drop.png" alt="Drop" className="w-[40px] md:w-[60px]" />
-      </div>
 
       {/* Wave SVG divider – sits at the very bottom */}
       <div className="absolute bottom-0 left-0 right-0 z-20 h-[var(--wave-height)] md:h-[var(--wave-height-md)]">
