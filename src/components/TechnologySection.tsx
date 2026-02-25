@@ -12,34 +12,42 @@ const TechnologySection = () => {
   return (
     <section id="Technology" className="section-white py-16 lg:py-24">
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
-        <ScrollReveal>
-          <div className="accent-line mb-6" />
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-8">The Technology</h2>
-        </ScrollReveal>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+          {/* Left column: title + subtitle */}
+          <div>
+            <ScrollReveal>
+              <div className="accent-line mb-6" />
+              <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-bold text-foreground leading-[1.05] mb-8">The<br />Technology</h2>
+            </ScrollReveal>
 
-        <ScrollReveal delay={0.1}>
-          <p className="text-foreground/70 text-base md:text-lg leading-relaxed mb-6 max-w-4xl">
-            Max-IR's patented technology unlocks the plethora of information that exists in the infrared spectra but is difficult to analyze.
-          </p>
-        </ScrollReveal>
+            <ScrollReveal delay={0.1}>
+              <p className="text-foreground text-[18px] md:text-[21px] lg:text-[23px] leading-relaxed">
+                Max-IR's patented technology unlocks the plethora of information that exists in the infrared spectra but is difficult to analyze.
+              </p>
+            </ScrollReveal>
+          </div>
 
-        <ScrollReveal delay={0.15}>
-          <p className="text-foreground/70 text-sm md:text-base leading-relaxed mb-6 max-w-4xl">
-            Traditional techniques such as ultraviolet, electrochemical, colorimetric and direct infrared interacting with the analyte liquid suffer from fouling and interferences and are unstable over time. Our technology enables the use of infrared spectroscopy even in the case of thick and opaque liquids where other methods fail.
-          </p>
-        </ScrollReveal>
+          {/* Right column: body paragraphs */}
+          <div className="flex flex-col gap-6">
+            <ScrollReveal delay={0.15}>
+              <p className="text-foreground text-[16px] lg:text-[18px] leading-relaxed">
+                Traditional techniques such as ultraviolet, electrochemical, colorimetric and direct infrared interacting with the analyte liquid suffer from fouling and interferences and are unstable over time. Our technology enables the use of infrared spectroscopy even in the case of thick and opaque liquids where other methods fail.
+              </p>
+            </ScrollReveal>
 
-        <ScrollReveal delay={0.2}>
-          <p className="text-foreground/70 text-sm md:text-base leading-relaxed mb-6 max-w-4xl">
-            Based on ground-breaking research by its founder, Max-IR seeks to solve the issue of analyzing the composition of liquids without creating any reaction, with accuracy, in real-time. The non-reactive method of measurement, coupled with a self-calibration technology to avoid measurement drift, ensures a low-maintenance sensor suited for industrial, biomedical, research, and defense/security applications.
-          </p>
-        </ScrollReveal>
+            <ScrollReveal delay={0.2}>
+              <p className="text-foreground text-[16px] lg:text-[18px] leading-relaxed">
+                Based on ground-breaking research by its founder, Max-IR seeks to solve the issue of analyzing the composition of liquids without creating any reaction, with accuracy, in real-time. The non-reactive method of measurement, coupled with a self-calibration technology to avoid measurement drift, ensures a low-maintenance sensor suited for industrial, biomedical, research, and defense/security applications.
+              </p>
+            </ScrollReveal>
 
-        <ScrollReveal delay={0.25}>
-          <p className="text-foreground/70 text-sm md:text-base leading-relaxed mb-12 max-w-4xl">
-            An infrared signal is passed down a special optical fiber in contact with the liquid analyte. The electromagnetic field associated with the IR signal penetrates a short distance into the liquid analyte where it is absorbed by target compounds. This generates small changes in the IR signal, which are detected by the sensor.
-          </p>
-        </ScrollReveal>
+            <ScrollReveal delay={0.25}>
+              <p className="text-foreground text-[16px] lg:text-[18px] leading-relaxed">
+                An infrared signal is passed down a special optical fiber in contact with the liquid analyte. The electromagnetic field associated with the IR signal penetrates a short distance into the liquid analyte where it is absorbed by target compounds. This generates small changes in the IR signal, which are detected by the sensor.
+              </p>
+            </ScrollReveal>
+          </div>
+        </div>
       </div>
 
       {/* Diagram - full width, outside container */}
