@@ -52,7 +52,7 @@ const TechnologySection = () => {
 
       {/* Diagram - full width, outside container */}
       <ScrollReveal variant="scaleIn">
-        <div className="w-full mb-16">
+        <div className="w-full mt-12 lg:mt-16 mb-16">
           <img src="/images/diagram.gif" alt="MaxIR Diagram" className="w-full" />
         </div>
       </ScrollReveal>
