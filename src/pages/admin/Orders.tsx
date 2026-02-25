@@ -193,7 +193,7 @@ const Orders = () => {
                 <TableHead className="w-10 pl-4">
                   <Checkbox checked={allSelected} onCheckedChange={toggleAll} />
                 </TableHead>
-                <TableHead>Draft order</TableHead>
+                <TableHead>Order ID</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Customer</TableHead>
                 <TableHead>Status</TableHead>
