@@ -57,17 +57,25 @@ const TechnologySection = () => {
         </div>
       </ScrollReveal>
 
-      <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
-        {/* Feature icons */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
-          {features.map((f, i) => (
-            <ScrollReveal key={f.title} delay={i * 0.1} variant="fadeUp">
-              <div className="flex flex-col items-center text-center gap-4">
-                <img src={f.icon} alt={f.title} className="w-16 h-16" />
-                <h3 className="text-foreground text-sm font-semibold">{f.title}</h3>
-              </div>
-            </ScrollReveal>
-          ))}
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-10">
+        {/* Feature icons with staggered card layout */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 lg:gap-6 items-end">
+          {features.map((f, i) => {
+            const isCenter = i === 2;
+            const isInner = i === 1 || i === 3;
+            return (
+              <ScrollReveal key={f.title} delay={i * 0.1} variant="fadeUp">
+                <div
+                  className={`bg-muted/50 rounded-[16px] p-6 lg:p-8 flex flex-col items-center text-center gap-5 shadow-sm ${
+                    isCenter ? 'lg:-translate-y-6' : isInner ? 'lg:-translate-y-3' : ''
+                  }`}
+                >
+                  <img src={f.icon} alt={f.title} className="w-14 h-14 lg:w-20 lg:h-20" />
+                  <h3 className="text-foreground text-sm lg:text-base font-semibold">{f.title}</h3>
+                </div>
+              </ScrollReveal>
+            );
+          })}
         </div>
       </div>
     </section>
