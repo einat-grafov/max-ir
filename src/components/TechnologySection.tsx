@@ -43,8 +43,8 @@ const TechnologySection = () => {
 
         {/* Diagram */}
         <ScrollReveal variant="scaleIn">
-          <div className="flex justify-center mb-16">
-            <img src="/images/diagram.gif" alt="MaxIR Diagram" className="max-w-full md:max-w-[700px]" />
+          <div className="flex justify-center mb-16 -mx-6 lg:-mx-10">
+            <img src="/images/diagram.gif" alt="MaxIR Diagram" className="w-full" />
           </div>
         </ScrollReveal>
 
