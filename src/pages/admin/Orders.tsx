@@ -194,7 +194,7 @@ const Orders = () => {
       </div>
 
       {/* Analytics Bar */}
-      <div className="flex items-stretch border border-border rounded-lg mb-6 bg-background overflow-hidden">
+      <div className="flex items-stretch border border-border rounded-lg mb-6 bg-background">
         {/* Time filter */}
         <div className="relative flex-shrink-0 border-r border-border" ref={dropdownRef}>
           <button
