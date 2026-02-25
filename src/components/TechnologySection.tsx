@@ -59,7 +59,7 @@ const TechnologySection = () => {
 
       <div className="max-w-[1400px] mx-auto px-6 lg:px-10">
         {/* Feature icons with staggered card layout */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 lg:gap-6 items-end">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 lg:gap-6 items-start">
           {features.map((f, i) => {
             const isCenter = i === 2;
             const isInner = i === 1 || i === 3;
@@ -67,7 +67,7 @@ const TechnologySection = () => {
               <ScrollReveal key={f.title} delay={i * 0.1} variant="fadeUp">
                 <div
                   className={`bg-white rounded-[16px] flex flex-col items-center text-center justify-between w-full min-h-[207px] transition-all duration-300 hover:-translate-y-2 hover:shadow-lg cursor-pointer ${
-                    isCenter ? 'lg:-translate-y-6' : isInner ? 'lg:-translate-y-3' : ''
+                    isCenter ? 'lg:translate-y-6' : isInner ? 'lg:translate-y-3' : ''
                   }`}
                   style={{ padding: '47px 14px 30px', boxShadow: '0 18px 44px #00000014' }}
                 >
