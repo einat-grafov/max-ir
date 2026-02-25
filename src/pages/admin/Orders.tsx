@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { FileText, Search, Filter, ArrowUpDown } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { FileText, Search, Filter, ArrowUpDown, DollarSign, ShoppingCart, Clock, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
@@ -112,6 +112,19 @@ const Orders = () => {
 
   const hasOrders = orders.length > 0;
 
+  const stats = useMemo(() => {
+    const totalRevenue = orders.reduce((sum, o) => sum + Number(o.total), 0);
+    const totalOrders = orders.length;
+    const openOrders = orders.filter((o) => statusLabel(o.status, o.payment_status).text === "Open").length;
+    const completedOrders = orders.filter((o) => statusLabel(o.status, o.payment_status).text === "Completed").length;
+    return [
+      { label: "Total Revenue", value: fmt(totalRevenue), icon: DollarSign },
+      { label: "Total Orders", value: String(totalOrders), icon: ShoppingCart },
+      { label: "Open Orders", value: String(openOrders), icon: Clock },
+      { label: "Completed", value: String(completedOrders), icon: TrendingUp },
+    ];
+  }, [orders]);
+
   return (
     <div>
       {/* Header */}
@@ -128,6 +141,22 @@ const Orders = () => {
             </>
           )}
         </div>
+      </div>
+
+      {/* Analytics Bar */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {stats.map((card) => (
+          <div
+            key={card.label}
+            className="bg-background border border-border rounded-lg p-5 shadow-sm"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-muted-foreground text-sm">{card.label}</span>
+              <card.icon className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <p className="text-2xl font-bold text-foreground">{card.value}</p>
+          </div>
+        ))}
       </div>
 
       {loading ? (
