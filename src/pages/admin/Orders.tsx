@@ -1,9 +1,12 @@
-import { useState, useEffect, useMemo } from "react";
-import { FileText, Search, Filter, ArrowUpDown, DollarSign, ShoppingCart, Clock, TrendingUp } from "lucide-react";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { FileText, Search, Filter, ArrowUpDown, CalendarIcon, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
 import {
   Table,
   TableBody,
@@ -112,18 +115,65 @@ const Orders = () => {
 
   const hasOrders = orders.length > 0;
 
+  const timeRanges = ["All", "Today", "Last 7 days", "Last 30 days", "Custom"] as const;
+  type TimeRange = typeof timeRanges[number];
+  const [timeRange, setTimeRange] = useState<TimeRange>("All");
+  const [showTimeDropdown, setShowTimeDropdown] = useState(false);
+  const [customFrom, setCustomFrom] = useState<Date | undefined>();
+  const [customTo, setCustomTo] = useState<Date | undefined>();
+  const [pickingFrom, setPickingFrom] = useState(true);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowTimeDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const filteredByTime = useMemo(() => {
+    if (timeRange === "All") return orders;
+    const now = new Date();
+    let start: Date;
+    if (timeRange === "Today") {
+      start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    } else if (timeRange === "Last 7 days") {
+      start = new Date(now); start.setDate(now.getDate() - 7);
+    } else if (timeRange === "Last 30 days") {
+      start = new Date(now); start.setDate(now.getDate() - 30);
+    } else if (timeRange === "Custom") {
+      if (!customFrom) return orders;
+      const from = new Date(customFrom.getFullYear(), customFrom.getMonth(), customFrom.getDate());
+      const to = customTo ? new Date(customTo.getFullYear(), customTo.getMonth(), customTo.getDate(), 23, 59, 59) : now;
+      return orders.filter((o) => { const d = new Date(o.created_at); return d >= from && d <= to; });
+    } else {
+      return orders;
+    }
+    return orders.filter((o) => new Date(o.created_at) >= start);
+  }, [orders, timeRange, customFrom, customTo]);
+
   const stats = useMemo(() => {
-    const totalRevenue = orders.reduce((sum, o) => sum + Number(o.total), 0);
-    const totalOrders = orders.length;
-    const openOrders = orders.filter((o) => statusLabel(o.status, o.payment_status).text === "Open").length;
-    const completedOrders = orders.filter((o) => statusLabel(o.status, o.payment_status).text === "Completed").length;
+    const src = filteredByTime;
+    const totalOrders = src.length;
+    const openOrders = src.filter((o) => statusLabel(o.status, o.payment_status).text === "Open").length;
+    const invoiceSent = src.filter((o) => statusLabel(o.status, o.payment_status).text === "Invoice sent").length;
+    const completed = src.filter((o) => statusLabel(o.status, o.payment_status).text === "Completed").length;
+    const totalRevenue = src.reduce((sum, o) => sum + Number(o.total), 0);
     return [
-      { label: "Total Revenue", value: fmt(totalRevenue), icon: DollarSign },
-      { label: "Total Orders", value: String(totalOrders), icon: ShoppingCart },
-      { label: "Open Orders", value: String(openOrders), icon: Clock },
-      { label: "Completed", value: String(completedOrders), icon: TrendingUp },
+      { label: "Orders", value: String(totalOrders) },
+      { label: "Revenue", value: fmt(totalRevenue) },
+      { label: "Open", value: String(openOrders) },
+      { label: "Invoice sent", value: String(invoiceSent) },
+      { label: "Completed", value: String(completed) },
     ];
-  }, [orders]);
+  }, [filteredByTime]);
+
+  const timeLabel = timeRange === "Custom" && customFrom
+    ? `${format(customFrom, "MMM d")}${customTo ? ` – ${format(customTo, "MMM d")}` : ""}`
+    : timeRange;
 
   return (
     <div>
@@ -144,17 +194,57 @@ const Orders = () => {
       </div>
 
       {/* Analytics Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {stats.map((card) => (
+      <div className="flex items-stretch border border-border rounded-lg mb-6 bg-background overflow-hidden">
+        {/* Time filter */}
+        <div className="relative flex-shrink-0 border-r border-border" ref={dropdownRef}>
+          <button
+            onClick={() => setShowTimeDropdown((v) => !v)}
+            className="flex items-center gap-2 px-4 h-full text-sm font-medium text-foreground hover:bg-muted transition-colors"
+          >
+            <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+            {timeLabel}
+            <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+          </button>
+          {showTimeDropdown && (
+            <div className="absolute top-full left-0 mt-1 z-50 bg-background border border-border rounded-lg shadow-lg min-w-[160px]">
+              {timeRanges.filter((t) => t !== "Custom").map((t) => (
+                <button
+                  key={t}
+                  onClick={() => { setTimeRange(t); setShowTimeDropdown(false); }}
+                  className={`block w-full text-left px-4 py-2 text-sm hover:bg-muted transition-colors ${timeRange === t ? "font-semibold text-foreground" : "text-muted-foreground"}`}
+                >
+                  {t}
+                </button>
+              ))}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className={`block w-full text-left px-4 py-2 text-sm hover:bg-muted transition-colors ${timeRange === "Custom" ? "font-semibold text-foreground" : "text-muted-foreground"}`}>
+                    Custom range…
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-3" align="start">
+                  <div className="text-xs text-muted-foreground mb-2">{pickingFrom ? "Select start date" : "Select end date"}</div>
+                  <Calendar
+                    mode="single"
+                    selected={pickingFrom ? customFrom : customTo}
+                    onSelect={(day) => {
+                      if (pickingFrom) { setCustomFrom(day); setPickingFrom(false); }
+                      else { setCustomTo(day); setPickingFrom(true); setTimeRange("Custom"); setShowTimeDropdown(false); }
+                    }}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          )}
+        </div>
+        {/* Stat cells */}
+        {stats.map((card, i) => (
           <div
             key={card.label}
-            className="bg-background border border-border rounded-lg p-5 shadow-sm"
+            className={`flex-1 px-5 py-3 ${i < stats.length - 1 ? "border-r border-border" : ""}`}
           >
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-muted-foreground text-sm">{card.label}</span>
-              <card.icon className="h-4 w-4 text-muted-foreground" />
-            </div>
-            <p className="text-2xl font-bold text-foreground">{card.value}</p>
+            <span className="text-xs text-muted-foreground">{card.label}</span>
+            <p className="text-base font-semibold text-foreground mt-0.5">{card.value}</p>
           </div>
         ))}
       </div>
