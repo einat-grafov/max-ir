@@ -58,6 +58,9 @@ const CreateOrder = () => {
   } | null>(null);
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
   const [invoiceSent, setInvoiceSent] = useState(false);
+  const [timelineEvents, setTimelineEvents] = useState<Array<{ id: string; message: string; timestamp: string; attachment?: { name: string; url: string } | null }>>([
+    { id: "1", message: "You created this draft order.", timestamp: "Just now" },
+  ]);
 
   const isSavingRef = useRef(false);
   const hasUnsavedChanges = products.length > 0 || selectedCustomer !== null || notes !== "" || discount !== null;
@@ -449,10 +452,20 @@ const CreateOrder = () => {
 
           {/* Timeline */}
           <OrderTimeline
-            events={[
-              { id: "1", message: "You created this draft order.", timestamp: "Just now" },
-            ]}
-            onAddComment={(comment) => console.log("Comment:", comment)}
+            events={timelineEvents}
+            onAddComment={(comment, attachment) => {
+              const now = new Date();
+              const time = now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true }).toLowerCase();
+              setTimelineEvents((prev) => [
+                {
+                  id: String(Date.now()),
+                  message: comment || (attachment ? `Attached: ${attachment.name}` : ""),
+                  timestamp: time,
+                  attachment: attachment ? { name: attachment.name, url: URL.createObjectURL(attachment) } : null,
+                },
+                ...prev,
+              ]);
+            }}
           />
 
           {/* Discount Modal */}
