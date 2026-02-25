@@ -40,14 +40,16 @@ const TechnologySection = () => {
             An infrared signal is passed down a special optical fiber in contact with the liquid analyte. The electromagnetic field associated with the IR signal penetrates a short distance into the liquid analyte where it is absorbed by target compounds. This generates small changes in the IR signal, which are detected by the sensor.
           </p>
         </ScrollReveal>
+      </div>
 
-        {/* Diagram */}
-        <ScrollReveal variant="scaleIn">
-          <div className="flex justify-center mb-16 -mx-6 lg:-mx-10">
-            <img src="/images/diagram.gif" alt="MaxIR Diagram" className="w-full" />
-          </div>
-        </ScrollReveal>
+      {/* Diagram - full width, outside container */}
+      <ScrollReveal variant="scaleIn">
+        <div className="w-full mb-16">
+          <img src="/images/diagram.gif" alt="MaxIR Diagram" className="w-full" />
+        </div>
+      </ScrollReveal>
 
+      <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
         {/* Feature icons */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           {features.map((f, i) => (
