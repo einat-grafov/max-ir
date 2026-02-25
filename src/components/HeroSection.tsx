@@ -2,7 +2,7 @@ const HeroSection = () => {
   return (
     <section
       className="relative h-screen flex items-start justify-center overflow-hidden section-dark pt-[120px] md:pt-[160px]"
-      style={{ '--wave-height': '80px', '--wave-height-md': '120px' } as React.CSSProperties}
+      style={{ '--wave-height': '120px', '--wave-height-md': '180px' } as React.CSSProperties}
     >
       {/* Background image */}
       <div className="absolute inset-0 z-0">
@@ -25,13 +25,13 @@ const HeroSection = () => {
       {/* Wave SVG divider – sits at the very bottom */}
       <div className="absolute bottom-0 left-0 right-0 z-20 h-[var(--wave-height)] md:h-[var(--wave-height-md)]">
         <svg
-          viewBox="0 0 1440 120"
+          viewBox="0 0 1440 180"
           preserveAspectRatio="none"
           className="absolute bottom-0 w-full h-full"
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            d="M0,58 C120,80 300,115 480,106 C660,97 900,5 1080,-6 C1200,-10 1350,26 1440,50 L1440,120 L0,120 Z"
+            d="M0,90 C200,130 400,170 600,160 C800,150 950,20 1100,10 C1250,0 1380,40 1440,70 L1440,180 L0,180 Z"
             fill="hsl(var(--background))"
           />
         </svg>
