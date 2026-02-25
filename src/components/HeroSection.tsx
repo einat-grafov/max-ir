@@ -22,13 +22,17 @@ const HeroSection = () => {
       </div>
 
       {/* Decorative drops background layer */}
-      <motion.img
-        src="/images/drops.png"
-        alt=""
-        aria-hidden="true"
-        className="absolute bottom-[calc(5%-24px)] md:bottom-[calc(8%-24px)] left-1/2 -translate-x-1/2 w-[60%] md:w-[45%] h-auto pointer-events-none"
+      <motion.div
+        className="absolute bottom-[calc(5%-24px)] md:bottom-[calc(8%-24px)] left-1/2 -translate-x-1/2 w-[60%] md:w-[45%] pointer-events-none"
         style={{ zIndex: 22, y: dropsY }}
-      />
+      >
+        <img
+          src="/images/drops.png"
+          alt=""
+          aria-hidden="true"
+          className="w-full h-auto"
+        />
+      </motion.div>
 
       {/* Decorative ribbon + droplet layer */}
       <img
