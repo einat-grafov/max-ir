@@ -115,6 +115,12 @@ const CreateOrder = () => {
       const { error: itemsError } = await supabase.from("order_items").insert(items);
       if (itemsError) throw itemsError;
 
+      // Reset state before navigating so the blocker doesn't trigger
+      setProducts([]);
+      setSelectedCustomer(null);
+      setNotes("");
+      setDiscount(null);
+
       toast.success("Order created successfully");
       navigate("/admin/orders");
     } catch (err: any) {
