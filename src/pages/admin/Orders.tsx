@@ -248,6 +248,7 @@ const Orders = () => {
                         mode="single"
                         selected={customFrom}
                         onSelect={(day) => setCustomFrom(day)}
+                        classNames={{ day_today: customFrom ? "" : undefined }}
                       />
                     </div>
                     <div>
@@ -257,6 +258,7 @@ const Orders = () => {
                         selected={customTo}
                         onSelect={(day) => setCustomTo(day)}
                         disabled={(date) => customFrom ? date < customFrom : false}
+                        classNames={{ day_today: customTo ? "" : undefined }}
                       />
                     </div>
                   </div>
