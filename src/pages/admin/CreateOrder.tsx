@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
-import { Link, useBlocker } from "react-router-dom";
+import { Link, useBlocker, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -72,7 +74,55 @@ const CreateOrder = () => {
     return () => window.removeEventListener("beforeunload", handler);
   }, [hasUnsavedChanges]);
 
+  const navigate = useNavigate();
+  const [saving, setSaving] = useState(false);
   const canSubmit = products.length > 0 && selectedCustomer !== null;
+
+  const handleCreateOrder = async () => {
+    if (!canSubmit || !selectedCustomer) return;
+    setSaving(true);
+    try {
+      const customerName = `${selectedCustomer.first_name}${selectedCustomer.last_name ? ` ${selectedCustomer.last_name}` : ""}`;
+      const { data: order, error: orderError } = await supabase
+        .from("orders")
+        .insert({
+          customer_id: selectedCustomer.id,
+          customer_name: customerName,
+          customer_email: selectedCustomer.email,
+          subtotal: subtotal,
+          discount_amount: discountAmount,
+          tax: tax,
+          total: total,
+          notes: notes || null,
+          payment_due_later: paymentDueLater,
+          status: "unfulfilled",
+          payment_status: paymentDueLater ? "pending" : "paid",
+        })
+        .select()
+        .single();
+
+      if (orderError) throw orderError;
+
+      const items = products.map((p) => ({
+        order_id: order.id,
+        product_id: p.id,
+        product_name: p.name,
+        price: p.price,
+        quantity: p.quantity,
+        total: p.price * p.quantity,
+      }));
+
+      const { error: itemsError } = await supabase.from("order_items").insert(items);
+      if (itemsError) throw itemsError;
+
+      toast.success("Order created successfully");
+      navigate("/admin/orders");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to create order");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleAddProducts = (newProducts: { id: string; name: string; price: number; stock: number; requires_shipping: boolean; tax_exempt: boolean }[]) => {
     setProducts((prev) => {
@@ -142,7 +192,7 @@ const CreateOrder = () => {
         <h1 className="text-2xl font-bold text-foreground">Create order</h1>
         <div className="flex gap-3">
           <Button variant="outline" disabled={!canSubmit} onClick={() => setInvoiceModalOpen(true)}>{invoiceSent ? "Resend invoice" : "Send invoice"}</Button>
-          <Button disabled={!canSubmit}>Create order</Button>
+          <Button disabled={!canSubmit || saving} onClick={handleCreateOrder}>{saving ? "Creating..." : "Create order"}</Button>
         </div>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
