@@ -245,10 +245,6 @@ const Orders = () => {
             <span className="text-sm text-muted-foreground ml-1">1-{filtered.length}</span>
           </div>
 
-          {/* Footer link */}
-          <div className="text-center py-6 border-t border-border">
-            <a href="#" className="text-sm text-primary hover:underline">Learn more about creating draft orders</a>
-          </div>
         </div>
       ) : (
         /* Empty state */
