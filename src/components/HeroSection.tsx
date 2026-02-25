@@ -1,8 +1,17 @@
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 
 const HeroSection = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+  const dropsY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+
   return (
     <section
+      ref={sectionRef}
       className="relative h-screen flex items-start justify-center overflow-hidden section-dark pt-[120px] md:pt-[160px]"
       style={{ '--wave-height': '120px', '--wave-height-md': '180px' } as React.CSSProperties}
     >
@@ -13,12 +22,12 @@ const HeroSection = () => {
       </div>
 
       {/* Decorative drops background layer */}
-      <img
+      <motion.img
         src="/images/drops.png"
         alt=""
         aria-hidden="true"
         className="absolute bottom-[calc(5%-24px)] md:bottom-[calc(8%-24px)] left-1/2 -translate-x-1/2 w-[60%] md:w-[45%] h-auto pointer-events-none"
-        style={{ zIndex: 22 }}
+        style={{ zIndex: 22, y: dropsY }}
       />
 
       {/* Decorative ribbon + droplet layer */}
