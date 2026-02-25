@@ -80,6 +80,7 @@ const CreateOrder = () => {
 
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
+  const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
   const canSubmit = products.length > 0 && selectedCustomer !== null;
 
   const handleCreateOrder = async () => {
@@ -120,9 +121,27 @@ const CreateOrder = () => {
       if (itemsError) throw itemsError;
 
       isSavingRef.current = true;
+      setCreatedOrderId(order.id);
       toast.success("Order created successfully");
     } catch (err: any) {
       toast.error(err.message || "Failed to create order");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleMarkAsPaid = async () => {
+    if (!createdOrderId) return;
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from("orders")
+        .update({ payment_status: "paid" })
+        .eq("id", createdOrderId);
+      if (error) throw error;
+      toast.success("Order marked as paid");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to mark as paid");
     } finally {
       setSaving(false);
     }
@@ -196,7 +215,11 @@ const CreateOrder = () => {
         <h1 className="text-2xl font-bold text-foreground">Create order</h1>
         <div className="flex gap-3">
           <Button variant="outline" disabled={!canSubmit} onClick={() => setInvoiceModalOpen(true)}>{invoiceSent ? "Resend invoice" : "Send invoice"}</Button>
-          <Button disabled={!canSubmit || saving} onClick={handleCreateOrder}>{saving ? "Creating..." : "Create order"}</Button>
+          {createdOrderId ? (
+            <Button disabled={saving} onClick={handleMarkAsPaid}>{saving ? "Updating..." : "Mark as paid"}</Button>
+          ) : (
+            <Button disabled={!canSubmit || saving} onClick={handleCreateOrder}>{saving ? "Creating..." : "Create order"}</Button>
+          )}
         </div>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
