@@ -222,7 +222,7 @@ const Orders = () => {
                     Custom range…
                   </button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start" sideOffset={8}>
+                <PopoverContent className="w-auto p-0" side="bottom" align="start" sideOffset={4}>
                   <div className="p-4">
                     {/* Date display header */}
                     <div className="flex items-center gap-3 mb-4 text-sm">
