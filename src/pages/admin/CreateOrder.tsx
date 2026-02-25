@@ -121,7 +121,6 @@ const CreateOrder = () => {
 
       isSavingRef.current = true;
       toast.success("Order created successfully");
-      navigate("/admin/orders");
     } catch (err: any) {
       toast.error(err.message || "Failed to create order");
     } finally {
