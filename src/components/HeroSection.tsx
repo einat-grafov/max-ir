@@ -12,7 +12,7 @@ const HeroSection = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative h-screen flex items-start justify-center overflow-x-clip section-dark pt-[120px] md:pt-[160px]"
+      className="relative min-h-[calc(100vh+64px)] md:min-h-[calc(100vh+96px)] flex items-start justify-center overflow-x-clip section-dark pt-[120px] md:pt-[160px]"
       style={{ '--wave-height': '120px', '--wave-height-md': '180px' } as React.CSSProperties}
     >
       {/* Background image */}
