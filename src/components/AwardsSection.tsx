@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import ScrollReveal from "./ScrollReveal";
 
 const awards = [
   {
@@ -38,40 +39,44 @@ const AwardsSection = () => {
   return (
     <section id="Awards" className="section-white py-16 lg:py-24">
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
-        <div className="accent-line mb-6" />
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-12">Awards and Achievements</h2>
+        <ScrollReveal>
+          <div className="accent-line mb-6" />
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-12">Awards and Achievements</h2>
+        </ScrollReveal>
 
-        <div className="relative">
-          <div className="overflow-hidden">
-            <div
-              className="flex transition-transform duration-500 ease-in-out"
-              style={{ transform: `translateX(-${currentSlide * (100 / visibleCount)}%)` }}
-            >
-              {awards.map((award, i) => (
-                <div key={i} className="flex-shrink-0 px-4" style={{ width: `${100 / visibleCount}%` }}>
-                  <div className="flex flex-col items-center text-center">
-                    <img src={award.logo} alt="Award logo" className="h-24 mb-6 object-contain" />
-                    <h3 className="font-bold text-lg mb-3">{award.title}</h3>
-                    <p className="text-foreground/60 text-sm leading-relaxed mb-4">{award.description}</p>
-                    {award.patent && (
-                      <img src="/images/patent-icon.png" alt="Patent" className="h-10 opacity-60" />
-                    )}
+        <ScrollReveal delay={0.15} variant="fadeIn">
+          <div className="relative">
+            <div className="overflow-hidden">
+              <div
+                className="flex transition-transform duration-500 ease-in-out"
+                style={{ transform: `translateX(-${currentSlide * (100 / visibleCount)}%)` }}
+              >
+                {awards.map((award, i) => (
+                  <div key={i} className="flex-shrink-0 px-4" style={{ width: `${100 / visibleCount}%` }}>
+                    <div className="flex flex-col items-center text-center">
+                      <img src={award.logo} alt="Award logo" className="h-24 mb-6 object-contain" />
+                      <h3 className="font-bold text-lg mb-3">{award.title}</h3>
+                      <p className="text-foreground/60 text-sm leading-relaxed mb-4">{award.description}</p>
+                      {award.patent && (
+                        <img src="/images/patent-icon.png" alt="Patent" className="h-10 opacity-60" />
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+            </div>
+
+            {/* Navigation arrows */}
+            <div className="flex justify-center gap-4 mt-8">
+              <button onClick={prev} className="w-10 h-10 rounded-full border border-foreground/20 flex items-center justify-center hover:border-primary transition-colors">
+                <ChevronLeft size={20} />
+              </button>
+              <button onClick={next} className="w-10 h-10 rounded-full border border-foreground/20 flex items-center justify-center hover:border-primary transition-colors">
+                <ChevronRight size={20} />
+              </button>
             </div>
           </div>
-
-          {/* Navigation arrows */}
-          <div className="flex justify-center gap-4 mt-8">
-            <button onClick={prev} className="w-10 h-10 rounded-full border border-foreground/20 flex items-center justify-center hover:border-primary transition-colors">
-              <ChevronLeft size={20} />
-            </button>
-            <button onClick={next} className="w-10 h-10 rounded-full border border-foreground/20 flex items-center justify-center hover:border-primary transition-colors">
-              <ChevronRight size={20} />
-            </button>
-          </div>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );
