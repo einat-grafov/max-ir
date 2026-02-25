@@ -15,7 +15,8 @@ const HeroSection = () => {
         src="/images/hero-ribbon-droplet.png"
         alt=""
         aria-hidden="true"
-        className="absolute bottom-[80px] md:bottom-[120px] left-0 right-0 w-full h-[55%] md:h-[60%] object-contain object-[50%_100%] pointer-events-none z-25"
+        className="absolute bottom-0 left-0 right-0 w-full h-[55%] md:h-[60%] object-contain object-[50%_100%] pointer-events-none"
+        style={{ zIndex: 25 }}
       />
 
       {/* Content */}
