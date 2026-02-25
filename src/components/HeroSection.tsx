@@ -10,6 +10,15 @@ const HeroSection = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-maxir-dark/40 via-transparent to-transparent" />
       </div>
 
+      {/* Decorative drops background layer */}
+      <img
+        src="/images/drops.png"
+        alt=""
+        aria-hidden="true"
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] md:w-[60%] h-auto pointer-events-none"
+        style={{ zIndex: 15 }}
+      />
+
       {/* Decorative ribbon + droplet layer */}
       <img
         src="/images/hero-ribbon-droplet.png"
