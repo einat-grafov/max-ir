@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { DateRangeCalendar } from "@/components/admin/DateRangeCalendar";
 import { format } from "date-fns";
 import {
   Table,
@@ -114,13 +113,10 @@ const Orders = () => {
 
   const hasOrders = orders.length > 0;
 
-  const timeRanges = ["All", "Today", "Last 7 days", "Last 30 days", "Custom"] as const;
+  const timeRanges = ["All", "Today", "Last 7 days", "Last 30 days"] as const;
   type TimeRange = typeof timeRanges[number];
   const [timeRange, setTimeRange] = useState<TimeRange>("All");
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
-  const [customFrom, setCustomFrom] = useState<Date | undefined>();
-  const [customTo, setCustomTo] = useState<Date | undefined>(new Date());
-  const [showCustomPicker, setShowCustomPicker] = useState(false);
   
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -144,16 +140,11 @@ const Orders = () => {
       start = new Date(now); start.setDate(now.getDate() - 7);
     } else if (timeRange === "Last 30 days") {
       start = new Date(now); start.setDate(now.getDate() - 30);
-    } else if (timeRange === "Custom") {
-      if (!customFrom) return orders;
-      const from = new Date(customFrom.getFullYear(), customFrom.getMonth(), customFrom.getDate());
-      const to = customTo ? new Date(customTo.getFullYear(), customTo.getMonth(), customTo.getDate(), 23, 59, 59) : now;
-      return orders.filter((o) => { const d = new Date(o.created_at); return d >= from && d <= to; });
     } else {
       return orders;
     }
     return orders.filter((o) => new Date(o.created_at) >= start);
-  }, [orders, timeRange, customFrom, customTo]);
+  }, [orders, timeRange]);
 
   const stats = useMemo(() => {
     const src = filteredByTime;
@@ -171,9 +162,7 @@ const Orders = () => {
     ];
   }, [filteredByTime]);
 
-  const timeLabel = timeRange === "Custom" && customFrom
-    ? `${format(customFrom, "MMM d")}${customTo ? ` – ${format(customTo, "MMM d")}` : ""}`
-    : timeRange;
+  const timeLabel = timeRange;
 
   return (
     <div>
@@ -207,7 +196,7 @@ const Orders = () => {
           </button>
           {showTimeDropdown && (
             <div className="absolute top-full left-0 mt-1 z-50 bg-background border border-border rounded-lg shadow-lg min-w-[160px]">
-              {timeRanges.filter((t) => t !== "Custom").map((t) => (
+              {timeRanges.map((t) => (
                 <button
                   key={t}
                   onClick={() => { setTimeRange(t); setShowTimeDropdown(false); }}
@@ -216,49 +205,6 @@ const Orders = () => {
                   {t}
                 </button>
               ))}
-              <button
-                onClick={() => setShowCustomPicker((v) => !v)}
-                className={`block w-full text-left px-4 py-2 text-sm hover:bg-muted transition-colors ${timeRange === "Custom" ? "font-semibold text-foreground" : "text-muted-foreground"}`}
-              >
-                Custom range…
-              </button>
-              {showCustomPicker && (
-                <div className="border-t border-border p-4">
-                  {/* Date display header */}
-                  <div className="flex items-center gap-3 mb-4 text-sm">
-                    <div className="border border-border rounded-md px-3 py-1.5 min-w-[140px] text-foreground">
-                      {customFrom ? format(customFrom, "d MMMM yyyy") : "Start date"}
-                    </div>
-                    <span className="text-muted-foreground">—</span>
-                    <div className="border border-border rounded-md px-3 py-1.5 min-w-[140px] text-foreground">
-                      {customTo ? format(customTo, "d MMMM yyyy") : "End date"}
-                    </div>
-                    <button
-                      onClick={() => { setCustomFrom(undefined); setCustomTo(undefined); }}
-                      className="text-sm text-primary hover:underline ml-2"
-                    >
-                      Clear
-                    </button>
-                  </div>
-                  <DateRangeCalendar
-                    from={customFrom}
-                    to={customTo}
-                    onFromChange={(d) => setCustomFrom(d)}
-                    onToChange={(d) => setCustomTo(d)}
-                  />
-                  {/* Actions */}
-                  <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-border">
-                    <Button variant="outline" size="sm" onClick={() => setShowCustomPicker(false)}>Cancel</Button>
-                    <Button
-                      size="sm"
-                      disabled={!customFrom || !customTo}
-                      onClick={() => { setTimeRange("Custom"); setShowTimeDropdown(false); setShowCustomPicker(false); }}
-                    >
-                      Apply
-                    </Button>
-                  </div>
-                </div>
-              )}
             </div>
           )}
         </div>
