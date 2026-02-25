@@ -66,9 +66,10 @@ const TechnologySection = () => {
             return (
               <ScrollReveal key={f.title} delay={i * 0.1} variant="fadeUp">
                 <div
-                  className={`bg-muted/50 rounded-[16px] p-6 lg:p-8 flex flex-col items-center text-center gap-5 shadow-sm ${
+                  className={`bg-white rounded-[16px] flex flex-col items-center text-center justify-between w-full min-h-[207px] transition-all duration-300 ${
                     isCenter ? 'lg:-translate-y-6' : isInner ? 'lg:-translate-y-3' : ''
                   }`}
+                  style={{ padding: '47px 14px 30px', boxShadow: '0 18px 44px #00000014' }}
                 >
                   <img src={f.icon} alt={f.title} className="w-14 h-14 lg:w-20 lg:h-20" />
                   <h3 className="text-foreground text-sm lg:text-base font-semibold">{f.title}</h3>
