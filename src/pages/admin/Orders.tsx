@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import { ShoppingCart, Calendar, FileText, ChevronDown, Search } from "lucide-react";
+import { FileText, Search, Filter, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -13,63 +12,68 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 interface Order {
   id: string;
   order_number: number;
   customer_name: string;
+  customer_email: string | null;
   status: string;
   payment_status: string;
   total: number;
   created_at: string;
-  items_count?: number;
 }
 
-const timeFilters = [
-  { label: "Today", description: "Compared to yesterday up to current hour" },
-  { label: "Last 7 days", description: "Compared to the previous 7 days" },
-  { label: "Last 30 days", description: "Compared to the previous 30 days" },
-];
+const tabs = ["All", "Open and invoice sent", "Open", "Invoice sent", "Completed"];
 
-const statusVariant = (status: string) => {
-  switch (status) {
-    case "fulfilled": return "default";
-    case "unfulfilled": return "secondary";
-    case "cancelled": return "destructive";
-    default: return "outline";
-  }
+const statusLabel = (status: string, paymentStatus: string) => {
+  if (status === "completed") return { text: "Completed", style: "bg-muted text-muted-foreground" };
+  if (paymentStatus === "paid") return { text: "Completed", style: "bg-muted text-muted-foreground" };
+  if (status === "invoice_sent") return { text: "Invoice sent", style: "bg-yellow-100 text-yellow-800 border border-yellow-300" };
+  return { text: "Open", style: "bg-muted text-muted-foreground" };
 };
 
-const paymentVariant = (status: string) => {
-  switch (status) {
-    case "paid": return "default";
-    case "pending": return "secondary";
-    case "refunded": return "destructive";
-    default: return "outline";
-  }
+const matchesTab = (tab: string, order: Order) => {
+  if (tab === "All") return true;
+  const s = statusLabel(order.status, order.payment_status);
+  if (tab === "Open") return s.text === "Open";
+  if (tab === "Invoice sent") return s.text === "Invoice sent";
+  if (tab === "Completed") return s.text === "Completed";
+  if (tab === "Open and invoice sent") return s.text === "Open" || s.text === "Invoice sent";
+  return true;
 };
 
 const fmt = (n: number) => "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+const formatDate = (dateStr: string) => {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+
+  if (diffMin < 1) return "Just now";
+  if (diffMin < 60) return `${diffMin}m ago`;
+
+  const isToday = date.toDateString() === now.toDateString();
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const isYesterday = date.toDateString() === yesterday.toDateString();
+
+  const time = date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true }).toLowerCase();
+
+  if (isToday) return `Today at ${time}`;
+  if (isYesterday) return `Yesterday at ${time}`;
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" }) + ` at ${time}`;
+};
+
 const Orders = () => {
   const navigate = useNavigate();
-  const [selectedFilter, setSelectedFilter] = useState("Today");
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("All");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [showSearch, setShowSearch] = useState(false);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -77,83 +81,53 @@ const Orders = () => {
         .from("orders")
         .select("*")
         .order("created_at", { ascending: false });
-
-      if (!error && data) {
-        setOrders(data as Order[]);
-      }
+      if (!error && data) setOrders(data as Order[]);
       setLoading(false);
     };
     fetchOrders();
   }, []);
 
-  const filteredOrders = orders.filter((o) => {
-    const matchesSearch = !search || o.customer_name.toLowerCase().includes(search.toLowerCase()) || `#${o.order_number}`.includes(search);
-    const matchesStatus = statusFilter === "all" || o.status === statusFilter;
-    return matchesSearch && matchesStatus;
+  const filtered = orders.filter((o) => {
+    if (!matchesTab(activeTab, o)) return false;
+    if (search && !o.customer_name.toLowerCase().includes(search.toLowerCase()) && !`#D${o.order_number}`.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
   });
 
-  const stats = [
-    { label: "Orders", value: String(orders.length), change: "—" },
-    { label: "Items ordered", value: "0", change: "—" },
-    { label: "Returns", value: "$0", change: "—" },
-    { label: "Orders fulfilled", value: String(orders.filter(o => o.status === "fulfilled").length), change: "—" },
-    { label: "Orders delivered", value: "0", change: "—" },
-  ];
+  const allSelected = filtered.length > 0 && filtered.every((o) => selectedIds.has(o.id));
+  const toggleAll = () => {
+    if (allSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filtered.map((o) => o.id)));
+    }
+  };
+  const toggleOne = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   const hasOrders = orders.length > 0;
 
   return (
     <div>
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <ShoppingCart className="h-6 w-6 text-foreground" />
-          <h1 className="text-2xl font-bold text-foreground">Orders</h1>
+          <FileText className="h-6 w-6 text-foreground" />
+          <h1 className="text-2xl font-bold text-foreground">Drafts</h1>
         </div>
-        {hasOrders && (
-          <Button onClick={() => navigate("/admin/orders/create")}>Create order</Button>
-        )}
-      </div>
-
-      {/* Stats bar */}
-      <div className="bg-background border border-border rounded-lg flex items-center divide-x divide-border mb-6">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 px-5 py-3 hover:bg-muted/50 rounded-l-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-foreground font-medium">{selectedFilter}</span>
-              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-72 bg-background border border-border shadow-lg z-50 p-1">
-            {timeFilters.map((filter) => (
-              <button
-                key={filter.label}
-                onClick={() => setSelectedFilter(filter.label)}
-                className="w-full flex items-start gap-3 px-3 py-2.5 rounded-md hover:bg-muted/50 transition-colors text-left"
-              >
-                <div className={`mt-1 h-4 w-4 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedFilter === filter.label ? "border-foreground" : "border-muted-foreground/40"}`}>
-                  {selectedFilter === filter.label && (
-                    <div className="h-2 w-2 rounded-full bg-foreground" />
-                  )}
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">{filter.label}</p>
-                  <p className="text-xs text-muted-foreground">{filter.description}</p>
-                </div>
-              </button>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        {stats.map((stat) => (
-          <div key={stat.label} className="flex-1 px-5 py-3">
-            <p className="text-sm font-semibold text-foreground">{stat.label}</p>
-            <div className="flex items-center gap-2 mt-0.5">
-              <span className="text-sm text-foreground">{stat.value}</span>
-              <span className="text-sm text-muted-foreground">{stat.change}</span>
-              <div className="h-[2px] w-12 bg-primary/40 rounded-full ml-1" />
-            </div>
-          </div>
-        ))}
+        <div className="flex gap-3">
+          {hasOrders && (
+            <>
+              <Button variant="outline">Export</Button>
+              <Button onClick={() => navigate("/admin/orders/create")}>Create order</Button>
+            </>
+          )}
+        </div>
       </div>
 
       {loading ? (
@@ -161,73 +135,120 @@ const Orders = () => {
           <p className="text-sm text-muted-foreground">Loading orders...</p>
         </div>
       ) : hasOrders ? (
-        /* Table view */
         <div className="bg-background border border-border rounded-lg">
-          {/* Filters row */}
-          <div className="flex items-center gap-3 p-4 border-b border-border">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search orders"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-9"
-              />
+          {/* Tabs */}
+          <div className="flex items-center justify-between border-b border-border px-1">
+            <div className="flex items-center gap-0.5">
+              {tabs.map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => { setActiveTab(tab); setSelectedIds(new Set()); }}
+                  className={`px-3 py-2.5 text-sm font-medium transition-colors rounded-t-md ${
+                    activeTab === tab
+                      ? "text-foreground border-b-2 border-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+              <button className="px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground">+</button>
             </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All statuses</SelectItem>
-                <SelectItem value="unfulfilled">Unfulfilled</SelectItem>
-                <SelectItem value="fulfilled">Fulfilled</SelectItem>
-                <SelectItem value="cancelled">Cancelled</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-1 pr-3">
+              <button
+                onClick={() => setShowSearch(!showSearch)}
+                className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground"
+              >
+                <Search className="h-4 w-4" />
+              </button>
+              <button className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground">
+                <Filter className="h-4 w-4" />
+              </button>
+              <button className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground">
+                <ArrowUpDown className="h-4 w-4" />
+              </button>
+            </div>
           </div>
 
+          {/* Search row */}
+          {showSearch && (
+            <div className="px-4 py-2 border-b border-border">
+              <div className="relative max-w-sm">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <input
+                  autoFocus
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search orders..."
+                  className="w-full pl-9 pr-3 py-1.5 text-sm bg-transparent border border-border rounded-md outline-none focus:ring-2 focus:ring-primary/30"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Table */}
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Order</TableHead>
+                <TableHead className="w-10 pl-4">
+                  <Checkbox checked={allSelected} onCheckedChange={toggleAll} />
+                </TableHead>
+                <TableHead>Draft order</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Customer</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Payment</TableHead>
-                <TableHead className="text-right">Total</TableHead>
+                <TableHead className="text-right pr-5">Total</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredOrders.map((order) => (
-                <TableRow key={order.id} className="cursor-pointer" onClick={() => {}}>
-                  <TableCell className="font-medium">#{order.order_number}</TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {new Date(order.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                  </TableCell>
-                  <TableCell>{order.customer_name}</TableCell>
-                  <TableCell>
-                    <Badge variant={statusVariant(order.status)} className="capitalize">
-                      {order.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={paymentVariant(order.payment_status)} className="capitalize">
-                      {order.payment_status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">{fmt(Number(order.total))}</TableCell>
-                </TableRow>
-              ))}
-              {filteredOrders.length === 0 && (
+              {filtered.map((order) => {
+                const s = statusLabel(order.status, order.payment_status);
+                return (
+                  <TableRow key={order.id} className="cursor-pointer" onClick={() => {}}>
+                    <TableCell className="pl-4" onClick={(e) => e.stopPropagation()}>
+                      <Checkbox
+                        checked={selectedIds.has(order.id)}
+                        onCheckedChange={() => toggleOne(order.id)}
+                      />
+                    </TableCell>
+                    <TableCell className="font-medium">#D{order.order_number}</TableCell>
+                    <TableCell className="text-muted-foreground">{formatDate(order.created_at)}</TableCell>
+                    <TableCell className="text-muted-foreground">—</TableCell>
+                    <TableCell>
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${s.style}`}>
+                        <span className={`h-1.5 w-1.5 rounded-full ${s.text === "Invoice sent" ? "bg-yellow-600" : "bg-muted-foreground/60"}`} />
+                        {s.text}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right pr-5 font-medium">{fmt(Number(order.total))}</TableCell>
+                  </TableRow>
+                );
+              })}
+              {filtered.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                    No orders match your search.
+                    No orders match this filter.
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
+
+          {/* Pagination */}
+          <div className="flex items-center gap-2 px-4 py-3 border-t border-border">
+            <button disabled className="p-1 rounded text-muted-foreground/40">
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+            </button>
+            <button disabled className="p-1 rounded text-muted-foreground/40">
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+            </button>
+            <span className="text-sm text-muted-foreground ml-1">1-{filtered.length}</span>
+          </div>
+
+          {/* Footer link */}
+          <div className="text-center py-6 border-t border-border">
+            <a href="#" className="text-sm text-primary hover:underline">Learn more about creating draft orders</a>
+          </div>
         </div>
       ) : (
         /* Empty state */
