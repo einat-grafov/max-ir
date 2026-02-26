@@ -95,13 +95,6 @@ const InfoCard = ({ hotspot, onMouseEnter, onMouseLeave }: InfoCardProps) => {
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* Anchor node pinned to card top edge */}
-      <div className="absolute top-0 z-20" style={anchorPositionStyle}>
-        <div className="flex flex-col items-center">
-          <span className="block w-[14px] h-[14px] rounded-full border-2 border-[#FF2D55] bg-[#FF2D55]/30" />
-          <span className="block w-[2px] h-3 bg-[#FF2D55]/40" />
-        </div>
-      </div>
 
       {/* Card body */}
       <div className="rounded-xl border-2 border-[#FF2D55] bg-[#F2F2F2] shadow-xl text-left"
