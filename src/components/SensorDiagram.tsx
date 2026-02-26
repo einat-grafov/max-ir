@@ -117,54 +117,64 @@ const SensorDiagram = () => {
       {/* Hover card */}
       <AnimatePresence>
         {activeHotspot && (
-          <>
-            {/* Anchor dot – positioned at the hotspot's x% */}
-            <motion.div
-              key={`anchor-${activeHotspot.id}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.18 }}
-              className="absolute -translate-x-1/2 z-40"
+          <motion.div
+            key={activeHotspot.id}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.18 }}
+            className="absolute bottom-0 translate-y-[calc(100%+8px)] w-[calc(100%-2rem)] max-w-[680px] z-30"
+            style={{
+              left: activeHotspot.id === "laser"
+                ? `${activeHotspot.x}%`
+                : activeHotspot.id === "cartridge"
+                  ? `50%`
+                  : `${activeHotspot.x}%`,
+              transform: activeHotspot.id === "laser"
+                ? "translateY(calc(100% + 8px))"
+                : activeHotspot.id === "cartridge"
+                  ? "translateX(-50%) translateY(calc(100% + 8px))"
+                  : "translateX(-100%) translateY(calc(100% + 8px))",
+            }}
+            onMouseEnter={() => showCard(activeHotspot.id)}
+            onMouseLeave={hideCard}
+          >
+            {/* Anchor dot */}
+            <div
+              className="relative z-10 -mb-2"
               style={{
-                left: `${activeHotspot.x}%`,
-                top: `calc(100% + 8px)`,
+                display: "flex",
+                justifyContent: activeHotspot.id === "laser"
+                  ? "flex-start"
+                  : activeHotspot.id === "cartridge"
+                    ? "center"
+                    : "flex-end",
+                paddingLeft: activeHotspot.id === "laser" ? "24px" : undefined,
+                paddingRight: activeHotspot.id === "detector" ? "24px" : undefined,
               }}
             >
               <span className="block w-4 h-4 rounded-full border-2 border-[#FF2D55] bg-[#FF2D55]/30" />
-            </motion.div>
+            </div>
 
-            {/* Card */}
-            <motion.div
-              key={activeHotspot.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 8 }}
-              transition={{ duration: 0.18 }}
-              className="absolute left-1/2 -translate-x-1/2 bottom-0 translate-y-[calc(100%+24px)] w-[calc(100%-2rem)] max-w-[680px] z-30"
-              onMouseEnter={() => showCard(activeHotspot.id)}
-              onMouseLeave={hideCard}
-            >
-              <div className="rounded-2xl border border-[#FF2D55]/60 bg-[#F5F5F5] shadow-lg p-6 md:p-8 text-left">
-                <h3 className="text-[#FF2D55] font-bold text-xl md:text-2xl mb-3">
-                  {activeHotspot.title}
-                </h3>
-                <p className="text-[#222] text-sm md:text-base leading-relaxed mb-4">
-                  {activeHotspot.description}
-                </p>
-                {activeHotspot.details?.map((d, j) => (
-                  <div
-                    key={j}
-                    className="border-l-[3px] border-[#FF2D55] pl-4 md:pl-5 mb-4 last:mb-0"
-                  >
-                    <p className="text-[#222] text-sm md:text-base leading-relaxed">
-                      <strong className="font-bold">{d.term}</strong> - {d.text}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          </>
+            <div className="rounded-2xl border border-[#FF2D55]/60 bg-[#F5F5F5] shadow-lg p-6 md:p-8 text-left">
+              <h3 className="text-[#FF2D55] font-bold text-xl md:text-2xl mb-3">
+                {activeHotspot.title}
+              </h3>
+              <p className="text-[#222] text-sm md:text-base leading-relaxed mb-4">
+                {activeHotspot.description}
+              </p>
+              {activeHotspot.details?.map((d, j) => (
+                <div
+                  key={j}
+                  className="border-l-[3px] border-[#FF2D55] pl-4 md:pl-5 mb-4 last:mb-0"
+                >
+                  <p className="text-[#222] text-sm md:text-base leading-relaxed">
+                    <strong className="font-bold">{d.term}</strong> - {d.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
