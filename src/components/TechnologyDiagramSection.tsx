@@ -69,39 +69,56 @@ interface InfoCardProps {
 const InfoCard = ({ hotspot, onMouseEnter, onMouseLeave }: InfoCardProps) => {
 
   return (
-    <motion.div
-      key={hotspot.id}
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 12 }}
-      transition={{ duration: 0.22, ease: "easeOut" }}
-      className="w-[calc(100%-2rem)] max-w-[860px] mx-auto mt-3 z-30"
+    <div
+      className="absolute z-30"
+      style={{
+        left: `${hotspot.x}%`,
+        top: `calc(${hotspot.y}% - 14px)`,
+      }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-
-      {/* Card body */}
-      <div className="rounded-xl border-2 border-[#FF2D55] bg-[#F2F2F2] shadow-xl text-left"
-        style={{ padding: "28px 36px" }}
+      <div
+        className={
+          hotspot.anchorPosition === "left"
+            ? "translate-y-[-100%]"
+            : hotspot.anchorPosition === "center"
+              ? "-translate-x-1/2 translate-y-[-100%]"
+              : "-translate-x-full translate-y-[-100%]"
+        }
       >
-        <h3 className="text-[#FF2D55] font-bold text-xl md:text-2xl mb-3">
-          {hotspot.title}
-        </h3>
-        <p className="text-[#1a1a1a] text-sm md:text-base leading-relaxed mb-4">
-          {hotspot.description}
-        </p>
-        {hotspot.details?.map((d, j) => (
-          <div
-            key={j}
-            className="border-l-[3px] border-[#FF2D55] pl-4 md:pl-5 mb-4 last:mb-0"
+        <motion.div
+          key={hotspot.id}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 12 }}
+          transition={{ duration: 0.22, ease: "easeOut" }}
+          className="w-[calc(100vw-2rem)] max-w-[860px]"
+        >
+          {/* Card body */}
+          <div className="rounded-xl border-2 border-[#FF2D55] bg-[#F2F2F2] shadow-xl text-left"
+            style={{ padding: "28px 36px" }}
           >
-            <p className="text-[#1a1a1a] text-sm md:text-base leading-relaxed">
-              <strong className="font-bold">{d.term}</strong> – {d.text}
+            <h3 className="text-[#FF2D55] font-bold text-xl md:text-2xl mb-3">
+              {hotspot.title}
+            </h3>
+            <p className="text-[#1a1a1a] text-sm md:text-base leading-relaxed mb-4">
+              {hotspot.description}
             </p>
+            {hotspot.details?.map((d, j) => (
+              <div
+                key={j}
+                className="border-l-[3px] border-[#FF2D55] pl-4 md:pl-5 mb-4 last:mb-0"
+              >
+                <p className="text-[#1a1a1a] text-sm md:text-base leading-relaxed">
+                  <strong className="font-bold">{d.term}</strong> – {d.text}
+                </p>
+              </div>
+            ))}
           </div>
-        ))}
+        </motion.div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
