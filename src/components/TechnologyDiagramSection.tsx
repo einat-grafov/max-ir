@@ -73,7 +73,7 @@ const InfoCard = ({ hotspot, onMouseEnter, onMouseLeave }: InfoCardProps) => {
       className="absolute z-30"
       style={{
         left: `${hotspot.x}%`,
-        top: `calc(${hotspot.y}% - 14px)`,
+        top: `calc(${hotspot.y}% + 14px)`,
       }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -81,10 +81,10 @@ const InfoCard = ({ hotspot, onMouseEnter, onMouseLeave }: InfoCardProps) => {
       <div
         className={
           hotspot.anchorPosition === "left"
-            ? "translate-y-[-100%]"
+            ? ""
             : hotspot.anchorPosition === "center"
-              ? "-translate-x-1/2 translate-y-[-100%]"
-              : "-translate-x-full translate-y-[-100%]"
+              ? "-translate-x-1/2"
+              : "-translate-x-full"
         }
       >
         <motion.div
