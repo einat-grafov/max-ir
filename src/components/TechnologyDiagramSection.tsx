@@ -76,9 +76,9 @@ const InfoCard = ({ hotspot, onMouseEnter, onMouseLeave }: InfoCardProps) => {
 
   const anchorPadding =
     hotspot.anchorPosition === "left"
-      ? { paddingLeft: "48px" }
+      ? { paddingLeft: "7px" }
       : hotspot.anchorPosition === "right"
-        ? { paddingRight: "48px" }
+        ? { paddingRight: "7px" }
         : {};
 
   return (
