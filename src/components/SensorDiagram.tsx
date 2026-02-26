@@ -117,41 +117,54 @@ const SensorDiagram = () => {
       {/* Hover card */}
       <AnimatePresence>
         {activeHotspot && (
-          <motion.div
-            key={activeHotspot.id}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 8 }}
-            transition={{ duration: 0.18 }}
-            className="absolute left-1/2 -translate-x-1/2 bottom-0 translate-y-[calc(100%+16px)] w-[calc(100%-2rem)] max-w-[680px] z-30"
-            onMouseEnter={() => showCard(activeHotspot.id)}
-            onMouseLeave={hideCard}
-          >
-            {/* Anchor dot */}
-            <div className="flex justify-center -mb-2 relative z-10">
+          <>
+            {/* Anchor dot – positioned at the hotspot's x% */}
+            <motion.div
+              key={`anchor-${activeHotspot.id}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }}
+              className="absolute -translate-x-1/2 z-40"
+              style={{
+                left: `${activeHotspot.x}%`,
+                top: `calc(100% + 8px)`,
+              }}
+            >
               <span className="block w-4 h-4 rounded-full border-2 border-[#FF2D55] bg-[#FF2D55]/30" />
-            </div>
+            </motion.div>
 
             {/* Card */}
-            <div className="rounded-2xl border border-[#FF2D55]/60 bg-[#F5F5F5] shadow-lg p-6 md:p-8 text-left">
-              <h3 className="text-[#FF2D55] font-bold text-xl md:text-2xl mb-3">
-                {activeHotspot.title}
-              </h3>
-              <p className="text-[#222] text-sm md:text-base leading-relaxed mb-4">
-                {activeHotspot.description}
-              </p>
-              {activeHotspot.details?.map((d, j) => (
-                <div
-                  key={j}
-                  className="border-l-[3px] border-[#FF2D55] pl-4 md:pl-5 mb-4 last:mb-0"
-                >
-                  <p className="text-[#222] text-sm md:text-base leading-relaxed">
-                    <strong className="font-bold">{d.term}</strong> - {d.text}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </motion.div>
+            <motion.div
+              key={activeHotspot.id}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={{ duration: 0.18 }}
+              className="absolute left-1/2 -translate-x-1/2 bottom-0 translate-y-[calc(100%+24px)] w-[calc(100%-2rem)] max-w-[680px] z-30"
+              onMouseEnter={() => showCard(activeHotspot.id)}
+              onMouseLeave={hideCard}
+            >
+              <div className="rounded-2xl border border-[#FF2D55]/60 bg-[#F5F5F5] shadow-lg p-6 md:p-8 text-left">
+                <h3 className="text-[#FF2D55] font-bold text-xl md:text-2xl mb-3">
+                  {activeHotspot.title}
+                </h3>
+                <p className="text-[#222] text-sm md:text-base leading-relaxed mb-4">
+                  {activeHotspot.description}
+                </p>
+                {activeHotspot.details?.map((d, j) => (
+                  <div
+                    key={j}
+                    className="border-l-[3px] border-[#FF2D55] pl-4 md:pl-5 mb-4 last:mb-0"
+                  >
+                    <p className="text-[#222] text-sm md:text-base leading-relaxed">
+                      <strong className="font-bold">{d.term}</strong> - {d.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>
