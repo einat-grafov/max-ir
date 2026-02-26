@@ -43,7 +43,7 @@ const hotspots: Hotspot[] = [
     title: "Infrared Detector",
     description:
       "an infrared sensor that can detect minute changes in the IR radiation that interacts with various compounds. With noise-cancellation algorithms it is able to extract information on the composition of the analyzed liquid. The sensor delivers real-time, continuous, accurate readings and due to self-calibration, does not suffer from drift or inaccuracies over time.",
-    x: 89,
+    x: 90.3,
     y: 50,
   },
 ];
