@@ -1,5 +1,5 @@
 import ScrollReveal from "./ScrollReveal";
-import SensorDiagram from "./SensorDiagram";
+import TechnologyDiagramSection from "./TechnologyDiagramSection";
 
 const SensorSection = () => {
   return (
@@ -42,7 +42,7 @@ const SensorSection = () => {
         {/* Interactive sensor diagram */}
         <ScrollReveal variant="scaleIn">
           <div className="mb-12 pb-16 md:pb-24">
-            <SensorDiagram />
+            <TechnologyDiagramSection embedded />
           </div>
         </ScrollReveal>
       </div>

@@ -123,7 +123,7 @@ const InfoCard = ({ hotspot, onMouseEnter, onMouseLeave }: InfoCardProps) => {
 };
 
 /* ─── Main section ─── */
-const TechnologyDiagramSection = () => {
+const TechnologyDiagramSection = ({ embedded }: { embedded?: boolean }) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const hideTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -172,65 +172,69 @@ const TechnologyDiagramSection = () => {
     ? `/images/sensor-${activeId === "qcl" ? "left" : activeId === "cartridge" ? "middle" : "right"}.svg`
     : "/images/sensor-full.svg";
 
+  const content = (
+    <div
+      ref={containerRef}
+      className="relative w-full max-w-[1100px] mx-auto"
+    >
+      {/* Diagram image */}
+      <div className="relative w-full" style={{ aspectRatio: "933 / 245" }}>
+        <img
+          src={diagramSrc}
+          alt="Technology diagram showing sensor components"
+          className="w-full h-full object-contain select-none"
+          draggable={false}
+        />
+
+        {/* Hotspot dots */}
+        {hotspots.map((spot, i) => (
+          <button
+            key={spot.id}
+            className="absolute -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer focus:outline-none group"
+            style={{ left: `${spot.x}%`, top: `${spot.y}%` }}
+            aria-label={`Show details for ${spot.title}`}
+            onMouseEnter={() => showCard(spot.id)}
+            onMouseLeave={hideCard}
+            onFocus={() => showCard(spot.id)}
+            onBlur={hideCard}
+            onClick={() => toggleCard(spot.id)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setActiveId(null);
+            }}
+          >
+            {/* Pulse ring */}
+            <span
+              className="absolute inset-[-6px] rounded-full border-2 border-[#FF9FAF] motion-safe:animate-[techDot-pulse_1.4s_ease-in-out_infinite] group-hover:animate-none group-focus:animate-none"
+              style={{ animationDelay: `${i * 0.4}s` }}
+            />
+            {/* Core dot */}
+            <span className="relative block w-4 h-4 md:w-5 md:h-5 group-hover:brightness-125 group-focus:brightness-125 transition-all">
+              <span className="absolute inset-[3px] md:inset-[4px] rounded-full bg-[#FF2D55]" />
+              <span className="absolute inset-0 rounded-full border-2 border-[#FF9FAF]" />
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* Info card overlay */}
+      <AnimatePresence>
+        {activeHotspot && (
+          <InfoCard
+            hotspot={activeHotspot}
+            onMouseEnter={() => showCard(activeHotspot.id)}
+            onMouseLeave={hideCard}
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  );
+
+  if (embedded) return content;
+
   return (
     <section className="bg-black py-20 lg:py-28">
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
-        <ScrollReveal>
-          <div
-            ref={containerRef}
-            className="relative w-full max-w-[1100px] mx-auto"
-          >
-            {/* Diagram image */}
-            <div className="relative w-full" style={{ aspectRatio: "933 / 245" }}>
-              <img
-                src={diagramSrc}
-                alt="Technology diagram showing sensor components"
-                className="w-full h-full object-contain select-none"
-                draggable={false}
-              />
-
-              {/* Hotspot dots */}
-              {hotspots.map((spot, i) => (
-                <button
-                  key={spot.id}
-                  className="absolute -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer focus:outline-none group"
-                  style={{ left: `${spot.x}%`, top: `${spot.y}%` }}
-                  aria-label={`Show details for ${spot.title}`}
-                  onMouseEnter={() => showCard(spot.id)}
-                  onMouseLeave={hideCard}
-                  onFocus={() => showCard(spot.id)}
-                  onBlur={hideCard}
-                  onClick={() => toggleCard(spot.id)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Escape") setActiveId(null);
-                  }}
-                >
-                  {/* Pulse ring */}
-                  <span
-                    className="absolute inset-[-6px] rounded-full border-2 border-[#FF9FAF] motion-safe:animate-[techDot-pulse_1.4s_ease-in-out_infinite] group-hover:animate-none group-focus:animate-none"
-                    style={{ animationDelay: `${i * 0.4}s` }}
-                  />
-                  {/* Core dot */}
-                  <span className="relative block w-4 h-4 md:w-5 md:h-5 group-hover:brightness-125 group-focus:brightness-125 transition-all">
-                    <span className="absolute inset-[3px] md:inset-[4px] rounded-full bg-[#FF2D55]" />
-                    <span className="absolute inset-0 rounded-full border-2 border-[#FF9FAF]" />
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            {/* Info card overlay */}
-            <AnimatePresence>
-              {activeHotspot && (
-                <InfoCard
-                  hotspot={activeHotspot}
-                  onMouseEnter={() => showCard(activeHotspot.id)}
-                  onMouseLeave={hideCard}
-                />
-              )}
-            </AnimatePresence>
-          </div>
-        </ScrollReveal>
+        <ScrollReveal>{content}</ScrollReveal>
       </div>
     </section>
   );
