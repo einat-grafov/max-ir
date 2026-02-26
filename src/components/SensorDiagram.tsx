@@ -17,7 +17,7 @@ const hotspots: Hotspot[] = [
     title: "Quantum Cascade Laser",
     description:
       "the source of the infrared light. QCLs are semiconductor lasers that emit infrared in the mid- and long-wave bands. We develop technology based on compact, high-power QCLs. Tunable QCLs are implemented for accurate spectral analysis of compounds in the examined liquid.",
-    x: 11,
+    x: 13.2,
     y: 50,
   },
   {
