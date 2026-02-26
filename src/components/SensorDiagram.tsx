@@ -123,23 +123,11 @@ const SensorDiagram = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.18 }}
-            className="absolute bottom-0 translate-y-[calc(100%+8px)] w-[calc(100%-2rem)] max-w-[680px] z-30"
-            style={{
-              left: activeHotspot.id === "laser"
-                ? `${activeHotspot.x}%`
-                : activeHotspot.id === "cartridge"
-                  ? `50%`
-                  : `${activeHotspot.x}%`,
-              transform: activeHotspot.id === "laser"
-                ? "translateY(calc(100% + 8px))"
-                : activeHotspot.id === "cartridge"
-                  ? "translateX(-50%) translateY(calc(100% + 8px))"
-                  : "translateX(-100%) translateY(calc(100% + 8px))",
-            }}
+            className="absolute left-1/2 -translate-x-1/2 bottom-0 translate-y-[calc(100%+8px)] w-[calc(100%-2rem)] max-w-[680px] z-30"
             onMouseEnter={() => showCard(activeHotspot.id)}
             onMouseLeave={hideCard}
           >
-            {/* Anchor dot */}
+            {/* Anchor dot – aligned based on hotspot position */}
             <div
               className="relative z-10 -mb-2"
               style={{
