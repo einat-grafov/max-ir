@@ -67,19 +67,12 @@ interface InfoCardProps {
 }
 
 const InfoCard = ({ hotspot, onMouseEnter, onMouseLeave }: InfoCardProps) => {
-  const anchorJustify =
+  const anchorPositionStyle =
     hotspot.anchorPosition === "left"
-      ? "flex-start"
+      ? { left: 0, transform: "translate(-50%, -50%)" }
       : hotspot.anchorPosition === "right"
-        ? "flex-end"
-        : "center";
-
-  const anchorPadding =
-    hotspot.anchorPosition === "left"
-      ? { paddingLeft: "7px" }
-      : hotspot.anchorPosition === "right"
-        ? { paddingRight: "7px" }
-        : {};
+        ? { right: 0, transform: "translate(50%, -50%)" }
+        : { left: "50%", transform: "translate(-50%, -50%)" };
 
   return (
     <motion.div
@@ -101,15 +94,10 @@ const InfoCard = ({ hotspot, onMouseEnter, onMouseLeave }: InfoCardProps) => {
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* Connector line from anchor down to dot */}
-      <div
-        className="relative z-10 -mb-[1px]"
-        style={{ display: "flex", justifyContent: anchorJustify, ...anchorPadding }}
-      >
+      {/* Anchor node pinned to card top edge */}
+      <div className="absolute top-0 z-20" style={anchorPositionStyle}>
         <div className="flex flex-col items-center">
-          {/* Anchor node */}
           <span className="block w-[14px] h-[14px] rounded-full border-2 border-[#FF2D55] bg-[#FF2D55]/30" />
-          {/* Connector line */}
           <span className="block w-[2px] h-3 bg-[#FF2D55]/40" />
         </div>
       </div>
