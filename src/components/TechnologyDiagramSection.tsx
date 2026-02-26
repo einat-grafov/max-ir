@@ -67,12 +67,6 @@ interface InfoCardProps {
 }
 
 const InfoCard = ({ hotspot, onMouseEnter, onMouseLeave }: InfoCardProps) => {
-  const anchorPositionStyle =
-    hotspot.anchorPosition === "left"
-      ? { left: 0, transform: "translate(-50%, -50%)" }
-      : hotspot.anchorPosition === "right"
-        ? { right: 0, transform: "translate(50%, -50%)" }
-        : { left: "50%", transform: "translate(-50%, -50%)" };
 
   return (
     <motion.div
@@ -81,17 +75,7 @@ const InfoCard = ({ hotspot, onMouseEnter, onMouseLeave }: InfoCardProps) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 12 }}
       transition={{ duration: 0.22, ease: "easeOut" }}
-      className="absolute w-[calc(100%-2rem)] max-w-[860px] z-30"
-      style={{
-        left: `${hotspot.x}%`,
-        top: `calc(${hotspot.y}% - 20px)`,
-        transform:
-          hotspot.anchorPosition === "left"
-            ? "translateX(0)"
-            : hotspot.anchorPosition === "center"
-              ? "translateX(-50%)"
-              : "translateX(-100%)",
-      }}
+      className="w-[calc(100%-2rem)] max-w-[860px] mx-auto mt-3 z-30"
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
