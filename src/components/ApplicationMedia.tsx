@@ -4,15 +4,15 @@ interface ApplicationMediaProps {
   imageSrc: string;
   imageAlt: string;
   shadowSrc?: string;
-  /** Mirror the shadow offset to the left instead of right */
-  shadowLeft?: boolean;
+  /** Which side the image sits on — controls lift & shadow direction */
+  position?: "left" | "right";
 }
 
 const ApplicationMedia = ({
   imageSrc,
   imageAlt,
   shadowSrc,
-  shadowLeft = false,
+  position = "left",
 }: ApplicationMediaProps) => {
   const [tapped, setTapped] = useState(false);
 
@@ -23,9 +23,20 @@ const ApplicationMedia = ({
 
   const handleBlur = useCallback(() => setTapped(false), []);
 
-  const shadowOffset = shadowLeft
-    ? { default: "-18px, 22px", hover: "-28px, 34px" }
-    : { default: "18px, 22px", hover: "28px, 34px" };
+  // Image lifts away from center; shadow shifts opposite
+  const isLeft = position === "left";
+
+  const vars = {
+    // Shadow: offset away from image, shifts further on hover
+    "--shadow-x": isLeft ? "18px" : "-18px",
+    "--shadow-y": "22px",
+    "--shadow-hover-x": isLeft ? "28px" : "-28px",
+    "--shadow-hover-y": "34px",
+    // Image: lifts toward its own side (away from center)
+    "--img-hover-x": isLeft ? "-10px" : "10px",
+    "--img-hover-y": "-12px",
+    "--img-hover-rotate": isLeft ? "-1deg" : "1deg",
+  } as React.CSSProperties;
 
   return (
     <button
@@ -34,6 +45,7 @@ const ApplicationMedia = ({
       onTouchEnd={handleTouchEnd}
       onBlur={handleBlur}
       aria-label={imageAlt}
+      style={vars}
     >
       {/* Shadow layer */}
       {shadowSrc && (
@@ -41,15 +53,8 @@ const ApplicationMedia = ({
           src={shadowSrc}
           alt=""
           aria-hidden="true"
-          className="application-media__shadow absolute inset-0 w-full h-auto opacity-60 will-change-transform"
-          style={
-            {
-              "--shadow-default": `translate(${shadowOffset.default})`,
-              "--shadow-hover": `translate(${shadowOffset.hover}) scale(0.98)`,
-              zIndex: 0,
-              transform: `translate(${shadowOffset.default})`,
-            } as React.CSSProperties
-          }
+          className="application-media__shadow absolute inset-0 w-full h-auto will-change-transform"
+          style={{ zIndex: 0 }}
         />
       )}
 

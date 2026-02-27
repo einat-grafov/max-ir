@@ -105,38 +105,34 @@
 }
 
 /* ── ApplicationMedia hover / focus / active effect ── */
-.application-media__image {
-  transition: transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
-              box-shadow 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
 .application-media__shadow {
+  transform: translate(var(--shadow-x), var(--shadow-y));
+  opacity: 0.6;
+  filter: blur(2px);
   transition: transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
               opacity 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
               filter 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
-  filter: blur(2px);
+}
+
+.application-media__image {
+  transition: transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 /* Hover, focus-visible, and touch-active states */
 .application-media:hover .application-media__image,
 .application-media:focus-visible .application-media__image,
 .application-media.is-active .application-media__image {
-  transform: translate(-10px, -12px) rotate(-1deg) scale(1.01);
+  transform: translate(var(--img-hover-x), var(--img-hover-y)) rotate(var(--img-hover-rotate)) scale(1.01);
   box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.4);
 }
 
 .application-media:hover .application-media__shadow,
 .application-media:focus-visible .application-media__shadow,
 .application-media.is-active .application-media__shadow {
-  opacity: 0.38 !important;
+  transform: translate(var(--shadow-hover-x), var(--shadow-hover-y)) scale(0.98);
+  opacity: 0.38;
   filter: blur(6px);
-}
-
-/* Shadow direction-aware hover transforms via inline CSS vars */
-.application-media:hover .application-media__shadow,
-.application-media:focus-visible .application-media__shadow,
-.application-media.is-active .application-media__shadow {
-  transform: var(--shadow-hover) !important;
 }
 
 /* Reduced motion */
@@ -154,6 +150,6 @@
   .application-media:hover .application-media__shadow,
   .application-media:focus-visible .application-media__shadow,
   .application-media.is-active .application-media__shadow {
-    transform: var(--shadow-default) !important;
+    transform: translate(var(--shadow-x), var(--shadow-y)) !important;
   }
 }
