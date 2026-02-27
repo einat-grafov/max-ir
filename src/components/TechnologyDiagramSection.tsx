@@ -175,7 +175,7 @@ const TechnologyDiagramSection = ({ embedded }: { embedded?: boolean }) => {
   const content = (
     <div
       ref={containerRef}
-      className="relative w-full max-w-[1100px] mx-auto"
+      className="relative w-full max-w-[1100px] mx-auto overflow-visible"
     >
       {/* Diagram image */}
       <div className="relative w-full" style={{ aspectRatio: "933 / 245" }}>
