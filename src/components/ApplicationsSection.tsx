@@ -6,8 +6,8 @@ const ApplicationsSection = () => {
     <section id="Applications" className="section-dark py-16 lg:py-24">
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
         <ScrollReveal>
-          <div className="accent-line mb-6" />
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-maxir-white mb-16">Applications</h2>
+          <div className="accent-line-center mb-6" />
+          <h2 className="text-[80px] leading-none font-bold text-maxir-white mb-16 text-center">Applications</h2>
         </ScrollReveal>
 
         {/* Water & Wastewater */}
