@@ -233,17 +233,16 @@ const TechnologyDiagramSection = ({ embedded }: { embedded?: boolean }) => {
       {/* Mobile info card (flows below diagram) */}
       <AnimatePresence>
         {activeHotspot && (
-          <div className="md:hidden mt-4 px-1">
-            <motion.div
-              key={activeHotspot.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 12 }}
-              transition={{ duration: 0.22, ease: "easeOut" }}
-            >
-              <CardBody hotspot={activeHotspot} />
-            </motion.div>
-          </div>
+          <motion.div
+            key={activeHotspot.id + "-mobile"}
+            className="md:hidden mt-4 px-1"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 12 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+          >
+            <CardBody hotspot={activeHotspot} />
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
