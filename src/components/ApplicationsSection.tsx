@@ -3,7 +3,7 @@ import ApplicationMedia from "./ApplicationMedia";
 
 const ApplicationsSection = () => {
   return (
-    <section id="Applications" className="section-dark py-16 lg:py-24 relative" style={{ backgroundImage: "url('/images/applications-bg.png')", backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }}>
+    <section id="Applications" className="py-16 lg:py-24 relative text-maxir-white" style={{ backgroundImage: "url('/images/applications-bg.png')", backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", backgroundColor: "hsl(220, 15%, 10%)" }}>
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
         <ScrollReveal>
           <div className="accent-line-center mb-6" />
