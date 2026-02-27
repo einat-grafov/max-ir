@@ -91,7 +91,7 @@ const InfoCard = ({ hotspot, onMouseEnter, onMouseLeave }: InfoCardProps) => (
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 12 }}
         transition={{ duration: 0.22, ease: "easeOut" }}
-        className="max-w-[860px]"
+        className="w-[min(860px,90vw)]"
       >
         <CardBody hotspot={hotspot} />
       </motion.div>
