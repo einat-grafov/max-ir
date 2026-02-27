@@ -40,8 +40,8 @@ const SensorSection = () => {
         </ScrollReveal>
 
         {/* Interactive sensor diagram */}
-        <ScrollReveal variant="scaleIn">
-          <div className="mb-12 pb-16 md:pb-24">
+        <ScrollReveal variant="scaleIn" className="overflow-visible">
+          <div className="mb-12 pb-16 md:pb-24 overflow-visible">
             <TechnologyDiagramSection embedded />
           </div>
         </ScrollReveal>
