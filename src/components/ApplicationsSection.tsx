@@ -36,16 +36,17 @@ const ApplicationsSection = () => {
         {/* Quality Monitoring */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start mb-20">
           <ScrollReveal variant="fadeLeft">
-            <div className="relative">
-              <img src="/images/quality-monitoring-image.png" alt="Quality monitoring analysis" className="relative z-10 w-full rounded" />
-            </div>
-          </ScrollReveal>
-          <ScrollReveal variant="fadeRight" delay={0.15}>
             <div>
               <h3 className="text-2xl font-bold text-maxir-white mb-4">Quality Monitoring and Analysis Services</h3>
               <p className="text-maxir-white/70 text-sm leading-relaxed">
                 Max-IR Labs provides specialized water and industrial fluid analysis services for quality control purposes. Our team is currently in the early stages of service deployment and is seeking pilot study partners to demonstrate our capabilities for monitoring of inorganic carbon, PFAS and nitrate in water and wastewater streams. We offer monitoring and analysis tailored to industry specific needs, helping ensure reliable, actionable results. Potential clients can <a href="mailto:info@max-ir-labs.com" className="text-primary hover:underline font-semibold">email us</a> at info@max-ir-labs.com to learn more or schedule an initial consultation.
               </p>
+            </div>
+          </ScrollReveal>
+          <ScrollReveal variant="fadeRight" delay={0.15}>
+            <div className="relative">
+              <img src="/images/food-shadow.svg" alt="" className="absolute -bottom-4 -left-4 w-full opacity-30" />
+              <img src="/images/quality-monitoring-image.png" alt="Quality monitoring analysis" className="relative z-10 w-full rounded" />
             </div>
           </ScrollReveal>
         </div>
