@@ -103,3 +103,57 @@
     color: hsl(var(--maxir-gray));
   }
 }
+
+/* ── ApplicationMedia hover / focus / active effect ── */
+.application-media__image {
+  transition: transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.application-media__shadow {
+  transition: transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              opacity 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              filter 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  filter: blur(2px);
+}
+
+/* Hover, focus-visible, and touch-active states */
+.application-media:hover .application-media__image,
+.application-media:focus-visible .application-media__image,
+.application-media.is-active .application-media__image {
+  transform: translate(-10px, -12px) rotate(-1deg) scale(1.01);
+  box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.4);
+}
+
+.application-media:hover .application-media__shadow,
+.application-media:focus-visible .application-media__shadow,
+.application-media.is-active .application-media__shadow {
+  opacity: 0.38 !important;
+  filter: blur(6px);
+}
+
+/* Shadow direction-aware hover transforms via inline CSS vars */
+.application-media:hover .application-media__shadow,
+.application-media:focus-visible .application-media__shadow,
+.application-media.is-active .application-media__shadow {
+  transform: var(--shadow-hover) !important;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .application-media__image,
+  .application-media__shadow {
+    transition: opacity 200ms ease !important;
+  }
+  .application-media:hover .application-media__image,
+  .application-media:focus-visible .application-media__image,
+  .application-media.is-active .application-media__image {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+  .application-media:hover .application-media__shadow,
+  .application-media:focus-visible .application-media__shadow,
+  .application-media.is-active .application-media__shadow {
+    transform: var(--shadow-default) !important;
+  }
+}

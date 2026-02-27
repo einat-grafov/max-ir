@@ -1,4 +1,5 @@
 import ScrollReveal from "./ScrollReveal";
+import ApplicationMedia from "./ApplicationMedia";
 
 const ApplicationsSection = () => {
   return (
@@ -12,10 +13,11 @@ const ApplicationsSection = () => {
         {/* Water & Wastewater */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start mb-20">
           <ScrollReveal variant="fadeLeft">
-            <div className="relative">
-              <img src="/images/water-shadow.svg" alt="" className="absolute -bottom-4 -right-4 w-full opacity-30" />
-              <img src="/images/water-image.png" alt="Cyanophyta on water surface" className="relative z-10 w-full rounded" />
-            </div>
+            <ApplicationMedia
+              imageSrc="/images/water-image.png"
+              imageAlt="Cyanophyta on water surface"
+              shadowSrc="/images/water-shadow.svg"
+            />
           </ScrollReveal>
           <ScrollReveal variant="fadeRight" delay={0.15}>
             <div>
@@ -44,10 +46,12 @@ const ApplicationsSection = () => {
             </div>
           </ScrollReveal>
           <ScrollReveal variant="fadeRight" delay={0.15}>
-            <div className="relative">
-              <img src="/images/food-shadow.svg" alt="" className="absolute -bottom-4 -left-4 w-full opacity-30" />
-              <img src="/images/quality-monitoring-image.png" alt="Quality monitoring analysis" className="relative z-10 w-full rounded" />
-            </div>
+            <ApplicationMedia
+              imageSrc="/images/quality-monitoring-image.png"
+              imageAlt="Quality monitoring analysis"
+              shadowSrc="/images/food-shadow.svg"
+              shadowLeft
+            />
           </ScrollReveal>
         </div>
 
@@ -68,20 +72,23 @@ const ApplicationsSection = () => {
             </div>
           </ScrollReveal>
           <ScrollReveal variant="fadeRight" delay={0.15} className="order-1 lg:order-2">
-            <div className="relative">
-              <img src="/images/food-shadow.svg" alt="" className="absolute -bottom-4 -left-4 w-full opacity-30" />
-              <img src="/images/food-image.png" alt="Pathogenic bacteria" className="relative z-10 w-full rounded" />
-            </div>
+            <ApplicationMedia
+              imageSrc="/images/food-image.png"
+              imageAlt="Pathogenic bacteria"
+              shadowSrc="/images/food-shadow.svg"
+              shadowLeft
+            />
           </ScrollReveal>
         </div>
 
         {/* Energy */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           <ScrollReveal variant="fadeLeft">
-            <div className="relative">
-              <img src="/images/energy-shadow.svg" alt="" className="absolute -bottom-4 -right-4 w-full opacity-30" />
-              <img src="/images/energy-image.png" alt="Liquid petrol surface" className="relative z-10 w-full rounded" />
-            </div>
+            <ApplicationMedia
+              imageSrc="/images/energy-image.png"
+              imageAlt="Liquid petrol surface"
+              shadowSrc="/images/energy-shadow.svg"
+            />
           </ScrollReveal>
           <ScrollReveal variant="fadeRight" delay={0.15}>
             <div>
