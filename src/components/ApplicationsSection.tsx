@@ -50,7 +50,7 @@ const ApplicationsSection = () => {
               imageSrc="/images/quality-monitoring-image.png"
               imageAlt="Quality monitoring analysis"
               shadowSrc="/images/food-shadow.svg"
-              shadowLeft
+              position="right"
             />
           </ScrollReveal>
         </div>
@@ -76,7 +76,7 @@ const ApplicationsSection = () => {
               imageSrc="/images/food-image.png"
               imageAlt="Pathogenic bacteria"
               shadowSrc="/images/food-shadow.svg"
-              shadowLeft
+              position="right"
             />
           </ScrollReveal>
         </div>
