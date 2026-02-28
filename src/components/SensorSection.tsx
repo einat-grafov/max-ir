@@ -3,7 +3,7 @@ import TechnologyDiagramSection from "./TechnologyDiagramSection";
 
 const SensorSection = () => {
   return (
-    <section id="Sensor" className="relative pt-[calc(2rem+120px)] md:pt-[calc(3rem+180px)] pb-16 lg:pb-24 mt-[120px] md:mt-[180px] text-white" style={{ backgroundColor: "#000000" }}>
+    <section id="Sensor" className="relative pt-[calc(1.6rem+96px)] md:pt-[calc(2.4rem+144px)] pb-[51px] lg:pb-[77px] mt-[120px] md:mt-[180px] text-white" style={{ backgroundColor: "#000000" }}>
       {/* Wave divider at top */}
       <div className="absolute top-0 left-0 right-0 z-10 h-[120px] md:h-[180px] -translate-y-[calc(100%-1px)]">
         <svg
@@ -26,7 +26,7 @@ const SensorSection = () => {
         </ScrollReveal>
 
         <ScrollReveal delay={0.1}>
-          <div className="max-w-4xl mx-auto mb-8">
+          <div className="max-w-4xl mx-auto mb-[40px]">
             <p className="text-maxir-white/70 text-base leading-relaxed mb-4">
               Max-IR develops infrared (IR) sensors for analysis of compounds in liquids, from clear to thick and murky. Using cutting-edge patented technology, our sensors enable accurate, real-time, continuous measurements, without change or drift over time.
             </p>
