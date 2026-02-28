@@ -26,7 +26,7 @@ const SensorSection = () => {
         </ScrollReveal>
 
         <ScrollReveal delay={0.1}>
-          <div className="max-w-4xl mx-auto mb-[40px]">
+          <div className="max-w-4xl mx-auto mb-[64px]">
             <p className="text-maxir-white/70 text-base leading-relaxed mb-4">
               Max-IR develops infrared (IR) sensors for analysis of compounds in liquids, from clear to thick and murky. Using cutting-edge patented technology, our sensors enable accurate, real-time, continuous measurements, without change or drift over time.
             </p>
