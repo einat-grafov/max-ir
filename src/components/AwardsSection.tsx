@@ -31,7 +31,7 @@ const awards = [
 
 const AwardsSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const visibleCount = typeof window !== "undefined" && window.innerWidth >= 768 ? 3 : 1;
+  const visibleCount = typeof window !== "undefined" && window.innerWidth >= 1024 ? 4 : typeof window !== "undefined" && window.innerWidth >= 768 ? 3 : 1;
 
   const prev = () => setCurrentSlide((s) => (s === 0 ? awards.length - visibleCount : s - 1));
   const next = () => setCurrentSlide((s) => (s >= awards.length - visibleCount ? 0 : s + 1));
