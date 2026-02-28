@@ -3,7 +3,7 @@ import TechnologyDiagramSection from "./TechnologyDiagramSection";
 
 const SensorSection = () => {
   return (
-    <section id="Sensor" className="relative section-dark pt-[calc(2rem+120px)] md:pt-[calc(3rem+180px)] pb-16 lg:pb-24 mt-[120px] md:mt-[180px]">
+    <section id="Sensor" className="relative pt-[calc(2rem+120px)] md:pt-[calc(3rem+180px)] pb-16 lg:pb-24 mt-[120px] md:mt-[180px] text-white" style={{ backgroundColor: "#000000" }}>
       {/* Wave divider at top */}
       <div className="absolute top-0 left-0 right-0 z-10 h-[120px] md:h-[180px] -translate-y-[calc(100%-1px)]">
         <svg
@@ -14,7 +14,7 @@ const SensorSection = () => {
         >
           <path
             d="M0,90 C200,130 400,170 600,160 C800,150 950,20 1100,10 C1250,0 1380,40 1440,70 L1440,180 L0,180 Z"
-            fill="hsl(var(--maxir-dark))"
+            fill="#000000"
           />
         </svg>
       </div>

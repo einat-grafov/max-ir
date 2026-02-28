@@ -3,7 +3,7 @@ import ApplicationMedia from "./ApplicationMedia";
 
 const ApplicationsSection = () => {
   return (
-    <section id="Applications" className="relative text-maxir-white" style={{ backgroundColor: "hsl(220, 15%, 10%)" }}>
+    <section id="Applications" className="relative text-maxir-white" style={{ backgroundColor: "#000000" }}>
       {/* Section Header */}
       <div className="py-16 lg:py-24 pb-0 lg:pb-0" style={{ backgroundImage: "url('/images/applications-bg.png')", backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }}>
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
