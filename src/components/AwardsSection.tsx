@@ -28,6 +28,7 @@ const awards = [
     logo: "/images/award-patent.png",
     title: "U.S. Patent #10,458,907",
     description: "Infrared analytical sensor for soil or water and method of operation thereof, issued May 25, 2018",
+    showBanner: true,
   },
 ];
 
@@ -61,7 +62,14 @@ const AwardsSection = () => {
                     key={i}
                     className="pl-4 basis-full md:basis-1/3 lg:basis-1/4"
                   >
-                    <div className="bg-white rounded-[16px] shadow-[0_8px_36px_#0000000d] p-8 flex flex-col items-center text-center h-full">
+                    <div className="relative bg-white rounded-[16px] shadow-[0_8px_36px_#0000000d] p-8 flex flex-col items-center text-center h-full overflow-hidden">
+                      {award.showBanner && (
+                        <img
+                          src="/images/patent-banner.png"
+                          alt="Patent"
+                          className="absolute top-0 right-0 w-24 h-24 pointer-events-none"
+                        />
+                      )}
                       <img src={award.logo} alt="Award logo" className="h-24 mb-6 object-contain" />
                       <h3 className="font-bold text-lg mb-3">{award.title}</h3>
                       <p className="text-foreground/60 text-sm leading-relaxed">{award.description}</p>
