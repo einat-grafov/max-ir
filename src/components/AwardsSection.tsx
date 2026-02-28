@@ -45,36 +45,33 @@ const AwardsSection = () => {
         </ScrollReveal>
 
         <ScrollReveal delay={0.15} variant="fadeIn">
-          <div className="relative">
-            <div className="overflow-hidden">
+          <div className="relative flex items-center">
+            {/* Left arrow */}
+            <button onClick={prev} className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-foreground/30 hover:text-foreground/60 transition-colors">
+              <ChevronLeft size={32} />
+            </button>
+
+            <div className="overflow-hidden flex-1">
               <div
                 className="flex transition-transform duration-500 ease-in-out"
                 style={{ transform: `translateX(-${currentSlide * (100 / visibleCount)}%)` }}
               >
                 {awards.map((award, i) => (
                   <div key={i} className="flex-shrink-0 px-4" style={{ width: `${100 / visibleCount}%` }}>
-                    <div className="flex flex-col items-center text-center">
+                    <div className="bg-card rounded-[16px] shadow-[0_18px_44px_#00000014] p-8 flex flex-col items-center text-center min-h-[280px]">
                       <img src={award.logo} alt="Award logo" className="h-24 mb-6 object-contain" />
                       <h3 className="font-bold text-lg mb-3">{award.title}</h3>
-                      <p className="text-foreground/60 text-sm leading-relaxed mb-4">{award.description}</p>
-                      {award.patent && (
-                        <img src="/images/patent-icon.png" alt="Patent" className="h-10 opacity-60" />
-                      )}
+                      <p className="text-foreground/60 text-sm leading-relaxed">{award.description}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Navigation arrows */}
-            <div className="flex justify-center gap-4 mt-8">
-              <button onClick={prev} className="w-10 h-10 rounded-full border border-foreground/20 flex items-center justify-center hover:border-primary transition-colors">
-                <ChevronLeft size={20} />
-              </button>
-              <button onClick={next} className="w-10 h-10 rounded-full border border-foreground/20 flex items-center justify-center hover:border-primary transition-colors">
-                <ChevronRight size={20} />
-              </button>
-            </div>
+            {/* Right arrow */}
+            <button onClick={next} className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-foreground/30 hover:text-foreground/60 transition-colors">
+              <ChevronRight size={32} />
+            </button>
           </div>
         </ScrollReveal>
       </div>
