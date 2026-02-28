@@ -132,7 +132,7 @@ const Navbar = () => {
                       >
                         {anchor.label}
                         {activeAnchor === anchor.id && (
-                          <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-primary rounded-full" />
+                          <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[36px] h-[2px] bg-primary rounded-full" />
                         )}
                       </button>
                     ))}
