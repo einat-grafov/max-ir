@@ -58,7 +58,7 @@ const AwardsSection = () => {
               >
                 {awards.map((award, i) => (
                   <div key={i} className="flex-shrink-0 px-4" style={{ width: `${100 / visibleCount}%` }}>
-                    <div className="bg-white rounded-[16px] shadow-[0_8px_36px_#0000000d] p-8 flex flex-col items-center text-center h-[340px] overflow-hidden">
+                    <div className="bg-white rounded-[16px] shadow-[0_8px_36px_#0000000d] p-8 flex flex-col items-center text-center h-[380px] overflow-hidden">
                       <img src={award.logo} alt="Award logo" className="h-24 mb-6 object-contain" />
                       <h3 className="font-bold text-lg mb-3">{award.title}</h3>
                       <p className="text-foreground/60 text-sm leading-relaxed">{award.description}</p>
