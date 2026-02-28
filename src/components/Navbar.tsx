@@ -21,14 +21,8 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-maxir-dark/90 backdrop-blur-sm">
       <div className="max-w-[1400px] mx-auto px-6 lg:px-10 flex items-center justify-between h-[70px]">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 shrink-0">
-          <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
-            <path d="M5 35L20 5L25 15L15 35H5Z" fill="hsl(348,100%,61%)" />
-            <path d="M15 35L25 15L35 35H15Z" fill="hsl(348,100%,61%)" opacity="0.7" />
-          </svg>
-          <span className="text-maxir-white font-bold text-lg tracking-wide">
-            MAX-IR <span className="font-light">LABS</span>
-          </span>
+        <Link to="/" className="shrink-0">
+          <img src="/images/maxir-logo.svg" alt="MAX-IR Labs" className="h-[28px] w-auto" />
         </Link>
 
         {/* Desktop Nav */}
