@@ -35,10 +35,14 @@ const Navbar = () => {
     return "home";
   }, [location.pathname]);
 
-  // Reset active anchor when page changes; default to first anchor
+  // Reset active anchor when page changes; default to first anchor only for home
   useEffect(() => {
-    const anchors = anchorLinks[activeMain];
-    setActiveAnchor(anchors.length > 0 ? anchors[0].id : null);
+    if (activeMain === "home") {
+      const anchors = anchorLinks[activeMain];
+      setActiveAnchor(anchors.length > 0 ? anchors[0].id : null);
+    } else {
+      setActiveAnchor(null);
+    }
   }, [activeMain]);
 
   const scrollTo = (id: string) => {

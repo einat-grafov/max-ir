@@ -90,6 +90,8 @@ const Team = () => {
     if (location.hash) {
       const el = document.getElementById(location.hash.slice(1));
       if (el) setTimeout(() => el.scrollIntoView({ behavior: "smooth" }), 100);
+    } else {
+      window.scrollTo(0, 0);
     }
   }, [location.hash]);
 
