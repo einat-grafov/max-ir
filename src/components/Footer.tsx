@@ -39,14 +39,15 @@ const Footer = () => {
                 <Link to="/team" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-semibold">The Team</Link>
               </div>
             </div>
-            <div className="text-maxir-white/60 text-sm leading-relaxed">
-              <p className="font-semibold text-maxir-white mb-2">Max-IR Labs, Inc.</p>
+            <div className="text-maxir-white text-[14px] leading-[20px] font-normal">
+              <p className="mb-1">Max-IR Labs, Inc.</p>
               <p>17217 Waterview Parkway</p>
               <p>Suite 1.202</p>
               <p>Dallas TX 75252,</p>
-              <p className="mt-2">+1-214-228-7213</p>
+              <p>+1-214-228-7213</p>
             </div>
-            <p className="text-maxir-white/40 text-xs mt-8">© 2020 MaxIR Labs. All rights reserved.</p>
+            <div className="h-[2px] bg-primary mt-8 mb-4" />
+            <p className="text-maxir-white text-[14px] leading-[20px] font-normal">© 2020 MaxIR Labs. All rights reserved.</p>
           </div>
 
           {/* Right - Contact Form */}
