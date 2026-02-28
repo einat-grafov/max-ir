@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 
@@ -26,6 +26,7 @@ const mainMenuRoutes: Record<MainMenuItem, string> = {
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeAnchor, setActiveAnchor] = useState<string | null>(null);
   const location = useLocation();
 
   const activeMain: MainMenuItem = useMemo(() => {
@@ -34,8 +35,15 @@ const Navbar = () => {
     return "home";
   }, [location.pathname]);
 
+  // Reset active anchor when page changes; default to first anchor
+  useEffect(() => {
+    const anchors = anchorLinks[activeMain];
+    setActiveAnchor(anchors.length > 0 ? anchors[0].id : null);
+  }, [activeMain]);
+
   const scrollTo = (id: string) => {
     setMobileOpen(false);
+    setActiveAnchor(id);
     const basePath = mainMenuRoutes[activeMain];
     if (location.pathname !== basePath) {
       window.location.href = `${basePath}#${id}`;
@@ -55,14 +63,14 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-maxir-dark/90 backdrop-blur-sm">
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-10 flex items-center justify-between h-[70px]">
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-10 flex items-center h-[70px]">
         {/* Logo */}
-        <Link to="/" className="shrink-0">
+        <Link to="/" className="shrink-0 mr-8">
           <img src="/images/maxir-logo.svg" alt="MAX-IR Labs" className="h-[28px] w-auto" />
         </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden lg:flex items-center gap-6">
+        <div className="hidden lg:flex items-center flex-1">
           {/* Main menu items + contextual anchors */}
           <div className="flex items-center gap-1">
             {mainItems.map((item) => (
@@ -86,9 +94,16 @@ const Navbar = () => {
                       <button
                         key={anchor.id}
                         onClick={() => scrollTo(anchor.id)}
-                        className="px-3 py-1.5 text-sm font-medium text-maxir-white/60 hover:text-maxir-white transition-colors"
+                        className={`relative px-3 py-1.5 text-sm font-medium transition-colors ${
+                          activeAnchor === anchor.id
+                            ? "text-maxir-white"
+                            : "text-maxir-white/60 hover:text-maxir-white"
+                        }`}
                       >
                         {anchor.label}
+                        {activeAnchor === anchor.id && (
+                          <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-primary rounded-full" />
+                        )}
                       </button>
                     ))}
                   </div>
@@ -97,13 +112,15 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Contact Us button */}
-          <button
-            onClick={() => scrollTo("Contact")}
-            className="bg-primary hover:bg-maxir-red-hover text-primary-foreground px-6 py-2 rounded-full text-sm font-semibold transition-colors"
-          >
-            Contact Us
-          </button>
+          {/* Contact Us button - pushed to right */}
+          <div className="ml-auto">
+            <button
+              onClick={() => scrollTo("Contact")}
+              className="bg-primary hover:bg-maxir-red-hover text-primary-foreground px-6 py-2 rounded-full text-sm font-semibold transition-colors"
+            >
+              Contact Us
+            </button>
+          </div>
         </div>
 
         {/* Mobile toggle */}
