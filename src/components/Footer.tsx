@@ -8,7 +8,21 @@ const Footer = () => {
   };
 
   return (
-    <footer id="Contact" className="section-dark relative" style={{ backgroundImage: 'url(/images/footer-bg.png)', backgroundSize: 'cover', backgroundPosition: 'center bottom' }}>
+    <footer id="Contact" className="section-dark relative mt-[120px] md:mt-[180px]" style={{ backgroundImage: 'url(/images/footer-bg.png)', backgroundSize: 'cover', backgroundPosition: 'center bottom' }}>
+      {/* Wave divider at top */}
+      <div className="absolute top-0 left-0 right-0 z-10 h-[120px] md:h-[180px] -translate-y-[calc(100%-1px)]">
+        <svg
+          viewBox="0 0 1440 180"
+          preserveAspectRatio="none"
+          className="absolute bottom-0 w-full h-full"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M0,90 C200,130 400,170 600,160 C800,150 950,20 1100,10 C1250,0 1380,40 1440,70 L1440,180 L0,180 Z"
+            fill="#000000"
+          />
+        </svg>
+      </div>
       <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16 lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
           {/* Left - Links & Address */}
