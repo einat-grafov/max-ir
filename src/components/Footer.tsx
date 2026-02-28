@@ -8,7 +8,7 @@ const Footer = () => {
   };
 
   return (
-    <footer id="Contact" className="section-dark">
+    <footer id="Contact" className="section-dark relative" style={{ backgroundImage: 'url(/images/footer-bg.png)', backgroundSize: 'cover', backgroundPosition: 'center bottom' }}>
       <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16 lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
           {/* Left - Links & Address */}
