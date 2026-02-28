@@ -45,6 +45,32 @@ const Navbar = () => {
     }
   }, [activeMain]);
 
+  // Scroll spy: observe sections and update active anchor
+  useEffect(() => {
+    const currentAnchors = anchorLinks[activeMain];
+    if (currentAnchors.length === 0) return;
+
+    const ids = currentAnchors.map((a) => a.id);
+    const elements = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
+    if (elements.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Find the topmost visible section
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible.length > 0) {
+          setActiveAnchor(visible[0].target.id);
+        }
+      },
+      { rootMargin: "-80px 0px -40% 0px", threshold: 0 }
+    );
+
+    elements.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [activeMain, location.pathname]);
+
   const scrollTo = (id: string) => {
     setMobileOpen(false);
     setActiveAnchor(id);
