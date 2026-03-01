@@ -49,7 +49,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
-          className="text-[40px] md:text-[60px] lg:text-[100px] font-bold text-maxir-white mb-6 tracking-tight leading-none"
+          className="text-[40px] md:text-[60px] lg:text-[100px] font-semibold text-maxir-white mb-6 tracking-tight leading-none"
         >
           Making Infrared Sense
         </motion.h1>
