@@ -85,8 +85,8 @@ const PublicationsCarousel = () => {
   return (
     <div className="relative">
       {/* Carousel viewport */}
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex gap-6">
+      <div className="overflow-hidden px-2 pb-4 -mx-2" ref={emblaRef}>
+        <div className="flex gap-6 py-2">
           {publications.map((pub, i) => (
             <div
               key={i}
