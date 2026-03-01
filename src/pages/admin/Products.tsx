@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { Package, Plus } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import ProductImageLightbox from "@/components/admin/ProductImageLightbox";
 
 const Products = () => {
   const navigate = useNavigate();
+  const [lightbox, setLightbox] = useState<{ images: string[]; open: boolean }>({ images: [], open: false });
   const { data: products, isLoading } = useQuery({
     queryKey: ["admin-products"],
     queryFn: async () => {
@@ -70,7 +73,13 @@ const Products = () => {
                           <img
                             src={product.image_url}
                             alt={product.name}
-                            className="h-10 w-10 rounded-lg object-cover border border-border"
+                            className="h-10 w-10 rounded-lg object-cover border border-border hover:ring-2 hover:ring-primary/50 transition-all"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const allImages = Array.isArray(product.images) ? (product.images as string[]) : [];
+                              const imgs = allImages.length > 0 ? allImages : [product.image_url!];
+                              setLightbox({ images: imgs, open: true });
+                            }}
                           />
                         ) : (
                           <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
@@ -95,6 +104,11 @@ const Products = () => {
           </table>
         </div>
       </div>
+      <ProductImageLightbox
+        images={lightbox.images}
+        open={lightbox.open}
+        onOpenChange={(open) => setLightbox((prev) => ({ ...prev, open }))}
+      />
     </div>
   );
 };
