@@ -228,7 +228,7 @@ const Team = () => {
           <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold mb-12 leading-none text-center">Advisory Board</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {advisors.map((advisor) => (
-              <div key={advisor.name}>
+              <div key={advisor.name} className="flex flex-col">
                 {/* Photo with LinkedIn overlay */}
                 <div className="relative w-full aspect-square overflow-hidden mb-6">
                   <img
@@ -246,16 +246,18 @@ const Team = () => {
                   </a>
                 </div>
                 <h3 className="text-2xl font-bold mb-1">{advisor.name}</h3>
-                <h4 className="text-primary text-base font-semibold mb-6 whitespace-pre-line">{advisor.role}</h4>
-                <a
-                  href={advisor.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-foreground text-sm font-medium hover:text-primary transition-colors"
-                >
-                  <img src="/images/arrow-circle.svg" alt="" className="w-5 h-5" />
-                  Read about
-                </a>
+                <h4 className="text-primary text-base font-semibold whitespace-pre-line">{advisor.role}</h4>
+                <div className="mt-auto pt-6">
+                  <a
+                    href={advisor.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-foreground text-sm font-medium hover:text-primary transition-colors"
+                  >
+                    <img src="/images/arrow-circle.svg" alt="" className="w-5 h-5" />
+                    Read about
+                  </a>
+                </div>
               </div>
             ))}
           </div>
