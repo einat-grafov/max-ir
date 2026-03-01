@@ -487,7 +487,9 @@ const Team = () => {
         </div>
       </section>
 
-      <Footer />
+      <div style={{ backgroundColor: '#F4F3F3' }}>
+        <Footer />
+      </div>
     </div>
   );
 };
