@@ -17,7 +17,7 @@ const TechnologySection = () => {
           <div>
             <ScrollReveal>
               <div className="accent-line mb-6" />
-              <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-bold text-foreground leading-[1.05] mb-8">The<br />Technology</h2>
+              <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold text-foreground leading-[1.05] mb-8">The<br />Technology</h2>
             </ScrollReveal>
 
             <ScrollReveal delay={0.1}>

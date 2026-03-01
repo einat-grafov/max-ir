@@ -38,7 +38,7 @@ const AwardsSection = () => {
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
         <ScrollReveal>
           <div className="accent-line-center mb-6" />
-          <h2 className="text-[40px] md:text-[60px] lg:text-[80px] leading-none font-bold mb-12 text-center">Awards and Achievements</h2>
+          <h2 className="text-[40px] md:text-[60px] lg:text-[80px] leading-none font-semibold mb-12 text-center">Awards and Achievements</h2>
         </ScrollReveal>
 
         <ScrollReveal delay={0.15} variant="fadeIn">

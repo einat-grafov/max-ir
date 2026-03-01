@@ -132,7 +132,7 @@ const Team = () => {
       <section className="section-white py-16 lg:py-24">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
           <div className="accent-line mb-6" />
-          <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-bold mb-12 leading-none">Our Story</h2>
+          <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold mb-12 leading-none">Our Story</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <p className="text-foreground/70 text-base leading-relaxed">
               The areas of expertise at Max-IR Labs cover both instrument development and materials engineering, as is necessary for the development and analysis of the company's patented and patent-pending sensing solutions.
@@ -153,7 +153,7 @@ const Team = () => {
       <section className="section-dark py-16 lg:py-24">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
           <div className="accent-line mb-6" />
-          <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-bold text-maxir-white mb-12 leading-none">Our Team</h2>
+          <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold text-maxir-white mb-12 leading-none">Our Team</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {teamMembers.map((member) => (
               <div key={member.name} className="bg-maxir-dark-surface p-8 border border-maxir-white/10">
@@ -173,7 +173,7 @@ const Team = () => {
       <section className="section-white py-16 lg:py-24">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
           <div className="accent-line mb-6" />
-          <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-bold mb-12 leading-none">Advisory Board</h2>
+          <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold mb-12 leading-none">Advisory Board</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {advisors.map((advisor) => (
               <div key={advisor.name} className="border border-foreground/10 p-8">
@@ -193,7 +193,7 @@ const Team = () => {
       <section id="Publications" className="section-dark py-16 lg:py-24">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
           <div className="accent-line mb-6" />
-          <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-bold text-maxir-white mb-4 leading-none">Publications and announcements</h2>
+          <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold text-maxir-white mb-4 leading-none">Publications and announcements</h2>
           <p className="text-maxir-white/60 text-sm mb-12 max-w-3xl">
             The list below is a continuously updated list of papers mentioning Max-IR Labs products and/or written by us. The list contains research works which have gone on record as developments in the optical field and are public domain.
           </p>
@@ -220,7 +220,7 @@ const Team = () => {
       <section id="FCOI" className="section-white py-16 lg:py-24">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
           <div className="accent-line mb-6" />
-          <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-bold mb-8 leading-none">FCOI</h2>
+          <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold mb-8 leading-none">FCOI</h2>
           <h3 className="font-bold text-lg mb-4">MAX-IR LABS FINANCIAL CONFLICT OF INTEREST POLICY DOCUMENT</h3>
           <h4 className="font-bold mb-4">INTRODUCTION</h4>
           <p className="text-foreground/70 text-sm leading-relaxed mb-6">

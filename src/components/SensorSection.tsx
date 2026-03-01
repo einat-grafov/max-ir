@@ -22,7 +22,7 @@ const SensorSection = () => {
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10 text-center">
         <ScrollReveal>
           <div className="accent-line-center mb-6" />
-          <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-bold mb-8 leading-[1.05]">The Sensor</h2>
+          <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold mb-8 leading-[1.05]">The Sensor</h2>
         </ScrollReveal>
 
         <ScrollReveal delay={0.1}>
