@@ -105,7 +105,7 @@ function TypographyTab() {
 
         {[
           { label: "H1 — Hero Heading", size: "text-[100px]", weight: "font-semibold", sample: "MAX-IR Labs" },
-          { label: "H2 — Section Heading", size: "text-[80px]", weight: "font-bold", sample: "Technology" },
+          { label: "H2 — Section Heading", size: "text-[80px]", weight: "font-semibold", sample: "Technology" },
           { label: "H3 — Card Heading", size: "text-2xl", weight: "font-semibold", sample: "Real-time Analysis" },
           { label: "Subtitle", size: "text-[24px]", weight: "font-medium", sample: "Next-generation infrared sensing" },
           { label: "Body", size: "text-[18px]", weight: "font-medium", sample: "MAX-IR Labs develops cutting-edge mid-infrared sensor technology for real-time molecular analysis across industries." },
