@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PublicationsCarousel from "@/components/PublicationsCarousel";
+import CareersForm from "@/components/CareersForm";
 
 const teamMembers = [
   {
@@ -268,6 +269,34 @@ const Team = () => {
           <p className="text-foreground text-sm leading-relaxed">
             <strong>The Designated Officials</strong>: is Dr. Katy Roodenko, who have been designated by Max-IR Labs to oversee the financial conflicts of interest process.
           </p>
+        </div>
+      </section>
+
+      {/* Careers */}
+      <section id="Careers" className="relative py-16 lg:py-24" style={{ background: 'linear-gradient(to right, hsl(var(--background)), hsl(0 0% 85%))' }}>
+        <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            {/* Left: Text */}
+            <div>
+              <div className="accent-line mb-6" />
+              <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold mb-8 leading-none text-primary">Careers</h2>
+              <p className="text-foreground text-[18px] font-medium leading-relaxed mb-6">
+                Looking for a job in a dynamic startup? Addicted to lab-work and dreaming in the Infrared spectral range? Can't wait to develop new chemometrics approaches to interpret complex infrared spectra?
+              </p>
+              <p className="text-foreground text-[18px] font-medium leading-relaxed">
+                We are always eager to hear from recent (and not so recent) MSc/PhD graduates who are familiar with QCL technology and will help us drive its applications in gas and fluid analysis!
+              </p>
+            </div>
+
+            {/* Right: Form */}
+            <div className="bg-background rounded-2xl p-8 shadow-lg">
+              <p className="font-bold text-foreground mb-6">
+                Send us your details by filling out the form.<br />
+                We'd be happy to get back to you:
+              </p>
+              <CareersForm />
+            </div>
+          </div>
         </div>
       </section>
 

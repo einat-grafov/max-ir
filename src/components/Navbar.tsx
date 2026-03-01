@@ -14,6 +14,7 @@ const anchorLinks: Record<MainMenuItem, { label: string; id: string }[]> = {
   team: [
     { label: "Publications", id: "Publications" },
     { label: "FCOI", id: "FCOI" },
+    { label: "Careers", id: "Careers" },
   ],
   store: [],
 };
