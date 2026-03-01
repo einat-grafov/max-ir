@@ -104,17 +104,17 @@ function TypographyTab() {
         </div>
 
         {[
-          { label: "H1 — Hero Heading", size: "text-[100px]", weight: "font-semibold", sample: "MAX-IR Labs" },
-          { label: "H2 — Section Heading", size: "text-[80px]", weight: "font-semibold", sample: "Technology" },
-          { label: "H3 — Card Heading", size: "text-2xl", weight: "font-semibold", sample: "Real-time Analysis" },
-          { label: "Subtitle", size: "text-[24px]", weight: "font-medium", sample: "Next-generation infrared sensing" },
-          { label: "Body", size: "text-[18px]", weight: "font-medium", sample: "MAX-IR Labs develops cutting-edge mid-infrared sensor technology for real-time molecular analysis across industries." },
-          { label: "Small / Caption", size: "text-sm", weight: "font-normal", sample: "Updated 2 hours ago" },
-          { label: "Overline", size: "text-xs", weight: "font-semibold tracking-widest uppercase", sample: "Award Winning" },
+          { label: "H1 — Hero Heading", size: "text-[100px]", weight: "font-semibold", lineHeight: "leading-none", sample: "MAX-IR Labs" },
+          { label: "H2 — Section Heading", size: "text-[80px]", weight: "font-semibold", lineHeight: "leading-none", sample: "Technology" },
+          { label: "H3 — Card Heading", size: "text-2xl", weight: "font-semibold", lineHeight: "leading-tight", sample: "Real-time Analysis" },
+          { label: "Subtitle", size: "text-[24px]", weight: "font-medium", lineHeight: "leading-relaxed", sample: "Next-generation infrared sensing" },
+          { label: "Body", size: "text-[18px]", weight: "font-medium", lineHeight: "leading-relaxed", sample: "MAX-IR Labs develops cutting-edge mid-infrared sensor technology for real-time molecular analysis across industries." },
+          { label: "Small / Caption", size: "text-sm", weight: "font-normal", lineHeight: "leading-normal", sample: "Updated 2 hours ago" },
+          { label: "Overline", size: "text-xs", weight: "font-semibold tracking-widest uppercase", lineHeight: "leading-normal", sample: "Award Winning" },
         ].map((t) => (
           <div key={t.label} className="border-b border-border pb-6">
-            <p className="text-xs font-mono text-muted-foreground mb-2">{t.label} — {t.size} {t.weight}</p>
-            <p className={`${t.size} ${t.weight} text-foreground font-montserrat leading-tight`}>{t.sample}</p>
+            <p className="text-xs font-mono text-muted-foreground mb-2">{t.label} — {t.size} {t.weight} {t.lineHeight}</p>
+            <p className={`${t.size} ${t.weight} ${t.lineHeight} text-foreground font-montserrat`}>{t.sample}</p>
           </div>
         ))}
       </div>
