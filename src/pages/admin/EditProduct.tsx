@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { toast } from "sonner";
 import ProductForm, { ProductFormData } from "@/components/admin/ProductForm";
 
@@ -34,6 +35,7 @@ const EditProduct = () => {
         requires_shipping: data.requiresShipping,
         tax_exempt: data.taxExempt,
         image_url: imageUrl,
+        specifications: (data.specifications.length > 0 ? data.specifications : []) as unknown as Json,
       })
       .eq("id", id!);
     if (error) throw error;
@@ -79,6 +81,7 @@ const EditProduct = () => {
         taxExempt: product.tax_exempt,
         status: "active",
         existingImageUrl: product.image_url,
+        specifications: Array.isArray(product.specifications) ? (product.specifications as any[]).map((s: any) => ({ label: s.label ?? "", value: s.value ?? "" })) : [],
       }}
       onSubmit={handleSubmit}
       onDelete={handleDelete}
