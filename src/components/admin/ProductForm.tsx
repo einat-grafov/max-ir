@@ -23,7 +23,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Upload, X } from "lucide-react";
+import { Upload, X, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export interface ProductFormData {
   title: string;
@@ -46,6 +57,7 @@ interface ProductFormProps {
   submitLabel: string;
   savingLabel: string;
   onSubmit: (data: ProductFormData, imageUrl: string | null) => Promise<void>;
+  onDelete?: () => Promise<void>;
 }
 
 const ProductForm = ({
@@ -55,8 +67,10 @@ const ProductForm = ({
   submitLabel,
   savingLabel,
   onSubmit,
+  onDelete,
 }: ProductFormProps) => {
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [description, setDescription] = useState(initialData?.description ?? "");
@@ -152,6 +166,40 @@ const ProductForm = ({
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-foreground">{pageTitle}</h1>
         <div className="flex gap-3">
+          {onDelete && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" disabled={deleting}>
+                  <Trash2 className="h-4 w-4 mr-1" />
+                  {deleting ? "Deleting..." : "Delete"}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete product</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to delete this product? This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    onClick={async () => {
+                      setDeleting(true);
+                      try {
+                        await onDelete();
+                      } finally {
+                        setDeleting(false);
+                      }
+                    }}
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
           <Button variant="outline" asChild>
             <Link to="/admin/products">Discard</Link>
           </Button>
