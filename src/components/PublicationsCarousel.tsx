@@ -45,7 +45,7 @@ const publications: Publication[] = [
 const PublicationsCarousel = () => {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
-    slidesToScroll: 2,
+    slidesToScroll: 1,
     containScroll: "trimSnaps",
   });
 
