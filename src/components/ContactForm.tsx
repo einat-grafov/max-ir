@@ -13,7 +13,7 @@ const ContactForm = () => {
       <div className="text-center py-8">
         <img src="/images/read-arrow.svg" alt="Checkmark" className="w-12 h-12 mx-auto mb-4 invert" />
         <p className="text-maxir-white font-semibold text-lg">Thank you!</p>
-        <p className="text-maxir-white/60 text-sm mt-2">Your message has been received!</p>
+        <p className="text-maxir-white text-sm mt-2">Your message has been received!</p>
       </div>
     );
   }

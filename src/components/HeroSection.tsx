@@ -63,7 +63,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
-          className="text-maxir-white/80 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed"
+          className="text-maxir-white text-lg md:text-xl max-w-2xl mx-auto leading-relaxed"
         >
           Max-IR Labs leverages state-of-the-art infrared technologies for high-value commercial and defense applications.
         </motion.p>
