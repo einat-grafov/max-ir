@@ -30,19 +30,22 @@ const teamMembers = [
 const advisors = [
   {
     name: "David Hitt",
-    role: "Patent Attorney, Member of the Board",
+    role: "Patent Attorney,\nMember of the Board",
+    image: "/images/advisor-david-hitt.png",
     linkedin: "https://www.linkedin.com/in/david-hitt-07900a4/",
     bio: "Mr. David Hitt received his Bachelors of Science degrees in both Physics and Business and Public Administration from the University of Texas at Dallas in 1982. He then received a Master's degree in Taxation at Baylor University in 1983 and his Juris Doctorate from Southern Methodist University in 1987.",
   },
   {
     name: "Dr. John N. Randall",
-    role: "CEO of Zyvex Labs & Nanoretina, Advisory Board Member",
+    role: "CEO of Zyvex Labs & Nanoretina,\nAdvisory Board Member",
+    image: "/images/advisor-john-randall.png",
     linkedin: "https://www.linkedin.com/in/john-n-randall-616777/",
     bio: "Dr. John N. Randall, President of Zyvex Labs, Executive VP at NanoRetina, Adjunct Professor at UT Dallas, and Fellow of the AVS and IEEE, has over 35 years of experience in Micro- and Nano- fabrication.",
   },
   {
     name: "Prof. Abraham Katzir",
-    role: "Scientific Advisor, Silver-Halide Fiber Technology Pioneer",
+    role: "Scientific Advisor\nSilver-Halide Fiber Technology Pioneer",
+    image: "/images/advisor-abraham-katzir.png",
     linkedin: "https://www.linkedin.com/in/abrahamkatzir/",
     bio: "Prof. Abraham Katzir is a Professor of Physics at Tel Aviv University, holding the Carol and Mel Taub Chair in Applied Medical Physics. Prof. Katzir is an expert in the fields of biomedical optics and infra-red fiber optics.",
   },
@@ -221,17 +224,38 @@ const Team = () => {
       {/* Advisory Board */}
       <section className="section-white pt-[100px] md:pt-[130px] pb-16 lg:pb-24">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
-          <div className="accent-line mb-6" />
-          <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold mb-12 leading-none">Advisory Board</h2>
+          <div className="accent-line mb-6 mx-auto" />
+          <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold mb-12 leading-none text-center">Advisory Board</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {advisors.map((advisor) => (
-              <div key={advisor.name} className="border border-foreground/10 p-8">
-                <a href={advisor.linkedin} target="_blank" rel="noopener noreferrer" className="inline-block mb-4">
-                  <img src="/images/linkedin-white.svg" alt="LinkedIn" className="w-6 h-6 opacity-40 hover:opacity-80 transition-opacity invert" />
+              <div key={advisor.name}>
+                {/* Photo with LinkedIn overlay */}
+                <div className="relative w-full aspect-square overflow-hidden mb-6">
+                  <img
+                    src={advisor.image}
+                    alt={advisor.name}
+                    className="w-full h-full object-cover grayscale"
+                  />
+                  <a
+                    href={advisor.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute bottom-0 right-0 bg-primary w-12 h-12 flex items-center justify-center hover:bg-primary/80 transition-colors"
+                  >
+                    <img src="/images/linkedin-white.svg" alt="LinkedIn" className="w-5 h-5" />
+                  </a>
+                </div>
+                <h3 className="text-2xl font-bold mb-1">{advisor.name}</h3>
+                <h4 className="text-primary text-base font-semibold mb-6 whitespace-pre-line">{advisor.role}</h4>
+                <a
+                  href={advisor.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-foreground text-sm font-medium hover:text-primary transition-colors"
+                >
+                  <img src="/images/arrow-circle.svg" alt="" className="w-5 h-5" />
+                  Read about
                 </a>
-                <h3 className="text-xl font-bold mb-1">{advisor.name}</h3>
-                <h4 className="text-primary text-sm font-semibold mb-4">{advisor.role}</h4>
-                <p className="text-foreground text-sm leading-relaxed">{advisor.bio}</p>
               </div>
             ))}
           </div>
