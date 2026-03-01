@@ -198,7 +198,7 @@ const Team = () => {
                   <h3 className="text-2xl md:text-3xl font-bold text-maxir-white mb-1">{member.name}</h3>
                   <h4 className="text-primary text-base font-semibold mb-6">{member.role}</h4>
                   {member.bio.split("\n\n").map((paragraph, idx) => (
-                    <p key={idx} className="text-maxir-white/70 text-[15px] leading-relaxed mb-4">{paragraph}</p>
+                    <p key={idx} className="text-maxir-white text-[15px] leading-relaxed mb-4">{paragraph}</p>
                   ))}
                 </div>
               </div>
@@ -269,17 +269,17 @@ const Team = () => {
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
           <div className="accent-line mb-6" />
           <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold text-maxir-white mb-4 leading-none">Publications and announcements</h2>
-          <p className="text-maxir-white/60 text-sm mb-12 max-w-3xl">
+          <p className="text-maxir-white text-sm mb-12 max-w-3xl">
             The list below is a continuously updated list of papers mentioning Max-IR Labs products and/or written by us. The list contains research works which have gone on record as developments in the optical field and are public domain.
           </p>
           <div className="space-y-8">
             {publications.map((pub, i) => (
               <div key={i} className="border-b border-maxir-white/10 pb-8">
                 <h3 className="text-lg font-bold text-maxir-white mb-2">{pub.title}</h3>
-                {pub.authors && <p className="text-maxir-white/50 text-sm mb-2">{pub.authors}</p>}
-                <p className="text-maxir-white/60 text-sm mb-3">{pub.venue}</p>
+                {pub.authors && <p className="text-maxir-white text-sm mb-2">{pub.authors}</p>}
+                <p className="text-maxir-white text-sm mb-3">{pub.venue}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-maxir-white/40 text-xs">{pub.date}</span>
+                  <span className="text-maxir-white text-xs">{pub.date}</span>
                   <a href={pub.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline text-sm font-semibold flex items-center gap-2">
                     Read article
                     <img src="/images/read-arrow.svg" alt="" className="w-5 h-5" />

@@ -27,13 +27,13 @@ const SensorSection = () => {
 
         <ScrollReveal delay={0.1}>
           <div className="max-w-4xl mx-auto mb-[64px]">
-            <p className="text-maxir-white/70 text-base leading-relaxed mb-4">
+            <p className="text-maxir-white text-base leading-relaxed mb-4">
               Max-IR develops infrared (IR) sensors for analysis of compounds in liquids, from clear to thick and murky. Using cutting-edge patented technology, our sensors enable accurate, real-time, continuous measurements, without change or drift over time.
             </p>
-            <p className="text-maxir-white/70 text-base leading-relaxed mb-4">
+            <p className="text-maxir-white text-base leading-relaxed mb-4">
               Max-IR's pioneering industrial grade sensor is based on infrared light passing through an immersed optical fiber.
             </p>
-            <p className="text-maxir-white/70 text-base leading-relaxed">
+            <p className="text-maxir-white text-base leading-relaxed">
               Implementation of ion-selective material enhances differentiation between various molecules, making it ideal for on-site operations.
             </p>
           </div>
