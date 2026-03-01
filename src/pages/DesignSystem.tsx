@@ -104,7 +104,7 @@ function TypographyTab() {
         </div>
 
         {[
-          { label: "H1 — Hero Heading", size: "text-[100px]", weight: "font-bold", sample: "MAX-IR Labs" },
+          { label: "H1 — Hero Heading", size: "text-[100px]", weight: "font-semibold", sample: "MAX-IR Labs" },
           { label: "H2 — Section Heading", size: "text-[80px]", weight: "font-bold", sample: "Technology" },
           { label: "H3 — Card Heading", size: "text-2xl", weight: "font-semibold", sample: "Real-time Analysis" },
           { label: "Subtitle", size: "text-[24px]", weight: "font-medium", sample: "Next-generation infrared sensing" },
