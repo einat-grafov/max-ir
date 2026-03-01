@@ -41,6 +41,13 @@ const EditProduct = () => {
     navigate("/admin/products");
   };
 
+  const handleDelete = async () => {
+    const { error } = await supabase.from("products").delete().eq("id", id!);
+    if (error) throw error;
+    toast.success("Product deleted");
+    navigate("/admin/products");
+  };
+
   if (isLoading) {
     return <div className="text-muted-foreground text-sm p-6">Loading...</div>;
   }
@@ -74,6 +81,7 @@ const EditProduct = () => {
         existingImageUrl: product.image_url,
       }}
       onSubmit={handleSubmit}
+      onDelete={handleDelete}
     />
   );
 };
