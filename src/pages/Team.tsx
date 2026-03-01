@@ -138,10 +138,10 @@ const Team = () => {
               The areas of expertise at Max-IR Labs cover both instrument development and materials engineering, as is necessary for the development and analysis of the company's patented and patent-pending sensing solutions.
             </p>
             <div>
-              <p className="text-foreground text-[24px] font-medium leading-relaxed mb-4">
+              <p className="text-foreground text-[18px] font-medium leading-relaxed mb-4">
                 Max-IR Labs is a woman-owned business founded in 2017 by Dr. Katy Roodenko in Dallas, Texas. Dr. Roodenko leveraged her experience in infrared (IR) methodology and analytical instrumentation to initiate the development of leading-edge technology and products. Dr. Roodenko gathered an experienced management team to develop a novel sensor for liquids using infrared spectral analysis.
               </p>
-              <p className="text-foreground text-[24px] font-medium leading-relaxed">
+              <p className="text-foreground text-[18px] font-medium leading-relaxed">
                 The team has developed strong collaborative relationships with leading industrial partners and universities in the fields of infrared optics, analytical chemistry, microbiology and the related characterization metrology.
               </p>
             </div>
