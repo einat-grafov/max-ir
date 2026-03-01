@@ -7,7 +7,7 @@ import ProductForm, { ProductFormData } from "@/components/admin/ProductForm";
 const CreateProduct = () => {
   const navigate = useNavigate();
 
-  const handleSubmit = async (data: ProductFormData, imageUrl: string | null) => {
+  const handleSubmit = async (data: ProductFormData, imageUrl: string | null, allImageUrls: string[]) => {
     const { error } = await supabase.from("products").insert({
       name: data.title.trim(),
       description: data.description || "",
@@ -18,6 +18,7 @@ const CreateProduct = () => {
       requires_shipping: data.requiresShipping,
       tax_exempt: data.taxExempt,
       image_url: imageUrl,
+      images: allImageUrls as unknown as Json,
       specifications: (data.specifications.length > 0 ? data.specifications : []) as unknown as Json,
     });
     if (error) throw error;

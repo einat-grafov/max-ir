@@ -1,0 +1,1 @@
+ALTER TABLE public.products ADD COLUMN images jsonb DEFAULT '[]'::jsonb;

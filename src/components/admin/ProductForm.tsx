@@ -53,6 +53,7 @@ export interface ProductFormData {
   taxExempt: boolean;
   status: string;
   existingImageUrl: string | null;
+  existingImages: string[];
   specifications: ProductSpecification[];
 }
 
@@ -62,7 +63,7 @@ interface ProductFormProps {
   breadcrumbLabel: string;
   submitLabel: string;
   savingLabel: string;
-  onSubmit: (data: ProductFormData, imageUrl: string | null) => Promise<void>;
+  onSubmit: (data: ProductFormData, imageUrl: string | null, allImageUrls: string[]) => Promise<void>;
   onDelete?: () => Promise<void>;
 }
 
@@ -92,9 +93,20 @@ const ProductForm = ({
     initialData?.specifications ?? [{ label: "", value: "" }]
   );
 
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(initialData?.existingImageUrl ?? null);
-  const [imageRemoved, setImageRemoved] = useState(false);
+  // Multiple images support
+  const [images, setImages] = useState<{ file?: File; url: string; isExisting: boolean }[]>(
+    () => {
+      const existing = initialData?.existingImages ?? [];
+      if (existing.length > 0) {
+        return existing.map(url => ({ url, isExisting: true }));
+      }
+      // Fallback to single image_url
+      if (initialData?.existingImageUrl) {
+        return [{ url: initialData.existingImageUrl, isExisting: true }];
+      }
+      return [];
+    }
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const canSubmit = title.trim().length > 0;
@@ -108,16 +120,15 @@ const ProductForm = ({
       toast.error("Image must be less than 5MB");
       return;
     }
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
-    setImageRemoved(false);
+    setImages(prev => [...prev, { file, url: URL.createObjectURL(file), isExisting: false }]);
   };
 
-  const removeImage = () => {
-    setImageFile(null);
-    if (imagePreview && imagePreview.startsWith("blob:")) URL.revokeObjectURL(imagePreview);
-    setImagePreview(null);
-    setImageRemoved(true);
+  const removeImage = (index: number) => {
+    setImages(prev => {
+      const item = prev[index];
+      if (!item.isExisting && item.url.startsWith("blob:")) URL.revokeObjectURL(item.url);
+      return prev.filter((_, i) => i !== index);
+    });
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -125,29 +136,31 @@ const ProductForm = ({
     if (!canSubmit) return;
     setSaving(true);
     try {
-      let imageUrl: string | null = initialData?.existingImageUrl ?? null;
-
-      if (imageRemoved && !imageFile) {
-        imageUrl = null;
+      // Upload any new image files
+      const allImageUrls: string[] = [];
+      for (const img of images) {
+        if (img.isExisting) {
+          allImageUrls.push(img.url);
+        } else if (img.file) {
+          const ext = img.file.name.split(".").pop();
+          const filePath = `${crypto.randomUUID()}.${ext}`;
+          const { error: uploadError } = await supabase.storage
+            .from("product-images")
+            .upload(filePath, img.file);
+          if (uploadError) throw uploadError;
+          const { data: urlData } = supabase.storage
+            .from("product-images")
+            .getPublicUrl(filePath);
+          allImageUrls.push(urlData.publicUrl);
+        }
       }
 
-      if (imageFile) {
-        const ext = imageFile.name.split(".").pop();
-        const filePath = `${crypto.randomUUID()}.${ext}`;
-        const { error: uploadError } = await supabase.storage
-          .from("product-images")
-          .upload(filePath, imageFile);
-        if (uploadError) throw uploadError;
-
-        const { data: urlData } = supabase.storage
-          .from("product-images")
-          .getPublicUrl(filePath);
-        imageUrl = urlData.publicUrl;
-      }
+      const primaryImageUrl = allImageUrls.length > 0 ? allImageUrls[0] : null;
 
       await onSubmit(
-        { title, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, existingImageUrl: null, specifications: specifications.filter(s => s.label.trim() && s.value.trim()) },
-        imageUrl
+        { title, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, existingImageUrl: null, existingImages: [], specifications: specifications.filter(s => s.label.trim() && s.value.trim()) },
+        primaryImageUrl,
+        allImageUrls
       );
     } catch (err: any) {
       toast.error(err.message || "Failed to save product");
@@ -234,25 +247,25 @@ const ProductForm = ({
           <Card className="p-5">
             <Label className="mb-3 block">Media</Label>
             <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) handleFileSelect(file); }} />
-            {imagePreview ? (
-              <div className="relative inline-block">
-                <img src={imagePreview} alt="Product preview" className="max-h-48 rounded-lg border border-border object-contain" />
-                <button onClick={removeImage} className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 hover:opacity-80 transition-opacity">
-                  <X className="h-3 w-3" />
-                </button>
-              </div>
-            ) : (
+            <div className="flex flex-wrap gap-3">
+              {images.map((img, index) => (
+                <div key={index} className="relative inline-block">
+                  <img src={img.url} alt={`Product image ${index + 1}`} className="h-32 w-32 rounded-lg border border-border object-cover" />
+                  <button onClick={() => removeImage(index)} className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 hover:opacity-80 transition-opacity">
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
               <div
-                className="border-2 border-dashed border-border rounded-lg p-10 text-center cursor-pointer hover:border-primary/50 transition-colors"
+                className="h-32 w-32 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors"
                 onClick={() => fileInputRef.current?.click()}
                 onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
                 onDrop={(e) => { e.preventDefault(); e.stopPropagation(); const file = e.dataTransfer.files?.[0]; if (file) handleFileSelect(file); }}
               >
-                <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm font-medium text-foreground mb-1">Click to upload or drag and drop</p>
-                <p className="text-xs text-muted-foreground">PNG, JPG, WEBP up to 5MB</p>
+                <Upload className="h-5 w-5 text-muted-foreground mb-1" />
+                <p className="text-xs text-muted-foreground">Add image</p>
               </div>
-            )}
+            </div>
           </Card>
 
           <Card className="p-5 space-y-2">
