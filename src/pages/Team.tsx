@@ -129,7 +129,7 @@ const Team = () => {
       </section>
 
       {/* Our Story */}
-      <section className="section-white py-16 lg:py-24 pb-[140px] md:pb-[200px]">
+      <section className="section-white py-16 lg:py-24 pb-[100px] md:pb-[130px]">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
           <div className="accent-line mb-6" />
           <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold mb-12 leading-none">Our Story</h2>
@@ -150,9 +150,9 @@ const Team = () => {
       </section>
 
       {/* Our Team */}
-      <section className="relative section-dark pt-[120px] md:pt-[180px] pb-16 lg:pb-24">
+      <section className="relative section-dark pt-[80px] md:pt-[120px] pb-16 lg:pb-24">
         {/* Top wave divider */}
-        <div className="absolute top-0 left-0 right-0 z-10 h-[120px] md:h-[180px] -translate-y-full">
+        <div className="absolute top-0 left-0 right-0 z-10 h-[72px] md:h-[108px] -translate-y-full">
           <svg
             viewBox="0 0 1440 180"
             preserveAspectRatio="none"
