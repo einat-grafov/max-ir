@@ -7,18 +7,21 @@ const teamMembers = [
   {
     name: "Dr. Katy Roodenko",
     role: "Founder and CEO",
+    image: "/images/team-katy-roodenko.png",
     linkedin: "https://www.linkedin.com/in/katy-r-a2b1705/",
-    bio: "Dr. Roodenko is the founder of Max-IR Labs. She has over 20 years of academic, industrial and entrepreneurial experience related with the development of infrared technology for civil and defense applications. She received her MSc degree from Tel-Aviv University in 2004, where she worked on the development of Scanning Near-field Infrared Microscopy in the group of prof. Katzir. She obtained her PhD degree from TU Berlin in Germany, developing novel infrared techniques and optical models for thin-film analysis.",
+    bio: "Dr. Roodenko is the founder of Max-IR Labs. She has over 20 years of academic, industrial and entrepreneurial experience related with the development of infrared technology for civil and defense applications. She received her MSc degree from Tel-Aviv University in 2004, where she worked on the development of Scanning Near-field Infrared Microscopy in the group of prof. Katzir. She obtained her PhD degree from TU Berlin in Germany, developing novel infrared techniques and optical models for thin-film analysis.\n\nIn 2008 she joined the group of prof. Yves Chabal at UT Dallas and continued to pursue her career in semiconductor materials and the development of infrared technologies for gas sensing and thin-film characterization. In 2012, she joined IntelliEpi to work on industrial production of III-V compound semiconductors for optoelectronic applications using molecular beam epitaxy (MBE). Team leader and business strategist, she drives disruptive technologies to markets. Dr. Roodenko has over 30 publications in leading scientific refereed journals, as well as patents and book chapters.",
   },
   {
     name: "Dr. Dennis I. Robbins",
     role: "Business Development",
+    image: "/images/team-dennis-robbins.png",
     linkedin: "https://www.linkedin.com/in/dennis-i-robbins-ph-d-a0b9a2/",
     bio: "Dr. Robbins leads business development efforts for Max-IR. He has over 43 years of experience in the semiconductor and technology industries and has held a variety of management and executives roles, including responsibilities over multiple fabrication facilities for mixed-signal ICs as a Vice President at Texas Instruments.",
   },
   {
     name: "Dr. Kevin Clark",
     role: "Chief Scientist",
+    image: "/images/team-kevin-clark.png",
     linkedin: "#",
     bio: "Dr. Kevin Clark is heading Max-IR product development and is an IR and materials specialist. Dr. Clark has worked at IntelliEPI, Inc. as a Senior Scientist in molecular beam epitaxy (MBE) from 2008 to 2016.",
   },
@@ -168,15 +171,33 @@ const Team = () => {
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
           <div className="accent-line mb-6" />
           <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold text-maxir-white mb-12 leading-none">Our Team</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="space-y-16 md:space-y-20">
             {teamMembers.map((member) => (
-              <div key={member.name} className="bg-maxir-dark-surface p-8 border border-maxir-white/10">
-                <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="inline-block mb-4">
-                  <img src="/images/linkedin-white.svg" alt="LinkedIn" className="w-6 h-6 opacity-60 hover:opacity-100 transition-opacity" />
-                </a>
-                <h3 className="text-xl font-bold text-maxir-white mb-1">{member.name}</h3>
-                <h4 className="text-primary text-sm font-semibold mb-4">{member.role}</h4>
-                <p className="text-maxir-white/60 text-sm leading-relaxed">{member.bio}</p>
+              <div key={member.name} className="grid grid-cols-1 md:grid-cols-[minmax(250px,380px)_1fr] gap-8 md:gap-12">
+                {/* Photo */}
+                <div className="relative">
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="w-full aspect-[4/5] object-cover grayscale"
+                  />
+                  <a
+                    href={member.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute bottom-0 right-0 bg-primary w-12 h-12 flex items-center justify-center hover:bg-primary/80 transition-colors"
+                  >
+                    <img src="/images/linkedin-white.svg" alt="LinkedIn" className="w-5 h-5" />
+                  </a>
+                </div>
+                {/* Info */}
+                <div className="flex flex-col justify-start pt-2">
+                  <h3 className="text-2xl md:text-3xl font-bold text-maxir-white mb-1">{member.name}</h3>
+                  <h4 className="text-primary text-base font-semibold mb-6">{member.role}</h4>
+                  {member.bio.split("\n\n").map((paragraph, idx) => (
+                    <p key={idx} className="text-maxir-white/70 text-[15px] leading-relaxed mb-4">{paragraph}</p>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
