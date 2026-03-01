@@ -129,7 +129,7 @@ const Team = () => {
       </section>
 
       {/* Our Story */}
-      <section className="section-white py-16 lg:py-24">
+      <section className="section-white py-16 lg:py-24 pb-[140px] md:pb-[200px]">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
           <div className="accent-line mb-6" />
           <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold mb-12 leading-none">Our Story</h2>
@@ -150,7 +150,21 @@ const Team = () => {
       </section>
 
       {/* Our Team */}
-      <section className="section-dark py-16 lg:py-24">
+      <section className="relative section-dark pt-[120px] md:pt-[180px] pb-16 lg:pb-24">
+        {/* Top wave divider */}
+        <div className="absolute top-0 left-0 right-0 z-10 h-[120px] md:h-[180px] -translate-y-full">
+          <svg
+            viewBox="0 0 1440 180"
+            preserveAspectRatio="none"
+            className="absolute bottom-0 w-full h-full"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M0,90 C200,130 400,170 600,160 C800,150 950,20 1100,10 C1250,0 1380,40 1440,70 L1440,180 L0,180 Z"
+              fill="hsl(var(--maxir-dark))"
+            />
+          </svg>
+        </div>
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
           <div className="accent-line mb-6" />
           <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold text-maxir-white mb-12 leading-none">Our Team</h2>
