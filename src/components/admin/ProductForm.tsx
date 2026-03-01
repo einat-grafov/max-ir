@@ -36,6 +36,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+export interface ProductSpecification {
+  label: string;
+  value: string;
+}
+
 export interface ProductFormData {
   title: string;
   description: string;
@@ -48,6 +53,7 @@ export interface ProductFormData {
   taxExempt: boolean;
   status: string;
   existingImageUrl: string | null;
+  specifications: ProductSpecification[];
 }
 
 interface ProductFormProps {
@@ -82,6 +88,9 @@ const ProductForm = ({
   const [requiresShipping, setRequiresShipping] = useState(initialData?.requiresShipping ?? true);
   const [taxExempt, setTaxExempt] = useState(initialData?.taxExempt ?? false);
   const [status, setStatus] = useState(initialData?.status ?? "active");
+  const [specifications, setSpecifications] = useState<ProductSpecification[]>(
+    initialData?.specifications ?? [{ label: "", value: "" }]
+  );
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(initialData?.existingImageUrl ?? null);
@@ -137,7 +146,7 @@ const ProductForm = ({
       }
 
       await onSubmit(
-        { title, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, existingImageUrl: null },
+        { title, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, existingImageUrl: null, specifications: specifications.filter(s => s.label.trim() && s.value.trim()) },
         imageUrl
       );
     } catch (err: any) {
@@ -250,6 +259,55 @@ const ProductForm = ({
             <Label>Category</Label>
             <Input placeholder="e.g. Sensors, Accessories" value={category} onChange={(e) => setCategory(e.target.value)} />
             <p className="text-xs text-muted-foreground">Determines tax rates and adds metafields to improve search, filters, and cross-channel sales</p>
+          </Card>
+
+          <Card className="p-5 space-y-4">
+            <Label>Specifications</Label>
+            {specifications.map((spec, index) => (
+              <div key={index} className="flex gap-3 items-start">
+                <div className="flex-1 space-y-1">
+                  <Input
+                    placeholder="Label (e.g. Weight)"
+                    value={spec.label}
+                    onChange={(e) => {
+                      const updated = [...specifications];
+                      updated[index] = { ...updated[index], label: e.target.value };
+                      setSpecifications(updated);
+                    }}
+                  />
+                </div>
+                <div className="flex-1 space-y-1">
+                  <Input
+                    placeholder="Value (e.g. 2.5 kg)"
+                    value={spec.value}
+                    onChange={(e) => {
+                      const updated = [...specifications];
+                      updated[index] = { ...updated[index], value: e.target.value };
+                      setSpecifications(updated);
+                    }}
+                  />
+                </div>
+                {specifications.length > 1 && (
+                  <button
+                    onClick={() => setSpecifications(specifications.filter((_, i) => i !== index))}
+                    className="mt-2 text-muted-foreground hover:text-destructive transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            ))}
+            <div className="flex justify-end">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                disabled={!specifications[specifications.length - 1]?.label.trim() || !specifications[specifications.length - 1]?.value.trim()}
+                onClick={() => setSpecifications([...specifications, { label: "", value: "" }])}
+              >
+                Add another
+              </Button>
+            </div>
           </Card>
 
           <Card className="p-5 space-y-4">
