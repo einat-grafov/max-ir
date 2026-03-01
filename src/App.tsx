@@ -16,12 +16,14 @@ import UsersSettings from "./pages/admin/settings/UsersSettings";
 import BillingSettings from "./pages/admin/settings/BillingSettings";
 import ShippingSettings from "./pages/admin/settings/ShippingSettings";
 import NotFound from "./pages/NotFound";
+import DesignSystem from "./pages/DesignSystem";
 
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   { path: "/", element: <Index /> },
   { path: "/team", element: <Team /> },
+  { path: "/design-system", element: <DesignSystem /> },
   { path: "/admin/login", element: <AdminLogin /> },
   {
     path: "/admin",
