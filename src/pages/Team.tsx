@@ -100,16 +100,31 @@ const Team = () => {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative h-[500px] flex items-center overflow-hidden section-dark">
-        <div className="absolute inset-0 bg-gradient-to-b from-maxir-dark via-maxir-dark/80 to-maxir-dark" />
-        <div className="absolute inset-0 opacity-30">
-          <div className="w-full h-full bg-gradient-to-r from-primary/20 via-transparent to-primary/10" />
+      <section className="relative h-[500px] md:h-[600px] flex items-center overflow-x-clip section-dark"
+        style={{ '--wave-height': '120px', '--wave-height-md': '180px' } as React.CSSProperties}
+      >
+        {/* Background image */}
+        <div className="absolute inset-0 z-0">
+          <img src="/images/team-hero-bg.jpg" alt="Lab environment" className="w-full h-full object-cover" />
         </div>
-        <div className="absolute bottom-0 left-0 right-0">
-          <img src="/images/wave-left.png" alt="" className="w-full" />
-        </div>
+
         <div className="relative z-10 max-w-[1200px] mx-auto px-6 lg:px-10 pt-20">
           <h1 className="text-[40px] md:text-[60px] lg:text-[100px] font-bold text-maxir-white leading-none">The Team</h1>
+        </div>
+
+        {/* Wave SVG divider */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 h-[var(--wave-height)] md:h-[var(--wave-height-md)]">
+          <svg
+            viewBox="0 0 1440 180"
+            preserveAspectRatio="none"
+            className="absolute bottom-0 w-full h-full"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M0,90 C200,130 400,170 600,160 C800,150 950,20 1100,10 C1250,0 1380,40 1440,70 L1440,180 L0,180 Z"
+              fill="hsl(var(--background))"
+            />
+          </svg>
         </div>
       </section>
 
