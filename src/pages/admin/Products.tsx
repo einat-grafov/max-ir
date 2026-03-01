@@ -1,9 +1,10 @@
 import { Package, Plus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 const Products = () => {
+  const navigate = useNavigate();
   const { data: products, isLoading } = useQuery({
     queryKey: ["admin-products"],
     queryFn: async () => {
@@ -62,7 +63,7 @@ const Products = () => {
                 </tr>
               ) : (
                 products.map((product) => (
-                  <tr key={product.id} className="border-b border-border/50 hover:bg-muted/50 transition-colors">
+                  <tr key={product.id} className="border-b border-border/50 hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => navigate(`/admin/products/${product.id}`)}>
                     <td className="px-6 py-3">
                       <div className="flex items-center gap-3">
                         {product.image_url ? (

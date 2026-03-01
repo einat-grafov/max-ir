@@ -11,6 +11,7 @@ import Orders from "./pages/admin/Orders";
 import CreateOrder from "./pages/admin/CreateOrder";
 import Products from "./pages/admin/Products";
 import CreateProduct from "./pages/admin/CreateProduct";
+import EditProduct from "./pages/admin/EditProduct";
 import Customers from "./pages/admin/Customers";
 import Analytics from "./pages/admin/Analytics";
 import UsersSettings from "./pages/admin/settings/UsersSettings";
@@ -35,6 +36,7 @@ const router = createBrowserRouter([
       { path: "orders/create", element: <CreateOrder /> },
       { path: "products", element: <Products /> },
       { path: "products/create", element: <CreateProduct /> },
+      { path: "products/:id", element: <EditProduct /> },
       { path: "customers", element: <Customers /> },
       { path: "analytics", element: <Analytics /> },
       { path: "settings/users", element: <UsersSettings /> },
