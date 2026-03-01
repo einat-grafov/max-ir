@@ -1,7 +1,24 @@
 import { Package, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Products = () => {
+  const { data: products, isLoading } = useQuery({
+    queryKey: ["admin-products"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const fmt = (n: number) =>
+    "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -31,11 +48,48 @@ const Products = () => {
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-border/50">
-                <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
-                  No products yet. Click "Add Product" to get started.
-                </td>
-              </tr>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
+                    Loading...
+                  </td>
+                </tr>
+              ) : !products || products.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
+                    No products yet. Click "Add Product" to get started.
+                  </td>
+                </tr>
+              ) : (
+                products.map((product) => (
+                  <tr key={product.id} className="border-b border-border/50 hover:bg-muted/50 transition-colors">
+                    <td className="px-6 py-3">
+                      <div className="flex items-center gap-3">
+                        {product.image_url ? (
+                          <img
+                            src={product.image_url}
+                            alt={product.name}
+                            className="h-10 w-10 rounded-lg object-cover border border-border"
+                          />
+                        ) : (
+                          <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
+                            <Package className="h-5 w-5 text-muted-foreground" />
+                          </div>
+                        )}
+                        <span className="font-medium text-foreground">{product.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3 text-muted-foreground">{product.sku || "—"}</td>
+                    <td className="px-6 py-3 text-muted-foreground">{product.category || "—"}</td>
+                    <td className="px-6 py-3 text-right text-foreground">{fmt(product.price)}</td>
+                    <td className="px-6 py-3 text-right">
+                      <span className={product.stock === 0 ? "text-destructive font-medium" : "text-foreground"}>
+                        {product.stock}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
