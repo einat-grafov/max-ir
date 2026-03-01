@@ -82,7 +82,7 @@ const EditProduct = () => {
         taxExempt: product.tax_exempt,
         status: "active",
         existingImageUrl: product.image_url,
-        specifications: Array.isArray(product.specifications) ? (product.specifications as any[]).map((s: any) => ({ label: s.label ?? "", value: s.value ?? "" })) : [],
+        specifications: Array.isArray(product.specifications) && (product.specifications as any[]).length > 0 ? (product.specifications as any[]).map((s: any) => ({ label: s.label ?? "", value: s.value ?? "" })) : [{ label: "", value: "" }],
       }}
       onSubmit={handleSubmit}
       onDelete={handleDelete}
