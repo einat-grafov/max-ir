@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PublicationsCarousel from "@/components/PublicationsCarousel";
 
 const teamMembers = [
   {
@@ -51,43 +52,6 @@ const advisors = [
   },
 ];
 
-const publications = [
-  {
-    title: "Nitrogen sensor based on quantum cascade lasers (QCLs) for wastewater treatment process control and optimization",
-    authors: "Katy Roodenko; D. Hinojos; K. Hodges; B.-J. Pandey; J.-F. Veyan; K. P. Clark; D. I. Robbins",
-    venue: "Presented at Photonics West 2020, published in SPIE Digital Library on February 2020",
-    date: "March 9, 2020",
-    url: "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/11233/112330C/Nitrogen-sensor-based-on-quantum-cascade-lasers-QCLs-for-wastewater/10.1117/12.2553691.short",
-  },
-  {
-    title: "Thermal modeling of quantum cascade lasers with 3D anisotropic heat transfer analysis",
-    authors: "Farhat Abbas; Binay J. Pandey; Kevin Clark; Kevin Lascola; Yamac Dikmelik; Dennis Robbins; David Hinojos; Kimari L. Hodges; Katy Roodenko; Qing Gu",
-    venue: "Presented at Photonics West 2020, published in SPIE Digital Library on February 2020",
-    date: "January 31, 2020",
-    url: "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/11288/2543594/Thermal-modeling-of-quantum-cascade-lasers-with-3D-anisotropic-heat/10.1117/12.2543594.short",
-  },
-  {
-    title: "IR-SNOM on a fork: infrared scanning near-field optical microscopy for thermal profiling of quantum cascade lasers",
-    authors: "B.-J. Pandey; K. P. Clark; F. Abbas; E. Fuchs; K. Lascola; Yamac Dikmelik; D. Hinojos; K. Hodges; D. I. Robbins; M. Platkov; A. Katzir; A. Suliman; G. Spingarn; A. Niguès; J.-F. Veyan; Q. Gu; K. Roodenko",
-    venue: "Presented at Photonics West 2020, published in SPIE Digital Library on February 2020",
-    date: "January 31, 2020",
-    url: "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/11288/112881Q/IR-SNOM-on-a-fork--infrared-scanning-near-field/10.1117/12.2543849.short?SSO=1",
-  },
-  {
-    title: "Non-dispersive infrared (NDIR) sensor for real-time nitrate monitoring in wastewater treatment",
-    authors: "K. Roodenko; D. Hinojos; K. Hodges; J.-F. Veyan; Y. J. Chabal; K. P. Clark; A. Katzir; D. Robbins",
-    venue: "Presented at Photonics West 2019, published in SPIE Digital Library on February 2019",
-    date: "February 27, 2019",
-    url: "https://spie.org/Publications/Proceedings/Paper/10.1117/12.2506550?SSO=1",
-  },
-  {
-    title: "Max-IR Labs awarded grant for development of nitrate detection sensor",
-    authors: "",
-    venue: "DALLAS, May 17, 2018 - Max-IR Labs, an optical sensor development company based in Dallas, Texas, today announced it has been awarded a Phase I Small Business Technology Transfer (STTR) grant of $225,000 from the National Science Foundation (NSF).",
-    date: "May 17, 2018",
-    url: "https://www.newswire.com/news/max-ir-labs-awarded-225k-phase-i-nsf-sttr-grant-for-real-time-20482883",
-  },
-];
 
 const Team = () => {
   const location = useLocation();
@@ -265,29 +229,16 @@ const Team = () => {
       </section>
 
       {/* Publications */}
-      <section id="Publications" className="section-dark py-16 lg:py-24">
+      <section id="Publications" className="section-white py-16 lg:py-24">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
-          <div className="accent-line mb-6" />
-          <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold text-maxir-white mb-4 leading-none">Publications and announcements</h2>
-          <p className="text-maxir-white text-sm mb-12 max-w-3xl">
-            The list below is a continuously updated list of papers mentioning Max-IR Labs products and/or written by us. The list contains research works which have gone on record as developments in the optical field and are public domain.
+          <div className="accent-line mb-6 mx-auto" />
+          <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold mb-4 leading-none text-center">Publications and announcements</h2>
+          <p className="text-foreground text-base mb-12 max-w-3xl mx-auto text-center">
+            The list below is a continuously updated list of papers mentioning Max-IR Labs products and/or written by us. The list contains research works which have gone on record as developments in the optical field and are public domain. For more information, please contact us using our form.
           </p>
-          <div className="space-y-8">
-            {publications.map((pub, i) => (
-              <div key={i} className="border-b border-maxir-white/10 pb-8">
-                <h3 className="text-lg font-bold text-maxir-white mb-2">{pub.title}</h3>
-                {pub.authors && <p className="text-maxir-white text-sm mb-2">{pub.authors}</p>}
-                <p className="text-maxir-white text-sm mb-3">{pub.venue}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-maxir-white text-xs">{pub.date}</span>
-                  <a href={pub.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline text-sm font-semibold flex items-center gap-2">
-                    Read article
-                    <img src="/images/read-arrow.svg" alt="" className="w-5 h-5" />
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
+        </div>
+        <div className="max-w-[1300px] mx-auto px-6 lg:px-16">
+          <PublicationsCarousel />
         </div>
       </section>
 
