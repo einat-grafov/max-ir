@@ -245,7 +245,8 @@ const ProductForm = ({
           </Card>
 
           <Card className="p-5">
-            <Label className="mb-3 block">Media</Label>
+            <Label className="mb-1 block">Media</Label>
+            <p className="text-xs text-muted-foreground mb-3">You can add unlimited images per product. The first image is used as the primary thumbnail in product lists.</p>
             <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) handleFileSelect(file); }} />
             <div className="flex flex-wrap gap-3">
               {images.map((img, index) => (
