@@ -108,7 +108,7 @@ function TypographyTab() {
           { label: "H2 — Section Heading", size: "text-[80px]", weight: "font-bold", sample: "Technology" },
           { label: "H3 — Card Heading", size: "text-2xl", weight: "font-semibold", sample: "Real-time Analysis" },
           { label: "Subtitle", size: "text-[24px]", weight: "font-medium", sample: "Next-generation infrared sensing" },
-          { label: "Body", size: "text-[18px]", weight: "font-normal", sample: "MAX-IR Labs develops cutting-edge mid-infrared sensor technology for real-time molecular analysis across industries." },
+          { label: "Body", size: "text-[18px]", weight: "font-medium", sample: "MAX-IR Labs develops cutting-edge mid-infrared sensor technology for real-time molecular analysis across industries." },
           { label: "Small / Caption", size: "text-sm", weight: "font-normal", sample: "Updated 2 hours ago" },
           { label: "Overline", size: "text-xs", weight: "font-semibold tracking-widest uppercase", sample: "Award Winning" },
         ].map((t) => (
