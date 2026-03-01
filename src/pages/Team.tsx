@@ -109,7 +109,7 @@ const Team = () => {
         </div>
 
         <div className="relative z-10 max-w-[1200px] mx-auto px-6 lg:px-10 w-full">
-          <h1 className="text-[40px] md:text-[60px] lg:text-[100px] font-bold text-maxir-white leading-none text-left">The Team</h1>
+          <h1 className="text-[40px] md:text-[60px] lg:text-[100px] font-semibold text-maxir-white leading-none text-left">The Team</h1>
         </div>
 
         {/* Wave SVG divider (flipped horizontally) */}
