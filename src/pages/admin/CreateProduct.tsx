@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { toast } from "sonner";
 import ProductForm, { ProductFormData } from "@/components/admin/ProductForm";
 
@@ -16,6 +17,7 @@ const CreateProduct = () => {
       requires_shipping: data.requiresShipping,
       tax_exempt: data.taxExempt,
       image_url: imageUrl,
+      specifications: (data.specifications.length > 0 ? data.specifications : []) as unknown as Json,
     });
     if (error) throw error;
     toast.success("Product created successfully");
