@@ -134,14 +134,14 @@ const Team = () => {
           <div className="accent-line mb-6" />
           <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold mb-12 leading-none">Our Story</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <p className="text-foreground/70 text-[24px] font-medium leading-relaxed">
+            <p className="text-foreground text-[24px] font-medium leading-relaxed">
               The areas of expertise at Max-IR Labs cover both instrument development and materials engineering, as is necessary for the development and analysis of the company's patented and patent-pending sensing solutions.
             </p>
             <div>
-              <p className="text-foreground/70 text-[24px] font-medium leading-relaxed mb-4">
+              <p className="text-foreground text-[24px] font-medium leading-relaxed mb-4">
                 Max-IR Labs is a woman-owned business founded in 2017 by Dr. Katy Roodenko in Dallas, Texas. Dr. Roodenko leveraged her experience in infrared (IR) methodology and analytical instrumentation to initiate the development of leading-edge technology and products. Dr. Roodenko gathered an experienced management team to develop a novel sensor for liquids using infrared spectral analysis.
               </p>
-              <p className="text-foreground/70 text-[24px] font-medium leading-relaxed">
+              <p className="text-foreground text-[24px] font-medium leading-relaxed">
                 The team has developed strong collaborative relationships with leading industrial partners and universities in the fields of infrared optics, analytical chemistry, microbiology and the related characterization metrology.
               </p>
             </div>
@@ -182,7 +182,7 @@ const Team = () => {
                 </a>
                 <h3 className="text-xl font-bold mb-1">{advisor.name}</h3>
                 <h4 className="text-primary text-sm font-semibold mb-4">{advisor.role}</h4>
-                <p className="text-foreground/60 text-sm leading-relaxed">{advisor.bio}</p>
+                <p className="text-foreground text-sm leading-relaxed">{advisor.bio}</p>
               </div>
             ))}
           </div>
@@ -223,23 +223,23 @@ const Team = () => {
           <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold mb-8 leading-none">FCOI</h2>
           <h3 className="font-bold text-lg mb-4">MAX-IR LABS FINANCIAL CONFLICT OF INTEREST POLICY DOCUMENT</h3>
           <h4 className="font-bold mb-4">INTRODUCTION</h4>
-          <p className="text-foreground/70 text-sm leading-relaxed mb-6">
+          <p className="text-foreground text-sm leading-relaxed mb-6">
             The federal Department of Health and Human Services has developed regulations (42 CFR Part 50 Subpart F and 45 CFR Part 94) on Promoting Objectivity in Research. The regulations were first developed in 1995, and in 2011, the regulations were revised. These regulations describe the actions an individual and an organization must take to promote objectivity in PHS-funded research. The regulations apply to all Public Health Service (PHS) (e.g., National Institutes of Health [NIH])-funded grants, cooperative agreements, and research contracts.
           </p>
-          <p className="text-foreground/70 text-sm leading-relaxed mb-6">
+          <p className="text-foreground text-sm leading-relaxed mb-6">
             This policy implements the regulatory requirements for Max-IR Labs.
           </p>
           <h4 className="font-bold mb-4">DEFINITIONS</h4>
-          <p className="text-foreground/70 text-sm leading-relaxed mb-3">
+          <p className="text-foreground text-sm leading-relaxed mb-3">
             <strong>Financial conflict of interest (FCOI)</strong>: a significant financial interest that could directly and significantly affect the design, conduct, or reporting of PHS-funded research.
           </p>
-          <p className="text-foreground/70 text-sm leading-relaxed mb-3">
+          <p className="text-foreground text-sm leading-relaxed mb-3">
             <strong>Financial Interest</strong>: means anything of monetary value, whether or not the value is readily ascertainable.
           </p>
-          <p className="text-foreground/70 text-sm leading-relaxed mb-3">
+          <p className="text-foreground text-sm leading-relaxed mb-3">
             <strong>Institutional responsibilities</strong>: are the professional activities an investigator performs on behalf of Max-IR Labs.
           </p>
-          <p className="text-foreground/70 text-sm leading-relaxed">
+          <p className="text-foreground text-sm leading-relaxed">
             <strong>The Designated Officials</strong>: is Dr. Katy Roodenko, who have been designated by Max-IR Labs to oversee the financial conflicts of interest process.
           </p>
         </div>
