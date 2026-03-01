@@ -229,7 +229,7 @@ const Team = () => {
       </section>
 
       {/* Publications */}
-      <section id="Publications" className="section-white py-16 lg:py-24">
+      <section id="Publications" className="section-white py-16 lg:py-24 relative" style={{ backgroundImage: 'url(/images/publications-bg.png)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
           <div className="accent-line mb-6 mx-auto" />
           <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold mb-4 leading-none text-center">Publications and announcements</h2>
