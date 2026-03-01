@@ -153,7 +153,7 @@ const Team = () => {
       </section>
 
       {/* Our Team */}
-      <section className="relative section-dark pt-[80px] md:pt-[120px] pb-16 lg:pb-24">
+      <section className="relative section-dark pt-[80px] md:pt-[120px] pb-[100px] md:pb-[140px]">
         {/* Top wave divider */}
         <div className="absolute top-0 left-0 right-0 z-10 h-[72px] md:h-[108px] -translate-y-full overflow-hidden">
           <svg
@@ -202,10 +202,24 @@ const Team = () => {
             ))}
           </div>
         </div>
+        {/* Bottom wave divider */}
+        <div className="absolute bottom-0 left-0 right-0 z-10 h-[60px] md:h-[90px] translate-y-full">
+          <svg
+            viewBox="0 0 1440 90"
+            preserveAspectRatio="none"
+            className="absolute top-0 w-full h-full"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M0,0 C360,0 540,70 900,80 C1150,86 1320,30 1440,0 L1440,0 L0,0 Z"
+              fill="hsl(var(--maxir-dark))"
+            />
+          </svg>
+        </div>
       </section>
 
       {/* Advisory Board */}
-      <section className="section-white py-16 lg:py-24">
+      <section className="section-white pt-[100px] md:pt-[130px] pb-16 lg:pb-24">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
           <div className="accent-line mb-6" />
           <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold mb-12 leading-none">Advisory Board</h2>
