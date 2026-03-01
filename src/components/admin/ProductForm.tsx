@@ -112,16 +112,21 @@ const ProductForm = ({
 
   const canSubmit = title.trim().length > 0;
 
-  const handleFileSelect = (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please select an image file");
-      return;
+  const handleFilesSelect = (files: FileList | File[]) => {
+    const fileArray = Array.from(files);
+    const valid: { file: File; url: string; isExisting: boolean }[] = [];
+    for (const file of fileArray) {
+      if (!file.type.startsWith("image/")) {
+        toast.error(`"${file.name}" is not an image`);
+        continue;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(`"${file.name}" exceeds 5MB`);
+        continue;
+      }
+      valid.push({ file, url: URL.createObjectURL(file), isExisting: false });
     }
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image must be less than 5MB");
-      return;
-    }
-    setImages(prev => [...prev, { file, url: URL.createObjectURL(file), isExisting: false }]);
+    if (valid.length > 0) setImages(prev => [...prev, ...valid]);
   };
 
   const removeImage = (index: number) => {
@@ -248,7 +253,7 @@ const ProductForm = ({
           <Card className="p-5">
             <Label className="mb-1 block">Media</Label>
             <p className="text-xs text-muted-foreground mb-3">You can add unlimited images per product. The first image is used as the primary thumbnail in product lists.</p>
-            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) handleFileSelect(file); }} />
+            <input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => { if (e.target.files?.length) handleFilesSelect(e.target.files); }} />
             <div className="flex flex-wrap gap-3">
               {images.map((img, index) => (
                 <div
@@ -288,7 +293,7 @@ const ProductForm = ({
                 className="h-32 w-32 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors"
                 onClick={() => fileInputRef.current?.click()}
                 onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onDrop={(e) => { e.preventDefault(); e.stopPropagation(); const file = e.dataTransfer.files?.[0]; if (file) handleFileSelect(file); }}
+                onDrop={(e) => { e.preventDefault(); e.stopPropagation(); if (e.dataTransfer.files?.length) handleFilesSelect(e.dataTransfer.files); }}
               >
                 <Upload className="h-5 w-5 text-muted-foreground mb-1" />
                 <p className="text-xs text-muted-foreground">Add image</p>
