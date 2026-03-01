@@ -108,12 +108,12 @@ const Team = () => {
           <img src="/images/team-hero-bg.jpg" alt="Lab environment" className="w-full h-full object-cover" />
         </div>
 
-        <div className="relative z-10 max-w-[1200px] mx-auto px-6 lg:px-10 pt-20">
-          <h1 className="text-[40px] md:text-[60px] lg:text-[100px] font-bold text-maxir-white leading-none">The Team</h1>
+        <div className="relative z-10 max-w-[1200px] mx-auto px-6 lg:px-10 pt-20 w-full">
+          <h1 className="text-[40px] md:text-[60px] lg:text-[100px] font-bold text-maxir-white leading-none text-left">The Team</h1>
         </div>
 
-        {/* Wave SVG divider */}
-        <div className="absolute bottom-0 left-0 right-0 z-20 h-[var(--wave-height)] md:h-[var(--wave-height-md)]">
+        {/* Wave SVG divider (flipped horizontally) */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 h-[var(--wave-height)] md:h-[var(--wave-height-md)] scale-x-[-1]">
           <svg
             viewBox="0 0 1440 180"
             preserveAspectRatio="none"
