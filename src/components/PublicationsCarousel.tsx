@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -52,35 +52,28 @@ const PublicationsCarousel = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
 
-  const onSelect = useCallback(() => {
-    if (!emblaApi) return;
-    setSelectedIndex(emblaApi.selectedScrollSnap());
-  }, [emblaApi]);
-
-  const onInit = useCallback(() => {
-    if (!emblaApi) return;
-    setScrollSnaps(emblaApi.scrollSnapList());
-    emblaApi.on("select", onSelect);
-  }, [emblaApi, onSelect]);
-
-  // Initialize on mount
-  useState(() => {
-    if (emblaApi) onInit();
-  });
-
-  // Re-init when emblaApi changes
-  if (emblaApi && scrollSnaps.length === 0) {
-    setScrollSnaps(emblaApi.scrollSnapList());
-    emblaApi.on("select", onSelect);
-  }
-
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
   const scrollTo = useCallback((index: number) => emblaApi?.scrollTo(index), [emblaApi]);
 
-  // Calculate total dot count based on pairs
-  const totalDots = Math.ceil(publications.length / 2);
-  const dots = Array.from({ length: totalDots });
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap());
+    const onInit = () => setScrollSnaps(emblaApi.scrollSnapList());
+
+    onInit();
+    onSelect();
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onInit);
+    emblaApi.on("reInit", onSelect);
+
+    return () => {
+      emblaApi.off("select", onSelect);
+      emblaApi.off("reInit", onInit);
+      emblaApi.off("reInit", onSelect);
+    };
+  }, [emblaApi]);
 
   return (
     <div className="relative">
@@ -139,7 +132,7 @@ const PublicationsCarousel = () => {
 
       {/* Dot indicators */}
       <div className="flex justify-center gap-2 mt-10">
-        {dots.map((_, i) => (
+        {scrollSnaps.map((_, i) => (
           <button
             key={i}
             onClick={() => scrollTo(i)}
