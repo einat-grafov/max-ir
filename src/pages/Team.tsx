@@ -152,15 +152,15 @@ const Team = () => {
       {/* Our Team */}
       <section className="relative section-dark pt-[80px] md:pt-[120px] pb-16 lg:pb-24">
         {/* Top wave divider */}
-        <div className="absolute top-0 left-0 right-0 z-10 h-[72px] md:h-[108px] -translate-y-full">
+        <div className="absolute top-0 left-0 right-0 z-10 h-[72px] md:h-[108px] -translate-y-full overflow-hidden">
           <svg
-            viewBox="0 0 1440 180"
+            viewBox="0 0 2880 108"
             preserveAspectRatio="none"
             className="absolute bottom-0 w-full h-full"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              d="M0,180 C300,180 500,0 720,0 C940,0 1140,180 1440,180 L1440,180 L0,180 Z"
+              d="M0,108 Q1440,0 2880,108 L2880,108 L0,108 Z"
               fill="hsl(var(--maxir-dark))"
             />
           </svg>
