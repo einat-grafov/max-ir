@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Upload } from "lucide-react";
+import { Upload, X, ImageIcon } from "lucide-react";
 
 const CreateProduct = () => {
   const navigate = useNavigate();
@@ -40,13 +40,55 @@ const CreateProduct = () => {
   const [requiresShipping, setRequiresShipping] = useState(true);
   const [taxExempt, setTaxExempt] = useState(false);
   const [status, setStatus] = useState("active");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const canSubmit = title.trim().length > 0;
+
+  const handleFileSelect = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be less than 5MB");
+      return;
+    }
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const handleSave = async () => {
     if (!canSubmit) return;
     setSaving(true);
     try {
+      let imageUrl: string | null = null;
+
+      if (imageFile) {
+        setUploading(true);
+        const ext = imageFile.name.split(".").pop();
+        const filePath = `${crypto.randomUUID()}.${ext}`;
+        const { error: uploadError } = await supabase.storage
+          .from("product-images")
+          .upload(filePath, imageFile);
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabase.storage
+          .from("product-images")
+          .getPublicUrl(filePath);
+        imageUrl = urlData.publicUrl;
+        setUploading(false);
+      }
+
       const { error } = await supabase.from("products").insert({
         name: title.trim(),
         category: category || null,
@@ -55,6 +97,7 @@ const CreateProduct = () => {
         stock: parseInt(stock) || 0,
         requires_shipping: requiresShipping,
         tax_exempt: taxExempt,
+        image_url: imageUrl,
       });
 
       if (error) throw error;
@@ -124,12 +167,51 @@ const CreateProduct = () => {
           {/* Media */}
           <Card className="p-5">
             <Label className="mb-3 block">Media</Label>
-            <div className="border-2 border-dashed border-border rounded-lg p-10 text-center">
-              <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">
-                Accepts images, videos, or 3D models
-              </p>
-            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleFileSelect(file);
+              }}
+            />
+            {imagePreview ? (
+              <div className="relative inline-block">
+                <img
+                  src={imagePreview}
+                  alt="Product preview"
+                  className="max-h-48 rounded-lg border border-border object-contain"
+                />
+                <button
+                  onClick={removeImage}
+                  className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 hover:opacity-80 transition-opacity"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            ) : (
+              <div
+                className="border-2 border-dashed border-border rounded-lg p-10 text-center cursor-pointer hover:border-primary/50 transition-colors"
+                onClick={() => fileInputRef.current?.click()}
+                onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const file = e.dataTransfer.files?.[0];
+                  if (file) handleFileSelect(file);
+                }}
+              >
+                <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                <p className="text-sm font-medium text-foreground mb-1">
+                  Click to upload or drag and drop
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  PNG, JPG, WEBP up to 5MB
+                </p>
+              </div>
+            )}
           </Card>
 
           {/* Category */}
