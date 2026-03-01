@@ -175,11 +175,11 @@ const Team = () => {
             {teamMembers.map((member) => (
               <div key={member.name} className="grid grid-cols-1 md:grid-cols-[minmax(250px,380px)_1fr] gap-8 md:gap-12">
                 {/* Photo */}
-                <div className="relative">
+                <div className="relative w-full aspect-[4/5] overflow-hidden">
                   <img
                     src={member.image}
                     alt={member.name}
-                    className="w-full aspect-[4/5] object-cover grayscale"
+                    className="w-full h-full object-cover grayscale"
                   />
                   <a
                     href={member.linkedin}
