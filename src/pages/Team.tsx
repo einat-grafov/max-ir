@@ -244,7 +244,7 @@ const Team = () => {
       </section>
 
       {/* FCOI */}
-      <section id="FCOI" className="section-white py-16 lg:py-24">
+      <section id="FCOI" className="section-white py-16 lg:py-24" style={{ backgroundColor: '#F4F3F3' }}>
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
           <div className="accent-line mb-6" />
           <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold mb-8 leading-none">FCOI</h2>
@@ -460,7 +460,7 @@ const Team = () => {
       </section>
 
       {/* Careers */}
-      <section id="Careers" className="relative py-16 lg:py-24" style={{ background: 'linear-gradient(to right, hsl(var(--background)), hsl(0 0% 85%))' }}>
+      <section id="Careers" className="relative py-16 lg:py-24" style={{ backgroundColor: '#F4F3F3' }}>
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             {/* Left: Text */}
