@@ -90,7 +90,7 @@ const PublicationsCarousel = () => {
           {publications.map((pub, i) => (
             <div
               key={i}
-              className="flex-[0_0_calc(50%-12px)] min-w-0 max-md:flex-[0_0_100%]"
+              className="flex-[0_0_calc(50%-12px)] min-w-0 max-lg:flex-[0_0_100%]"
             >
               <div className="bg-card rounded-[16px] p-8 md:p-10 flex flex-col h-full min-h-[400px] shadow-[0_18px_44px_rgba(0,0,0,0.08)]">
                 <h3 className="text-[22px] md:text-[26px] font-bold text-[#4FBDBA] leading-snug mb-6">
