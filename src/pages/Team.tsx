@@ -100,7 +100,7 @@ const Team = () => {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative h-[500px] md:h-[600px] flex items-center overflow-x-clip section-dark"
+      <section className="relative h-[500px] md:h-[600px] flex items-start overflow-x-clip section-dark"
         style={{ '--wave-height': '120px', '--wave-height-md': '180px' } as React.CSSProperties}
       >
         {/* Background image */}
@@ -108,7 +108,7 @@ const Team = () => {
           <img src="/images/team-hero-bg.jpg" alt="Lab environment" className="w-full h-full object-cover" />
         </div>
 
-        <div className="relative z-10 max-w-[1200px] mx-auto px-6 lg:px-10 pt-20 w-full">
+        <div className="relative z-10 max-w-[1200px] mx-auto px-6 lg:px-10 pt-[30%] md:pt-[25%] w-full">
           <h1 className="text-[40px] md:text-[60px] lg:text-[100px] font-bold text-maxir-white leading-none text-left">The Team</h1>
         </div>
 
