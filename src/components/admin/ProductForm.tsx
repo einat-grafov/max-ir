@@ -100,13 +100,14 @@ const ProductForm = ({
       if (existing.length > 0) {
         return existing.map(url => ({ url, isExisting: true }));
       }
-      // Fallback to single image_url
       if (initialData?.existingImageUrl) {
         return [{ url: initialData.existingImageUrl, isExisting: true }];
       }
       return [];
     }
   );
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const canSubmit = title.trim().length > 0;
@@ -250,8 +251,34 @@ const ProductForm = ({
             <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) handleFileSelect(file); }} />
             <div className="flex flex-wrap gap-3">
               {images.map((img, index) => (
-                <div key={index} className="relative inline-block">
+                <div
+                  key={index}
+                  draggable
+                  onDragStart={() => setDragIndex(index)}
+                  onDragOver={(e) => { e.preventDefault(); setDragOverIndex(index); }}
+                  onDragLeave={() => setDragOverIndex(null)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (dragIndex !== null && dragIndex !== index) {
+                      setImages(prev => {
+                        const updated = [...prev];
+                        const [moved] = updated.splice(dragIndex, 1);
+                        updated.splice(index, 0, moved);
+                        return updated;
+                      });
+                    }
+                    setDragIndex(null);
+                    setDragOverIndex(null);
+                  }}
+                  onDragEnd={() => { setDragIndex(null); setDragOverIndex(null); }}
+                  className={`relative inline-block cursor-grab active:cursor-grabbing transition-all ${
+                    dragOverIndex === index ? "ring-2 ring-primary scale-105" : ""
+                  } ${dragIndex === index ? "opacity-40" : ""}`}
+                >
                   <img src={img.url} alt={`Product image ${index + 1}`} className="h-32 w-32 rounded-lg border border-border object-cover" />
+                  {index === 0 && images.length > 1 && (
+                    <span className="absolute bottom-1 left-1 bg-primary text-primary-foreground text-[10px] font-medium px-1.5 py-0.5 rounded">Primary</span>
+                  )}
                   <button onClick={() => removeImage(index)} className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 hover:opacity-80 transition-opacity">
                     <X className="h-3 w-3" />
                   </button>
