@@ -92,7 +92,13 @@ const EditProduct = () => {
         existingImageUrl: product.image_url,
         existingImages: Array.isArray((product as any).images) ? (product as any).images as string[] : [],
         specifications: Array.isArray(product.specifications) && (product.specifications as any[]).length > 0 ? (product.specifications as any[]).map((s: any) => ({ label: s.label ?? "", value: s.value ?? "" })) : [{ label: "", value: "" }],
-        variants: Array.isArray((product as any).variants) && ((product as any).variants as any[]).length > 0 ? (product as any).variants as string[] : [""],
+        variants: Array.isArray((product as any).variants) && ((product as any).variants as any[]).length > 0
+          ? ((product as any).variants as any[]).map((v: any) =>
+              typeof v === "string"
+                ? { name: v, price: "", stock: "" }
+                : { name: v.name ?? "", price: v.price?.toString() ?? "", stock: v.stock?.toString() ?? "" }
+            )
+          : [{ name: "", price: "", stock: "" }],
       }}
       onSubmit={handleSubmit}
       onDelete={handleDelete}
