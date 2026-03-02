@@ -4,8 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, Mail } from "lucide-react";
+import { useState, useRef } from "react";
+import ProductInquiryForm from "@/components/ProductInquiryForm";
 
 interface Product {
   id: string;
@@ -22,6 +23,11 @@ interface Product {
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [selectedImage, setSelectedImage] = useState(0);
+  const inquiryRef = useRef<HTMLDivElement>(null);
+
+  const scrollToInquiry = () => {
+    inquiryRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const { data: product, isLoading } = useQuery({
     queryKey: ["product-detail", id],
@@ -173,7 +179,7 @@ const ProductDetail = () => {
                     </div>
                   )}
 
-                  {(() => {
+                {(() => {
                     const specs = getSpecs(product);
                     if (specs.length === 0) return null;
                     return (
@@ -197,6 +203,15 @@ const ProductDetail = () => {
                       </div>
                     );
                   })()}
+
+                  {/* Inquiry button */}
+                  <button
+                    onClick={scrollToInquiry}
+                    className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-lg font-semibold transition-colors"
+                  >
+                    <Mail className="w-5 h-5" />
+                    Inquire About This Product
+                  </button>
                 </div>
               </div>
             ) : (
@@ -204,6 +219,21 @@ const ProductDetail = () => {
             )}
           </div>
         </section>
+
+        {/* Inquiry section */}
+        {product && (
+          <section ref={inquiryRef} className="bg-maxir-dark">
+            <div className="max-w-[800px] mx-auto px-6 lg:px-10 py-16 lg:py-24">
+              <h2 className="text-2xl md:text-3xl font-bold text-maxir-white font-montserrat mb-2 text-center">
+                Inquire About {product.name}
+              </h2>
+              <p className="text-maxir-white/60 text-center mb-10 text-sm">
+                Fill out the form below and our team will get back to you shortly.
+              </p>
+              <ProductInquiryForm productName={product.name} />
+            </div>
+          </section>
+        )}
       </main>
       <Footer />
     </div>
