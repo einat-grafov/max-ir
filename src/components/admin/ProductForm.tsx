@@ -255,7 +255,7 @@ const ProductForm = ({
         <div className="lg:col-span-2 space-y-6">
           <Card className="p-5 space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
+              <Label htmlFor="title">Product Name</Label>
               <Input id="title" placeholder="Short sleeve t-shirt" value={title} onChange={(e) => setTitle(e.target.value)} />
             </div>
             <div className="space-y-2">
