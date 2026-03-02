@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ShoppingCart } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
 
 type MainMenuItem = "home" | "team" | "store";
 
@@ -29,6 +30,7 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeAnchor, setActiveAnchor] = useState<string | null>(null);
   const location = useLocation();
+  const { totalItems } = useCart();
 
   const activeMain: MainMenuItem = useMemo(() => {
     if (location.pathname.startsWith("/team")) return "team";
@@ -144,7 +146,15 @@ const Navbar = () => {
           </div>
 
           {/* Contact Us button - pushed to right */}
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-3">
+            <Link to="/store" className="relative text-maxir-white/80 hover:text-maxir-white transition-colors p-2">
+              <ShoppingCart size={20} />
+              {totalItems > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full w-[18px] h-[18px] flex items-center justify-center">
+                  {totalItems > 99 ? "99+" : totalItems}
+                </span>
+              )}
+            </Link>
             <button
               onClick={() => scrollTo("Contact")}
               className="bg-primary hover:bg-maxir-red-hover text-primary-foreground px-6 py-2 rounded-full text-sm font-semibold transition-colors"
@@ -155,9 +165,19 @@ const Navbar = () => {
         </div>
 
         {/* Mobile toggle */}
-        <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden text-maxir-white">
-          {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        <div className="lg:hidden flex items-center gap-2 ml-auto">
+          <Link to="/store" className="relative text-maxir-white/80 hover:text-maxir-white transition-colors p-2">
+            <ShoppingCart size={20} />
+            {totalItems > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full w-[18px] h-[18px] flex items-center justify-center">
+                {totalItems > 99 ? "99+" : totalItems}
+              </span>
+            )}
+          </Link>
+          <button onClick={() => setMobileOpen(!mobileOpen)} className="text-maxir-white">
+            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
