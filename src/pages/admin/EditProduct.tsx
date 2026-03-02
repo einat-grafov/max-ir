@@ -95,10 +95,10 @@ const EditProduct = () => {
         variants: Array.isArray((product as any).variants) && ((product as any).variants as any[]).length > 0
           ? ((product as any).variants as any[]).map((v: any) =>
               typeof v === "string"
-                ? { name: v, price: "", stock: "" }
-                : { name: v.name ?? "", price: v.price?.toString() ?? "", stock: v.stock?.toString() ?? "" }
+                ? { name: v, price: "", stock: "", sku: "" }
+                : { name: v.name ?? "", price: v.price?.toString() ?? "", stock: v.stock?.toString() ?? "", sku: v.sku ?? "" }
             )
-          : [{ name: "", price: "", stock: "" }],
+          : [{ name: "", price: "", stock: "", sku: "" }],
       }}
       onSubmit={handleSubmit}
       onDelete={handleDelete}

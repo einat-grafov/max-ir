@@ -69,6 +69,7 @@ export interface ProductVariant {
   name: string;
   price: string;
   stock: string;
+  sku: string;
 }
 
 interface ProductFormProps {
@@ -108,7 +109,7 @@ const ProductForm = ({
     initialData?.specifications ?? [{ label: "", value: "" }]
   );
   const [variants, setVariants] = useState<ProductVariant[]>(
-    initialData?.variants ?? [{ name: "", price: "", stock: "" }]
+    initialData?.variants ?? [{ name: "", price: "", stock: "", sku: "" }]
   );
 
   // Multiple images support
@@ -334,21 +335,31 @@ const ProductForm = ({
             <Label>Variants</Label>
             <p className="text-xs text-muted-foreground mb-1">Add product variants with individual pricing and inventory.</p>
             {variants.length > 1 && (
-              <div className="grid grid-cols-[1fr_100px_80px_32px] gap-3 px-0 text-xs font-medium text-muted-foreground">
+              <div className="grid grid-cols-[1fr_100px_100px_80px_32px] gap-3 px-0 text-xs font-medium text-muted-foreground">
                 <span>Name</span>
+                <span>SKU</span>
                 <span>Price</span>
                 <span>Quantity</span>
                 <span />
               </div>
             )}
             {variants.map((variant, index) => (
-              <div key={index} className="grid grid-cols-[1fr_100px_80px_32px] gap-3 items-center">
+              <div key={index} className="grid grid-cols-[1fr_100px_100px_80px_32px] gap-3 items-center">
                 <Input
                   placeholder="e.g. 10 mL, Red"
                   value={variant.name}
                   onChange={(e) => {
                     const updated = [...variants];
                     updated[index] = { ...updated[index], name: e.target.value };
+                    setVariants(updated);
+                  }}
+                />
+                <Input
+                  placeholder="SKU"
+                  value={variant.sku || ""}
+                  onChange={(e) => {
+                    const updated = [...variants];
+                    updated[index] = { ...updated[index], sku: e.target.value };
                     setVariants(updated);
                   }}
                 />
@@ -395,7 +406,7 @@ const ProductForm = ({
                 variant="secondary"
                 size="sm"
                 disabled={!variants[variants.length - 1]?.name.trim()}
-                onClick={() => setVariants([...variants, { name: "", price: "", stock: "" }])}
+                onClick={() => setVariants([...variants, { name: "", price: "", stock: "", sku: "" }])}
               >
                 Add another
               </Button>
