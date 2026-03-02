@@ -48,7 +48,6 @@ const EditProduct = () => {
       queryClient.invalidateQueries({ queryKey: ["products"] }),
     ]);
     toast.success("Product updated successfully");
-    navigate("/admin/products");
   };
 
   const handleDelete = async () => {
