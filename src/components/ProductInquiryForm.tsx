@@ -9,19 +9,38 @@ const inquirySchema = z.object({
   message: z.string().trim().min(1, "Message is required").max(2000),
 });
 
+export interface SelectedVariantItem {
+  name: string;
+  sku?: string;
+  price?: string;
+  quantity: number;
+}
+
 interface ProductInquiryFormProps {
   productName: string;
   productId?: string;
+  selectedVariants?: SelectedVariantItem[];
 }
 
-const ProductInquiryForm = ({ productName, productId }: ProductInquiryFormProps) => {
+const ProductInquiryForm = ({ productName, productId, selectedVariants = [] }: ProductInquiryFormProps) => {
   const { toast } = useToast();
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const buildDefaultMessage = () => {
+    if (selectedVariants.length === 0) {
+      return `I'm interested in learning more about ${productName}.`;
+    }
+    const lines = selectedVariants.map(
+      (v) => `- ${v.name}${v.sku ? ` (${v.sku})` : ""} × ${v.quantity}`
+    );
+    return `I'd like to request a quote for ${productName}:\n${lines.join("\n")}`;
+  };
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    message: `I'm interested in learning more about ${productName}.`,
+    message: buildDefaultMessage(),
   });
 
   const handleChange = (field: string, value: string) => {
