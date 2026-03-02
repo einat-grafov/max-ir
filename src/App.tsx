@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import Team from "./pages/Team";
+import Store from "./pages/Store";
 import AdminLogin from "./pages/AdminLogin";
 import AdminLayout from "./components/admin/AdminLayout";
 import Orders from "./pages/admin/Orders";
@@ -25,6 +26,7 @@ const queryClient = new QueryClient();
 const router = createBrowserRouter([
   { path: "/", element: <Index /> },
   { path: "/team", element: <Team /> },
+  { path: "/store", element: <Store /> },
   { path: "/design-system", element: <DesignSystem /> },
   { path: "/admin/login", element: <AdminLogin /> },
   {
