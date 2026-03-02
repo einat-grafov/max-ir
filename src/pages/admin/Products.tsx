@@ -4,6 +4,26 @@ import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import ProductImageLightbox from "@/components/admin/ProductImageLightbox";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+interface ProductVariant {
+  name: string;
+  price: string;
+  stock: string;
+}
+
+const getVariantStock = (product: any): { total: number; variants: ProductVariant[] } | null => {
+  if (!product.variants || !Array.isArray(product.variants)) return null;
+  const variants = (product.variants as ProductVariant[]).filter(v => v.name?.trim());
+  if (variants.length === 0) return null;
+  const total = variants.reduce((sum, v) => sum + (parseInt(v.stock) || 0), 0);
+  return { total, variants };
+};
 
 const Products = () => {
   const navigate = useNavigate();
@@ -93,9 +113,37 @@ const Products = () => {
                     <td className="px-6 py-3 text-muted-foreground">{product.category || "—"}</td>
                     <td className="px-6 py-3 text-right text-foreground">{fmt(product.price)}</td>
                     <td className="px-6 py-3 text-right">
-                      <span className={product.stock === 0 ? "text-destructive font-medium" : "text-foreground"}>
-                        {product.stock}
-                      </span>
+                      {(() => {
+                        const variantData = getVariantStock(product);
+                        if (variantData) {
+                          return (
+                            <TooltipProvider delayDuration={0}>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span className={`cursor-default underline decoration-dotted ${variantData.total === 0 ? "text-destructive font-medium" : "text-foreground"}`}>
+                                    {variantData.total}
+                                  </span>
+                                </TooltipTrigger>
+                                <TooltipContent side="left" className="max-w-xs">
+                                  <div className="space-y-1">
+                                    {variantData.variants.map((v, i) => (
+                                      <div key={i} className="flex justify-between gap-4 text-xs">
+                                        <span>{v.name}</span>
+                                        <span className="font-medium">{parseInt(v.stock) || 0}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          );
+                        }
+                        return (
+                          <span className={product.stock === 0 ? "text-destructive font-medium" : "text-foreground"}>
+                            {product.stock}
+                          </span>
+                        );
+                      })()}
                     </td>
                   </tr>
                 ))
