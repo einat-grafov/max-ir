@@ -75,7 +75,7 @@ const ProductDetail = () => {
     <div className="min-h-screen bg-white">
       <Navbar />
       <main className="pt-[70px]">
-        <div className="max-w-[1638px] mx-auto px-6 lg:px-10">
+        <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
           {/* Breadcrumb */}
           {isLoading ? (
             <Skeleton className="h-5 w-48 mt-6 bg-muted" />
