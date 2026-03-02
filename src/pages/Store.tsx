@@ -40,7 +40,7 @@ const Store = () => {
       <main className="pt-[70px]">
         {/* Dark header with title */}
         <section className="bg-maxir-dark relative pb-0">
-          <div className="max-w-[1638px] mx-auto px-6 lg:px-10 pt-16 lg:pt-24 pb-24 lg:pb-32">
+          <div className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-16 lg:pt-24 pb-24 lg:pb-32">
             <h1 className="text-4xl md:text-5xl lg:text-[56px] font-bold text-maxir-white text-center font-montserrat">
               Our Products
             </h1>
@@ -63,7 +63,7 @@ const Store = () => {
 
         {/* White product grid section */}
         <section className="bg-white">
-          <div className="max-w-[1638px] mx-auto px-6 lg:px-10 py-12 lg:py-20">
+          <div className="max-w-[1200px] mx-auto px-6 lg:px-10 py-12 lg:py-20">
             {isLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                 {[...Array(8)].map((_, i) => (
