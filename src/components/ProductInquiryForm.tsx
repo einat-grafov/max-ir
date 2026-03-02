@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const inquirySchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100),
@@ -9,9 +11,11 @@ const inquirySchema = z.object({
 
 interface ProductInquiryFormProps {
   productName: string;
+  productId?: string;
 }
 
-const ProductInquiryForm = ({ productName }: ProductInquiryFormProps) => {
+const ProductInquiryForm = ({ productName, productId }: ProductInquiryFormProps) => {
+  const { toast } = useToast();
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
@@ -25,7 +29,7 @@ const ProductInquiryForm = ({ productName }: ProductInquiryFormProps) => {
     setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = inquirySchema.safeParse(formData);
     if (!result.success) {
@@ -36,7 +40,19 @@ const ProductInquiryForm = ({ productName }: ProductInquiryFormProps) => {
       setErrors(fieldErrors);
       return;
     }
-    setSubmitted(true);
+    try {
+      const { error } = await supabase.from("inquiries").insert({
+        product_id: productId ?? null,
+        product_name: productName,
+        name: result.data.name,
+        email: result.data.email,
+        message: result.data.message,
+      });
+      if (error) throw error;
+      setSubmitted(true);
+    } catch {
+      toast({ title: "Error", description: "Failed to send inquiry. Please try again.", variant: "destructive" });
+    }
   };
 
   if (submitted) {
