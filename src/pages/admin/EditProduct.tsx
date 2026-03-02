@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
 import { toast } from "sonner";
@@ -8,6 +8,7 @@ import ProductForm, { ProductFormData } from "@/components/admin/ProductForm";
 const EditProduct = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { data: product, isLoading, error } = useQuery({
     queryKey: ["product", id],
@@ -41,6 +42,10 @@ const EditProduct = () => {
       })
       .eq("id", id!);
     if (error) throw error;
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["product", id] }),
+      queryClient.invalidateQueries({ queryKey: ["products"] }),
+    ]);
     toast.success("Product updated successfully");
     navigate("/admin/products");
   };
@@ -66,7 +71,7 @@ const EditProduct = () => {
 
   return (
     <ProductForm
-      key={product.id}
+      key={`${product.id}-${product.updated_at}`}
       pageTitle="Edit product"
       breadcrumbLabel={product.name}
       submitLabel="Save changes"
