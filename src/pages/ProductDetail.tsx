@@ -4,9 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Mail, FileText, Plus, Minus } from "lucide-react";
+import { Mail, FileText, Plus, Minus, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import ProductInquiryForm, { type SelectedVariantItem } from "@/components/ProductInquiryForm";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
 
 import {
   Dialog,
@@ -38,6 +40,8 @@ interface Product {
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const { addItems } = useCart();
+  const { toast } = useToast();
   const [selectedImage, setSelectedImage] = useState(0);
   const [inquiryOpen, setInquiryOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"description" | "specifications">("description");
@@ -255,7 +259,35 @@ const ProductDetail = () => {
                   })()}
 
                   {/* Action buttons */}
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <button
+                      onClick={() => {
+                        const variants = getVariants(product);
+                        const cartItems = variants.length > 0
+                          ? variants.map((v, i) => ({
+                              productId: product.id,
+                              productName: product.name,
+                              variantName: v.name,
+                              sku: v.sku || undefined,
+                              price: parseFloat(v.price) || 0,
+                              quantity: selectedVariants[i] ?? 1,
+                            }))
+                          : [{
+                              productId: product.id,
+                              productName: product.name,
+                              variantName: product.name,
+                              sku: product.sku || undefined,
+                              price: product.price,
+                              quantity: 1,
+                            }];
+                        addItems(cartItems);
+                        toast({ title: "Added to cart", description: `${product.name} has been added to your cart.` });
+                      }}
+                      className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 text-sm font-semibold transition-colors rounded-md"
+                    >
+                      <ShoppingCart className="w-4 h-4" />
+                      Add to Cart
+                    </button>
                     <button
                       onClick={() => setInquiryOpen(true)}
                       className="inline-flex items-center gap-2 bg-maxir-dark hover:bg-maxir-dark/90 text-maxir-white px-6 py-3 text-sm font-semibold transition-colors rounded-md"
@@ -265,7 +297,7 @@ const ProductDetail = () => {
                     </button>
                     <button
                       onClick={() => setInquiryOpen(true)}
-                      className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 text-sm font-semibold transition-colors rounded-md"
+                      className="inline-flex items-center gap-2 border border-border hover:bg-muted text-foreground px-6 py-3 text-sm font-semibold transition-colors rounded-md"
                     >
                       <FileText className="w-4 h-4" />
                       Quote
