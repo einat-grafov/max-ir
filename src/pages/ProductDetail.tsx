@@ -4,9 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Mail, FileText } from "lucide-react";
+import { Mail, FileText, Plus, Minus } from "lucide-react";
 import { useState } from "react";
 import ProductInquiryForm from "@/components/ProductInquiryForm";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -18,6 +19,7 @@ interface ProductVariant {
   name: string;
   price: string;
   stock: string;
+  sku: string;
 }
 
 interface Product {
@@ -39,6 +41,7 @@ const ProductDetail = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [inquiryOpen, setInquiryOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"description" | "specifications">("description");
+  const [selectedVariants, setSelectedVariants] = useState<Record<number, number>>({});
 
   const { data: product, isLoading } = useQuery({
     queryKey: ["product-detail", id],
@@ -174,25 +177,75 @@ const ProductDetail = () => {
                   {(() => {
                     const variants = getVariants(product);
                     if (variants.length > 0) {
+                      const toggleVariant = (index: number) => {
+                        setSelectedVariants(prev => {
+                          const next = { ...prev };
+                          if (next[index] !== undefined) {
+                            delete next[index];
+                          } else {
+                            next[index] = 1;
+                          }
+                          return next;
+                        });
+                      };
+                      const updateQty = (index: number, delta: number) => {
+                        setSelectedVariants(prev => {
+                          const current = prev[index] ?? 1;
+                          const next = Math.max(1, current + delta);
+                          return { ...prev, [index]: next };
+                        });
+                      };
                       return (
                         <div>
-                          <h3 className="text-sm font-semibold text-foreground mb-3">Available Options</h3>
+                          <h3 className="text-sm font-semibold text-foreground mb-3">Select Options</h3>
                           <div className="border border-border rounded-lg overflow-hidden">
-                            {variants.map((v, i) => (
-                              <div key={i} className={`flex items-center justify-between px-4 py-3 ${i > 0 ? "border-t border-border" : ""}`}>
-                                <span className="text-sm text-foreground font-medium">{v.name}</span>
-                                <div className="flex items-center gap-4">
-                                  {parseFloat(v.price) > 0 && (
-                                    <span className="text-sm font-bold text-foreground">{formatPrice(parseFloat(v.price))}</span>
-                                  )}
-                                  {parseInt(v.stock) > 0 ? (
-                                    <span className="text-xs text-green-600 font-medium">In Stock</span>
-                                  ) : (
-                                    <span className="text-xs text-muted-foreground">Contact for availability</span>
+                            {variants.map((v, i) => {
+                              const isSelected = selectedVariants[i] !== undefined;
+                              const qty = selectedVariants[i] ?? 1;
+                              return (
+                                <div key={i} className={`px-4 py-3 ${i > 0 ? "border-t border-border" : ""} ${isSelected ? "bg-primary/5" : ""}`}>
+                                  <div className="flex items-center gap-3">
+                                    <Checkbox
+                                      checked={isSelected}
+                                      onCheckedChange={() => toggleVariant(i)}
+                                    />
+                                    <span className="text-sm text-foreground font-medium flex-1">{v.name}</span>
+                                    <div className="flex items-center gap-4">
+                                      {v.sku && (
+                                        <span className="text-xs text-muted-foreground font-mono">{v.sku}</span>
+                                      )}
+                                      {parseFloat(v.price) > 0 && (
+                                        <span className="text-sm font-bold text-foreground">{formatPrice(parseFloat(v.price))}</span>
+                                      )}
+                                      {parseInt(v.stock) > 0 ? (
+                                        <span className="text-xs text-green-600 font-medium">In Stock</span>
+                                      ) : (
+                                        <span className="text-xs text-muted-foreground">Contact for availability</span>
+                                      )}
+                                    </div>
+                                  </div>
+                                  {isSelected && (
+                                    <div className="flex items-center gap-2 mt-2 ml-7">
+                                      <span className="text-xs text-muted-foreground mr-1">Qty:</span>
+                                      <button
+                                        onClick={() => updateQty(i, -1)}
+                                        disabled={qty <= 1}
+                                        className="w-7 h-7 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:bg-muted disabled:opacity-40 transition-colors"
+                                      >
+                                        <Minus className="w-3 h-3" />
+                                      </button>
+                                      <span className="text-sm font-medium text-foreground w-8 text-center">{qty}</span>
+                                      <button
+                                        onClick={() => updateQty(i, 1)}
+                                        className="w-7 h-7 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors"
+                                      >
+                                        <Plus className="w-3 h-3" />
+                                      </button>
+                                    </div>
                                   )}
                                 </div>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                           <p className="text-xs text-muted-foreground mt-1.5 max-w-[280px]">
                             <span className="font-semibold text-foreground">Sales tax:</span> Calculated at checkout for U.S. shipping addresses. Not charged for non-U.S. shipping
