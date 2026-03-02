@@ -29,6 +29,7 @@ const EditProduct = () => {
       .from("products")
       .update({
         name: data.title.trim(),
+        overview: data.overview || "",
         description: data.description || "",
         category: data.category || null,
         price: parseFloat(data.price) || 0,
@@ -78,6 +79,7 @@ const EditProduct = () => {
       savingLabel="Saving..."
       initialData={{
         title: product.name,
+        overview: (product as any).overview ?? "",
         description: (product as any).description ?? "",
         category: product.category ?? "",
         price: product.price.toString(),
