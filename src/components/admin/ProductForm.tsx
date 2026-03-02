@@ -62,7 +62,13 @@ export interface ProductFormData {
   existingImageUrl: string | null;
   existingImages: string[];
   specifications: ProductSpecification[];
-  variants: string[];
+  variants: ProductVariant[];
+}
+
+export interface ProductVariant {
+  name: string;
+  price: string;
+  stock: string;
 }
 
 interface ProductFormProps {
@@ -101,8 +107,8 @@ const ProductForm = ({
   const [specifications, setSpecifications] = useState<ProductSpecification[]>(
     initialData?.specifications ?? [{ label: "", value: "" }]
   );
-  const [variants, setVariants] = useState<string[]>(
-    initialData?.variants ?? [""]
+  const [variants, setVariants] = useState<ProductVariant[]>(
+    initialData?.variants ?? [{ name: "", price: "", stock: "" }]
   );
 
   // Multiple images support
@@ -176,7 +182,7 @@ const ProductForm = ({
       const primaryImageUrl = allImageUrls.length > 0 ? allImageUrls[0] : null;
 
       await onSubmit(
-        { title, overview, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, existingImageUrl: null, existingImages: [], specifications: specifications.filter(s => s.label.trim() && s.value.trim()), variants: variants.filter(v => v.trim()) },
+        { title, overview, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, existingImageUrl: null, existingImages: [], specifications: specifications.filter(s => s.label.trim() && s.value.trim()), variants: variants.filter(v => v.name.trim()) },
         primaryImageUrl,
         allImageUrls
       );
@@ -325,27 +331,61 @@ const ProductForm = ({
 
           <Card className="p-5 space-y-2">
             <Label>Variants</Label>
-            <p className="text-xs text-muted-foreground mb-1">Add product variants such as sizes, colors, or configurations.</p>
+            <p className="text-xs text-muted-foreground mb-1">Add product variants with individual pricing and inventory.</p>
+            {variants.length > 1 && (
+              <div className="grid grid-cols-[1fr_100px_80px_32px] gap-3 px-0 text-xs font-medium text-muted-foreground">
+                <span>Name</span>
+                <span>Price</span>
+                <span>Quantity</span>
+                <span />
+              </div>
+            )}
             {variants.map((variant, index) => (
-              <div key={index} className="flex gap-3 items-center">
+              <div key={index} className="grid grid-cols-[1fr_100px_80px_32px] gap-3 items-center">
                 <Input
-                  placeholder="e.g. 10 mL, Red, Standard"
-                  value={variant}
+                  placeholder="e.g. 10 mL, Red"
+                  value={variant.name}
                   onChange={(e) => {
                     const updated = [...variants];
-                    updated[index] = e.target.value;
+                    updated[index] = { ...updated[index], name: e.target.value };
                     setVariants(updated);
                   }}
-                  className="flex-1"
                 />
-                {variants.length > 1 && (
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">$</span>
+                  <Input
+                    type="number"
+                    placeholder="0.00"
+                    value={variant.price}
+                    onChange={(e) => {
+                      const updated = [...variants];
+                      updated[index] = { ...updated[index], price: e.target.value };
+                      setVariants(updated);
+                    }}
+                    className="pl-6"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+                <Input
+                  type="number"
+                  placeholder="0"
+                  value={variant.stock}
+                  onChange={(e) => {
+                    const updated = [...variants];
+                    updated[index] = { ...updated[index], stock: e.target.value };
+                    setVariants(updated);
+                  }}
+                  min="0"
+                />
+                {variants.length > 1 ? (
                   <button
                     onClick={() => setVariants(variants.filter((_, i) => i !== index))}
-                    className="text-muted-foreground hover:text-destructive transition-colors"
+                    className="text-muted-foreground hover:text-destructive transition-colors justify-self-center"
                   >
                     <X className="h-4 w-4" />
                   </button>
-                )}
+                ) : <span />}
               </div>
             ))}
             <div className="flex justify-end">
@@ -353,8 +393,8 @@ const ProductForm = ({
                 type="button"
                 variant="secondary"
                 size="sm"
-                disabled={!variants[variants.length - 1]?.trim()}
-                onClick={() => setVariants([...variants, ""])}
+                disabled={!variants[variants.length - 1]?.name.trim()}
+                onClick={() => setVariants([...variants, { name: "", price: "", stock: "" }])}
               >
                 Add another
               </Button>
