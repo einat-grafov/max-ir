@@ -237,9 +237,14 @@ const ProductDetail = () => {
                               return sum + price * qty;
                             }, 0);
                             return (
-                              <div className="mt-3 flex items-baseline justify-between border-t border-border pt-3">
-                                <span className="text-sm text-muted-foreground">{totalItems} item{totalItems !== 1 ? "s" : ""}</span>
-                                <span className="text-xl font-bold text-foreground">{formatPrice(totalPrice)}</span>
+                              <div className="mt-3 border-t border-border pt-3">
+                                <div className="flex items-baseline justify-between">
+                                  <span className="text-sm text-muted-foreground">{totalItems} item{totalItems !== 1 ? "s" : ""}</span>
+                                  <span className="text-xl font-bold text-foreground">{formatPrice(totalPrice)}</span>
+                                </div>
+                                <p className="text-xs text-muted-foreground mt-1.5 max-w-[280px] ml-auto text-right">
+                                  <span className="font-semibold text-foreground">Sales tax:</span> Calculated at checkout for U.S. shipping addresses. Not charged for non-U.S. shipping
+                                </p>
                               </div>
                             );
                           })()}
