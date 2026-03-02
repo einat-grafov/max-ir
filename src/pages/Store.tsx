@@ -65,7 +65,7 @@ const Store = () => {
         <section className="bg-white">
           <div className="max-w-[1638px] mx-auto px-6 lg:px-10 py-12 lg:py-20">
             {isLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                 {[...Array(8)].map((_, i) => (
                   <div key={i} className="flex flex-col gap-3">
                     <Skeleton className="aspect-square w-full rounded-lg bg-muted" />
@@ -74,7 +74,7 @@ const Store = () => {
                 ))}
               </div>
             ) : products && products.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                 {products.map((product) => {
                   const img = getProductImage(product);
                   return (
