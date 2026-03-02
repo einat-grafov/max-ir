@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Team from "./pages/Team";
 import Store from "./pages/Store";
 import ProductDetail from "./pages/ProductDetail";
+import Cart from "./pages/Cart";
 import AdminLogin from "./pages/AdminLogin";
 import AdminLayout from "./components/admin/AdminLayout";
 import Orders from "./pages/admin/Orders";
@@ -40,6 +41,7 @@ const router = createBrowserRouter([
       { path: "/team", element: <Team /> },
       { path: "/store", element: <Store /> },
       { path: "/store/:id", element: <ProductDetail /> },
+      { path: "/cart", element: <Cart /> },
       { path: "/design-system", element: <DesignSystem /> },
       { path: "/admin/login", element: <AdminLogin /> },
       {
