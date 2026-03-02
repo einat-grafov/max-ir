@@ -129,6 +129,7 @@ const ProductForm = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const canSubmit = title.trim().length > 0;
+  const hasVariants = variants.some(v => v.name.trim());
 
   const handleFilesSelect = (files: FileList | File[]) => {
     const fileArray = Array.from(files);
@@ -456,28 +457,40 @@ const ProductForm = ({
             </div>
           </Card>
 
-          <Card className="p-5 space-y-4">
+          <Card className={`p-5 space-y-4 ${hasVariants ? "opacity-50 pointer-events-none" : ""}`}>
             <Label>Price</Label>
-            <div className="relative w-48">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
-              <Input type="number" placeholder="0.00" value={price} onChange={(e) => setPrice(e.target.value)} className="pl-7" min="0" step="0.01" />
-            </div>
-            <div className="flex items-center gap-2 pt-2 border-t border-border">
-              <span className="text-sm text-muted-foreground">Charge tax</span>
-              <Switch checked={!taxExempt} onCheckedChange={(v) => setTaxExempt(!v)} />
-              <span className="text-xs text-muted-foreground">{taxExempt ? "No" : "Yes"}</span>
-            </div>
+            {hasVariants && (
+              <p className="text-xs text-muted-foreground">Price is managed per variant above.</p>
+            )}
+            {!hasVariants && (
+              <>
+                <div className="relative w-48">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
+                  <Input type="number" placeholder="0.00" value={price} onChange={(e) => setPrice(e.target.value)} className="pl-7" min="0" step="0.01" />
+                </div>
+                <div className="flex items-center gap-2 pt-2 border-t border-border">
+                  <span className="text-sm text-muted-foreground">Charge tax</span>
+                  <Switch checked={!taxExempt} onCheckedChange={(v) => setTaxExempt(!v)} />
+                  <span className="text-xs text-muted-foreground">{taxExempt ? "No" : "Yes"}</span>
+                </div>
+              </>
+            )}
           </Card>
 
-          <Card className="p-5 space-y-4">
+          <Card className={`p-5 space-y-4 ${hasVariants ? "opacity-50 pointer-events-none" : ""}`}>
             <div className="flex items-center justify-between">
               <h2 className="text-base font-semibold text-foreground">Inventory</h2>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Inventory tracked</span>
-                <Switch checked={trackInventory} onCheckedChange={setTrackInventory} />
-              </div>
+              {!hasVariants && (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Inventory tracked</span>
+                  <Switch checked={trackInventory} onCheckedChange={setTrackInventory} />
+                </div>
+              )}
             </div>
-            {trackInventory && (
+            {hasVariants && (
+              <p className="text-xs text-muted-foreground">Inventory is managed per variant above.</p>
+            )}
+            {!hasVariants && trackInventory && (
               <div className="border border-border rounded-lg overflow-hidden">
                 <div className="grid grid-cols-2 gap-4 px-4 py-2 bg-muted/50 text-xs font-medium text-muted-foreground">
                   <span>Location</span>
