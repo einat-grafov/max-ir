@@ -89,7 +89,7 @@ const Navbar = () => {
   const mainItems: { key: MainMenuItem; label: string }[] = [
     { key: "home", label: "Home" },
     { key: "team", label: "Team" },
-    { key: "store", label: "Store" },
+    { key: "store", label: "Our Products" },
   ];
 
   return (
