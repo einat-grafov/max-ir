@@ -147,7 +147,7 @@ const ProductDetail = () => {
 
                 {/* Product info */}
                 <div className="flex flex-col gap-6">
-                  <h1 className="text-3xl md:text-4xl lg:text-[42px] font-bold text-foreground font-montserrat leading-tight">
+                  <h1 className="text-3xl md:text-4xl font-bold text-foreground font-montserrat leading-tight">
                     {product.name}
                   </h1>
 
