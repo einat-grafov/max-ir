@@ -1,11 +1,22 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
 import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import ProductInquiryForm, { type SelectedVariantItem } from "@/components/ProductInquiryForm";
 
 const Cart = () => {
   const { items, updateQuantity, removeItem, clearCart, totalItems, totalPrice } = useCart();
+  const [quoteOpen, setQuoteOpen] = useState(false);
+
+  const selectedVariants: SelectedVariantItem[] = items.map((item) => ({
+    name: `${item.productName}${item.variantName !== item.productName ? ` – ${item.variantName}` : ""}`,
+    sku: item.sku,
+    price: `$${item.price}`,
+    quantity: item.quantity,
+  }));
 
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("en-US", {
@@ -182,7 +193,10 @@ const Cart = () => {
                     <span className="font-semibold text-foreground">Sales tax:</span> Calculated at checkout for U.S. shipping addresses. Not charged for non-U.S. shipping
                   </p>
 
-                  <button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 text-sm font-semibold rounded-md transition-colors">
+                  <button
+                    onClick={() => setQuoteOpen(true)}
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 text-sm font-semibold rounded-md transition-colors"
+                  >
                     Request Quote
                   </button>
 
@@ -196,6 +210,21 @@ const Cart = () => {
         </div>
       </main>
       <Footer />
+
+      <Dialog open={quoteOpen} onOpenChange={setQuoteOpen}>
+        <DialogContent className="bg-maxir-dark-surface border-maxir-white/20 max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-maxir-white text-lg font-montserrat">Request a Quote</DialogTitle>
+            <DialogDescription className="text-maxir-white/60 text-sm">
+              Fill in your details and we'll get back to you with a quote for your cart items.
+            </DialogDescription>
+          </DialogHeader>
+          <ProductInquiryForm
+            productName="Cart Items"
+            selectedVariants={selectedVariants}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
