@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import RichTextEditor from "@/components/admin/RichTextEditor";
 import { Switch } from "@/components/ui/switch";
 import { Card } from "@/components/ui/card";
 import {
@@ -257,8 +257,8 @@ const ProductForm = ({
               <Input id="title" placeholder="Short sleeve t-shirt" value={title} onChange={(e) => setTitle(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea id="description" placeholder="Add a description for this product..." value={description} onChange={(e) => setDescription(e.target.value)} className="min-h-[160px]" />
+              <Label>Description</Label>
+              <RichTextEditor value={description} onChange={setDescription} placeholder="Add a description for this product..." />
             </div>
           </Card>
 
