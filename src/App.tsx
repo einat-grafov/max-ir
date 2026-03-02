@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate, Outlet } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
 import Index from "./pages/Index";
 import Team from "./pages/Team";
@@ -26,43 +26,52 @@ import DesignSystem from "./pages/DesignSystem";
 
 const queryClient = new QueryClient();
 
+const RootLayout = () => (
+  <CartProvider>
+    <Outlet />
+  </CartProvider>
+);
+
 const router = createBrowserRouter([
-  { path: "/", element: <Index /> },
-  { path: "/team", element: <Team /> },
-  { path: "/store", element: <Store /> },
-  { path: "/store/:id", element: <ProductDetail /> },
-  { path: "/design-system", element: <DesignSystem /> },
-  { path: "/admin/login", element: <AdminLogin /> },
   {
-    path: "/admin",
-    element: <AdminLayout />,
+    element: <RootLayout />,
     children: [
-      { index: true, element: <Navigate to="/admin/orders" replace /> },
-      { path: "orders", element: <Orders /> },
-      { path: "orders/create", element: <CreateOrder /> },
-      { path: "products", element: <Products /> },
-      { path: "products/create", element: <CreateProduct /> },
-      { path: "products/:id", element: <EditProduct /> },
-      { path: "customers", element: <Customers /> },
-      { path: "inquiries", element: <Inquiries /> },
-      { path: "analytics", element: <Analytics /> },
-      { path: "settings/users", element: <UsersSettings /> },
-      { path: "settings/billing", element: <BillingSettings /> },
-      { path: "settings/shipping", element: <ShippingSettings /> },
+      { path: "/", element: <Index /> },
+      { path: "/team", element: <Team /> },
+      { path: "/store", element: <Store /> },
+      { path: "/store/:id", element: <ProductDetail /> },
+      { path: "/design-system", element: <DesignSystem /> },
+      { path: "/admin/login", element: <AdminLogin /> },
+      {
+        path: "/admin",
+        element: <AdminLayout />,
+        children: [
+          { index: true, element: <Navigate to="/admin/orders" replace /> },
+          { path: "orders", element: <Orders /> },
+          { path: "orders/create", element: <CreateOrder /> },
+          { path: "products", element: <Products /> },
+          { path: "products/create", element: <CreateProduct /> },
+          { path: "products/:id", element: <EditProduct /> },
+          { path: "customers", element: <Customers /> },
+          { path: "inquiries", element: <Inquiries /> },
+          { path: "analytics", element: <Analytics /> },
+          { path: "settings/users", element: <UsersSettings /> },
+          { path: "settings/billing", element: <BillingSettings /> },
+          { path: "settings/shipping", element: <ShippingSettings /> },
+        ],
+      },
+      { path: "*", element: <NotFound /> },
     ],
   },
-  { path: "*", element: <NotFound /> },
 ]);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <CartProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <RouterProvider router={router} />
-      </TooltipProvider>
-    </CartProvider>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <RouterProvider router={router} />
+    </TooltipProvider>
   </QueryClientProvider>
 );
 
