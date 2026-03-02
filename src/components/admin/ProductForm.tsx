@@ -62,6 +62,7 @@ export interface ProductFormData {
   existingImageUrl: string | null;
   existingImages: string[];
   specifications: ProductSpecification[];
+  variants: string[];
 }
 
 interface ProductFormProps {
@@ -99,6 +100,9 @@ const ProductForm = ({
   const [status, setStatus] = useState(initialData?.status ?? "active");
   const [specifications, setSpecifications] = useState<ProductSpecification[]>(
     initialData?.specifications ?? [{ label: "", value: "" }]
+  );
+  const [variants, setVariants] = useState<string[]>(
+    initialData?.variants ?? [""]
   );
 
   // Multiple images support
@@ -172,7 +176,7 @@ const ProductForm = ({
       const primaryImageUrl = allImageUrls.length > 0 ? allImageUrls[0] : null;
 
       await onSubmit(
-        { title, overview, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, existingImageUrl: null, existingImages: [], specifications: specifications.filter(s => s.label.trim() && s.value.trim()) },
+        { title, overview, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, existingImageUrl: null, existingImages: [], specifications: specifications.filter(s => s.label.trim() && s.value.trim()), variants: variants.filter(v => v.trim()) },
         primaryImageUrl,
         allImageUrls
       );
@@ -316,6 +320,44 @@ const ProductForm = ({
                 <Upload className="h-5 w-5 text-muted-foreground mb-1" />
                 <p className="text-xs text-muted-foreground">Add image</p>
               </div>
+            </div>
+          </Card>
+
+          <Card className="p-5 space-y-2">
+            <Label>Variants</Label>
+            <p className="text-xs text-muted-foreground mb-1">Add product variants such as sizes, colors, or configurations.</p>
+            {variants.map((variant, index) => (
+              <div key={index} className="flex gap-3 items-center">
+                <Input
+                  placeholder="e.g. 10 mL, Red, Standard"
+                  value={variant}
+                  onChange={(e) => {
+                    const updated = [...variants];
+                    updated[index] = e.target.value;
+                    setVariants(updated);
+                  }}
+                  className="flex-1"
+                />
+                {variants.length > 1 && (
+                  <button
+                    onClick={() => setVariants(variants.filter((_, i) => i !== index))}
+                    className="text-muted-foreground hover:text-destructive transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            ))}
+            <div className="flex justify-end">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                disabled={!variants[variants.length - 1]?.trim()}
+                onClick={() => setVariants([...variants, ""])}
+              >
+                Add another
+              </Button>
             </div>
           </Card>
 

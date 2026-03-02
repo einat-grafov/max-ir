@@ -242,6 +242,7 @@ export type Database = {
           stock: number
           tax_exempt: boolean
           updated_at: string
+          variants: Json | null
         }
         Insert: {
           category?: string | null
@@ -259,6 +260,7 @@ export type Database = {
           stock?: number
           tax_exempt?: boolean
           updated_at?: string
+          variants?: Json | null
         }
         Update: {
           category?: string | null
@@ -276,6 +278,7 @@ export type Database = {
           stock?: number
           tax_exempt?: boolean
           updated_at?: string
+          variants?: Json | null
         }
         Relationships: []
       }
