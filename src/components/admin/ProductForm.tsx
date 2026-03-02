@@ -25,6 +25,12 @@ import {
 import { Label } from "@/components/ui/label";
 import { Upload, X, Trash2 } from "lucide-react";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -195,38 +201,44 @@ const ProductForm = ({
         <h1 className="text-2xl font-bold text-foreground">{pageTitle}</h1>
         <div className="flex gap-3">
           {onDelete && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive" disabled={deleting}>
-                  <Trash2 className="h-4 w-4 mr-1" />
-                  {deleting ? "Deleting..." : "Delete"}
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete product</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Are you sure you want to delete this product? This action cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    onClick={async () => {
-                      setDeleting(true);
-                      try {
-                        await onDelete();
-                      } finally {
-                        setDeleting(false);
-                      }
-                    }}
-                  >
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <TooltipProvider>
+              <Tooltip>
+                <AlertDialog>
+                  <TooltipTrigger asChild>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" size="icon" disabled={deleting}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent>Delete</TooltipContent>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete product</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to delete this product? This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        onClick={async () => {
+                          setDeleting(true);
+                          try {
+                            await onDelete();
+                          } finally {
+                            setDeleting(false);
+                          }
+                        }}
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </Tooltip>
+            </TooltipProvider>
           )}
           <Button variant="outline" asChild>
             <Link to="/admin/products">Discard</Link>
