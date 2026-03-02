@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface Product {
   id: string;
@@ -77,32 +78,32 @@ const Store = () => {
                 {products.map((product) => {
                   const img = getProductImage(product);
                   return (
-                    <div key={product.id} className="group flex flex-col">
-                      {/* Product image */}
-                      <div className="aspect-square rounded-lg overflow-hidden bg-muted mb-4">
-                        {img ? (
-                          <img
-                            src={img}
-                            alt={product.name}
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">
-                            No image
-                          </div>
-                        )}
-                      </div>
-                      {/* Name + arrow row */}
-                      <div className="flex items-center justify-between gap-3">
-                        <h3 className="text-foreground font-semibold text-base leading-tight">
-                          {product.name}
-                        </h3>
-                        <div className="shrink-0 w-8 h-8 rounded-full bg-maxir-dark flex items-center justify-center group-hover:bg-primary transition-colors">
-                          <ArrowRight className="w-4 h-4 text-maxir-white" />
-                        </div>
-                      </div>
-                    </div>
+                    <Link key={product.id} to={`/store/${product.id}`} className="group flex flex-col">
+                       {/* Product image */}
+                       <div className="aspect-square rounded-lg overflow-hidden bg-muted mb-4">
+                         {img ? (
+                           <img
+                             src={img}
+                             alt={product.name}
+                             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                             loading="lazy"
+                           />
+                         ) : (
+                           <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">
+                             No image
+                           </div>
+                         )}
+                       </div>
+                       {/* Name + arrow row */}
+                       <div className="flex items-center justify-between gap-3">
+                         <h3 className="text-foreground font-semibold text-base leading-tight">
+                           {product.name}
+                         </h3>
+                         <div className="shrink-0 w-8 h-8 rounded-full bg-maxir-dark flex items-center justify-center group-hover:bg-primary transition-colors">
+                           <ArrowRight className="w-4 h-4 text-maxir-white" />
+                         </div>
+                       </div>
+                    </Link>
                   );
                 })}
               </div>
