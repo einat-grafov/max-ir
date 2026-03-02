@@ -10,6 +10,7 @@ import {
   LogOut,
   ChevronDown,
   MessageSquare,
+  Bell,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate, Link } from "react-router-dom";
@@ -34,6 +35,7 @@ const mainItems = [
   { title: "Products", url: "/admin/products", icon: Package },
   { title: "Customers", url: "/admin/customers", icon: Users },
   { title: "Inquiries", url: "/admin/inquiries", icon: MessageSquare },
+  { title: "Notifications", url: "/admin/stock-notifications", icon: Bell },
   { title: "Analytics", url: "/admin/analytics", icon: BarChart3 },
 ];
 
