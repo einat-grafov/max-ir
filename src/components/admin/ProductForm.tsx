@@ -201,12 +201,12 @@ const ProductForm = ({
         <h1 className="text-2xl font-bold text-foreground">{pageTitle}</h1>
         <div className="flex gap-3">
           {onDelete && (
-            <TooltipProvider>
+            <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <AlertDialog>
                   <TooltipTrigger asChild>
                     <AlertDialogTrigger asChild>
-                      <Button variant="destructive" size="icon" disabled={deleting}>
+                      <Button variant="destructive" size="icon" className="cursor-pointer" disabled={deleting}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </AlertDialogTrigger>
