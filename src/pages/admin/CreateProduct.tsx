@@ -21,6 +21,7 @@ const CreateProduct = () => {
       image_url: imageUrl,
       images: allImageUrls as unknown as Json,
       specifications: (data.specifications.length > 0 ? data.specifications : []) as unknown as Json,
+      variants: (data.variants.length > 0 ? data.variants : []) as unknown as Json,
     });
     if (error) throw error;
     toast.success("Product created successfully");
