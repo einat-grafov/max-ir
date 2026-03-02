@@ -4,17 +4,22 @@ import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Mail, FileText, Plus, Minus, ShoppingCart } from "lucide-react";
+import { Mail, FileText, Plus, Minus, ShoppingCart, Bell } from "lucide-react";
 import { useState } from "react";
+import { z } from "zod";
 import ProductInquiryForm, { type SelectedVariantItem } from "@/components/ProductInquiryForm";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 
 interface ProductVariant {
@@ -46,6 +51,43 @@ const ProductDetail = () => {
   const [inquiryOpen, setInquiryOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"description" | "specifications">("description");
   const [selectedVariants, setSelectedVariants] = useState<Record<number, number>>({});
+  const [notifyVariant, setNotifyVariant] = useState<ProductVariant | null>(null);
+  const [notifyEmail, setNotifyEmail] = useState("");
+  const [notifySubmitting, setNotifySubmitting] = useState(false);
+  const [notifyError, setNotifyError] = useState("");
+
+  const emailSchema = z.string().trim().email("Please enter a valid email").max(255);
+
+  const isOutOfStock = (v: ProductVariant) => {
+    const stock = parseInt(v.stock, 10);
+    return isNaN(stock) || stock <= 0;
+  };
+
+  const handleNotifySubmit = async () => {
+    const result = emailSchema.safeParse(notifyEmail);
+    if (!result.success) {
+      setNotifyError(result.error.issues[0].message);
+      return;
+    }
+    setNotifySubmitting(true);
+    try {
+      const { error } = await supabase.from("stock_notifications").insert({
+        product_id: product?.id ?? null,
+        variant_sku: notifyVariant?.sku || null,
+        variant_name: notifyVariant?.name ?? "",
+        email: result.data,
+      });
+      if (error) throw error;
+      toast({ title: "You're on the list!", description: `We'll notify you when ${notifyVariant?.name} is back in stock.` });
+      setNotifyVariant(null);
+      setNotifyEmail("");
+      setNotifyError("");
+    } catch {
+      toast({ title: "Error", description: "Failed to register. Please try again.", variant: "destructive" });
+    } finally {
+      setNotifySubmitting(false);
+    }
+  };
 
   const { data: product, isLoading } = useQuery({
     queryKey: ["product-detail", id],
@@ -194,35 +236,49 @@ const ProductDetail = () => {
                           <div className="border border-border rounded-lg overflow-hidden">
                             {variants.map((v, i) => {
                               const qty = selectedVariants[i] ?? 1;
+                              const outOfStock = isOutOfStock(v);
                               return (
-                                <div key={i} className={`px-4 py-3 ${i > 0 ? "border-t border-border" : ""}`}>
+                                <div key={i} className={`px-4 py-3 ${i > 0 ? "border-t border-border" : ""} ${outOfStock ? "opacity-60" : ""}`}>
                                   <div className="flex items-start gap-3">
                                     <div className="flex-1 min-w-0">
                                       <span className="text-sm text-foreground font-medium">{v.name}</span>
                                       {v.sku && (
                                         <p className="text-xs text-muted-foreground font-mono mt-0.5">{v.sku}</p>
                                       )}
+                                      {outOfStock && (
+                                        <p className="text-xs text-destructive font-medium mt-0.5">Out of stock</p>
+                                      )}
                                     </div>
                                     <div className="flex items-center gap-4 shrink-0">
                                       {parseFloat(v.price) > 0 && (
                                         <span className="text-sm font-bold text-foreground">{formatPrice(parseFloat(v.price))}</span>
                                       )}
-                                      <div className="flex items-center gap-1.5">
+                                      {outOfStock ? (
                                         <button
-                                          onClick={() => updateQty(i, -1)}
-                                          disabled={qty <= 1}
-                                          className="w-7 h-7 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:bg-muted disabled:opacity-40 transition-colors"
+                                          onClick={() => { setNotifyVariant(v); setNotifyEmail(""); setNotifyError(""); }}
+                                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
                                         >
-                                          <Minus className="w-3 h-3" />
+                                          <Bell className="w-3.5 h-3.5" />
+                                          Notify Me
                                         </button>
-                                        <span className="text-sm font-medium text-foreground w-8 text-center">{qty}</span>
-                                        <button
-                                          onClick={() => updateQty(i, 1)}
-                                          className="w-7 h-7 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors"
-                                        >
-                                          <Plus className="w-3 h-3" />
-                                        </button>
-                                      </div>
+                                      ) : (
+                                        <div className="flex items-center gap-1.5">
+                                          <button
+                                            onClick={() => updateQty(i, -1)}
+                                            disabled={qty <= 1}
+                                            className="w-7 h-7 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:bg-muted disabled:opacity-40 transition-colors"
+                                          >
+                                            <Minus className="w-3 h-3" />
+                                          </button>
+                                          <span className="text-sm font-medium text-foreground w-8 text-center">{qty}</span>
+                                          <button
+                                            onClick={() => updateQty(i, 1)}
+                                            className="w-7 h-7 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors"
+                                          >
+                                            <Plus className="w-3 h-3" />
+                                          </button>
+                                        </div>
+                                      )}
                                     </div>
                                   </div>
                                 </div>
@@ -230,8 +286,9 @@ const ProductDetail = () => {
                             })}
                           </div>
                           {(() => {
-                            const totalItems = variants.reduce((sum, _, i) => sum + (selectedVariants[i] ?? 1), 0);
-                            const totalPrice = variants.reduce((sum, v, i) => {
+                            const inStockVariants = variants.map((v, i) => ({ v, i })).filter(({ v }) => !isOutOfStock(v));
+                            const totalItems = inStockVariants.reduce((sum, { i }) => sum + (selectedVariants[i] ?? 1), 0);
+                            const totalPrice = inStockVariants.reduce((sum, { v, i }) => {
                               const price = parseFloat(v.price || "0");
                               const qty = selectedVariants[i] ?? 1;
                               return sum + price * qty;
@@ -269,14 +326,19 @@ const ProductDetail = () => {
                       onClick={() => {
                         const variants = getVariants(product);
                         const cartItems = variants.length > 0
-                          ? variants.map((v, i) => ({
-                              productId: product.id,
-                              productName: product.name,
-                              variantName: v.name,
-                              sku: v.sku || undefined,
-                              price: parseFloat(v.price) || 0,
-                              quantity: selectedVariants[i] ?? 1,
-                            }))
+                          ? variants
+                              .filter((v) => !isOutOfStock(v))
+                              .map((v) => {
+                                const originalIndex = variants.indexOf(v);
+                                return {
+                                  productId: product.id,
+                                  productName: product.name,
+                                  variantName: v.name,
+                                  sku: v.sku || undefined,
+                                  price: parseFloat(v.price) || 0,
+                                  quantity: selectedVariants[originalIndex] ?? 1,
+                                };
+                              })
                           : [{
                               productId: product.id,
                               productName: product.name,
@@ -418,6 +480,33 @@ const ProductDetail = () => {
             </DialogContent>
           </Dialog>
         )}
+        {/* Notify Me Modal */}
+        <Dialog open={!!notifyVariant} onOpenChange={(open) => { if (!open) setNotifyVariant(null); }}>
+          <DialogContent className="sm:max-w-[420px]">
+            <DialogHeader>
+              <DialogTitle className="font-montserrat">Get Notified</DialogTitle>
+              <DialogDescription className="text-sm text-muted-foreground">
+                Enter your email and we'll let you know when <span className="font-medium text-foreground">{notifyVariant?.name}</span> is back in stock.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 pt-2">
+              <div className="space-y-2">
+                <Label htmlFor="notify-email">Email address</Label>
+                <Input
+                  id="notify-email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={notifyEmail}
+                  onChange={(e) => { setNotifyEmail(e.target.value); setNotifyError(""); }}
+                />
+                {notifyError && <p className="text-xs text-destructive">{notifyError}</p>}
+              </div>
+              <Button onClick={handleNotifySubmit} disabled={notifySubmitting} className="w-full">
+                {notifySubmitting ? "Submitting…" : "Notify Me"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </main>
       <Footer />
     </div>
