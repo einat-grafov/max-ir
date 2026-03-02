@@ -4,9 +4,15 @@ import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Mail } from "lucide-react";
-import { useState, useRef } from "react";
+import { Mail, FileText } from "lucide-react";
+import { useState } from "react";
 import ProductInquiryForm from "@/components/ProductInquiryForm";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Product {
   id: string;
@@ -18,23 +24,21 @@ interface Product {
   overview: string | null;
   specifications: unknown;
   category: string | null;
+  sku: string | null;
 }
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [selectedImage, setSelectedImage] = useState(0);
-  const inquiryRef = useRef<HTMLDivElement>(null);
-
-  const scrollToInquiry = () => {
-    inquiryRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const [inquiryOpen, setInquiryOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"description" | "specifications">("description");
 
   const { data: product, isLoading } = useQuery({
     queryKey: ["product-detail", id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id, name, image_url, images, price, description, overview, specifications, category")
+        .select("id, name, image_url, images, price, description, overview, specifications, category, sku")
         .eq("id", id!)
         .single();
       if (error) throw error;
@@ -58,57 +62,47 @@ const ProductDetail = () => {
     );
   };
 
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+
   return (
-    <div className="min-h-screen bg-maxir-dark">
+    <div className="min-h-screen bg-white">
       <Navbar />
       <main className="pt-[70px]">
-        {/* Dark header */}
-        <section className="bg-maxir-dark relative pb-0">
-          <div className="max-w-[1638px] mx-auto px-6 lg:px-10 pt-10 lg:pt-16 pb-24 lg:pb-32">
-            <Link
-              to="/store"
-              className="inline-flex items-center gap-2 text-maxir-white/70 hover:text-maxir-white transition-colors mb-6 text-sm font-medium"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Products
-            </Link>
-            {isLoading ? (
-              <Skeleton className="h-10 w-64 bg-white/10" />
-            ) : (
-              <h1 className="text-3xl md:text-4xl lg:text-[48px] font-bold text-maxir-white font-montserrat">
-                {product?.name}
-              </h1>
-            )}
-          </div>
-          <div className="absolute bottom-0 left-0 right-0 z-10 translate-y-[1px]">
-            <svg
-              viewBox="0 0 1440 120"
-              preserveAspectRatio="none"
-              className="w-full h-[60px] md:h-[90px] lg:h-[120px]"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M0,60 C300,120 600,0 900,60 C1100,100 1300,40 1440,80 L1440,120 L0,120 Z"
-                fill="hsl(0 0% 100%)"
-              />
-            </svg>
-          </div>
-        </section>
+        <div className="max-w-[1638px] mx-auto px-6 lg:px-10">
+          {/* Breadcrumb */}
+          {isLoading ? (
+            <Skeleton className="h-5 w-48 mt-6 bg-muted" />
+          ) : product ? (
+            <nav className="pt-6 pb-8 text-sm text-muted-foreground">
+              <Link to="/store" className="hover:text-foreground transition-colors">
+                Our products
+              </Link>
+              <span className="mx-2">&gt;</span>
+              <span className="text-foreground">{product.name}</span>
+            </nav>
+          ) : null}
 
-        {/* White content */}
-        <section className="bg-white">
-          <div className="max-w-[1638px] mx-auto px-6 lg:px-10 py-12 lg:py-20">
-            {isLoading ? (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
-                <Skeleton className="aspect-square w-full rounded-lg bg-muted" />
-                <div className="space-y-4">
-                  <Skeleton className="h-6 w-1/2 bg-muted" />
-                  <Skeleton className="h-4 w-full bg-muted" />
-                  <Skeleton className="h-4 w-3/4 bg-muted" />
-                </div>
+          {isLoading ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 pb-16">
+              <Skeleton className="aspect-square w-full rounded-lg bg-muted" />
+              <div className="space-y-4">
+                <Skeleton className="h-10 w-3/4 bg-muted" />
+                <Skeleton className="h-4 w-full bg-muted" />
+                <Skeleton className="h-4 w-1/2 bg-muted" />
+                <Skeleton className="h-8 w-32 bg-muted mt-4" />
               </div>
-            ) : product ? (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+            </div>
+          ) : product ? (
+            <>
+              {/* Hero: Image + Info */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 pb-16">
                 {/* Image gallery */}
                 <div className="space-y-4">
                   {(() => {
@@ -152,87 +146,142 @@ const ProductDetail = () => {
                 </div>
 
                 {/* Product info */}
-                <div className="space-y-8">
-                  {product.category && (
-                    <span className="inline-block text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 px-3 py-1 rounded-full">
-                      {product.category}
-                    </span>
-                  )}
+                <div className="flex flex-col gap-6">
+                  <h1 className="text-3xl md:text-4xl lg:text-[42px] font-bold text-foreground font-montserrat leading-tight">
+                    {product.name}
+                  </h1>
 
                   {product.overview && (
-                    <div>
-                      <h2 className="text-lg font-semibold text-foreground mb-3">Overview</h2>
-                      <div
-                        className="text-muted-foreground leading-relaxed prose prose-sm max-w-none"
-                        dangerouslySetInnerHTML={{ __html: product.overview }}
-                      />
-                    </div>
+                    <div
+                      className="text-muted-foreground leading-relaxed prose prose-sm max-w-none"
+                      dangerouslySetInnerHTML={{ __html: product.overview }}
+                    />
                   )}
 
-                  {product.description && (
-                    <div>
-                      <h2 className="text-lg font-semibold text-foreground mb-3">Description</h2>
-                      <div
-                        className="text-muted-foreground leading-relaxed prose prose-sm max-w-none"
-                        dangerouslySetInnerHTML={{ __html: product.description }}
-                      />
-                    </div>
+                  {/* Price */}
+                  <div>
+                    <p className="text-3xl font-bold text-foreground">
+                      {formatPrice(product.price)}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1.5 max-w-[280px]">
+                      <span className="font-semibold text-foreground">Sales tax:</span> Calculated at checkout for U.S. shipping addresses. Not charged for non-U.S. shipping
+                    </p>
+                  </div>
+
+                  {/* Action buttons */}
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setInquiryOpen(true)}
+                      className="inline-flex items-center gap-2 bg-maxir-dark hover:bg-maxir-dark/90 text-maxir-white px-6 py-3 text-sm font-semibold transition-colors rounded-md"
+                    >
+                      <Mail className="w-4 h-4" />
+                      Contact
+                    </button>
+                    <button
+                      onClick={() => setInquiryOpen(true)}
+                      className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 text-sm font-semibold transition-colors rounded-md"
+                    >
+                      <FileText className="w-4 h-4" />
+                      Quote
+                    </button>
+                  </div>
+
+                  {/* SKU */}
+                  {product.sku && (
+                    <p className="text-sm text-muted-foreground">
+                      <span className="font-medium text-foreground">SKU:</span> {product.sku}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Tabbed section: Description / Specifications */}
+              <div className="border-t pb-20">
+                <div className="flex gap-8 border-b">
+                  <button
+                    onClick={() => setActiveTab("description")}
+                    className={`py-4 text-base font-semibold transition-colors relative ${
+                      activeTab === "description"
+                        ? "text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    Description
+                    {activeTab === "description" && (
+                      <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-foreground" />
+                    )}
+                  </button>
+                  {getSpecs(product).length > 0 && (
+                    <button
+                      onClick={() => setActiveTab("specifications")}
+                      className={`py-4 text-base font-semibold transition-colors relative ${
+                        activeTab === "specifications"
+                          ? "text-foreground"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      Specifications
+                      {activeTab === "specifications" && (
+                        <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-foreground" />
+                      )}
+                    </button>
+                  )}
+                </div>
+
+                <div className="pt-8 max-w-[900px]">
+                  {activeTab === "description" && product.description && (
+                    <div
+                      className="text-muted-foreground leading-relaxed prose prose-sm max-w-none"
+                      dangerouslySetInnerHTML={{ __html: product.description }}
+                    />
+                  )}
+                  {activeTab === "description" && !product.description && (
+                    <p className="text-muted-foreground">No description available.</p>
                   )}
 
-                {(() => {
+                  {activeTab === "specifications" && (() => {
                     const specs = getSpecs(product);
-                    if (specs.length === 0) return null;
                     return (
-                      <div>
-                        <h2 className="text-lg font-semibold text-foreground mb-4">Specifications</h2>
-                        <div className="border rounded-lg overflow-hidden">
-                          {specs.map((spec, i) => (
-                            <div
-                              key={i}
-                              className={`flex ${i > 0 ? "border-t" : ""}`}
-                            >
-                              <div className="w-1/3 bg-muted/50 px-4 py-3 text-sm font-medium text-foreground">
-                                {spec.label}
-                              </div>
-                              <div className="w-2/3 px-4 py-3 text-sm text-muted-foreground">
-                                {spec.value}
-                              </div>
+                      <div className="border rounded-lg overflow-hidden">
+                        {specs.map((spec, i) => (
+                          <div
+                            key={i}
+                            className={`flex ${i > 0 ? "border-t" : ""}`}
+                          >
+                            <div className="w-1/3 bg-muted/50 px-4 py-3 text-sm font-medium text-foreground">
+                              {spec.label}
                             </div>
-                          ))}
-                        </div>
+                            <div className="w-2/3 px-4 py-3 text-sm text-muted-foreground">
+                              {spec.value}
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     );
                   })()}
-
-                  {/* Inquiry button */}
-                  <button
-                    onClick={scrollToInquiry}
-                    className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-lg font-semibold transition-colors"
-                  >
-                    <Mail className="w-5 h-5" />
-                    Inquire About This Product
-                  </button>
                 </div>
               </div>
-            ) : (
-              <p className="text-muted-foreground text-center py-16">Product not found.</p>
-            )}
-          </div>
-        </section>
+            </>
+          ) : (
+            <p className="text-muted-foreground text-center py-16">Product not found.</p>
+          )}
+        </div>
 
-        {/* Inquiry section */}
+        {/* Inquiry Modal */}
         {product && (
-          <section ref={inquiryRef} className="bg-maxir-dark">
-            <div className="max-w-[800px] mx-auto px-6 lg:px-10 py-16 lg:py-24">
-              <h2 className="text-2xl md:text-3xl font-bold text-maxir-white font-montserrat mb-2 text-center">
-                Inquire About {product.name}
-              </h2>
-              <p className="text-maxir-white/60 text-center mb-10 text-sm">
-                Fill out the form below and our team will get back to you shortly.
-              </p>
+          <Dialog open={inquiryOpen} onOpenChange={setInquiryOpen}>
+            <DialogContent className="bg-maxir-dark border-white/10 sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle className="text-maxir-white font-montserrat text-xl">
+                  Inquire About {product.name}
+                </DialogTitle>
+                <p className="text-maxir-white/60 text-sm mt-1">
+                  Fill out the form below and our team will get back to you shortly.
+                </p>
+              </DialogHeader>
               <ProductInquiryForm productName={product.name} productId={product.id} />
-            </div>
-          </section>
+            </DialogContent>
+          </Dialog>
         )}
       </main>
       <Footer />
