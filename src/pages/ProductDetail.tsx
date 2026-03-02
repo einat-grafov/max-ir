@@ -196,7 +196,7 @@ const ProductDetail = () => {
               </div>
 
               {/* Tabbed section: Description / Specifications */}
-              <div className="border-t pb-20">
+              <div className="pb-20">
                 <div className="flex gap-8 border-b">
                   <button
                     onClick={() => setActiveTab("description")}
