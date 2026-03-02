@@ -230,7 +230,7 @@ const ProductDetail = () => {
               <p className="text-maxir-white/60 text-center mb-10 text-sm">
                 Fill out the form below and our team will get back to you shortly.
               </p>
-              <ProductInquiryForm productName={product.name} />
+              <ProductInquiryForm productName={product.name} productId={product.id} />
             </div>
           </section>
         )}

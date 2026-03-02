@@ -9,6 +9,7 @@ import {
   Truck,
   LogOut,
   ChevronDown,
+  MessageSquare,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate, Link } from "react-router-dom";
@@ -32,6 +33,7 @@ const mainItems = [
   { title: "Orders", url: "/admin/orders", icon: ShoppingCart },
   { title: "Products", url: "/admin/products", icon: Package },
   { title: "Customers", url: "/admin/customers", icon: Users },
+  { title: "Inquiries", url: "/admin/inquiries", icon: MessageSquare },
   { title: "Analytics", url: "/admin/analytics", icon: BarChart3 },
 ];
 
