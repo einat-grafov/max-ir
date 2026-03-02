@@ -247,9 +247,24 @@ const ProductDetail = () => {
                               );
                             })}
                           </div>
-                          <p className="text-xs text-muted-foreground mt-1.5 max-w-[280px]">
-                            <span className="font-semibold text-foreground">Sales tax:</span> Calculated at checkout for U.S. shipping addresses. Not charged for non-U.S. shipping
-                          </p>
+                          {(() => {
+                            const totalItems = Object.values(selectedVariants).reduce((sum, q) => sum + q, 0);
+                            const totalPrice = Object.entries(selectedVariants).reduce((sum, [idx, qty]) => {
+                              const price = parseFloat(variants[Number(idx)]?.price || "0");
+                              return sum + price * qty;
+                            }, 0);
+                            if (totalItems === 0) return (
+                              <p className="text-xs text-muted-foreground mt-1.5 max-w-[280px]">
+                                <span className="font-semibold text-foreground">Sales tax:</span> Calculated at checkout for U.S. shipping addresses. Not charged for non-U.S. shipping
+                              </p>
+                            );
+                            return (
+                              <div className="mt-3 flex items-baseline justify-between border-t border-border pt-3">
+                                <span className="text-sm text-muted-foreground">{totalItems} item{totalItems !== 1 ? "s" : ""} selected</span>
+                                <span className="text-xl font-bold text-foreground">{formatPrice(totalPrice)}</span>
+                              </div>
+                            );
+                          })()}
                         </div>
                       );
                     }
