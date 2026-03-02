@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Mail, FileText, Plus, Minus } from "lucide-react";
 import { useState } from "react";
-import ProductInquiryForm from "@/components/ProductInquiryForm";
+import ProductInquiryForm, { type SelectedVariantItem } from "@/components/ProductInquiryForm";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
@@ -376,7 +376,17 @@ const ProductDetail = () => {
                   Fill out the form below and our team will get back to you shortly.
                 </p>
               </DialogHeader>
-              <ProductInquiryForm productName={product.name} productId={product.id} />
+              <ProductInquiryForm
+                productName={product.name}
+                productId={product.id}
+                selectedVariants={(() => {
+                  const variants = getVariants(product);
+                  return Object.entries(selectedVariants).map(([idx, qty]) => {
+                    const v = variants[Number(idx)];
+                    return { name: v.name, sku: v.sku, price: v.price, quantity: qty } as SelectedVariantItem;
+                  });
+                })()}
+              />
             </DialogContent>
           </Dialog>
         )}
