@@ -14,6 +14,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+interface ProductVariant {
+  name: string;
+  price: string;
+  stock: string;
+}
+
 interface Product {
   id: string;
   name: string;
@@ -23,6 +29,7 @@ interface Product {
   description: string | null;
   overview: string | null;
   specifications: unknown;
+  variants: unknown;
   category: string | null;
   sku: string | null;
 }
@@ -38,7 +45,7 @@ const ProductDetail = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id, name, image_url, images, price, description, overview, specifications, category, sku")
+        .select("id, name, image_url, images, price, description, overview, specifications, variants, category, sku")
         .eq("id", id!)
         .single();
       if (error) throw error;
@@ -53,6 +60,11 @@ const ProductDetail = () => {
     }
     if (product.image_url) return [product.image_url];
     return [];
+  };
+
+  const getVariants = (product: Product): ProductVariant[] => {
+    if (!product.variants || !Array.isArray(product.variants)) return [];
+    return (product.variants as ProductVariant[]).filter(v => v.name?.trim());
   };
 
   const getSpecs = (product: Product): { label: string; value: string }[] => {
@@ -158,15 +170,47 @@ const ProductDetail = () => {
                     />
                   )}
 
-                  {/* Price */}
-                  <div>
-                    <p className="text-3xl font-bold text-foreground">
-                      {formatPrice(product.price)}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1.5 max-w-[280px]">
-                      <span className="font-semibold text-foreground">Sales tax:</span> Calculated at checkout for U.S. shipping addresses. Not charged for non-U.S. shipping
-                    </p>
-                  </div>
+                  {/* Price / Variants */}
+                  {(() => {
+                    const variants = getVariants(product);
+                    if (variants.length > 0) {
+                      return (
+                        <div>
+                          <h3 className="text-sm font-semibold text-foreground mb-3">Available Options</h3>
+                          <div className="border border-border rounded-lg overflow-hidden">
+                            {variants.map((v, i) => (
+                              <div key={i} className={`flex items-center justify-between px-4 py-3 ${i > 0 ? "border-t border-border" : ""}`}>
+                                <span className="text-sm text-foreground font-medium">{v.name}</span>
+                                <div className="flex items-center gap-4">
+                                  {parseFloat(v.price) > 0 && (
+                                    <span className="text-sm font-bold text-foreground">{formatPrice(parseFloat(v.price))}</span>
+                                  )}
+                                  {parseInt(v.stock) > 0 ? (
+                                    <span className="text-xs text-green-600 font-medium">In Stock</span>
+                                  ) : (
+                                    <span className="text-xs text-muted-foreground">Contact for availability</span>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1.5 max-w-[280px]">
+                            <span className="font-semibold text-foreground">Sales tax:</span> Calculated at checkout for U.S. shipping addresses. Not charged for non-U.S. shipping
+                          </p>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div>
+                        <p className="text-3xl font-bold text-foreground">
+                          {formatPrice(product.price)}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1.5 max-w-[280px]">
+                          <span className="font-semibold text-foreground">Sales tax:</span> Calculated at checkout for U.S. shipping addresses. Not charged for non-U.S. shipping
+                        </p>
+                      </div>
+                    );
+                  })()}
 
                   {/* Action buttons */}
                   <div className="flex items-center gap-3">
