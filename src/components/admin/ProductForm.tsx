@@ -49,6 +49,7 @@ export interface ProductSpecification {
 
 export interface ProductFormData {
   title: string;
+  overview: string;
   description: string;
   category: string;
   price: string;
@@ -86,6 +87,7 @@ const ProductForm = ({
   const [deleting, setDeleting] = useState(false);
 
   const [title, setTitle] = useState(initialData?.title ?? "");
+  const [overview, setOverview] = useState(initialData?.overview ?? "");
   const [description, setDescription] = useState(initialData?.description ?? "");
   const [category, setCategory] = useState(initialData?.category ?? "");
   const [price, setPrice] = useState(initialData?.price ?? "");
@@ -170,7 +172,7 @@ const ProductForm = ({
       const primaryImageUrl = allImageUrls.length > 0 ? allImageUrls[0] : null;
 
       await onSubmit(
-        { title, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, existingImageUrl: null, existingImages: [], specifications: specifications.filter(s => s.label.trim() && s.value.trim()) },
+        { title, overview, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, existingImageUrl: null, existingImages: [], specifications: specifications.filter(s => s.label.trim() && s.value.trim()) },
         primaryImageUrl,
         allImageUrls
       );
@@ -255,6 +257,10 @@ const ProductForm = ({
             <div className="space-y-2">
               <Label htmlFor="title">Title</Label>
               <Input id="title" placeholder="Short sleeve t-shirt" value={title} onChange={(e) => setTitle(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Product Overview</Label>
+              <RichTextEditor value={overview} onChange={setOverview} placeholder="Add a brief overview for this product..." />
             </div>
             <div className="space-y-2">
               <Label>Description</Label>

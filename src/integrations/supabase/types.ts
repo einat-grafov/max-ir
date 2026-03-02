@@ -193,6 +193,7 @@ export type Database = {
           image_url: string | null
           images: Json | null
           name: string
+          overview: string | null
           price: number
           requires_shipping: boolean
           sku: string | null
@@ -209,6 +210,7 @@ export type Database = {
           image_url?: string | null
           images?: Json | null
           name: string
+          overview?: string | null
           price?: number
           requires_shipping?: boolean
           sku?: string | null
@@ -225,6 +227,7 @@ export type Database = {
           image_url?: string | null
           images?: Json | null
           name?: string
+          overview?: string | null
           price?: number
           requires_shipping?: boolean
           sku?: string | null

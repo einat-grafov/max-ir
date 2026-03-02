@@ -10,6 +10,7 @@ const CreateProduct = () => {
   const handleSubmit = async (data: ProductFormData, imageUrl: string | null, allImageUrls: string[]) => {
     const { error } = await supabase.from("products").insert({
       name: data.title.trim(),
+      overview: data.overview || "",
       description: data.description || "",
       category: data.category || null,
       price: parseFloat(data.price) || 0,
