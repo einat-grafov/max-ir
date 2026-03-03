@@ -14,6 +14,13 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Plus, Trash2 } from "lucide-react";
 
 interface Contact {
@@ -32,17 +39,37 @@ const emptyContact = (): Contact => ({
   email: "",
 });
 
+const COUNTRIES = [
+  "Israel", "United States", "United Kingdom", "Germany", "France",
+  "Canada", "Australia", "Japan", "China", "India", "Brazil",
+  "Italy", "Spain", "Netherlands", "Sweden", "Switzerland",
+  "South Korea", "Singapore", "Mexico", "Argentina",
+];
+
 const CreateCustomer = () => {
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
+
+  // Company
   const [companyName, setCompanyName] = useState("");
+
+  // Customer details
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [country, setCountry] = useState("Israel");
+  const [address, setAddress] = useState("");
+  const [apartment, setApartment] = useState("");
+  const [city, setCity] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+
+  // Contacts
   const [contacts, setContacts] = useState<Contact[]>([]);
 
   const addContact = () => setContacts((prev) => [...prev, emptyContact()]);
-
   const removeContact = (index: number) =>
     setContacts((prev) => prev.filter((_, i) => i !== index));
-
   const updateContact = (index: number, field: keyof Contact, value: string) =>
     setContacts((prev) =>
       prev.map((c, i) => (i === index ? { ...c, [field]: value } : c))
@@ -55,19 +82,25 @@ const CreateCustomer = () => {
     }
     setSaving(true);
     try {
-      // Create customer with company name as first_name
       const { data: customer, error: customerError } = await supabase
         .from("customers")
         .insert({
-          first_name: companyName.trim(),
+          first_name: firstName.trim() || companyName.trim(),
+          last_name: lastName.trim() || null,
           company: companyName.trim(),
+          email: email.trim() || null,
+          phone: phone.trim() || null,
+          country,
+          address: address.trim() || null,
+          apartment: apartment.trim() || null,
+          city: city.trim() || null,
+          postal_code: postalCode.trim() || null,
         })
         .select("id")
         .single();
 
       if (customerError) throw customerError;
 
-      // Insert contacts if any
       const validContacts = contacts.filter((c) => c.first_name.trim());
       if (validContacts.length > 0) {
         const { error: contactsError } = await supabase
@@ -96,7 +129,6 @@ const CreateCustomer = () => {
 
   return (
     <div>
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <Breadcrumb className="mb-2">
@@ -120,7 +152,7 @@ const CreateCustomer = () => {
       </div>
 
       <div className="max-w-2xl space-y-6">
-        {/* Company Name */}
+        {/* Company */}
         <Card className="p-6">
           <h2 className="text-base font-semibold text-foreground mb-4">Company</h2>
           <div>
@@ -132,8 +164,71 @@ const CreateCustomer = () => {
               className="mt-1.5"
             />
             <p className="text-xs text-muted-foreground mt-1">
-              This will be used as the customer name.
+              This will be used as the customer name if no first name is provided.
             </p>
+          </div>
+        </Card>
+
+        {/* Customer overview */}
+        <Card className="p-6">
+          <h2 className="text-base font-semibold text-foreground mb-4">Customer overview</h2>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium text-foreground">First name</Label>
+                <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} className="mt-1.5" />
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-foreground">Last name</Label>
+                <Input value={lastName} onChange={(e) => setLastName(e.target.value)} className="mt-1.5" />
+              </div>
+            </div>
+            <div>
+              <Label className="text-sm font-medium text-foreground">Email</Label>
+              <Input value={email} onChange={(e) => setEmail(e.target.value)} type="email" className="mt-1.5" />
+            </div>
+            <div>
+              <Label className="text-sm font-medium text-foreground">Phone</Label>
+              <Input value={phone} onChange={(e) => setPhone(e.target.value)} className="mt-1.5" />
+            </div>
+          </div>
+        </Card>
+
+        {/* Address */}
+        <Card className="p-6">
+          <h2 className="text-base font-semibold text-foreground mb-4">Default address</h2>
+          <div className="space-y-4">
+            <div>
+              <Label className="text-sm font-medium text-foreground">Country / region</Label>
+              <Select value={country} onValueChange={setCountry}>
+                <SelectTrigger className="mt-1.5">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {COUNTRIES.map((c) => (
+                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-sm font-medium text-foreground">Address</Label>
+              <Input value={address} onChange={(e) => setAddress(e.target.value)} className="mt-1.5" />
+            </div>
+            <div>
+              <Label className="text-sm font-medium text-foreground">Apartment, suite, etc</Label>
+              <Input value={apartment} onChange={(e) => setApartment(e.target.value)} className="mt-1.5" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium text-foreground">Postal code</Label>
+                <Input value={postalCode} onChange={(e) => setPostalCode(e.target.value)} className="mt-1.5" />
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-foreground">City</Label>
+                <Input value={city} onChange={(e) => setCity(e.target.value)} className="mt-1.5" />
+              </div>
+            </div>
           </div>
         </Card>
 
@@ -154,88 +249,35 @@ const CreateCustomer = () => {
           ) : (
             <div className="space-y-6">
               {contacts.map((contact, index) => (
-                <div
-                  key={index}
-                  className="border border-border rounded-lg p-4 space-y-4 relative"
-                >
+                <div key={index} className="border border-border rounded-lg p-4 space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-muted-foreground">
-                      Contact {index + 1}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                      onClick={() => removeContact(index)}
-                    >
+                    <span className="text-sm font-medium text-muted-foreground">Contact {index + 1}</span>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => removeContact(index)}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label className="text-sm font-medium text-foreground">
-                        First name
-                      </Label>
-                      <Input
-                        value={contact.first_name}
-                        onChange={(e) =>
-                          updateContact(index, "first_name", e.target.value)
-                        }
-                        className="mt-1.5"
-                      />
+                      <Label className="text-sm font-medium text-foreground">First name</Label>
+                      <Input value={contact.first_name} onChange={(e) => updateContact(index, "first_name", e.target.value)} className="mt-1.5" />
                     </div>
                     <div>
-                      <Label className="text-sm font-medium text-foreground">
-                        Last name
-                      </Label>
-                      <Input
-                        value={contact.last_name}
-                        onChange={(e) =>
-                          updateContact(index, "last_name", e.target.value)
-                        }
-                        className="mt-1.5"
-                      />
+                      <Label className="text-sm font-medium text-foreground">Last name</Label>
+                      <Input value={contact.last_name} onChange={(e) => updateContact(index, "last_name", e.target.value)} className="mt-1.5" />
                     </div>
                   </div>
-
                   <div>
                     <Label className="text-sm font-medium text-foreground">Role</Label>
-                    <Input
-                      value={contact.role}
-                      onChange={(e) =>
-                        updateContact(index, "role", e.target.value)
-                      }
-                      placeholder="e.g. CEO, CTO, Purchasing Manager"
-                      className="mt-1.5"
-                    />
+                    <Input value={contact.role} onChange={(e) => updateContact(index, "role", e.target.value)} placeholder="e.g. CEO, CTO, Purchasing Manager" className="mt-1.5" />
                   </div>
-
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label className="text-sm font-medium text-foreground">
-                        Phone
-                      </Label>
-                      <Input
-                        value={contact.phone}
-                        onChange={(e) =>
-                          updateContact(index, "phone", e.target.value)
-                        }
-                        className="mt-1.5"
-                      />
+                      <Label className="text-sm font-medium text-foreground">Phone</Label>
+                      <Input value={contact.phone} onChange={(e) => updateContact(index, "phone", e.target.value)} className="mt-1.5" />
                     </div>
                     <div>
-                      <Label className="text-sm font-medium text-foreground">
-                        Email
-                      </Label>
-                      <Input
-                        value={contact.email}
-                        onChange={(e) =>
-                          updateContact(index, "email", e.target.value)
-                        }
-                        type="email"
-                        className="mt-1.5"
-                      />
+                      <Label className="text-sm font-medium text-foreground">Email</Label>
+                      <Input value={contact.email} onChange={(e) => updateContact(index, "email", e.target.value)} type="email" className="mt-1.5" />
                     </div>
                   </div>
                 </div>
