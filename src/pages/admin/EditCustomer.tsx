@@ -339,7 +339,7 @@ const EditCustomer = () => {
                 <div key={contact.id || index} className="border border-border rounded-lg p-4 space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-muted-foreground">Contact {index + 1}</span>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => removeContact(index)}>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:bg-destructive hover:text-white" onClick={() => removeContact(index)}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
