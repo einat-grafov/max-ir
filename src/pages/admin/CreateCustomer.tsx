@@ -53,11 +53,6 @@ const CreateCustomer = () => {
   // Company
   const [companyName, setCompanyName] = useState("");
 
-  // Customer details
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
   const [country, setCountry] = useState("Israel");
   const [address, setAddress] = useState("");
   const [apartment, setApartment] = useState("");
@@ -75,9 +70,15 @@ const CreateCustomer = () => {
       prev.map((c, i) => (i === index ? { ...c, [field]: value } : c))
     );
 
+  const hasValidContact = contacts.some((c) => c.first_name.trim());
+
   const handleSave = async () => {
     if (!companyName.trim()) {
       toast.error("Company name is required");
+      return;
+    }
+    if (!hasValidContact) {
+      toast.error("At least one contact is required");
       return;
     }
     setSaving(true);
@@ -85,11 +86,8 @@ const CreateCustomer = () => {
       const { data: customer, error: customerError } = await supabase
         .from("customers")
         .insert({
-          first_name: firstName.trim() || companyName.trim(),
-          last_name: lastName.trim() || null,
+          first_name: companyName.trim(),
           company: companyName.trim(),
-          email: email.trim() || null,
-          phone: phone.trim() || null,
           country,
           address: address.trim() || null,
           apartment: apartment.trim() || null,
@@ -146,7 +144,7 @@ const CreateCustomer = () => {
           </Breadcrumb>
           <h1 className="text-2xl font-bold text-foreground">Add customer</h1>
         </div>
-        <Button onClick={handleSave} disabled={saving}>
+        <Button onClick={handleSave} disabled={saving || !hasValidContact}>
           {saving ? "Saving..." : "Save customer"}
         </Button>
       </div>
@@ -169,30 +167,6 @@ const CreateCustomer = () => {
           </div>
         </Card>
 
-        {/* Customer overview */}
-        <Card className="p-6">
-          <h2 className="text-base font-semibold text-foreground mb-4">Customer overview</h2>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label className="text-sm font-medium text-foreground">First name</Label>
-                <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} className="mt-1.5" />
-              </div>
-              <div>
-                <Label className="text-sm font-medium text-foreground">Last name</Label>
-                <Input value={lastName} onChange={(e) => setLastName(e.target.value)} className="mt-1.5" />
-              </div>
-            </div>
-            <div>
-              <Label className="text-sm font-medium text-foreground">Email</Label>
-              <Input value={email} onChange={(e) => setEmail(e.target.value)} type="email" className="mt-1.5" />
-            </div>
-            <div>
-              <Label className="text-sm font-medium text-foreground">Phone</Label>
-              <Input value={phone} onChange={(e) => setPhone(e.target.value)} className="mt-1.5" />
-            </div>
-          </div>
-        </Card>
 
         {/* Address */}
         <Card className="p-6">
