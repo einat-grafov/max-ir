@@ -2,9 +2,10 @@ import { Users, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Customers = () => {
+  const navigate = useNavigate();
   const { data: customers = [] } = useQuery({
     queryKey: ["customers"],
     queryFn: async () => {
@@ -53,9 +54,11 @@ const Customers = () => {
                 </tr>
               ) : (
                 customers.map((c) => (
-                  <tr key={c.id} className="border-b border-border/50 hover:bg-muted/50 transition-colors">
+                  <tr key={c.id} className="border-b border-border/50 hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => navigate(`/admin/customers/${c.id}`)}>
                     <td className="px-6 py-3 text-foreground font-medium">
-                      {c.first_name} {c.last_name || ""}
+                      <Link to={`/admin/customers/${c.id}`} className="hover:underline" onClick={(e) => e.stopPropagation()}>
+                        {c.first_name} {c.last_name || ""}
+                      </Link>
                     </td>
                     <td className="px-6 py-3 text-muted-foreground">{c.email || "—"}</td>
                     <td className="px-6 py-3 text-muted-foreground">{c.country || "—"}</td>
