@@ -17,6 +17,7 @@ import Products from "./pages/admin/Products";
 import CreateProduct from "./pages/admin/CreateProduct";
 import EditProduct from "./pages/admin/EditProduct";
 import Customers from "./pages/admin/Customers";
+import CreateCustomer from "./pages/admin/CreateCustomer";
 import Analytics from "./pages/admin/Analytics";
 import Inquiries from "./pages/admin/Inquiries";
 import StockNotifications from "./pages/admin/StockNotifications";
@@ -56,6 +57,7 @@ const router = createBrowserRouter([
           { path: "products/create", element: <CreateProduct /> },
           { path: "products/:id", element: <EditProduct /> },
           { path: "customers", element: <Customers /> },
+          { path: "customers/create", element: <CreateCustomer /> },
           { path: "inquiries", element: <Inquiries /> },
           { path: "stock-notifications", element: <StockNotifications /> },
           { path: "analytics", element: <Analytics /> },

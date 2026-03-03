@@ -1,14 +1,11 @@
-import { useState } from "react";
 import { Users, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import CreateCustomerModal from "@/components/admin/CreateCustomerModal";
+import { Link } from "react-router-dom";
 
 const Customers = () => {
-  const [modalOpen, setModalOpen] = useState(false);
-
-  const { data: customers = [], refetch } = useQuery({
+  const { data: customers = [] } = useQuery({
     queryKey: ["customers"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -27,17 +24,13 @@ const Customers = () => {
           <Users className="h-6 w-6 text-primary" />
           <h1 className="text-2xl font-bold text-foreground">Customers</h1>
         </div>
-        <Button onClick={() => setModalOpen(true)}>
-          <Plus className="h-4 w-4 mr-1" />
-          Add customer
+        <Button asChild>
+          <Link to="/admin/customers/create">
+            <Plus className="h-4 w-4 mr-1" />
+            Add customer
+          </Link>
         </Button>
       </div>
-
-      <CreateCustomerModal
-        open={modalOpen}
-        onOpenChange={setModalOpen}
-        onCustomerCreated={() => refetch()}
-      />
 
       <div className="bg-background border border-border rounded-lg overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
