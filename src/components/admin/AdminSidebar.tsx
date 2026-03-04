@@ -9,6 +9,7 @@ import {
   LogOut,
   ChevronDown,
   Home,
+  Globe,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate, Link } from "react-router-dom";
@@ -33,6 +34,7 @@ const mainItems = [
   { title: "Orders", url: "/admin/orders", icon: ShoppingCart },
   { title: "Products", url: "/admin/products", icon: Package },
   { title: "Customers", url: "/admin/customers", icon: Users },
+  { title: "Website", url: "/admin/website", icon: Globe },
 ];
 
 const settingsItems = [

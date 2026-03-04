@@ -24,6 +24,7 @@ import Customers from "./pages/admin/Customers";
 import CreateCustomer from "./pages/admin/CreateCustomer";
 import EditCustomer from "./pages/admin/EditCustomer";
 import Analytics from "./pages/admin/Analytics";
+import Website from "./pages/admin/Website";
 import UsersSettings from "./pages/admin/settings/UsersSettings";
 import BillingSettings from "./pages/admin/settings/BillingSettings";
 import ShippingSettings from "./pages/admin/settings/ShippingSettings";
@@ -75,6 +76,7 @@ const router = createBrowserRouter([
           { path: "customers", element: <Customers /> },
           { path: "customers/create", element: <CreateCustomer /> },
           { path: "customers/:id", element: <EditCustomer /> },
+          { path: "website", element: <Website /> },
           { path: "settings/users", element: <UsersSettings /> },
           { path: "settings/billing", element: <BillingSettings /> },
           { path: "settings/shipping", element: <ShippingSettings /> },
