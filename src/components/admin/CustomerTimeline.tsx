@@ -40,34 +40,18 @@ const groupLabel = (date: Date) => {
   return format(date, "MMMM d, yyyy");
 };
 
-const EventIcon = ({ type }: { type: TimelineEvent["type"] }) => {
-  const base = "absolute -left-[25.5px] top-1 h-3.5 w-3.5 -translate-x-1/2 rounded-full flex items-center justify-center";
-  switch (type) {
-    case "order":
-      return (
-        <div className={cn(base, "bg-primary")}>
-          <ShoppingCart className="h-2 w-2 text-primary-foreground" />
-        </div>
-      );
-    case "inquiry":
-      return (
-        <div className={cn(base, "bg-blue-500")}>
-          <Mail className="h-2 w-2 text-white" />
-        </div>
-      );
-    case "note":
-      return (
-        <div className={cn(base, "bg-amber-500")}>
-          <MessageSquare className="h-2 w-2 text-white" />
-        </div>
-      );
-    case "created":
-      return (
-        <div className={cn(base, "bg-green-500")}>
-          <UserPlus className="h-2 w-2 text-white" />
-        </div>
-      );
-  }
+const iconColors: Record<TimelineEvent["type"], string> = {
+  order: "bg-primary",
+  inquiry: "bg-blue-500",
+  note: "bg-amber-500",
+  created: "bg-green-500",
+};
+
+const iconElements: Record<TimelineEvent["type"], React.ReactNode> = {
+  order: <ShoppingCart className="h-2 w-2 text-primary-foreground" />,
+  inquiry: <Mail className="h-2 w-2 text-white" />,
+  note: <MessageSquare className="h-2 w-2 text-white" />,
+  created: <UserPlus className="h-2 w-2 text-white" />,
 };
 
 const EVENT_TYPE_FILTERS = [
@@ -308,31 +292,36 @@ const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, company
         contactPerson={contactPerson || ""}
       />
 
-      <div className="relative pl-10">
-        <div className="absolute left-[14px] top-0 bottom-0 w-px bg-border" />
-
+      <div className="relative">
         {/* Events */}
         {filteredEvents.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{isFiltering ? "No matching events found." : "No activity yet."}</p>
+          <p className="text-sm text-muted-foreground pl-8">{isFiltering ? "No matching events found." : "No activity yet."}</p>
         ) : (
           grouped.map((group) => (
             <div key={group.label} className="mb-4">
-              <p className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">
+              <p className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide pl-8">
                 {group.label}
               </p>
               {group.events.map((event) => (
                 <div
                   key={event.id}
                   className={cn(
-                    "relative mb-4 last:mb-0",
+                    "flex gap-3 mb-4 last:mb-0",
                     event.noteData && "cursor-pointer hover:bg-muted/50 rounded-md transition-colors"
                   )}
                   onClick={() => {
                     if (event.noteData) setSelectedNote(event.noteData);
                   }}
                 >
-                  <EventIcon type={event.type} />
-                  <div className="flex items-start justify-between gap-3">
+                  {/* Icon column — fixed width, line runs through center */}
+                  <div className="relative flex flex-col items-center w-[14px] shrink-0 pt-1">
+                    <div className="absolute inset-0 left-1/2 w-px -translate-x-1/2 bg-border" />
+                    <div className={cn("relative z-10 h-3.5 w-3.5 rounded-full flex items-center justify-center shrink-0", iconColors[event.type])}>
+                      {iconElements[event.type]}
+                    </div>
+                  </div>
+                  {/* Content */}
+                  <div className="flex-1 min-w-0 flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-foreground line-clamp-2">
                         {event.link ? (
