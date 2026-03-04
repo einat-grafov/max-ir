@@ -138,11 +138,11 @@ const SectionFields = ({
     case "hero":
       return <HeroFields content={content} updateField={updateField} />;
     case "technology":
-      return <TechnologyFields content={content} updateField={updateField} setContent={setContent} />;
+      return <TechnologyFieldsRich content={content} updateField={updateField} setContent={setContent} />;
     case "sensor":
-      return <SimpleTextFields content={content} updateField={updateField} fields={["title", "description"]} />;
+      return <SensorFieldsRich content={content} updateField={updateField} setContent={setContent} />;
     case "applications":
-      return <ApplicationsFields content={content} updateField={updateField} setContent={setContent} />;
+      return <ApplicationsFieldsRich content={content} updateField={updateField} setContent={setContent} />;
     case "awards":
       return <ListSectionFields content={content} updateField={updateField} setContent={setContent} itemKey="items" itemFields={["image", "title", "description"]} />;
     case "our_story":
@@ -171,6 +171,49 @@ const HeroFields = ({ content, updateField }: { content: any; updateField: (p: s
       <Field label="Subtitle" value={content.subtitle} onChange={(v) => updateField("subtitle", v)} multiline />
     )}
     <Field label="Background Image URL" value={content.background_image} onChange={(v) => updateField("background_image", v)} />
+  </div>
+);
+
+const TechnologyFieldsRich = ({ content, updateField, setContent }: { content: any; updateField: (p: string, v: any) => void; setContent: any }) => (
+  <div className="space-y-4">
+    <Field label="Title" value={content.title} onChange={(v) => updateField("title", v)} />
+    <Field label="Subtitle" value={content.subtitle} onChange={(v) => updateField("subtitle", v)} multiline />
+    <Field label="Diagram Image URL" value={content.diagram_image} onChange={(v) => updateField("diagram_image", v)} />
+    <OurStoryFields content={{ title: "", paragraphs: content.paragraphs || [] }} updateField={() => {}} setContent={(fn: any) => {
+      setContent((prev: any) => {
+        const temp = fn({ paragraphs: prev.paragraphs || [] });
+        return { ...prev, paragraphs: temp.paragraphs };
+      });
+    }} />
+    <Label className="text-sm font-medium text-foreground block">About Paragraphs (shown above Technology)</Label>
+    <OurStoryFields content={{ title: "", paragraphs: content.about_paragraphs || [] }} updateField={() => {}} setContent={(fn: any) => {
+      setContent((prev: any) => {
+        const temp = fn({ paragraphs: prev.about_paragraphs || [] });
+        return { ...prev, about_paragraphs: temp.paragraphs };
+      });
+    }} />
+    <ListSectionFields content={content} updateField={updateField} setContent={setContent} itemKey="features" itemFields={["icon", "title"]} />
+  </div>
+);
+
+const SensorFieldsRich = ({ content, updateField, setContent }: { content: any; updateField: (p: string, v: any) => void; setContent: any }) => (
+  <div className="space-y-4">
+    <Field label="Title" value={content.title} onChange={(v) => updateField("title", v)} />
+    <OurStoryFields content={{ title: "", paragraphs: content.paragraphs || [] }} updateField={() => {}} setContent={(fn: any) => {
+      setContent((prev: any) => {
+        const temp = fn({ paragraphs: prev.paragraphs || [] });
+        return { ...prev, paragraphs: temp.paragraphs };
+      });
+    }} />
+  </div>
+);
+
+const ApplicationsFieldsRich = ({ content, updateField, setContent }: { content: any; updateField: (p: string, v: any) => void; setContent: any }) => (
+  <div className="space-y-4">
+    <Field label="Title" value={content.title} onChange={(v) => updateField("title", v)} />
+    <ListSectionFields content={content} updateField={updateField} setContent={setContent} itemKey="items" itemFields={["key", "title", "image", "image_alt", "shadow", "bg_image", "layout"]} />
+    {/* Paragraphs per item are managed within each item */}
+    <Label className="text-sm font-medium text-foreground block mt-2">Note: Each application item''s paragraphs can be edited as a JSON array in the description-like fields above.</Label>
   </div>
 );
 
