@@ -34,6 +34,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Plus, Trash2 } from "lucide-react";
+import CustomerTimeline from "@/components/admin/CustomerTimeline";
 
 interface ContactState {
   id?: string;
@@ -266,112 +267,123 @@ const EditCustomer = () => {
         </div>
       </div>
 
-      <div className="max-w-2xl space-y-6">
-        {/* Company */}
-        <Card className="p-6">
-          <h2 className="text-base font-semibold text-foreground mb-4">Company</h2>
-          <div>
-            <Label className="text-sm font-medium text-foreground">Company name</Label>
-            <Input
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              placeholder="Enter company name"
-              className="mt-1.5"
-            />
-          </div>
-        </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-6">
+        <div className="space-y-6">
+          {/* Company */}
+          <Card className="p-6">
+            <h2 className="text-base font-semibold text-foreground mb-4">Company</h2>
+            <div>
+              <Label className="text-sm font-medium text-foreground">Company name</Label>
+              <Input
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                placeholder="Enter company name"
+                className="mt-1.5"
+              />
+            </div>
+          </Card>
 
-        {/* Contacts */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-semibold text-foreground">Contacts</h2>
-            <Button variant="outline" size="sm" onClick={addContact}>
-              <Plus className="h-4 w-4 mr-1" />
-              Add contact
-            </Button>
-          </div>
+          {/* Contacts */}
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-base font-semibold text-foreground">Contacts</h2>
+              <Button variant="outline" size="sm" onClick={addContact}>
+                <Plus className="h-4 w-4 mr-1" />
+                Add contact
+              </Button>
+            </div>
 
-          {contacts.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              No contacts added yet. Click "Add contact" to add one.
-            </p>
-          ) : (
-            <div className="space-y-6">
-              {contacts.map((contact, index) => (
-                <div key={contact.id || index} className="border border-border rounded-lg p-4 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-muted-foreground">Contact {index + 1}</span>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:bg-destructive hover:text-white" onClick={() => removeContact(index)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-sm font-medium text-foreground">First name</Label>
-                      <Input value={contact.first_name} onChange={(e) => updateContact(index, "first_name", e.target.value)} className="mt-1.5" />
+            {contacts.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No contacts added yet. Click "Add contact" to add one.
+              </p>
+            ) : (
+              <div className="space-y-6">
+                {contacts.map((contact, index) => (
+                  <div key={contact.id || index} className="border border-border rounded-lg p-4 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-muted-foreground">Contact {index + 1}</span>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:bg-destructive hover:text-white" onClick={() => removeContact(index)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium text-foreground">First name</Label>
+                        <Input value={contact.first_name} onChange={(e) => updateContact(index, "first_name", e.target.value)} className="mt-1.5" />
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-foreground">Last name</Label>
+                        <Input value={contact.last_name} onChange={(e) => updateContact(index, "last_name", e.target.value)} className="mt-1.5" />
+                      </div>
                     </div>
                     <div>
-                      <Label className="text-sm font-medium text-foreground">Last name</Label>
-                      <Input value={contact.last_name} onChange={(e) => updateContact(index, "last_name", e.target.value)} className="mt-1.5" />
+                      <Label className="text-sm font-medium text-foreground">Role</Label>
+                      <Input value={contact.role} onChange={(e) => updateContact(index, "role", e.target.value)} placeholder="e.g. CEO, CTO, Purchasing Manager" className="mt-1.5" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium text-foreground">Phone</Label>
+                        <Input value={contact.phone} onChange={(e) => updateContact(index, "phone", e.target.value)} className="mt-1.5" />
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-foreground">Email</Label>
+                        <Input value={contact.email} onChange={(e) => updateContact(index, "email", e.target.value)} type="email" className="mt-1.5" />
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <Label className="text-sm font-medium text-foreground">Role</Label>
-                    <Input value={contact.role} onChange={(e) => updateContact(index, "role", e.target.value)} placeholder="e.g. CEO, CTO, Purchasing Manager" className="mt-1.5" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-sm font-medium text-foreground">Phone</Label>
-                      <Input value={contact.phone} onChange={(e) => updateContact(index, "phone", e.target.value)} className="mt-1.5" />
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-foreground">Email</Label>
-                      <Input value={contact.email} onChange={(e) => updateContact(index, "email", e.target.value)} type="email" className="mt-1.5" />
-                    </div>
-                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+
+          {/* Address */}
+          <Card className="p-6">
+            <h2 className="text-base font-semibold text-foreground mb-4">Default address</h2>
+            <div className="space-y-4">
+              <div>
+                <Label className="text-sm font-medium text-foreground">Country / region</Label>
+                <Select value={country} onValueChange={setCountry}>
+                  <SelectTrigger className="mt-1.5">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {COUNTRIES.map((c) => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-foreground">Address</Label>
+                <Input value={address} onChange={(e) => setAddress(e.target.value)} className="mt-1.5" />
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-foreground">Apartment, suite, etc</Label>
+                <Input value={apartment} onChange={(e) => setApartment(e.target.value)} className="mt-1.5" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium text-foreground">Postal code</Label>
+                  <Input value={postalCode} onChange={(e) => setPostalCode(e.target.value)} className="mt-1.5" />
                 </div>
-              ))}
+                <div>
+                  <Label className="text-sm font-medium text-foreground">City</Label>
+                  <Input value={city} onChange={(e) => setCity(e.target.value)} className="mt-1.5" />
+                </div>
+              </div>
             </div>
-          )}
-        </Card>
+          </Card>
+        </div>
 
-        {/* Address */}
-        <Card className="p-6">
-          <h2 className="text-base font-semibold text-foreground mb-4">Default address</h2>
-          <div className="space-y-4">
-            <div>
-              <Label className="text-sm font-medium text-foreground">Country / region</Label>
-              <Select value={country} onValueChange={setCountry}>
-                <SelectTrigger className="mt-1.5">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {COUNTRIES.map((c) => (
-                    <SelectItem key={c} value={c}>{c}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label className="text-sm font-medium text-foreground">Address</Label>
-              <Input value={address} onChange={(e) => setAddress(e.target.value)} className="mt-1.5" />
-            </div>
-            <div>
-              <Label className="text-sm font-medium text-foreground">Apartment, suite, etc</Label>
-              <Input value={apartment} onChange={(e) => setApartment(e.target.value)} className="mt-1.5" />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label className="text-sm font-medium text-foreground">Postal code</Label>
-                <Input value={postalCode} onChange={(e) => setPostalCode(e.target.value)} className="mt-1.5" />
-              </div>
-              <div>
-                <Label className="text-sm font-medium text-foreground">City</Label>
-                <Input value={city} onChange={(e) => setCity(e.target.value)} className="mt-1.5" />
-              </div>
-            </div>
-          </div>
-        </Card>
+        {/* Right sidebar – Timeline */}
+        <div className="space-y-6">
+          <CustomerTimeline
+            customerId={id!}
+            customerName={companyName || customer.company || customer.first_name}
+            customerCreatedAt={customer.created_at}
+          />
+        </div>
       </div>
     </div>
   );
