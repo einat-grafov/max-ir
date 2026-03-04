@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -35,6 +35,19 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Plus, Trash2 } from "lucide-react";
 import CustomerTimeline from "@/components/admin/CustomerTimeline";
+import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const statusConfig: Record<string, { label: string; className: string }> = {
+  active: { label: "Active", className: "bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-200 cursor-pointer" },
+  new_lead: { label: "New Lead", className: "bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200 cursor-pointer" },
+  new_inquiry: { label: "New Inquiry", className: "bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-200 cursor-pointer" },
+};
 
 interface ContactState {
   id?: string;
@@ -65,6 +78,22 @@ const EditCustomer = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [saving, setSaving] = useState(false);
+
+  const updateStatusMutation = useMutation({
+    mutationFn: async (newStatus: string) => {
+      const { error } = await supabase
+        .from("customers")
+        .update({ status: newStatus } as any)
+        .eq("id", id!);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["customer", id] });
+      queryClient.invalidateQueries({ queryKey: ["customers"] });
+      toast.success("Status updated");
+    },
+    onError: () => toast.error("Failed to update status"),
+  });
 
   const [companyName, setCompanyName] = useState("");
   const [country, setCountry] = useState("Israel");
@@ -239,11 +268,33 @@ const EditCustomer = () => {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <h1 className="text-2xl font-bold text-foreground">
+          <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
             {customer.company || customer.first_name}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button>
+                  <Badge variant="outline" className={((statusConfig as any)[(customer as any).status] || statusConfig.new_lead).className}>
+                    {((statusConfig as any)[(customer as any).status] || statusConfig.new_lead).label}
+                  </Badge>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                {Object.entries(statusConfig).map(([key, config]) => (
+                  <DropdownMenuItem
+                    key={key}
+                    onClick={() => {
+                      updateStatusMutation.mutate(key);
+                    }}
+                    className="gap-2"
+                  >
+                    <Badge variant="outline" className={config.className.replace("hover:bg-emerald-200 cursor-pointer", "").replace("hover:bg-blue-200 cursor-pointer", "").replace("hover:bg-amber-200 cursor-pointer", "")}>
+                      {config.label}
+                    </Badge>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </h1>
-        </div>
-        <div className="flex items-center gap-2">
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="destructive">Delete customer</Button>
