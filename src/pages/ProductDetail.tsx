@@ -243,7 +243,7 @@ const ProductDetail = () => {
                                     <div className="flex-1 min-w-0">
                                       <span className="text-sm text-foreground font-medium">{v.name}</span>
                                       {v.sku && (
-                                        <p className="text-xs text-muted-foreground font-mono mt-0.5">{v.sku}</p>
+                                        <p className="text-xs text-muted-foreground font-mono mt-0.5"><span className="font-semibold not-italic" style={{ fontFamily: 'inherit' }}>SKU:</span> {v.sku}</p>
                                       )}
                                       {outOfStock && (
                                         <p className="text-xs text-destructive font-medium mt-0.5">Out of stock</p>
