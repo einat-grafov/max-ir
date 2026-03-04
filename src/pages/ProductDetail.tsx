@@ -384,6 +384,9 @@ const ProductDetail = () => {
                     </button>
                     </>
                     )}
+                    {!showAddToCart && !showRequestQuote && (
+                      <p className="text-sm text-muted-foreground italic">Contact us for availability and pricing.</p>
+                    )}
                   </div>
                     );
                   })()}
