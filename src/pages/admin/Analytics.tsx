@@ -2,7 +2,8 @@ import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format, subDays, startOfDay, endOfDay, eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval, isWithinInterval, startOfWeek, startOfMonth, endOfWeek, endOfMonth } from "date-fns";
-import { BarChart3, DollarSign, ShoppingCart, Users, TrendingUp, CalendarIcon, Download, ArrowUpDown } from "lucide-react";
+import { BarChart3, DollarSign, ShoppingCart, Users, TrendingUp, CalendarIcon, Download, ArrowUpDown, ExternalLink } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +24,7 @@ const PERIOD_OPTIONS = [
 ];
 
 const Analytics = () => {
+  const navigate = useNavigate();
   const [period, setPeriod] = useState("30");
   const [customRange, setCustomRange] = useState<DateRange | undefined>();
   const [customOpen, setCustomOpen] = useState(false);
@@ -75,14 +77,18 @@ const Analytics = () => {
   });
 
   // Match inquiries to existing customers by email
-  const { data: customerEmails = [] } = useQuery({
+  const { data: customerEmailMap = new Map() } = useQuery({
     queryKey: ["analytics-customer-emails"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("customers")
-        .select("email");
+        .select("id, email");
       if (error) throw error;
-      return data.map((c) => c.email?.toLowerCase()).filter(Boolean) as string[];
+      const map = new Map<string, string>();
+      data.forEach((c) => {
+        if (c.email) map.set(c.email.toLowerCase(), c.id);
+      });
+      return map;
     },
   });
 
@@ -342,11 +348,21 @@ const Analytics = () => {
               </TableHeader>
               <TableBody>
                 {filteredInquiries.map((inquiry) => {
-                  const isExisting = customerEmails.includes(inquiry.email?.toLowerCase());
+                  const customerId = customerEmailMap.get(inquiry.email?.toLowerCase());
+                  const isExisting = !!customerId;
                   const displayName = inquiry.company_name || [inquiry.first_name, inquiry.last_name].filter(Boolean).join(" ") || inquiry.name;
                   return (
-                    <TableRow key={inquiry.id}>
-                      <TableCell className="font-medium text-sm">{displayName}</TableCell>
+                    <TableRow
+                      key={inquiry.id}
+                      className={isExisting ? "cursor-pointer" : ""}
+                      onClick={() => isExisting && navigate(`/admin/customers/${customerId}`)}
+                    >
+                      <TableCell className="font-medium text-sm">
+                        <span className="flex items-center gap-1.5">
+                          {displayName}
+                          {isExisting && <ExternalLink className="h-3 w-3 text-muted-foreground" />}
+                        </span>
+                      </TableCell>
                       <TableCell className="text-sm">{inquiry.email}</TableCell>
                       <TableCell className="text-sm">{inquiry.product_name}</TableCell>
                       <TableCell className="text-sm max-w-[240px] truncate">{inquiry.message}</TableCell>
