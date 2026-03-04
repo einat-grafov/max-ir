@@ -2,8 +2,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createBrowserRouter, RouterProvider, Navigate, Outlet } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate, Outlet, useLocation } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
+import { useEffect } from "react";
 import Index from "./pages/Index";
 import Team from "./pages/Team";
 import Store from "./pages/Store";
@@ -30,8 +31,17 @@ import DesignSystem from "./pages/DesignSystem";
 
 const queryClient = new QueryClient();
 
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
+
 const RootLayout = () => (
   <CartProvider>
+    <ScrollToTop />
     <Outlet />
   </CartProvider>
 );
