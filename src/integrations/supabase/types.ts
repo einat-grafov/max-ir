@@ -55,6 +55,41 @@ export type Database = {
           },
         ]
       }
+      customer_notes: {
+        Row: {
+          attachment_name: string | null
+          attachment_url: string | null
+          content: string
+          created_at: string
+          customer_id: string
+          id: string
+        }
+        Insert: {
+          attachment_name?: string | null
+          attachment_url?: string | null
+          content: string
+          created_at?: string
+          customer_id: string
+          id?: string
+        }
+        Update: {
+          attachment_name?: string | null
+          attachment_url?: string | null
+          content?: string
+          created_at?: string
+          customer_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_notes_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customers: {
         Row: {
           accepts_marketing: boolean
