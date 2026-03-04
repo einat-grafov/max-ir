@@ -114,31 +114,46 @@ export type Database = {
       }
       inquiries: {
         Row: {
+          company_name: string | null
+          country: string | null
           created_at: string
           email: string
+          first_name: string | null
           id: string
+          last_name: string | null
           message: string
           name: string
+          phone: string | null
           product_id: string | null
           product_name: string
           read: boolean
         }
         Insert: {
+          company_name?: string | null
+          country?: string | null
           created_at?: string
           email: string
+          first_name?: string | null
           id?: string
+          last_name?: string | null
           message: string
           name: string
+          phone?: string | null
           product_id?: string | null
           product_name: string
           read?: boolean
         }
         Update: {
+          company_name?: string | null
+          country?: string | null
           created_at?: string
           email?: string
+          first_name?: string | null
           id?: string
+          last_name?: string | null
           message?: string
           name?: string
+          phone?: string | null
           product_id?: string | null
           product_name?: string
           read?: boolean

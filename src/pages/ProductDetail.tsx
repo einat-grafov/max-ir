@@ -465,31 +465,21 @@ const ProductDetail = () => {
 
         {/* Inquiry Modal */}
         {product && (
-          <Dialog open={inquiryOpen} onOpenChange={setInquiryOpen}>
-            <DialogContent className="bg-maxir-dark border-white/10 sm:max-w-[500px]">
-              <DialogHeader>
-                <DialogTitle className="text-maxir-white font-montserrat text-xl">
-                  Inquire About {product.name}
-                </DialogTitle>
-                <p className="text-maxir-white/60 text-sm mt-1">
-                  Fill out the form below and our team will get back to you shortly.
-                </p>
-              </DialogHeader>
-              <ProductInquiryForm
-                productName={product.name}
-                productId={product.id}
-                selectedVariants={(() => {
-                  const variants = getVariants(product);
-                  return variants.map((v, i) => ({
-                    name: v.name,
-                    sku: v.sku,
-                    price: v.price,
-                    quantity: selectedVariants[i] ?? 1,
-                  } as SelectedVariantItem));
-                })()}
-              />
-            </DialogContent>
-          </Dialog>
+          <ProductInquiryForm
+            open={inquiryOpen}
+            onOpenChange={setInquiryOpen}
+            productName={product.name}
+            productId={product.id}
+            selectedVariants={(() => {
+              const variants = getVariants(product);
+              return variants.map((v, i) => ({
+                name: v.name,
+                sku: v.sku,
+                price: v.price,
+                quantity: selectedVariants[i] ?? 1,
+              } as SelectedVariantItem));
+            })()}
+          />
         )}
         {/* Notify Me Modal */}
         <Dialog open={!!notifyVariant} onOpenChange={(open) => { if (!open) setNotifyVariant(null); }}>
