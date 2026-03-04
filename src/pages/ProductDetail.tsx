@@ -94,10 +94,12 @@ const ProductDetail = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id, name, image_url, images, price, description, overview, specifications, variants, category, sku")
+        .select("id, name, image_url, images, price, description, overview, specifications, variants, category, sku, status")
         .eq("id", id!)
-        .single();
+        .eq("status", "active")
+        .maybeSingle();
       if (error) throw error;
+      if (!data) throw new Error("Product not found");
       return data as Product;
     },
     enabled: !!id,
