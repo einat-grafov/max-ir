@@ -1,15 +1,19 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { format, isToday, isYesterday } from "date-fns";
+import { Badge } from "@/components/ui/badge";
+import { format, isToday, isYesterday, subDays, startOfDay, endOfDay, isWithinInterval } from "date-fns";
 import { cn } from "@/lib/utils";
-import { ShoppingCart, Mail, UserPlus, MessageSquare, Paperclip, Plus } from "lucide-react";
+import { ShoppingCart, Mail, UserPlus, MessageSquare, Paperclip, Plus, Filter, CalendarIcon, X } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import RecordInteractionModal from "@/components/admin/RecordInteractionModal";
 import NoteDetailModal from "@/components/admin/NoteDetailModal";
 import type { Tables } from "@/integrations/supabase/types";
+import type { DateRange } from "react-day-picker";
 
 interface TimelineEvent {
   id: string;
@@ -65,10 +69,29 @@ const EventIcon = ({ type }: { type: TimelineEvent["type"] }) => {
   }
 };
 
+const EVENT_TYPE_FILTERS = [
+  { value: "all", label: "All" },
+  { value: "note", label: "Notes" },
+  { value: "order", label: "Orders" },
+  { value: "inquiry", label: "Inquiries" },
+];
+
+const DATE_PRESETS = [
+  { value: "all", label: "All time" },
+  { value: "7", label: "Last 7 days" },
+  { value: "30", label: "Last 30 days" },
+  { value: "90", label: "Last 90 days" },
+  { value: "custom", label: "Custom" },
+];
+
 const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, companyName, contactPerson }: CustomerTimelineProps) => {
   const queryClient = useQueryClient();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Tables<"customer_notes"> | null>(null);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [datePreset, setDatePreset] = useState("all");
+  const [customDateRange, setCustomDateRange] = useState<DateRange | undefined>();
   const { data: orders } = useQuery({
     queryKey: ["customer-orders", customerId],
     queryFn: async () => {
@@ -154,10 +177,36 @@ const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, company
 
   events.sort((a, b) => b.date.getTime() - a.date.getTime());
 
+  // Apply filters
+  const isFiltering = typeFilter !== "all" || datePreset !== "all";
+
+  const filteredEvents = useMemo(() => {
+    let result = events;
+
+    // Type filter
+    if (typeFilter !== "all") {
+      result = result.filter((e) => e.type === typeFilter);
+    }
+
+    // Date filter
+    if (datePreset !== "all" && datePreset !== "custom") {
+      const days = parseInt(datePreset);
+      const start = startOfDay(subDays(new Date(), days));
+      const end = endOfDay(new Date());
+      result = result.filter((e) => isWithinInterval(e.date, { start, end }));
+    } else if (datePreset === "custom" && customDateRange?.from) {
+      const start = startOfDay(customDateRange.from);
+      const end = endOfDay(customDateRange.to || customDateRange.from);
+      result = result.filter((e) => isWithinInterval(e.date, { start, end }));
+    }
+
+    return result;
+  }, [events, typeFilter, datePreset, customDateRange]);
+
   // Group by day
   const grouped: { label: string; events: TimelineEvent[] }[] = [];
   let lastLabel = "";
-  for (const event of events) {
+  for (const event of filteredEvents) {
     const label = groupLabel(event.date);
     if (label !== lastLabel) {
       grouped.push({ label, events: [event] });
@@ -167,10 +216,76 @@ const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, company
     }
   }
 
+  const clearFilters = () => {
+    setTypeFilter("all");
+    setDatePreset("all");
+    setCustomDateRange(undefined);
+  };
+
   return (
     <Card className="p-5">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-base font-semibold text-foreground">Timeline</h2>
+        <div className="flex items-center gap-1">
+          {isFiltering && (
+            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs text-muted-foreground" onClick={clearFilters}>
+              <X className="h-3 w-3 mr-1" />
+              Clear
+            </Button>
+          )}
+          <Popover open={filterOpen} onOpenChange={setFilterOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" className={cn("h-8 w-8", isFiltering && "text-primary")}>
+                <Filter className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[280px] p-4" align="end">
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm font-medium mb-2">Event type</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {EVENT_TYPE_FILTERS.map((f) => (
+                      <Badge
+                        key={f.value}
+                        variant={typeFilter === f.value ? "default" : "outline"}
+                        className="cursor-pointer text-xs"
+                        onClick={() => setTypeFilter(f.value)}
+                      >
+                        {f.label}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm font-medium mb-2">Date range</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {DATE_PRESETS.map((p) => (
+                      <Badge
+                        key={p.value}
+                        variant={datePreset === p.value ? "default" : "outline"}
+                        className="cursor-pointer text-xs"
+                        onClick={() => setDatePreset(p.value)}
+                      >
+                        {p.label}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                {datePreset === "custom" && (
+                  <div>
+                    <Calendar
+                      mode="range"
+                      selected={customDateRange}
+                      onSelect={setCustomDateRange}
+                      numberOfMonths={1}
+                      className={cn("p-0 pointer-events-auto")}
+                    />
+                  </div>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
       {/* Leave a note button */}
@@ -196,8 +311,8 @@ const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, company
         <div className="absolute left-0 top-0 bottom-0 w-px bg-border" />
 
         {/* Events */}
-        {events.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No activity yet.</p>
+        {filteredEvents.length === 0 ? (
+          <p className="text-sm text-muted-foreground">{isFiltering ? "No matching events found." : "No activity yet."}</p>
         ) : (
           grouped.map((group) => (
             <div key={group.label} className="mb-4">
