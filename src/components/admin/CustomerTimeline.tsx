@@ -40,25 +40,25 @@ const EventIcon = ({ type }: { type: TimelineEvent["type"] }) => {
   switch (type) {
     case "order":
       return (
-        <div className="absolute -left-6 top-1 h-3.5 w-3.5 rounded-full bg-primary flex items-center justify-center">
+        <div className="absolute left-0 top-1 h-3.5 w-3.5 -translate-x-1/2 rounded-full bg-primary flex items-center justify-center">
           <ShoppingCart className="h-2 w-2 text-primary-foreground" />
         </div>
       );
     case "inquiry":
       return (
-        <div className="absolute -left-6 top-1 h-3.5 w-3.5 rounded-full bg-blue-500 flex items-center justify-center">
+        <div className="absolute left-0 top-1 h-3.5 w-3.5 -translate-x-1/2 rounded-full bg-blue-500 flex items-center justify-center">
           <Mail className="h-2 w-2 text-white" />
         </div>
       );
     case "note":
       return (
-        <div className="absolute -left-6 top-1 h-3.5 w-3.5 rounded-full bg-amber-500 flex items-center justify-center">
+        <div className="absolute left-0 top-1 h-3.5 w-3.5 -translate-x-1/2 rounded-full bg-amber-500 flex items-center justify-center">
           <MessageSquare className="h-2 w-2 text-white" />
         </div>
       );
     case "created":
       return (
-        <div className="absolute -left-6 top-1 h-3.5 w-3.5 rounded-full bg-green-500 flex items-center justify-center">
+        <div className="absolute left-0 top-1 h-3.5 w-3.5 -translate-x-1/2 rounded-full bg-green-500 flex items-center justify-center">
           <UserPlus className="h-2 w-2 text-white" />
         </div>
       );
@@ -193,7 +193,7 @@ const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, company
       />
 
       <div className="relative pl-6">
-        <div className="absolute left-[7px] top-0 bottom-0 w-px bg-border" />
+        <div className="absolute left-0 top-0 bottom-0 w-px bg-border" />
 
         {/* Events */}
         {events.length === 0 ? (
