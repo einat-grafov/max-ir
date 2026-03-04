@@ -67,10 +67,7 @@ const RecordInteractionModal = ({
   const queryClient = useQueryClient();
 
   const [dateOfInteraction, setDateOfInteraction] = useState<Date>(new Date());
-  const [name, setName] = useState(customerName);
-  const [company, setCompany] = useState(companyName);
   const [contact, setContact] = useState(contactPerson);
-  const [salesRep, setSalesRep] = useState("");
   const [interactionType, setInteractionType] = useState("");
   const [interactionTypeOther, setInteractionTypeOther] = useState("");
   const [summary, setSummary] = useState("");
@@ -81,14 +78,10 @@ const RecordInteractionModal = ({
   const [salesStage, setSalesStage] = useState("");
   const [salesStageOther, setSalesStageOther] = useState("");
   const [nextFollowUpDate, setNextFollowUpDate] = useState<Date | undefined>();
-  const [assignedSalesRep, setAssignedSalesRep] = useState("");
 
   const resetForm = () => {
     setDateOfInteraction(new Date());
-    setName(customerName);
-    setCompany(companyName);
     setContact(contactPerson);
-    setSalesRep("");
     setInteractionType("");
     setInteractionTypeOther("");
     setSummary("");
@@ -99,13 +92,10 @@ const RecordInteractionModal = ({
     setSalesStage("");
     setSalesStageOther("");
     setNextFollowUpDate(undefined);
-    setAssignedSalesRep("");
   };
 
   const handleOpenChange = (newOpen: boolean) => {
     if (newOpen) {
-      setName(customerName);
-      setCompany(companyName);
       setContact(contactPerson);
       setDateOfInteraction(new Date());
     }
@@ -125,10 +115,9 @@ const RecordInteractionModal = ({
         customer_id: customerId,
         content: contentParts.join(" ") || "Interaction recorded",
         date_of_interaction: dateOfInteraction.toISOString(),
-        customer_name: name || null,
-        company: company || null,
+        customer_name: customerName || null,
+        company: companyName || null,
         contact_person: contact || null,
-        sales_representative: salesRep || null,
         interaction_type: interactionType === "Other" ? interactionTypeOther : interactionType || null,
         interaction_type_other: interactionType === "Other" ? interactionTypeOther : null,
         summary: summary || null,
@@ -139,7 +128,6 @@ const RecordInteractionModal = ({
         sales_stage: salesStage === "Other" ? salesStageOther : salesStage || null,
         sales_stage_other: salesStage === "Other" ? salesStageOther : null,
         next_follow_up_date: nextFollowUpDate ? format(nextFollowUpDate, "yyyy-MM-dd") : null,
-        assigned_sales_rep: assignedSalesRep || null,
       } as any);
       if (error) throw error;
     },
@@ -164,7 +152,7 @@ const RecordInteractionModal = ({
         </DialogHeader>
 
         <div className="space-y-5 pt-2">
-          {/* Row 1: Date + Customer Name */}
+          {/* Row 1: Date + Contact Person */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label className="text-sm font-medium">Date of Interaction</Label>
@@ -193,42 +181,24 @@ const RecordInteractionModal = ({
               </Popover>
             </div>
             <div>
-              <Label className="text-sm font-medium">Customer Name</Label>
-              <Input value={name} onChange={(e) => setName(e.target.value)} className="mt-1.5" />
-            </div>
-          </div>
-
-          {/* Row 2: Company + Contact Person */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className="text-sm font-medium">Company / Organization</Label>
-              <Input value={company} onChange={(e) => setCompany(e.target.value)} className="mt-1.5" />
-            </div>
-            <div>
               <Label className="text-sm font-medium">Contact Person</Label>
               <Input value={contact} onChange={(e) => setContact(e.target.value)} className="mt-1.5" />
             </div>
           </div>
 
-          {/* Row 3: Sales Rep + Interaction Type */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className="text-sm font-medium">Sales Representative</Label>
-              <Input value={salesRep} onChange={(e) => setSalesRep(e.target.value)} className="mt-1.5" />
-            </div>
-            <div>
-              <Label className="text-sm font-medium">Type of Interaction</Label>
-              <Select value={interactionType} onValueChange={setInteractionType}>
-                <SelectTrigger className="mt-1.5">
-                  <SelectValue placeholder="Select type..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {INTERACTION_TYPES.map((t) => (
-                    <SelectItem key={t} value={t}>{t}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Interaction Type */}
+          <div>
+            <Label className="text-sm font-medium">Type of Interaction</Label>
+            <Select value={interactionType} onValueChange={setInteractionType}>
+              <SelectTrigger className="mt-1.5">
+                <SelectValue placeholder="Select type..." />
+              </SelectTrigger>
+              <SelectContent>
+                {INTERACTION_TYPES.map((t) => (
+                  <SelectItem key={t} value={t}>{t}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {interactionType === "Other" && (
@@ -379,15 +349,6 @@ const RecordInteractionModal = ({
             </div>
           )}
 
-          {/* Assigned Sales Rep */}
-          <div>
-            <Label className="text-sm font-medium">Assigned Sales Rep</Label>
-            <Input
-              value={assignedSalesRep}
-              onChange={(e) => setAssignedSalesRep(e.target.value)}
-              className="mt-1.5"
-            />
-          </div>
         </div>
 
         {/* Footer */}
