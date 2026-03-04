@@ -366,6 +366,8 @@ const ProductDetail = () => {
                       Add to Cart
                     </button>
                     )}
+                    {showRequestQuote && (
+                    <>
                     <button
                       onClick={() => setInquiryOpen(true)}
                       className="inline-flex items-center gap-2 bg-maxir-dark hover:bg-maxir-dark/90 text-maxir-white px-6 py-3 text-sm font-semibold transition-colors rounded-md"
@@ -373,7 +375,6 @@ const ProductDetail = () => {
                       <Mail className="w-4 h-4" />
                       Contact
                     </button>
-                    {showRequestQuote && (
                     <button
                       onClick={() => setInquiryOpen(true)}
                       className="inline-flex items-center gap-2 border border-border hover:bg-muted text-foreground px-6 py-3 text-sm font-semibold transition-colors rounded-md"
@@ -381,6 +382,7 @@ const ProductDetail = () => {
                       <FileText className="w-4 h-4" />
                       Quote
                     </button>
+                    </>
                     )}
                   </div>
                     );
