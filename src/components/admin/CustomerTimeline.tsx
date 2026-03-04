@@ -41,7 +41,7 @@ const groupLabel = (date: Date) => {
 };
 
 const EventIcon = ({ type }: { type: TimelineEvent["type"] }) => {
-  const base = "absolute -left-[26px] top-1 h-3.5 w-3.5 -translate-x-1/2 rounded-full flex items-center justify-center";
+  const base = "absolute -left-[23px] top-1 h-3.5 w-3.5 -translate-x-1/2 rounded-full flex items-center justify-center";
   switch (type) {
     case "order":
       return (
@@ -325,7 +325,7 @@ const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, company
                   key={event.id}
                   className={cn(
                     "relative mb-4 last:mb-0",
-                    event.noteData && "cursor-pointer hover:bg-muted/50 -mx-2 px-2 py-1 rounded-md transition-colors"
+                    event.noteData && "cursor-pointer hover:bg-muted/50 rounded-md transition-colors"
                   )}
                   onClick={() => {
                     if (event.noteData) setSelectedNote(event.noteData);
