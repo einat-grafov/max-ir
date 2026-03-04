@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import "flag-icons/css/flag-icons.min.css";
+import { COUNTRIES, getCountryCode } from "@/lib/countries";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -39,12 +41,6 @@ const emptyContact = (): Contact => ({
   email: "",
 });
 
-const COUNTRIES = [
-  "Israel", "United States", "United Kingdom", "Germany", "France",
-  "Canada", "Australia", "Japan", "China", "India", "Brazil",
-  "Italy", "Spain", "Netherlands", "Sweden", "Switzerland",
-  "South Korea", "Singapore", "Mexico", "Argentina",
-];
 
 const CreateCustomer = () => {
   const navigate = useNavigate();
@@ -230,11 +226,21 @@ const CreateCustomer = () => {
               <Label className="text-sm font-medium text-foreground">Country / region</Label>
               <Select value={country} onValueChange={setCountry}>
                 <SelectTrigger className="mt-1.5">
-                  <SelectValue />
+                  <SelectValue>
+                    <span className="inline-flex items-center gap-2">
+                      {getCountryCode(country) && <span className={`fi fi-${getCountryCode(country)} rounded-sm`} />}
+                      {country}
+                    </span>
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {COUNTRIES.map((c) => (
-                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                    <SelectItem key={c.name} value={c.name}>
+                      <span className="inline-flex items-center gap-2">
+                        <span className={`fi fi-${c.code} rounded-sm`} />
+                        {c.name}
+                      </span>
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>

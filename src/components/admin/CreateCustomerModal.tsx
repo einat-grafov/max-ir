@@ -1,4 +1,6 @@
 import { useState } from "react";
+import "flag-icons/css/flag-icons.min.css";
+import { COUNTRIES, getCountryCode } from "@/lib/countries";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -150,14 +152,22 @@ const CreateCustomerModal = ({ open, onOpenChange, onCustomerCreated }: CreateCu
             <Label className="text-sm font-medium text-foreground">Country/region</Label>
             <Select value={form.country} onValueChange={(v) => update("country", v)}>
               <SelectTrigger className="mt-1.5">
-                <SelectValue />
+                <SelectValue>
+                  <span className="inline-flex items-center gap-2">
+                    {getCountryCode(form.country) && <span className={`fi fi-${getCountryCode(form.country)} rounded-sm`} />}
+                    {form.country}
+                  </span>
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Israel">Israel</SelectItem>
-                <SelectItem value="United States">United States</SelectItem>
-                <SelectItem value="United Kingdom">United Kingdom</SelectItem>
-                <SelectItem value="Germany">Germany</SelectItem>
-                <SelectItem value="France">France</SelectItem>
+                {COUNTRIES.map((c) => (
+                  <SelectItem key={c.name} value={c.name}>
+                    <span className="inline-flex items-center gap-2">
+                      <span className={`fi fi-${c.code} rounded-sm`} />
+                      {c.name}
+                    </span>
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
