@@ -40,25 +40,25 @@ const EventIcon = ({ type }: { type: TimelineEvent["type"] }) => {
   switch (type) {
     case "order":
       return (
-        <div className="absolute left-0 top-1 h-3.5 w-3.5 -translate-x-1/2 rounded-full bg-primary flex items-center justify-center">
+        <div className="absolute -left-6 top-1 h-3.5 w-3.5 translate-x-[calc(50%-0.5px)] rounded-full bg-primary flex items-center justify-center">
           <ShoppingCart className="h-2 w-2 text-primary-foreground" />
         </div>
       );
     case "inquiry":
       return (
-        <div className="absolute left-0 top-1 h-3.5 w-3.5 -translate-x-1/2 rounded-full bg-blue-500 flex items-center justify-center">
+        <div className="absolute -left-6 top-1 h-3.5 w-3.5 translate-x-[calc(50%-0.5px)] rounded-full bg-blue-500 flex items-center justify-center">
           <Mail className="h-2 w-2 text-white" />
         </div>
       );
     case "note":
       return (
-        <div className="absolute left-0 top-1 h-3.5 w-3.5 -translate-x-1/2 rounded-full bg-amber-500 flex items-center justify-center">
+        <div className="absolute -left-6 top-1 h-3.5 w-3.5 translate-x-[calc(50%-0.5px)] rounded-full bg-amber-500 flex items-center justify-center">
           <MessageSquare className="h-2 w-2 text-white" />
         </div>
       );
     case "created":
       return (
-        <div className="absolute left-0 top-1 h-3.5 w-3.5 -translate-x-1/2 rounded-full bg-green-500 flex items-center justify-center">
+        <div className="absolute -left-6 top-1 h-3.5 w-3.5 translate-x-[calc(50%-0.5px)] rounded-full bg-green-500 flex items-center justify-center">
           <UserPlus className="h-2 w-2 text-white" />
         </div>
       );
