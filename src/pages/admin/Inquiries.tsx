@@ -4,6 +4,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { Mail, MailOpen } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Inquiries = () => {
   const queryClient = useQueryClient();
@@ -13,7 +14,7 @@ const Inquiries = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("inquiries")
-        .select("*")
+        .select("*, customers:customer_id(id, first_name, last_name, company)")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
@@ -50,6 +51,7 @@ const Inquiries = () => {
             <TableRow className="border-white/10 hover:bg-transparent">
               <TableHead className="text-maxir-gray w-10"></TableHead>
               <TableHead className="text-maxir-gray">Name</TableHead>
+              <TableHead className="text-maxir-gray">Customer</TableHead>
               <TableHead className="text-maxir-gray">Email</TableHead>
               <TableHead className="text-maxir-gray">Product</TableHead>
               <TableHead className="text-maxir-gray">Message</TableHead>
@@ -59,13 +61,13 @@ const Inquiries = () => {
           <TableBody>
             {isLoading ? (
               <TableRow className="border-white/10">
-                <TableCell colSpan={6} className="text-center text-maxir-gray py-12">
+                <TableCell colSpan={7} className="text-center text-maxir-gray py-12">
                   Loading…
                 </TableCell>
               </TableRow>
             ) : !inquiries?.length ? (
               <TableRow className="border-white/10">
-                <TableCell colSpan={6} className="text-center text-maxir-gray py-12">
+                <TableCell colSpan={7} className="text-center text-maxir-gray py-12">
                   No inquiries yet
                 </TableCell>
               </TableRow>
@@ -85,6 +87,19 @@ const Inquiries = () => {
                   </TableCell>
                   <TableCell className={`${!inq.read ? "text-maxir-white font-semibold" : "text-maxir-gray"}`}>
                     {inq.name}
+                  </TableCell>
+                  <TableCell className="text-maxir-gray">
+                    {(inq as any).customers ? (
+                      <Link
+                        to={`/admin/customers/${(inq as any).customers.id}`}
+                        className="text-primary hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {(inq as any).customers.company || `${(inq as any).customers.first_name} ${(inq as any).customers.last_name || ""}`.trim()}
+                      </Link>
+                    ) : (
+                      "—"
+                    )}
                   </TableCell>
                   <TableCell className="text-maxir-gray">{inq.email}</TableCell>
                   <TableCell>
