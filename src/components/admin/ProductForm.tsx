@@ -336,6 +336,24 @@ const ProductForm = ({
             </div>
           </Card>
 
+          <Card className="p-5 space-y-3">
+            <Label>Call to action</Label>
+            <p className="text-xs text-muted-foreground">Select which buttons appear on the product page. At least one must be enabled.</p>
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <Checkbox checked={ctaAddToCart} onCheckedChange={(v) => setCtaAddToCart(!!v)} />
+                <span className="text-sm">Add to Cart</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <Checkbox checked={ctaRequestQuote} onCheckedChange={(v) => setCtaRequestQuote(!!v)} />
+                <span className="text-sm">Request a Quote</span>
+              </label>
+            </div>
+            {!ctaAddToCart && !ctaRequestQuote && (
+              <p className="text-xs text-destructive font-medium">At least one call to action is required.</p>
+            )}
+          </Card>
+
           <Card className="p-5 space-y-2">
             <Label>Variants</Label>
             <p className="text-xs text-muted-foreground mb-1">Add product variants with individual pricing and inventory.</p>
@@ -548,24 +566,6 @@ const ProductForm = ({
                 <SelectItem value="archived">Archived</SelectItem>
               </SelectContent>
             </Select>
-          </Card>
-
-          <Card className="p-5 space-y-3">
-            <Label>Call to action</Label>
-            <p className="text-xs text-muted-foreground">Select which buttons appear on the product page. At least one must be enabled.</p>
-            <div className="space-y-2">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <Checkbox checked={ctaAddToCart} onCheckedChange={(v) => setCtaAddToCart(!!v)} />
-                <span className="text-sm">Add to Cart</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <Checkbox checked={ctaRequestQuote} onCheckedChange={(v) => setCtaRequestQuote(!!v)} />
-                <span className="text-sm">Request a Quote</span>
-              </label>
-            </div>
-            {!ctaAddToCart && !ctaRequestQuote && (
-              <p className="text-xs text-destructive font-medium">At least one call to action is required.</p>
-            )}
           </Card>
 
           <Card className="p-5 space-y-4">
