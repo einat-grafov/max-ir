@@ -225,8 +225,8 @@ const ProductDetail = () => {
                     if (variants.length > 0) {
                       const updateQty = (index: number, delta: number) => {
                         setSelectedVariants(prev => {
-                          const current = prev[index] ?? 1;
-                          const next = Math.max(1, current + delta);
+                          const current = prev[index] ?? 0;
+                          const next = Math.max(0, current + delta);
                           return { ...prev, [index]: next };
                         });
                       };
@@ -235,7 +235,7 @@ const ProductDetail = () => {
                           <h3 className="text-sm font-semibold text-foreground mb-3">Select Options</h3>
                           <div className="border border-border rounded-lg overflow-hidden">
                             {variants.map((v, i) => {
-                              const qty = selectedVariants[i] ?? 1;
+                              const qty = selectedVariants[i] ?? 0;
                               const outOfStock = isOutOfStock(v);
                               return (
                                 <div key={i} className={`px-4 py-3 ${i > 0 ? "border-t border-border" : ""} ${outOfStock ? "opacity-60" : ""}`}>
@@ -265,7 +265,7 @@ const ProductDetail = () => {
                                         <div className="flex items-center gap-1.5">
                                           <button
                                             onClick={() => updateQty(i, -1)}
-                                            disabled={qty <= 1}
+                                            disabled={qty <= 0}
                                             className="w-7 h-7 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:bg-muted disabled:opacity-40 transition-colors"
                                           >
                                             <Minus className="w-3 h-3" />
@@ -287,10 +287,10 @@ const ProductDetail = () => {
                           </div>
                           {(() => {
                             const inStockVariants = variants.map((v, i) => ({ v, i })).filter(({ v }) => !isOutOfStock(v));
-                            const totalItems = inStockVariants.reduce((sum, { i }) => sum + (selectedVariants[i] ?? 1), 0);
-                            const totalPrice = inStockVariants.reduce((sum, { v, i }) => {
-                              const price = parseFloat(v.price || "0");
-                              const qty = selectedVariants[i] ?? 1;
+                            const totalItems = inStockVariants.reduce((sum, { i }) => sum + (selectedVariants[i] ?? 0), 0);
+                             const totalPrice = inStockVariants.reduce((sum, { v, i }) => {
+                               const price = parseFloat(v.price || "0");
+                               const qty = selectedVariants[i] ?? 0;
                               return sum + price * qty;
                             }, 0);
                             return (
@@ -327,18 +327,16 @@ const ProductDetail = () => {
                         const variants = getVariants(product);
                         const cartItems = variants.length > 0
                           ? variants
-                              .filter((v) => !isOutOfStock(v))
-                              .map((v) => {
-                                const originalIndex = variants.indexOf(v);
-                                return {
+                              .map((v, i) => ({ v, i }))
+                              .filter(({ v, i }) => !isOutOfStock(v) && (selectedVariants[i] ?? 0) > 0)
+                              .map(({ v, i }) => ({
                                   productId: product.id,
                                   productName: product.name,
                                   variantName: v.name,
                                   sku: v.sku || undefined,
                                   price: parseFloat(v.price) || 0,
-                                  quantity: selectedVariants[originalIndex] ?? 1,
-                                };
-                              })
+                                  quantity: selectedVariants[i] ?? 0,
+                              }))
                           : [{
                               productId: product.id,
                               productName: product.name,
