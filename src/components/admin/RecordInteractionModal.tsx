@@ -291,6 +291,43 @@ const RecordInteractionModal = ({
             </div>
           )}
 
+          {/* Sales Stage */}
+          <div>
+            <div className="flex items-center gap-2">
+              <Label className="text-sm font-medium">Sales Stage</Label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs max-w-[200px]">Track where this customer is in the sales pipeline.</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            <Select value={salesStage} onValueChange={setSalesStage}>
+              <SelectTrigger className="mt-1.5">
+                <SelectValue placeholder="Select stage..." />
+              </SelectTrigger>
+              <SelectContent>
+                {SALES_STAGES.map((s) => (
+                  <SelectItem key={s} value={s}>{s}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {salesStage === "Other" && (
+            <div>
+              <Label className="text-sm font-medium">Specify Sales Stage</Label>
+              <Input
+                value={salesStageOther}
+                onChange={(e) => setSalesStageOther(e.target.value)}
+                placeholder="e.g. Pilot, Custom stage"
+                className="mt-1.5"
+              />
+            </div>
+          )}
+
           {/* Summary */}
           <div>
             <Label className="text-sm font-medium">
@@ -389,44 +426,6 @@ const RecordInteractionModal = ({
               </div>
             )}
           </div>
-
-          {/* Sales Stage */}
-          <div>
-            <div className="flex items-center gap-2">
-              <Label className="text-sm font-medium">Sales Stage</Label>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="text-xs max-w-[200px]">Track where this customer is in the sales pipeline.</p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
-            <Select value={salesStage} onValueChange={setSalesStage}>
-              <SelectTrigger className="mt-1.5">
-                <SelectValue placeholder="Select stage..." />
-              </SelectTrigger>
-              <SelectContent>
-                {SALES_STAGES.map((s) => (
-                  <SelectItem key={s} value={s}>{s}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {salesStage === "Other" && (
-            <div>
-              <Label className="text-sm font-medium">Specify Sales Stage</Label>
-              <Input
-                value={salesStageOther}
-                onChange={(e) => setSalesStageOther(e.target.value)}
-                placeholder="e.g. Pilot, Custom stage"
-                className="mt-1.5"
-              />
-            </div>
-          )}
-
         </div>
 
         {/* Footer */}
