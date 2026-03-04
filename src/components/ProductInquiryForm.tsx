@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { z } from "zod";
+import "flag-icons/css/flag-icons.min.css";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -33,39 +34,39 @@ interface ProductInquiryFormProps {
   selectedVariants?: SelectedVariantItem[];
 }
 
-const COUNTRIES: { name: string; flag: string }[] = [
-  { name: "United States", flag: "🇺🇸" },
-  { name: "Canada", flag: "🇨🇦" },
-  { name: "United Kingdom", flag: "🇬🇧" },
-  { name: "Germany", flag: "🇩🇪" },
-  { name: "France", flag: "🇫🇷" },
-  { name: "Australia", flag: "🇦🇺" },
-  { name: "Japan", flag: "🇯🇵" },
-  { name: "China", flag: "🇨🇳" },
-  { name: "India", flag: "🇮🇳" },
-  { name: "Brazil", flag: "🇧🇷" },
-  { name: "Mexico", flag: "🇲🇽" },
-  { name: "South Korea", flag: "🇰🇷" },
-  { name: "Israel", flag: "🇮🇱" },
-  { name: "Italy", flag: "🇮🇹" },
-  { name: "Spain", flag: "🇪🇸" },
-  { name: "Netherlands", flag: "🇳🇱" },
-  { name: "Sweden", flag: "🇸🇪" },
-  { name: "Switzerland", flag: "🇨🇭" },
-  { name: "Norway", flag: "🇳🇴" },
-  { name: "Denmark", flag: "🇩🇰" },
-  { name: "Finland", flag: "🇫🇮" },
-  { name: "Belgium", flag: "🇧🇪" },
-  { name: "Austria", flag: "🇦🇹" },
-  { name: "Poland", flag: "🇵🇱" },
-  { name: "Czech Republic", flag: "🇨🇿" },
-  { name: "Ireland", flag: "🇮🇪" },
-  { name: "Portugal", flag: "🇵🇹" },
-  { name: "Singapore", flag: "🇸🇬" },
-  { name: "Taiwan", flag: "🇹🇼" },
-  { name: "New Zealand", flag: "🇳🇿" },
-  { name: "South Africa", flag: "🇿🇦" },
-  { name: "Other", flag: "🌍" },
+const COUNTRIES: { name: string; code: string }[] = [
+  { name: "United States", code: "us" },
+  { name: "Canada", code: "ca" },
+  { name: "United Kingdom", code: "gb" },
+  { name: "Germany", code: "de" },
+  { name: "France", code: "fr" },
+  { name: "Australia", code: "au" },
+  { name: "Japan", code: "jp" },
+  { name: "China", code: "cn" },
+  { name: "India", code: "in" },
+  { name: "Brazil", code: "br" },
+  { name: "Mexico", code: "mx" },
+  { name: "South Korea", code: "kr" },
+  { name: "Israel", code: "il" },
+  { name: "Italy", code: "it" },
+  { name: "Spain", code: "es" },
+  { name: "Netherlands", code: "nl" },
+  { name: "Sweden", code: "se" },
+  { name: "Switzerland", code: "ch" },
+  { name: "Norway", code: "no" },
+  { name: "Denmark", code: "dk" },
+  { name: "Finland", code: "fi" },
+  { name: "Belgium", code: "be" },
+  { name: "Austria", code: "at" },
+  { name: "Poland", code: "pl" },
+  { name: "Czech Republic", code: "cz" },
+  { name: "Ireland", code: "ie" },
+  { name: "Portugal", code: "pt" },
+  { name: "Singapore", code: "sg" },
+  { name: "Taiwan", code: "tw" },
+  { name: "New Zealand", code: "nz" },
+  { name: "South Africa", code: "za" },
+  { name: "Other", code: "" },
 ];
 
 const ProductInquiryForm = ({ open, onOpenChange, productName, productId, selectedVariants = [] }: ProductInquiryFormProps) => {
@@ -236,7 +237,11 @@ const ProductInquiryForm = ({ open, onOpenChange, productName, productId, select
                   {COUNTRIES.map((c) => (
                     <SelectItem key={c.name} value={c.name}>
                       <span className="inline-flex items-center gap-2">
-                        <span>{c.flag}</span>
+                        {c.code ? (
+                          <span className={`fi fi-${c.code} rounded-sm`} style={{ fontSize: '1rem', lineHeight: 1 }} />
+                        ) : (
+                          <span className="inline-block w-4 h-3 rounded-sm bg-muted" />
+                        )}
                         <span>{c.name}</span>
                       </span>
                     </SelectItem>
