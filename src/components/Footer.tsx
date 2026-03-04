@@ -48,7 +48,7 @@ const Footer = () => {
               <p>+1-214-228-7213</p>
             </div>
             <div className="h-[2px] bg-primary mt-8 mb-4" />
-            <p className="text-maxir-white text-[14px] leading-[20px] font-normal">© 2020 MaxIR Labs. All rights reserved.</p>
+            <p className="text-maxir-white text-[14px] leading-[20px] font-normal">© {new Date().getFullYear()} MaxIR Labs. All rights reserved.</p>
           </div>
 
           {/* Right - Contact Form */}
