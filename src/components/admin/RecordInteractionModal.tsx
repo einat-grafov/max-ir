@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const INTERACTION_TYPES = [
   "Email",
@@ -69,6 +69,20 @@ const RecordInteractionModal = ({
 }: RecordInteractionModalProps) => {
   const queryClient = useQueryClient();
   const isEditing = !!editNote;
+
+  const { data: contacts = [] } = useQuery({
+    queryKey: ["customer-contacts", customerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("customer_contacts")
+        .select("*")
+        .eq("customer_id", customerId)
+        .order("first_name");
+      if (error) throw error;
+      return data;
+    },
+    enabled: open,
+  });
 
   const [dateOfInteraction, setDateOfInteraction] = useState<Date>(new Date());
   const [contact, setContact] = useState(contactPerson);
@@ -228,7 +242,25 @@ const RecordInteractionModal = ({
             </div>
             <div>
               <Label className="text-sm font-medium">Contact Person</Label>
-              <Input value={contact} onChange={(e) => setContact(e.target.value)} className="mt-1.5" />
+              {contacts.length > 0 ? (
+                <Select value={contact} onValueChange={setContact}>
+                  <SelectTrigger className="mt-1.5">
+                    <SelectValue placeholder="Select contact..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {contacts.map((c) => {
+                      const fullName = [c.first_name, c.last_name].filter(Boolean).join(" ");
+                      return (
+                        <SelectItem key={c.id} value={fullName}>
+                          {fullName}{c.role ? ` — ${c.role}` : ""}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Input value={contact} onChange={(e) => setContact(e.target.value)} className="mt-1.5" />
+              )}
             </div>
           </div>
 
