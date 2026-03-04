@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format, subDays, startOfDay, endOfDay, eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval, isWithinInterval, startOfWeek, startOfMonth, endOfWeek, endOfMonth } from "date-fns";
-import { BarChart3, DollarSign, ShoppingCart, Users, TrendingUp, CalendarIcon } from "lucide-react";
+import { BarChart3, DollarSign, ShoppingCart, Users, TrendingUp, CalendarIcon, Download } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -154,6 +154,30 @@ const Analytics = () => {
     }
   };
 
+  const exportCSV = () => {
+    const rows = buckets.map((b, i) => ({
+      Period: b.label,
+      Revenue: revenueData[i].revenue,
+      Orders: ordersData[i].orders,
+      "Total Customers": customerGrowthData[i].customers,
+      "New Customers": customerGrowthData[i].new,
+    }));
+
+    const headers = Object.keys(rows[0] || {});
+    const csv = [
+      headers.join(","),
+      ...rows.map((r) => headers.map((h) => r[h as keyof typeof r]).join(",")),
+    ].join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `analytics-${format(dateRange.start, "yyyy-MM-dd")}-to-${format(dateRange.end, "yyyy-MM-dd")}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const chartTooltipStyle = {
     contentStyle: {
       backgroundColor: "hsl(var(--popover))",
@@ -173,8 +197,12 @@ const Analytics = () => {
           <h1 className="text-2xl font-bold text-foreground">Analytics</h1>
         </div>
 
-        {/* Date filter */}
+        {/* Actions */}
         <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={exportCSV}>
+            <Download className="h-4 w-4 mr-2" />
+            Export CSV
+          </Button>
           <Select value={period} onValueChange={handlePeriodChange}>
             <SelectTrigger className="w-[180px]">
               <SelectValue />
