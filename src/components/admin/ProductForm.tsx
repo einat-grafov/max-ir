@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Upload, X, Trash2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Tooltip,
   TooltipContent,
@@ -59,6 +60,8 @@ export interface ProductFormData {
   requiresShipping: boolean;
   taxExempt: boolean;
   status: string;
+  ctaAddToCart: boolean;
+  ctaRequestQuote: boolean;
   existingImageUrl: string | null;
   existingImages: string[];
   specifications: ProductSpecification[];
@@ -105,6 +108,8 @@ const ProductForm = ({
   const [requiresShipping, setRequiresShipping] = useState(initialData?.requiresShipping ?? true);
   const [taxExempt, setTaxExempt] = useState(initialData?.taxExempt ?? false);
   const [status, setStatus] = useState(initialData?.status ?? "active");
+  const [ctaAddToCart, setCtaAddToCart] = useState(initialData?.ctaAddToCart ?? true);
+  const [ctaRequestQuote, setCtaRequestQuote] = useState(initialData?.ctaRequestQuote ?? true);
   const [specifications, setSpecifications] = useState<ProductSpecification[]>(
     initialData?.specifications ?? [{ label: "", value: "" }]
   );
@@ -129,7 +134,7 @@ const ProductForm = ({
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const canSubmit = title.trim().length > 0;
+  const canSubmit = title.trim().length > 0 && (ctaAddToCart || ctaRequestQuote);
   const hasVariants = variants.some(v => v.name.trim());
 
   const handleFilesSelect = (files: FileList | File[]) => {
@@ -184,7 +189,7 @@ const ProductForm = ({
       const primaryImageUrl = allImageUrls.length > 0 ? allImageUrls[0] : null;
 
       await onSubmit(
-        { title, overview, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, existingImageUrl: null, existingImages: [], specifications: specifications.filter(s => s.label.trim() && s.value.trim()), variants: variants.filter(v => v.name.trim()) },
+        { title, overview, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, ctaAddToCart, ctaRequestQuote, existingImageUrl: null, existingImages: [], specifications: specifications.filter(s => s.label.trim() && s.value.trim()), variants: variants.filter(v => v.name.trim()) },
         primaryImageUrl,
         allImageUrls
       );
@@ -543,6 +548,24 @@ const ProductForm = ({
                 <SelectItem value="archived">Archived</SelectItem>
               </SelectContent>
             </Select>
+          </Card>
+
+          <Card className="p-5 space-y-3">
+            <Label>Call to action</Label>
+            <p className="text-xs text-muted-foreground">Select which buttons appear on the product page. At least one must be enabled.</p>
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <Checkbox checked={ctaAddToCart} onCheckedChange={(v) => setCtaAddToCart(!!v)} />
+                <span className="text-sm">Add to Cart</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <Checkbox checked={ctaRequestQuote} onCheckedChange={(v) => setCtaRequestQuote(!!v)} />
+                <span className="text-sm">Request a Quote</span>
+              </label>
+            </div>
+            {!ctaAddToCart && !ctaRequestQuote && (
+              <p className="text-xs text-destructive font-medium">At least one call to action is required.</p>
+            )}
           </Card>
 
           <Card className="p-5 space-y-4">
