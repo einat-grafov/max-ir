@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import type { Tables } from "@/integrations/supabase/types";
 import { CalendarIcon, Info } from "lucide-react";
@@ -125,15 +125,16 @@ const RecordInteractionModal = ({
     setNextFollowUpDate(undefined);
   };
 
-  const handleOpenChange = (newOpen: boolean) => {
-    if (newOpen) {
-      if (editNote) {
-        populateFromNote(editNote);
-      } else {
-        setContact(contactPerson);
-        setDateOfInteraction(new Date());
-      }
+  // Populate form when opening in edit mode
+  useEffect(() => {
+    if (open && editNote) {
+      populateFromNote(editNote);
+    } else if (open && !editNote) {
+      resetForm();
     }
+  }, [open, editNote]);
+
+  const handleOpenChange = (newOpen: boolean) => {
     onOpenChange(newOpen);
   };
 
