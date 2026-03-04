@@ -4,9 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { format, isToday, isYesterday } from "date-fns";
+import { cn } from "@/lib/utils";
 import { ShoppingCart, Mail, UserPlus, MessageSquare, Paperclip, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import RecordInteractionModal from "@/components/admin/RecordInteractionModal";
+import NoteDetailModal from "@/components/admin/NoteDetailModal";
+import type { Tables } from "@/integrations/supabase/types";
 
 interface TimelineEvent {
   id: string;
@@ -16,6 +19,7 @@ interface TimelineEvent {
   link?: string;
   attachmentName?: string;
   attachmentUrl?: string;
+  noteData?: Tables<"customer_notes">;
 }
 
 interface CustomerTimelineProps {
@@ -64,7 +68,7 @@ const EventIcon = ({ type }: { type: TimelineEvent["type"] }) => {
 const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, companyName, contactPerson }: CustomerTimelineProps) => {
   const queryClient = useQueryClient();
   const [modalOpen, setModalOpen] = useState(false);
-
+  const [selectedNote, setSelectedNote] = useState<Tables<"customer_notes"> | null>(null);
   const { data: orders } = useQuery({
     queryKey: ["customer-orders", customerId],
     queryFn: async () => {
@@ -136,13 +140,15 @@ const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, company
   });
 
   notes?.forEach((note) => {
+    const displayMessage = note.summary || note.content;
     events.push({
       id: `note-${note.id}`,
       type: "note",
-      message: note.content,
+      message: displayMessage,
       date: new Date(note.created_at),
       attachmentName: note.attachment_name || undefined,
       attachmentUrl: note.attachment_url || undefined,
+      noteData: note,
     });
   });
 
@@ -199,11 +205,20 @@ const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, company
                 {group.label}
               </p>
               {group.events.map((event) => (
-                <div key={event.id} className="relative mb-4 last:mb-0">
+                <div
+                  key={event.id}
+                  className={cn(
+                    "relative mb-4 last:mb-0",
+                    event.noteData && "cursor-pointer hover:bg-muted/50 -mx-2 px-2 py-1 rounded-md transition-colors"
+                  )}
+                  onClick={() => {
+                    if (event.noteData) setSelectedNote(event.noteData);
+                  }}
+                >
                   <EventIcon type={event.type} />
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-foreground">
+                      <p className="text-sm text-foreground line-clamp-2">
                         {event.link ? (
                           <Link to={event.link} className="hover:underline">
                             {event.message}
@@ -218,6 +233,7 @@ const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, company
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-1.5 mt-1 text-xs text-primary hover:underline"
+                          onClick={(e) => e.stopPropagation()}
                         >
                           <Paperclip className="h-3 w-3" />
                           <span>{event.attachmentName}</span>
@@ -234,6 +250,12 @@ const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, company
           ))
         )}
       </div>
+
+      <NoteDetailModal
+        open={!!selectedNote}
+        onOpenChange={(open) => { if (!open) setSelectedNote(null); }}
+        note={selectedNote}
+      />
     </Card>
   );
 };
