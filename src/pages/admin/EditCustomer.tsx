@@ -316,6 +316,33 @@ const EditCustomer = () => {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+          <Button
+            variant="outline"
+            onClick={() => {
+              if (customer) {
+                setCompanyName(customer.company || customer.first_name || "");
+                setCountry(customer.country || "Israel");
+                setAddress(customer.address || "");
+                setApartment(customer.apartment || "");
+                setCity(customer.city || "");
+                setPostalCode(customer.postal_code || "");
+              }
+              if (existingContacts) {
+                setContacts(
+                  existingContacts.map((c) => ({
+                    id: c.id,
+                    first_name: c.first_name,
+                    last_name: c.last_name || "",
+                    role: c.role || "",
+                    phone: c.phone || "",
+                    email: c.email || "",
+                  }))
+                );
+              }
+            }}
+          >
+            Discard
+          </Button>
           <Button onClick={handleSave} disabled={saving || !hasValidContact}>
             {saving ? "Saving..." : "Save changes"}
           </Button>
