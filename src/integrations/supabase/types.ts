@@ -57,28 +57,76 @@ export type Database = {
       }
       customer_notes: {
         Row: {
+          action_items: string | null
+          assigned_sales_rep: string | null
           attachment_name: string | null
           attachment_url: string | null
+          company: string | null
+          contact_person: string | null
           content: string
           created_at: string
+          customer_feedback: string | null
           customer_id: string
+          customer_name: string | null
+          date_of_interaction: string
+          follow_up_details: string | null
+          follow_up_required: boolean
           id: string
+          interaction_type: string | null
+          interaction_type_other: string | null
+          next_follow_up_date: string | null
+          sales_representative: string | null
+          sales_stage: string | null
+          sales_stage_other: string | null
+          summary: string | null
         }
         Insert: {
+          action_items?: string | null
+          assigned_sales_rep?: string | null
           attachment_name?: string | null
           attachment_url?: string | null
+          company?: string | null
+          contact_person?: string | null
           content: string
           created_at?: string
+          customer_feedback?: string | null
           customer_id: string
+          customer_name?: string | null
+          date_of_interaction?: string
+          follow_up_details?: string | null
+          follow_up_required?: boolean
           id?: string
+          interaction_type?: string | null
+          interaction_type_other?: string | null
+          next_follow_up_date?: string | null
+          sales_representative?: string | null
+          sales_stage?: string | null
+          sales_stage_other?: string | null
+          summary?: string | null
         }
         Update: {
+          action_items?: string | null
+          assigned_sales_rep?: string | null
           attachment_name?: string | null
           attachment_url?: string | null
+          company?: string | null
+          contact_person?: string | null
           content?: string
           created_at?: string
+          customer_feedback?: string | null
           customer_id?: string
+          customer_name?: string | null
+          date_of_interaction?: string
+          follow_up_details?: string | null
+          follow_up_required?: boolean
           id?: string
+          interaction_type?: string | null
+          interaction_type_other?: string | null
+          next_follow_up_date?: string | null
+          sales_representative?: string | null
+          sales_stage?: string | null
+          sales_stage_other?: string | null
+          summary?: string | null
         }
         Relationships: [
           {

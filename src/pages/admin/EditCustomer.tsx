@@ -437,6 +437,8 @@ const EditCustomer = () => {
             customerId={id!}
             customerName={companyName || customer.company || customer.first_name}
             customerCreatedAt={customer.created_at}
+            companyName={companyName || customer.company || ""}
+            contactPerson={contacts.length > 0 ? `${contacts[0].first_name} ${contacts[0].last_name}`.trim() : ""}
           />
         </div>
       </div>
