@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Mail, FileText, Plus, Minus, ShoppingCart, Bell } from "lucide-react";
+import { FileText, Plus, Minus, ShoppingCart, Bell } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 import ProductInquiryForm, { type SelectedVariantItem } from "@/components/ProductInquiryForm";
@@ -367,22 +367,13 @@ const ProductDetail = () => {
                     </button>
                     )}
                     {showRequestQuote && (
-                    <>
                     <button
                       onClick={() => setInquiryOpen(true)}
                       className="inline-flex items-center gap-2 bg-maxir-dark hover:bg-maxir-dark/90 text-maxir-white px-6 py-3 text-sm font-semibold transition-colors rounded-md"
                     >
-                      <Mail className="w-4 h-4" />
-                      Contact
-                    </button>
-                    <button
-                      onClick={() => setInquiryOpen(true)}
-                      className="inline-flex items-center gap-2 border border-border hover:bg-muted text-foreground px-6 py-3 text-sm font-semibold transition-colors rounded-md"
-                    >
                       <FileText className="w-4 h-4" />
-                      Quote
+                      Request a Quote
                     </button>
-                    </>
                     )}
                     {!showAddToCart && !showRequestQuote && (
                       <p className="text-sm text-muted-foreground italic">Contact us for availability and pricing.</p>
