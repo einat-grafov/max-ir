@@ -76,19 +76,24 @@ const Analytics = () => {
     },
   });
 
-  // Match inquiries to existing customers by email
-  const { data: customerEmailMap = new Map() } = useQuery({
-    queryKey: ["analytics-customer-emails"],
+  // Match inquiries to existing customers by company name, full name, then email
+  const { data: customerLookup } = useQuery({
+    queryKey: ["analytics-customer-lookup"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("customers")
-        .select("id, email");
+        .select("id, email, company, first_name, last_name");
       if (error) throw error;
-      const map = new Map<string, string>();
+      const emailMap = new Map<string, string>();
+      const companyMap = new Map<string, string>();
+      const nameMap = new Map<string, string>();
       data.forEach((c) => {
-        if (c.email) map.set(c.email.toLowerCase(), c.id);
+        if (c.email) emailMap.set(c.email.toLowerCase(), c.id);
+        if (c.company) companyMap.set(c.company.toLowerCase(), c.id);
+        const fullName = [c.first_name, c.last_name].filter(Boolean).join(" ").toLowerCase();
+        if (fullName) nameMap.set(fullName, c.id);
       });
-      return map;
+      return { emailMap, companyMap, nameMap };
     },
   });
 
@@ -348,9 +353,12 @@ const Analytics = () => {
               </TableHeader>
               <TableBody>
                 {filteredInquiries.map((inquiry) => {
-                  const customerId = customerEmailMap.get(inquiry.email?.toLowerCase());
-                  const isExisting = !!customerId;
                   const displayName = inquiry.company_name || [inquiry.first_name, inquiry.last_name].filter(Boolean).join(" ") || inquiry.name;
+                  const customerId = 
+                    (inquiry.company_name && customerLookup?.companyMap.get(inquiry.company_name.toLowerCase())) ||
+                    customerLookup?.nameMap.get(inquiry.name?.toLowerCase()) ||
+                    (inquiry.email && customerLookup?.emailMap.get(inquiry.email.toLowerCase()));
+                  const isExisting = !!customerId;
                   return (
                     <TableRow
                       key={inquiry.id}
