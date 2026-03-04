@@ -321,11 +321,15 @@ const ProductDetail = () => {
                   })()}
 
                   {/* Action buttons */}
-                  <div className="flex items-center gap-3 flex-wrap">
+                  {(() => {
+                    const variants = getVariants(product);
+                    const hasVariants = variants.length > 0;
+                    const hasSelection = !hasVariants || variants.some((v, i) => !isOutOfStock(v) && (selectedVariants[i] ?? 0) > 0);
+                    return (
+                    <div className="flex items-center gap-3 flex-wrap">
                     <button
                       onClick={() => {
-                        const variants = getVariants(product);
-                        if (variants.length > 0) {
+                        if (hasVariants) {
                           const cartItems = variants
                             .map((v, i) => ({ v, i }))
                             .filter(({ v, i }) => !isOutOfStock(v) && (selectedVariants[i] ?? 0) > 0)
@@ -337,10 +341,6 @@ const ProductDetail = () => {
                               price: parseFloat(v.price) || 0,
                               quantity: selectedVariants[i] ?? 0,
                             }));
-                          if (cartItems.length === 0) {
-                            toast({ title: "No items selected", description: "Please select a quantity for at least one variant.", variant: "destructive" });
-                            return;
-                          }
                           addItems(cartItems);
                         } else {
                           addItems([{
@@ -354,7 +354,8 @@ const ProductDetail = () => {
                         }
                         toast({ title: "Added to cart", description: `${product.name} has been added to your cart.` });
                       }}
-                      className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 text-sm font-semibold transition-colors rounded-md"
+                      disabled={!hasSelection}
+                      className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 text-sm font-semibold transition-colors rounded-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary"
                     >
                       <ShoppingCart className="w-4 h-4" />
                       Add to Cart
@@ -374,6 +375,8 @@ const ProductDetail = () => {
                       Quote
                     </button>
                   </div>
+                    );
+                  })()}
 
                   {/* SKU */}
                   {product.sku && (
