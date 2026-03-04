@@ -211,7 +211,7 @@ const CustomerTimeline = ({ customerId, customerName, customerCreatedAt }: Custo
       type: "order",
       message: `Order #D${order.order_number} placed — $${Number(order.total).toFixed(2)}`,
       date: new Date(order.created_at),
-      link: `/admin/orders`,
+      link: `/admin/orders/${order.id}`,
     });
   });
 
