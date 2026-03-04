@@ -325,27 +325,33 @@ const ProductDetail = () => {
                     <button
                       onClick={() => {
                         const variants = getVariants(product);
-                        const cartItems = variants.length > 0
-                          ? variants
-                              .map((v, i) => ({ v, i }))
-                              .filter(({ v, i }) => !isOutOfStock(v) && (selectedVariants[i] ?? 0) > 0)
-                              .map(({ v, i }) => ({
-                                  productId: product.id,
-                                  productName: product.name,
-                                  variantName: v.name,
-                                  sku: v.sku || undefined,
-                                  price: parseFloat(v.price) || 0,
-                                  quantity: selectedVariants[i] ?? 0,
-                              }))
-                          : [{
+                        if (variants.length > 0) {
+                          const cartItems = variants
+                            .map((v, i) => ({ v, i }))
+                            .filter(({ v, i }) => !isOutOfStock(v) && (selectedVariants[i] ?? 0) > 0)
+                            .map(({ v, i }) => ({
                               productId: product.id,
                               productName: product.name,
-                              variantName: product.name,
-                              sku: product.sku || undefined,
-                              price: product.price,
-                              quantity: 1,
-                            }];
-                        addItems(cartItems);
+                              variantName: v.name,
+                              sku: v.sku || undefined,
+                              price: parseFloat(v.price) || 0,
+                              quantity: selectedVariants[i] ?? 0,
+                            }));
+                          if (cartItems.length === 0) {
+                            toast({ title: "No items selected", description: "Please select a quantity for at least one variant.", variant: "destructive" });
+                            return;
+                          }
+                          addItems(cartItems);
+                        } else {
+                          addItems([{
+                            productId: product.id,
+                            productName: product.name,
+                            variantName: product.name,
+                            sku: product.sku || undefined,
+                            price: product.price,
+                            quantity: 1,
+                          }]);
+                        }
                         toast({ title: "Added to cart", description: `${product.name} has been added to your cart.` });
                       }}
                       className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 text-sm font-semibold transition-colors rounded-md"
