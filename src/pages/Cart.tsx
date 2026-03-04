@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
 import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+
 import ProductInquiryForm, { type SelectedVariantItem } from "@/components/ProductInquiryForm";
 
 const Cart = () => {
@@ -211,20 +211,12 @@ const Cart = () => {
       </main>
       <Footer />
 
-      <Dialog open={quoteOpen} onOpenChange={setQuoteOpen}>
-        <DialogContent className="bg-maxir-dark-surface border-maxir-white/20 max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="text-maxir-white text-lg font-montserrat">Request a Quote</DialogTitle>
-            <DialogDescription className="text-maxir-white/60 text-sm">
-              Fill in your details and we'll get back to you with a quote for your cart items.
-            </DialogDescription>
-          </DialogHeader>
-          <ProductInquiryForm
-            productName="Cart Items"
-            selectedVariants={selectedVariants}
-          />
-        </DialogContent>
-      </Dialog>
+      <ProductInquiryForm
+        open={quoteOpen}
+        onOpenChange={setQuoteOpen}
+        productName="Cart Items"
+        selectedVariants={selectedVariants}
+      />
     </div>
   );
 };

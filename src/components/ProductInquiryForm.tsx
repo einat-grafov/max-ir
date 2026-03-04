@@ -2,10 +2,19 @@ import { useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const inquirySchema = z.object({
-  name: z.string().trim().min(1, "Name is required").max(100),
+  companyName: z.string().trim().min(1, "Company name is required").max(200),
+  firstName: z.string().trim().min(1, "First name is required").max(100),
+  lastName: z.string().trim().max(100).optional(),
+  phone: z.string().trim().max(50).optional(),
   email: z.string().trim().email("Invalid email address").max(255),
+  country: z.string().trim().min(1, "Country is required"),
   message: z.string().trim().min(1, "Message is required").max(2000),
 });
 
@@ -17,15 +26,26 @@ export interface SelectedVariantItem {
 }
 
 interface ProductInquiryFormProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   productName: string;
   productId?: string;
   selectedVariants?: SelectedVariantItem[];
 }
 
-const ProductInquiryForm = ({ productName, productId, selectedVariants = [] }: ProductInquiryFormProps) => {
+const COUNTRIES = [
+  "United States", "Canada", "United Kingdom", "Germany", "France", "Australia",
+  "Japan", "China", "India", "Brazil", "Mexico", "South Korea", "Israel",
+  "Italy", "Spain", "Netherlands", "Sweden", "Switzerland", "Norway", "Denmark",
+  "Finland", "Belgium", "Austria", "Poland", "Czech Republic", "Ireland",
+  "Portugal", "Singapore", "Taiwan", "New Zealand", "South Africa", "Other",
+];
+
+const ProductInquiryForm = ({ open, onOpenChange, productName, productId, selectedVariants = [] }: ProductInquiryFormProps) => {
   const { toast } = useToast();
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
 
   const buildDefaultMessage = () => {
     if (selectedVariants.length === 0) {
@@ -38,14 +58,35 @@ const ProductInquiryForm = ({ productName, productId, selectedVariants = [] }: P
   };
 
   const [formData, setFormData] = useState({
-    name: "",
+    companyName: "",
+    firstName: "",
+    lastName: "",
+    phone: "",
     email: "",
+    country: "",
     message: buildDefaultMessage(),
   });
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => ({ ...prev, [field]: "" }));
+  };
+
+  const handleOpenChange = (newOpen: boolean) => {
+    if (newOpen) {
+      setFormData({
+        companyName: "",
+        firstName: "",
+        lastName: "",
+        phone: "",
+        email: "",
+        country: "",
+        message: buildDefaultMessage(),
+      });
+      setErrors({});
+      setSubmitted(false);
+    }
+    onOpenChange(newOpen);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -59,74 +100,142 @@ const ProductInquiryForm = ({ productName, productId, selectedVariants = [] }: P
       setErrors(fieldErrors);
       return;
     }
+    setLoading(true);
     try {
+      const displayName = result.data.companyName || `${result.data.firstName} ${result.data.lastName ?? ""}`.trim();
       const { error } = await supabase.from("inquiries").insert({
         product_id: productId ?? null,
         product_name: productName,
-        name: result.data.name,
+        name: displayName,
         email: result.data.email,
         message: result.data.message,
+        company_name: result.data.companyName,
+        first_name: result.data.firstName,
+        last_name: result.data.lastName || null,
+        phone: result.data.phone || null,
+        country: result.data.country,
       });
       if (error) throw error;
       setSubmitted(true);
     } catch {
       toast({ title: "Error", description: "Failed to send inquiry. Please try again.", variant: "destructive" });
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (submitted) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-maxir-white font-semibold text-lg">Thank you!</p>
-        <p className="text-maxir-white/60 text-sm mt-2">
-          Your inquiry about {productName} has been received. We'll be in touch soon.
-        </p>
-      </div>
-    );
-  }
-
-  const inputClass =
-    "w-full bg-maxir-dark-surface border border-maxir-white/20 text-maxir-white px-4 py-3 text-sm placeholder:text-maxir-white/40 focus:outline-none focus:border-primary rounded-md";
-
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div>
-        <input
-          type="text"
-          placeholder="Your Name"
-          value={formData.name}
-          onChange={(e) => handleChange("name", e.target.value)}
-          className={inputClass}
-        />
-        {errors.name && <p className="text-primary text-xs mt-1">{errors.name}</p>}
-      </div>
-      <div>
-        <input
-          type="email"
-          placeholder="Email Address"
-          value={formData.email}
-          onChange={(e) => handleChange("email", e.target.value)}
-          className={inputClass}
-        />
-        {errors.email && <p className="text-primary text-xs mt-1">{errors.email}</p>}
-      </div>
-      <div>
-        <textarea
-          placeholder="Your Message"
-          rows={4}
-          value={formData.message}
-          onChange={(e) => handleChange("message", e.target.value)}
-          className={`${inputClass} resize-none`}
-        />
-        {errors.message && <p className="text-primary text-xs mt-1">{errors.message}</p>}
-      </div>
-      <button
-        type="submit"
-        className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 text-sm font-semibold transition-colors w-fit rounded-md"
-      >
-        Send Inquiry
-      </button>
-    </form>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="sm:max-w-[560px]">
+        <DialogHeader>
+          <DialogTitle>Inquire About {productName}</DialogTitle>
+        </DialogHeader>
+
+        {submitted ? (
+          <div className="text-center py-8">
+            <p className="font-semibold text-lg text-foreground">Thank you!</p>
+            <p className="text-muted-foreground text-sm mt-2">
+              Your inquiry about {productName} has been received. We'll be in touch soon.
+            </p>
+            <div className="flex justify-end pt-4">
+              <Button variant="outline" onClick={() => handleOpenChange(false)}>Close</Button>
+            </div>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+            {/* Company Name */}
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">Company name</label>
+              <Input
+                value={formData.companyName}
+                onChange={(e) => handleChange("companyName", e.target.value)}
+                placeholder="Company name"
+              />
+              {errors.companyName && <p className="text-destructive text-xs mt-1">{errors.companyName}</p>}
+            </div>
+
+            {/* First & Last Name */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">First name</label>
+                <Input
+                  value={formData.firstName}
+                  onChange={(e) => handleChange("firstName", e.target.value)}
+                  placeholder="First name"
+                />
+                {errors.firstName && <p className="text-destructive text-xs mt-1">{errors.firstName}</p>}
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">Last name</label>
+                <Input
+                  value={formData.lastName}
+                  onChange={(e) => handleChange("lastName", e.target.value)}
+                  placeholder="Last name"
+                />
+              </div>
+            </div>
+
+            {/* Phone & Email */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">Phone number</label>
+                <Input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => handleChange("phone", e.target.value)}
+                  placeholder="Phone number"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">Email</label>
+                <Input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleChange("email", e.target.value)}
+                  placeholder="Email address"
+                />
+                {errors.email && <p className="text-destructive text-xs mt-1">{errors.email}</p>}
+              </div>
+            </div>
+
+            {/* Country */}
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">Country (for shipment)</label>
+              <Select value={formData.country} onValueChange={(v) => handleChange("country", v)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a country" />
+                </SelectTrigger>
+                <SelectContent>
+                  {COUNTRIES.map((c) => (
+                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.country && <p className="text-destructive text-xs mt-1">{errors.country}</p>}
+            </div>
+
+            {/* Message */}
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">Message</label>
+              <Textarea
+                value={formData.message}
+                onChange={(e) => handleChange("message", e.target.value)}
+                className="min-h-[100px] resize-none"
+              />
+              {errors.message && <p className="text-destructive text-xs mt-1">{errors.message}</p>}
+            </div>
+
+            {/* Footer buttons */}
+            <div className="flex justify-end gap-2 pt-2">
+              <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>Cancel</Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? "Sending..." : "Send Inquiry"}
+              </Button>
+            </div>
+          </form>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 };
 
