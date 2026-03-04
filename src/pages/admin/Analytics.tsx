@@ -2,12 +2,14 @@ import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format, subDays, startOfDay, endOfDay, eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval, isWithinInterval, startOfWeek, startOfMonth, endOfWeek, endOfMonth } from "date-fns";
-import { BarChart3, DollarSign, ShoppingCart, Users, TrendingUp, CalendarIcon, Download } from "lucide-react";
+import { BarChart3, DollarSign, ShoppingCart, Users, TrendingUp, CalendarIcon, Download, ArrowUpDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
 import type { DateRange } from "react-day-picker";
@@ -58,6 +60,55 @@ const Analytics = () => {
       return data;
     },
   });
+
+  // Fetch inquiries with customer matching
+  const { data: inquiries = [] } = useQuery({
+    queryKey: ["analytics-inquiries"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("inquiries")
+        .select("id, name, email, product_name, message, created_at, company_name, first_name, last_name")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Match inquiries to existing customers by email
+  const { data: customerEmails = [] } = useQuery({
+    queryKey: ["analytics-customer-emails"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("customers")
+        .select("email");
+      if (error) throw error;
+      return data.map((c) => c.email?.toLowerCase()).filter(Boolean) as string[];
+    },
+  });
+
+  const [inquirySortField, setInquirySortField] = useState<"name" | "email" | "product_name" | "created_at">("created_at");
+  const [inquirySortDir, setInquirySortDir] = useState<"asc" | "desc">("desc");
+
+  const toggleInquirySort = (field: typeof inquirySortField) => {
+    if (inquirySortField === field) {
+      setInquirySortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setInquirySortField(field);
+      setInquirySortDir("asc");
+    }
+  };
+
+  const filteredInquiries = useMemo(() => {
+    const filtered = inquiries.filter((i) =>
+      isWithinInterval(new Date(i.created_at), dateRange)
+    );
+    return filtered.sort((a, b) => {
+      const aVal = a[inquirySortField] || "";
+      const bVal = b[inquirySortField] || "";
+      const cmp = String(aVal).localeCompare(String(bVal));
+      return inquirySortDir === "asc" ? cmp : -cmp;
+    });
+  }, [inquiries, dateRange, inquirySortField, inquirySortDir]);
 
   // Filter data by date range
   const filteredOrders = useMemo(() =>
@@ -251,6 +302,70 @@ const Analytics = () => {
           </Card>
         ))}
       </div>
+
+      {/* Inquiries Table */}
+      <Card className="p-6 mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-foreground font-semibold">Recent Inquiries</h2>
+          <span className="text-sm text-muted-foreground">{filteredInquiries.length} inquiries</span>
+        </div>
+        {filteredInquiries.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-8 text-center">No inquiries in this period.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>
+                    <Button variant="ghost" size="sm" className="h-7 -ml-2 text-xs font-medium" onClick={() => toggleInquirySort("name")}>
+                      Name <ArrowUpDown className="h-3 w-3 ml-1" />
+                    </Button>
+                  </TableHead>
+                  <TableHead>
+                    <Button variant="ghost" size="sm" className="h-7 -ml-2 text-xs font-medium" onClick={() => toggleInquirySort("email")}>
+                      Email <ArrowUpDown className="h-3 w-3 ml-1" />
+                    </Button>
+                  </TableHead>
+                  <TableHead>
+                    <Button variant="ghost" size="sm" className="h-7 -ml-2 text-xs font-medium" onClick={() => toggleInquirySort("product_name")}>
+                      Product <ArrowUpDown className="h-3 w-3 ml-1" />
+                    </Button>
+                  </TableHead>
+                  <TableHead className="max-w-[240px]">Message</TableHead>
+                  <TableHead>Lead Status</TableHead>
+                  <TableHead>
+                    <Button variant="ghost" size="sm" className="h-7 -ml-2 text-xs font-medium" onClick={() => toggleInquirySort("created_at")}>
+                      Date <ArrowUpDown className="h-3 w-3 ml-1" />
+                    </Button>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredInquiries.map((inquiry) => {
+                  const isExisting = customerEmails.includes(inquiry.email?.toLowerCase());
+                  const displayName = inquiry.company_name || [inquiry.first_name, inquiry.last_name].filter(Boolean).join(" ") || inquiry.name;
+                  return (
+                    <TableRow key={inquiry.id}>
+                      <TableCell className="font-medium text-sm">{displayName}</TableCell>
+                      <TableCell className="text-sm">{inquiry.email}</TableCell>
+                      <TableCell className="text-sm">{inquiry.product_name}</TableCell>
+                      <TableCell className="text-sm max-w-[240px] truncate">{inquiry.message}</TableCell>
+                      <TableCell>
+                        <Badge variant={isExisting ? "default" : "secondary"} className="text-xs whitespace-nowrap">
+                          {isExisting ? "Existing Customer" : "New Lead"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                        {format(new Date(inquiry.created_at), "MMM d, yyyy")}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </Card>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
