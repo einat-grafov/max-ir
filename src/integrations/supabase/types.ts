@@ -106,6 +106,7 @@ export type Database = {
           last_name: string | null
           phone: string | null
           postal_code: string | null
+          status: string
           tax_exempt: boolean
           updated_at: string
         }
@@ -124,6 +125,7 @@ export type Database = {
           last_name?: string | null
           phone?: string | null
           postal_code?: string | null
+          status?: string
           tax_exempt?: boolean
           updated_at?: string
         }
@@ -142,6 +144,7 @@ export type Database = {
           last_name?: string | null
           phone?: string | null
           postal_code?: string | null
+          status?: string
           tax_exempt?: boolean
           updated_at?: string
         }
