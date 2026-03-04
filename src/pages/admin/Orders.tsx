@@ -294,7 +294,7 @@ const Orders = () => {
               {filtered.map((order) => {
                 const s = statusLabel(order.status, order.payment_status);
                 return (
-                  <TableRow key={order.id} className="cursor-pointer" onClick={() => {}}>
+                  <TableRow key={order.id} className="cursor-pointer" onClick={() => navigate(`/admin/orders/${order.id}`)}>
                     <TableCell className="pl-4" onClick={(e) => e.stopPropagation()}>
                       <Checkbox
                         checked={selectedIds.has(order.id)}
