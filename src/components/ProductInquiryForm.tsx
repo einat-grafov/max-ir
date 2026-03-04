@@ -2,7 +2,7 @@ import { useState } from "react";
 import { z } from "zod";
 import "flag-icons/css/flag-icons.min.css";
 import { supabase } from "@/integrations/supabase/client";
-import { COUNTRIES_WITH_OTHER as COUNTRIES } from "@/lib/countries";
+import { COUNTRIES_WITH_OTHER as COUNTRIES, US_STATES } from "@/lib/countries";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -59,11 +59,19 @@ const ProductInquiryForm = ({ open, onOpenChange, productName, productId, select
     phone: "",
     email: "",
     country: "",
+    state: "",
     message: buildDefaultMessage(),
   });
 
   const handleChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => {
+      const updated = { ...prev, [field]: value };
+      // Clear state when country changes away from US
+      if (field === "country" && value !== "United States") {
+        updated.state = "";
+      }
+      return updated;
+    });
     setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
@@ -76,6 +84,7 @@ const ProductInquiryForm = ({ open, onOpenChange, productName, productId, select
         phone: "",
         email: "",
         country: "",
+        state: "",
         message: buildDefaultMessage(),
       });
       setErrors({});
@@ -87,11 +96,17 @@ const ProductInquiryForm = ({ open, onOpenChange, productName, productId, select
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = inquirySchema.safeParse(formData);
+    const fieldErrors: Record<string, string> = {};
     if (!result.success) {
-      const fieldErrors: Record<string, string> = {};
       result.error.issues.forEach((issue) => {
         fieldErrors[issue.path[0] as string] = issue.message;
       });
+    }
+    // Validate state for US
+    if (formData.country === "United States" && !formData.state.trim()) {
+      fieldErrors.state = "State is required";
+    }
+    if (Object.keys(fieldErrors).length > 0) {
       setErrors(fieldErrors);
       return;
     }
@@ -109,7 +124,8 @@ const ProductInquiryForm = ({ open, onOpenChange, productName, productId, select
         last_name: result.data.lastName || null,
         phone: result.data.phone || null,
         country: result.data.country,
-      });
+        state: formData.country === "United States" ? formData.state : null,
+      } as any);
       if (error) throw error;
       setSubmitted(true);
     } catch {
@@ -217,6 +233,24 @@ const ProductInquiryForm = ({ open, onOpenChange, productName, productId, select
               </Select>
               {errors.country && <p className="text-destructive text-xs mt-1">{errors.country}</p>}
             </div>
+
+            {/* State (US only) */}
+            {formData.country === "United States" && (
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">State</label>
+                <Select value={formData.state} onValueChange={(v) => handleChange("state", v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a state" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {US_STATES.map((s) => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.state && <p className="text-destructive text-xs mt-1">{errors.state}</p>}
+              </div>
+            )}
 
             {/* Message */}
             <div>
