@@ -24,8 +24,6 @@ import Customers from "./pages/admin/Customers";
 import CreateCustomer from "./pages/admin/CreateCustomer";
 import EditCustomer from "./pages/admin/EditCustomer";
 import Analytics from "./pages/admin/Analytics";
-import Inquiries from "./pages/admin/Inquiries";
-import StockNotifications from "./pages/admin/StockNotifications";
 import UsersSettings from "./pages/admin/settings/UsersSettings";
 import BillingSettings from "./pages/admin/settings/BillingSettings";
 import ShippingSettings from "./pages/admin/settings/ShippingSettings";
@@ -66,7 +64,8 @@ const router = createBrowserRouter([
         path: "/admin",
         element: <AdminLayout />,
         children: [
-          { index: true, element: <Navigate to="/admin/orders" replace /> },
+          { index: true, element: <Navigate to="/admin/home" replace /> },
+          { path: "home", element: <Analytics /> },
           { path: "orders", element: <Orders /> },
           { path: "orders/create", element: <CreateOrder /> },
           { path: "orders/:id", element: <OrderDetail /> },
@@ -76,9 +75,6 @@ const router = createBrowserRouter([
           { path: "customers", element: <Customers /> },
           { path: "customers/create", element: <CreateCustomer /> },
           { path: "customers/:id", element: <EditCustomer /> },
-          { path: "inquiries", element: <Inquiries /> },
-          { path: "stock-notifications", element: <StockNotifications /> },
-          { path: "analytics", element: <Analytics /> },
           { path: "settings/users", element: <UsersSettings /> },
           { path: "settings/billing", element: <BillingSettings /> },
           { path: "settings/shipping", element: <ShippingSettings /> },

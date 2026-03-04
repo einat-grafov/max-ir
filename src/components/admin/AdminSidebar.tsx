@@ -2,15 +2,13 @@ import {
   ShoppingCart,
   Package,
   Users,
-  BarChart3,
   Settings,
   UserCog,
   CreditCard,
   Truck,
   LogOut,
   ChevronDown,
-  MessageSquare,
-  Bell,
+  Home,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate, Link } from "react-router-dom";
@@ -31,12 +29,10 @@ import {
 } from "@/components/ui/sidebar";
 
 const mainItems = [
+  { title: "Home", url: "/admin/home", icon: Home },
   { title: "Orders", url: "/admin/orders", icon: ShoppingCart },
   { title: "Products", url: "/admin/products", icon: Package },
   { title: "Customers", url: "/admin/customers", icon: Users },
-  { title: "Inquiries", url: "/admin/inquiries", icon: MessageSquare },
-  { title: "Notifications", url: "/admin/stock-notifications", icon: Bell },
-  { title: "Analytics", url: "/admin/analytics", icon: BarChart3 },
 ];
 
 const settingsItems = [
@@ -67,7 +63,7 @@ export function AdminSidebar() {
       collapsible="icon"
     >
       <div className="p-4 border-b border-white/10 bg-maxir-dark">
-        <Link to="/admin/orders" className="flex items-center gap-2">
+        <Link to="/admin/home" className="flex items-center gap-2">
           <svg width="24" height="24" viewBox="0 0 40 40" fill="none">
             <path d="M5 35L20 5L25 15L15 35H5Z" fill="hsl(348,100%,61%)" />
             <path d="M15 35L25 15L35 35H15Z" fill="hsl(348,100%,61%)" opacity="0.7" />
