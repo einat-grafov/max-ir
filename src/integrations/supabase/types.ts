@@ -203,6 +203,7 @@ export type Database = {
           company_name: string | null
           country: string | null
           created_at: string
+          customer_id: string | null
           email: string
           first_name: string | null
           id: string
@@ -218,6 +219,7 @@ export type Database = {
           company_name?: string | null
           country?: string | null
           created_at?: string
+          customer_id?: string | null
           email: string
           first_name?: string | null
           id?: string
@@ -233,6 +235,7 @@ export type Database = {
           company_name?: string | null
           country?: string | null
           created_at?: string
+          customer_id?: string | null
           email?: string
           first_name?: string | null
           id?: string
@@ -245,6 +248,13 @@ export type Database = {
           read?: boolean
         }
         Relationships: [
+          {
+            foreignKeyName: "inquiries_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "inquiries_product_id_fkey"
             columns: ["product_id"]
