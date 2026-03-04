@@ -41,7 +41,7 @@ const groupLabel = (date: Date) => {
 };
 
 const EventIcon = ({ type }: { type: TimelineEvent["type"] }) => {
-  const base = "absolute left-0 top-1 h-3.5 w-3.5 -translate-x-1/2 rounded-full flex items-center justify-center";
+  const base = "absolute -left-[26px] top-1 h-3.5 w-3.5 -translate-x-1/2 rounded-full flex items-center justify-center";
   switch (type) {
     case "order":
       return (
@@ -308,8 +308,8 @@ const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, company
         contactPerson={contactPerson || ""}
       />
 
-      <div className="relative pl-6">
-        <div className="absolute left-0 top-0 bottom-0 w-px bg-border" />
+      <div className="relative pl-10">
+        <div className="absolute left-[14px] top-0 bottom-0 w-px bg-border" />
 
         {/* Events */}
         {filteredEvents.length === 0 ? (
