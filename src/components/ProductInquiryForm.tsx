@@ -33,12 +33,39 @@ interface ProductInquiryFormProps {
   selectedVariants?: SelectedVariantItem[];
 }
 
-const COUNTRIES = [
-  "United States", "Canada", "United Kingdom", "Germany", "France", "Australia",
-  "Japan", "China", "India", "Brazil", "Mexico", "South Korea", "Israel",
-  "Italy", "Spain", "Netherlands", "Sweden", "Switzerland", "Norway", "Denmark",
-  "Finland", "Belgium", "Austria", "Poland", "Czech Republic", "Ireland",
-  "Portugal", "Singapore", "Taiwan", "New Zealand", "South Africa", "Other",
+const COUNTRIES: { name: string; flag: string }[] = [
+  { name: "United States", flag: "🇺🇸" },
+  { name: "Canada", flag: "🇨🇦" },
+  { name: "United Kingdom", flag: "🇬🇧" },
+  { name: "Germany", flag: "🇩🇪" },
+  { name: "France", flag: "🇫🇷" },
+  { name: "Australia", flag: "🇦🇺" },
+  { name: "Japan", flag: "🇯🇵" },
+  { name: "China", flag: "🇨🇳" },
+  { name: "India", flag: "🇮🇳" },
+  { name: "Brazil", flag: "🇧🇷" },
+  { name: "Mexico", flag: "🇲🇽" },
+  { name: "South Korea", flag: "🇰🇷" },
+  { name: "Israel", flag: "🇮🇱" },
+  { name: "Italy", flag: "🇮🇹" },
+  { name: "Spain", flag: "🇪🇸" },
+  { name: "Netherlands", flag: "🇳🇱" },
+  { name: "Sweden", flag: "🇸🇪" },
+  { name: "Switzerland", flag: "🇨🇭" },
+  { name: "Norway", flag: "🇳🇴" },
+  { name: "Denmark", flag: "🇩🇰" },
+  { name: "Finland", flag: "🇫🇮" },
+  { name: "Belgium", flag: "🇧🇪" },
+  { name: "Austria", flag: "🇦🇹" },
+  { name: "Poland", flag: "🇵🇱" },
+  { name: "Czech Republic", flag: "🇨🇿" },
+  { name: "Ireland", flag: "🇮🇪" },
+  { name: "Portugal", flag: "🇵🇹" },
+  { name: "Singapore", flag: "🇸🇬" },
+  { name: "Taiwan", flag: "🇹🇼" },
+  { name: "New Zealand", flag: "🇳🇿" },
+  { name: "South Africa", flag: "🇿🇦" },
+  { name: "Other", flag: "🌍" },
 ];
 
 const ProductInquiryForm = ({ open, onOpenChange, productName, productId, selectedVariants = [] }: ProductInquiryFormProps) => {
@@ -207,7 +234,12 @@ const ProductInquiryForm = ({ open, onOpenChange, productName, productId, select
                 </SelectTrigger>
                 <SelectContent>
                   {COUNTRIES.map((c) => (
-                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                    <SelectItem key={c.name} value={c.name}>
+                      <span className="inline-flex items-center gap-2">
+                        <span>{c.flag}</span>
+                        <span>{c.name}</span>
+                      </span>
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
