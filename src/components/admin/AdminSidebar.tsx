@@ -66,13 +66,10 @@ export function AdminSidebar() {
     >
       <div className="p-4 border-b border-white/10 bg-maxir-dark">
         <Link to="/admin/home" className="flex items-center gap-2">
-          <svg width="24" height="24" viewBox="0 0 40 40" fill="none">
-            <path d="M5 35L20 5L25 15L15 35H5Z" fill="hsl(348,100%,61%)" />
-            <path d="M15 35L25 15L35 35H15Z" fill="hsl(348,100%,61%)" opacity="0.7" />
-          </svg>
+          <img src="/images/maxir-logo.svg" alt="MAX-IR Labs" className={collapsed ? "h-6 w-auto" : "h-7 w-auto"} />
           {!collapsed && (
             <span className="text-maxir-white font-bold text-sm tracking-wide">
-              MAX-IR <span className="font-light">ADMIN</span>
+              ADMIN
             </span>
           )}
         </Link>
