@@ -154,6 +154,7 @@ export type Database = {
           last_name: string | null
           phone: string | null
           postal_code: string | null
+          state: string | null
           status: string
           tax_exempt: boolean
           updated_at: string
@@ -173,6 +174,7 @@ export type Database = {
           last_name?: string | null
           phone?: string | null
           postal_code?: string | null
+          state?: string | null
           status?: string
           tax_exempt?: boolean
           updated_at?: string
@@ -192,6 +194,7 @@ export type Database = {
           last_name?: string | null
           phone?: string | null
           postal_code?: string | null
+          state?: string | null
           status?: string
           tax_exempt?: boolean
           updated_at?: string
@@ -214,6 +217,7 @@ export type Database = {
           product_id: string | null
           product_name: string
           read: boolean
+          state: string | null
         }
         Insert: {
           company_name?: string | null
@@ -230,6 +234,7 @@ export type Database = {
           product_id?: string | null
           product_name: string
           read?: boolean
+          state?: string | null
         }
         Update: {
           company_name?: string | null
@@ -246,6 +251,7 @@ export type Database = {
           product_id?: string | null
           product_name?: string
           read?: boolean
+          state?: string | null
         }
         Relationships: [
           {
