@@ -41,7 +41,7 @@ const groupLabel = (date: Date) => {
 };
 
 const EventIcon = ({ type }: { type: TimelineEvent["type"] }) => {
-  const base = "absolute -left-[23px] top-1 h-3.5 w-3.5 -translate-x-1/2 rounded-full flex items-center justify-center";
+  const base = "absolute -left-[25.5px] top-1 h-3.5 w-3.5 -translate-x-1/2 rounded-full flex items-center justify-center";
   switch (type) {
     case "order":
       return (
