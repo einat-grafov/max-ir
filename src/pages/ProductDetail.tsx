@@ -380,8 +380,8 @@ const ProductDetail = () => {
 
                   {/* SKU */}
                   {product.sku && (
-                    <p className="text-sm text-muted-foreground">
-                      <span className="font-medium text-foreground">SKU:</span> {product.sku}
+                    <p className="text-sm text-muted-foreground font-semibold">
+                      <span className="text-foreground">SKU:</span> {product.sku}
                     </p>
                   )}
                 </div>
