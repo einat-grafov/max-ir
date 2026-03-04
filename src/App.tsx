@@ -11,6 +11,8 @@ import Store from "./pages/Store";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import AdminLogin from "./pages/AdminLogin";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import AdminLayout from "./components/admin/AdminLayout";
 import Orders from "./pages/admin/Orders";
 import CreateOrder from "./pages/admin/CreateOrder";
@@ -58,6 +60,8 @@ const router = createBrowserRouter([
       { path: "/cart", element: <Cart /> },
       { path: "/design-system", element: <DesignSystem /> },
       { path: "/admin/login", element: <AdminLogin /> },
+      { path: "/forgot-password", element: <ForgotPassword /> },
+      { path: "/reset-password", element: <ResetPassword /> },
       {
         path: "/admin",
         element: <AdminLayout />,

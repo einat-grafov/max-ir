@@ -105,6 +105,13 @@ const AdminLogin = () => {
             >
               {loading ? "Signing in..." : "Sign In"}
             </button>
+
+            <Link
+              to="/forgot-password"
+              className="text-maxir-gray hover:text-maxir-white text-xs text-center transition-colors"
+            >
+              Forgot password?
+            </Link>
           </form>
         </div>
 
