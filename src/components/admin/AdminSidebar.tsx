@@ -65,13 +65,8 @@ export function AdminSidebar() {
       collapsible="icon"
     >
       <div className="p-4 border-b border-white/10 bg-maxir-dark">
-        <Link to="/admin/home" className="flex items-center gap-2">
+        <Link to="/admin/home" className="flex items-center">
           <img src="/images/maxir-logo.svg" alt="MAX-IR Labs" className={collapsed ? "h-6 w-auto" : "h-7 w-auto"} />
-          {!collapsed && (
-            <span className="text-maxir-white font-bold text-sm tracking-wide">
-              ADMIN
-            </span>
-          )}
         </Link>
       </div>
 
