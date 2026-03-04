@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { format } from "date-fns";
+import type { Tables } from "@/integrations/supabase/types";
 import { CalendarIcon, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -54,6 +55,7 @@ interface RecordInteractionModalProps {
   customerName: string;
   companyName: string;
   contactPerson: string;
+  editNote?: Tables<"customer_notes"> | null;
 }
 
 const RecordInteractionModal = ({
@@ -63,8 +65,10 @@ const RecordInteractionModal = ({
   customerName,
   companyName,
   contactPerson,
+  editNote,
 }: RecordInteractionModalProps) => {
   const queryClient = useQueryClient();
+  const isEditing = !!editNote;
 
   const [dateOfInteraction, setDateOfInteraction] = useState<Date>(new Date());
   const [contact, setContact] = useState(contactPerson);
@@ -78,6 +82,33 @@ const RecordInteractionModal = ({
   const [salesStage, setSalesStage] = useState("");
   const [salesStageOther, setSalesStageOther] = useState("");
   const [nextFollowUpDate, setNextFollowUpDate] = useState<Date | undefined>();
+
+  const populateFromNote = (note: Tables<"customer_notes">) => {
+    setDateOfInteraction(new Date(note.date_of_interaction));
+    setContact(note.contact_person || contactPerson);
+    const isOtherInteraction = note.interaction_type_other && !INTERACTION_TYPES.slice(0, -1).includes(note.interaction_type || "");
+    if (isOtherInteraction) {
+      setInteractionType("Other");
+      setInteractionTypeOther(note.interaction_type_other || "");
+    } else {
+      setInteractionType(note.interaction_type || "");
+      setInteractionTypeOther("");
+    }
+    setSummary(note.summary || "");
+    setActionItems(note.action_items || "");
+    setCustomerFeedback(note.customer_feedback || "");
+    setFollowUpRequired(note.follow_up_required);
+    setFollowUpDetails(note.follow_up_details || "");
+    const isOtherStage = note.sales_stage_other && !SALES_STAGES.slice(0, -1).includes(note.sales_stage || "");
+    if (isOtherStage) {
+      setSalesStage("Other");
+      setSalesStageOther(note.sales_stage_other || "");
+    } else {
+      setSalesStage(note.sales_stage || "");
+      setSalesStageOther("");
+    }
+    setNextFollowUpDate(note.next_follow_up_date ? new Date(note.next_follow_up_date) : undefined);
+  };
 
   const resetForm = () => {
     setDateOfInteraction(new Date());
@@ -96,8 +127,12 @@ const RecordInteractionModal = ({
 
   const handleOpenChange = (newOpen: boolean) => {
     if (newOpen) {
-      setContact(contactPerson);
-      setDateOfInteraction(new Date());
+      if (editNote) {
+        populateFromNote(editNote);
+      } else {
+        setContact(contactPerson);
+        setDateOfInteraction(new Date());
+      }
     }
     onOpenChange(newOpen);
   };
@@ -111,7 +146,7 @@ const RecordInteractionModal = ({
         summary,
       ].filter(Boolean);
 
-      const { error } = await supabase.from("customer_notes").insert({
+      const noteData = {
         customer_id: customerId,
         content: contentParts.join(" ") || "Interaction recorded",
         date_of_interaction: dateOfInteraction.toISOString(),
@@ -128,17 +163,27 @@ const RecordInteractionModal = ({
         sales_stage: salesStage === "Other" ? salesStageOther : salesStage || null,
         sales_stage_other: salesStage === "Other" ? salesStageOther : null,
         next_follow_up_date: nextFollowUpDate ? format(nextFollowUpDate, "yyyy-MM-dd") : null,
-      } as any);
-      if (error) throw error;
+      };
+
+      if (isEditing && editNote) {
+        const { error } = await supabase
+          .from("customer_notes")
+          .update(noteData as any)
+          .eq("id", editNote.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("customer_notes").insert(noteData as any);
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["customer-notes", customerId] });
-      toast.success("Interaction recorded");
+      toast.success(isEditing ? "Interaction updated" : "Interaction recorded");
       resetForm();
       onOpenChange(false);
     },
     onError: () => {
-      toast.error("Failed to save interaction");
+      toast.error(isEditing ? "Failed to update interaction" : "Failed to save interaction");
     },
   });
 
@@ -148,7 +193,7 @@ const RecordInteractionModal = ({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-[640px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Record Customer Interaction</DialogTitle>
+          <DialogTitle>{isEditing ? "Edit Interaction" : "Record Customer Interaction"}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-5 pt-2">
@@ -360,7 +405,7 @@ const RecordInteractionModal = ({
             onClick={() => saveMutation.mutate()}
             disabled={!canSave || saveMutation.isPending}
           >
-            {saveMutation.isPending ? "Saving..." : "Save"}
+            {saveMutation.isPending ? "Saving..." : isEditing ? "Update" : "Save"}
           </Button>
         </div>
       </DialogContent>

@@ -255,6 +255,10 @@ const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, company
         open={!!selectedNote}
         onOpenChange={(open) => { if (!open) setSelectedNote(null); }}
         note={selectedNote}
+        customerId={customerId}
+        customerName={customerName}
+        companyName={companyName || customerName}
+        contactPerson={contactPerson || ""}
       />
     </Card>
   );
