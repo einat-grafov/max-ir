@@ -65,6 +65,7 @@ const Products = () => {
             <thead>
               <tr className="border-b border-border">
                 <th className="text-left text-muted-foreground font-medium px-6 py-3">Product</th>
+                <th className="text-left text-muted-foreground font-medium px-6 py-3">Status</th>
                 <th className="text-left text-muted-foreground font-medium px-6 py-3">SKU</th>
                 <th className="text-left text-muted-foreground font-medium px-6 py-3">Category</th>
                 <th className="text-right text-muted-foreground font-medium px-6 py-3">Price</th>
@@ -74,13 +75,13 @@ const Products = () => {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
+                   <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
                     Loading...
                   </td>
                 </tr>
               ) : !products || products.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
+                  <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
                     No products yet. Click "Add Product" to get started.
                   </td>
                 </tr>
@@ -107,7 +108,16 @@ const Products = () => {
                           </div>
                         )}
                         <span className="font-medium text-foreground">{product.name}</span>
-                      </div>
+                     </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                        (product as any).status === "archived"
+                          ? "bg-muted text-muted-foreground"
+                          : "bg-primary/10 text-primary"
+                      }`}>
+                        {(product as any).status === "archived" ? "Archived" : "Active"}
+                      </span>
                     </td>
                     <td className="px-6 py-3 text-muted-foreground">{product.sku || "—"}</td>
                     <td className="px-6 py-3 text-muted-foreground">{product.category || "—"}</td>
