@@ -21,6 +21,7 @@ const Store = () => {
       const { data, error } = await supabase
         .from("products")
         .select("id, name, image_url, images, price")
+        .eq("status", "active")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data as Product[];

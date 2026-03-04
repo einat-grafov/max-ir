@@ -280,6 +280,7 @@ export type Database = {
           requires_shipping: boolean
           sku: string | null
           specifications: Json | null
+          status: string
           stock: number
           tax_exempt: boolean
           updated_at: string
@@ -298,6 +299,7 @@ export type Database = {
           requires_shipping?: boolean
           sku?: string | null
           specifications?: Json | null
+          status?: string
           stock?: number
           tax_exempt?: boolean
           updated_at?: string
@@ -316,6 +318,7 @@ export type Database = {
           requires_shipping?: boolean
           sku?: string | null
           specifications?: Json | null
+          status?: string
           stock?: number
           tax_exempt?: boolean
           updated_at?: string

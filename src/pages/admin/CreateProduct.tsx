@@ -18,6 +18,7 @@ const CreateProduct = () => {
       stock: parseInt(data.stock) || 0,
       requires_shipping: data.requiresShipping,
       tax_exempt: data.taxExempt,
+      status: data.status,
       image_url: imageUrl,
       images: allImageUrls as unknown as Json,
       specifications: (data.specifications.length > 0 ? data.specifications : []) as unknown as Json,
