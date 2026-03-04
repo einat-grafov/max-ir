@@ -174,6 +174,15 @@ const EditCustomer = () => {
     return false;
   }, [customer, existingContacts, companyName, country, address, apartment, city, postalCode, contacts]);
 
+  useEffect(() => {
+    if (!hasUnsavedChanges) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [hasUnsavedChanges]);
+
   const addContact = () => setContacts((prev) => [...prev, emptyContact()]);
   const removeContact = (index: number) =>
     setContacts((prev) => prev.filter((_, i) => i !== index));
