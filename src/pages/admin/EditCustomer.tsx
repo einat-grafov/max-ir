@@ -268,7 +268,7 @@ const EditCustomer = () => {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-foreground flex items-center gap-3 leading-none">
             {customer.company || customer.first_name}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
