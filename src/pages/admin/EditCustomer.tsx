@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import "flag-icons/css/flag-icons.min.css";
 import { COUNTRIES, getCountryCode } from "@/lib/countries";
@@ -152,6 +152,27 @@ const EditCustomer = () => {
       );
     }
   }, [existingContacts]);
+
+  const hasUnsavedChanges = useMemo(() => {
+    if (!customer || !existingContacts) return false;
+    const saved = {
+      company: customer.company || customer.first_name || "",
+      country: customer.country || "Israel",
+      address: customer.address || "",
+      apartment: customer.apartment || "",
+      city: customer.city || "",
+      postal: customer.postal_code || "",
+    };
+    if (companyName !== saved.company || country !== saved.country || address !== saved.address || apartment !== saved.apartment || city !== saved.city || postalCode !== saved.postal) return true;
+    if (contacts.length !== existingContacts.length) return true;
+    for (let i = 0; i < existingContacts.length; i++) {
+      const ec = existingContacts[i];
+      const c = contacts[i];
+      if (!c) return true;
+      if (c.first_name !== ec.first_name || c.last_name !== (ec.last_name || "") || c.role !== (ec.role || "") || c.phone !== (ec.phone || "") || c.email !== (ec.email || "")) return true;
+    }
+    return false;
+  }, [customer, existingContacts, companyName, country, address, apartment, city, postalCode, contacts]);
 
   const addContact = () => setContacts((prev) => [...prev, emptyContact()]);
   const removeContact = (index: number) =>
@@ -312,8 +333,12 @@ const EditCustomer = () => {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+          {hasUnsavedChanges && (
+            <span className="text-sm text-amber-600 font-medium animate-in fade-in">Unsaved changes</span>
+          )}
           <Button
             variant="outline"
+            disabled={!hasUnsavedChanges}
             onClick={() => {
               if (customer) {
                 setCompanyName(customer.company || customer.first_name || "");
@@ -339,7 +364,7 @@ const EditCustomer = () => {
           >
             Discard
           </Button>
-          <Button onClick={handleSave} disabled={saving || !hasValidContact}>
+          <Button onClick={handleSave} disabled={saving || !hasValidContact || !hasUnsavedChanges}>
             {saving ? "Saving..." : "Save changes"}
           </Button>
         </div>
