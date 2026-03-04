@@ -35,7 +35,7 @@ const Store = () => {
   };
 
   return (
-    <div className="min-h-screen bg-maxir-dark">
+    <div className="min-h-screen bg-white">
       <Navbar />
       <main className="pt-[70px]">
         {/* Dark header with title */}
