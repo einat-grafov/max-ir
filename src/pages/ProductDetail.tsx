@@ -94,7 +94,7 @@ const ProductDetail = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id, name, image_url, images, price, description, overview, specifications, variants, category, sku, status")
+        .select("id, name, image_url, images, price, description, overview, specifications, variants, category, sku, status, cta_add_to_cart, cta_request_quote")
         .eq("id", id!)
         .eq("status", "active")
         .maybeSingle();
@@ -327,8 +327,11 @@ const ProductDetail = () => {
                     const variants = getVariants(product);
                     const hasVariants = variants.length > 0;
                     const hasSelection = !hasVariants || variants.some((v, i) => !isOutOfStock(v) && (selectedVariants[i] ?? 0) > 0);
+                    const showAddToCart = (product as any).cta_add_to_cart !== false;
+                    const showRequestQuote = (product as any).cta_request_quote !== false;
                     return (
                     <div className="flex items-center gap-3 flex-wrap">
+                    {showAddToCart && (
                     <button
                       onClick={() => {
                         if (hasVariants) {
@@ -362,6 +365,7 @@ const ProductDetail = () => {
                       <ShoppingCart className="w-4 h-4" />
                       Add to Cart
                     </button>
+                    )}
                     <button
                       onClick={() => setInquiryOpen(true)}
                       className="inline-flex items-center gap-2 bg-maxir-dark hover:bg-maxir-dark/90 text-maxir-white px-6 py-3 text-sm font-semibold transition-colors rounded-md"
@@ -369,6 +373,7 @@ const ProductDetail = () => {
                       <Mail className="w-4 h-4" />
                       Contact
                     </button>
+                    {showRequestQuote && (
                     <button
                       onClick={() => setInquiryOpen(true)}
                       className="inline-flex items-center gap-2 border border-border hover:bg-muted text-foreground px-6 py-3 text-sm font-semibold transition-colors rounded-md"
@@ -376,6 +381,7 @@ const ProductDetail = () => {
                       <FileText className="w-4 h-4" />
                       Quote
                     </button>
+                    )}
                   </div>
                     );
                   })()}
