@@ -168,44 +168,6 @@ const CreateCustomer = () => {
         </Card>
 
 
-        {/* Address */}
-        <Card className="p-6">
-          <h2 className="text-base font-semibold text-foreground mb-4">Default address</h2>
-          <div className="space-y-4">
-            <div>
-              <Label className="text-sm font-medium text-foreground">Country / region</Label>
-              <Select value={country} onValueChange={setCountry}>
-                <SelectTrigger className="mt-1.5">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {COUNTRIES.map((c) => (
-                    <SelectItem key={c} value={c}>{c}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label className="text-sm font-medium text-foreground">Address</Label>
-              <Input value={address} onChange={(e) => setAddress(e.target.value)} className="mt-1.5" />
-            </div>
-            <div>
-              <Label className="text-sm font-medium text-foreground">Apartment, suite, etc</Label>
-              <Input value={apartment} onChange={(e) => setApartment(e.target.value)} className="mt-1.5" />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label className="text-sm font-medium text-foreground">Postal code</Label>
-                <Input value={postalCode} onChange={(e) => setPostalCode(e.target.value)} className="mt-1.5" />
-              </div>
-              <div>
-                <Label className="text-sm font-medium text-foreground">City</Label>
-                <Input value={city} onChange={(e) => setCity(e.target.value)} className="mt-1.5" />
-              </div>
-            </div>
-          </div>
-        </Card>
-
         {/* Contacts */}
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
@@ -258,6 +220,44 @@ const CreateCustomer = () => {
               ))}
             </div>
           )}
+        </Card>
+
+        {/* Address */}
+        <Card className="p-6">
+          <h2 className="text-base font-semibold text-foreground mb-4">Default address</h2>
+          <div className="space-y-4">
+            <div>
+              <Label className="text-sm font-medium text-foreground">Country / region</Label>
+              <Select value={country} onValueChange={setCountry}>
+                <SelectTrigger className="mt-1.5">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {COUNTRIES.map((c) => (
+                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-sm font-medium text-foreground">Address</Label>
+              <Input value={address} onChange={(e) => setAddress(e.target.value)} className="mt-1.5" />
+            </div>
+            <div>
+              <Label className="text-sm font-medium text-foreground">Apartment, suite, etc</Label>
+              <Input value={apartment} onChange={(e) => setApartment(e.target.value)} className="mt-1.5" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium text-foreground">Postal code</Label>
+                <Input value={postalCode} onChange={(e) => setPostalCode(e.target.value)} className="mt-1.5" />
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-foreground">City</Label>
+                <Input value={city} onChange={(e) => setCity(e.target.value)} className="mt-1.5" />
+              </div>
+            </div>
+          </div>
         </Card>
       </div>
     </div>
