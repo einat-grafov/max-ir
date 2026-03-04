@@ -350,69 +350,69 @@ const RecordInteractionModal = ({
               <label htmlFor="follow-up-yes" className="text-sm">Yes, follow-up needed</label>
             </div>
             {followUpRequired && (
-              <div>
-                <Label className="text-sm font-medium">Follow-up Details</Label>
-                <Input
-                  value={followUpDetails}
-                  onChange={(e) => setFollowUpDetails(e.target.value)}
-                  placeholder="Specify follow-up date and action needed"
-                  className="mt-1.5"
-                />
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-sm font-medium">Follow-up Date</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal mt-1.5",
+                          !nextFollowUpDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="h-4 w-4 mr-2" />
+                        {nextFollowUpDate ? format(nextFollowUpDate, "PPP") : "Pick a date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={nextFollowUpDate}
+                        onSelect={setNextFollowUpDate}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Follow-up Details</Label>
+                  <Input
+                    value={followUpDetails}
+                    onChange={(e) => setFollowUpDetails(e.target.value)}
+                    placeholder="Describe the follow-up action needed"
+                    className="mt-1.5"
+                  />
+                </div>
               </div>
             )}
           </div>
 
-          {/* Row: Sales Stage + Follow-up Date */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <div className="flex items-center gap-2">
-                <Label className="text-sm font-medium">Sales Stage</Label>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="text-xs max-w-[200px]">Track where this customer is in the sales pipeline.</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <Select value={salesStage} onValueChange={setSalesStage}>
-                <SelectTrigger className="mt-1.5">
-                  <SelectValue placeholder="Select stage..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {SALES_STAGES.map((s) => (
-                    <SelectItem key={s} value={s}>{s}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+          {/* Sales Stage */}
+          <div>
+            <div className="flex items-center gap-2">
+              <Label className="text-sm font-medium">Sales Stage</Label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs max-w-[200px]">Track where this customer is in the sales pipeline.</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
-            <div>
-              <Label className="text-sm font-medium">Next Follow-up Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal mt-1.5",
-                      !nextFollowUpDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="h-4 w-4 mr-2" />
-                    {nextFollowUpDate ? format(nextFollowUpDate, "PPP") : "Pick a date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={nextFollowUpDate}
-                    onSelect={setNextFollowUpDate}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+            <Select value={salesStage} onValueChange={setSalesStage}>
+              <SelectTrigger className="mt-1.5">
+                <SelectValue placeholder="Select stage..." />
+              </SelectTrigger>
+              <SelectContent>
+                {SALES_STAGES.map((s) => (
+                  <SelectItem key={s} value={s}>{s}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {salesStage === "Other" && (
