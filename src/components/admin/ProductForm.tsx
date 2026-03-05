@@ -225,9 +225,9 @@ const ProductForm = ({
                 <AlertDialog>
                   <TooltipTrigger asChild>
                     <AlertDialogTrigger asChild>
-                      <Button variant="destructive" size="icon" className="cursor-pointer" disabled={deleting}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                       <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:bg-destructive hover:text-white" disabled={deleting}>
+                         <Trash2 className="h-4 w-4" />
+                       </Button>
                     </AlertDialogTrigger>
                   </TooltipTrigger>
                   <TooltipContent>Delete</TooltipContent>
