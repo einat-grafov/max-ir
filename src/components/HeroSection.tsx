@@ -1,5 +1,6 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import { Link } from "react-router-dom";
 
 interface HeroContent {
   title?: string;
@@ -75,6 +76,19 @@ const HeroSection = ({ content }: { content?: HeroContent | null }) => {
         >
           {c.subtitle}
         </motion.p>
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.9, ease: "easeOut" }}
+          className="mt-10"
+        >
+          <Link
+            to="/store"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 text-base font-semibold transition-colors"
+          >
+            Our Products
+          </Link>
+        </motion.div>
       </div>
 
       {/* Wave SVG divider */}
