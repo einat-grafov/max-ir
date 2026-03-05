@@ -26,7 +26,7 @@ const HeroSection = ({ content }: { content?: HeroContent | null }) => {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[70vh] md:min-h-[75vh] flex items-start justify-center overflow-x-clip section-dark pt-[160px] md:pt-[200px]"
+      className="relative min-h-[70vh] md:min-h-[75vh] flex items-start justify-center overflow-x-clip section-dark pt-[120px] md:pt-[160px]"
       style={{ '--wave-height': '120px', '--wave-height-md': '180px' } as React.CSSProperties}
     >
       {/* Background image */}
