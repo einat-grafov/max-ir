@@ -62,12 +62,6 @@ const HeroSection = ({ content }: { content?: HeroContent | null }) => {
         >
           {c.title}
         </motion.h1>
-        <motion.div
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
-          className="accent-line-center"
-        />
       </div>
 
       {/* Wave SVG divider */}
