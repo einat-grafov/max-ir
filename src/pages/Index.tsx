@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
+import ProductGrid from "@/components/ProductGrid";
 import AboutSection from "@/components/AboutSection";
 import TechnologySection from "@/components/TechnologySection";
 import SensorSection from "@/components/SensorSection";
@@ -15,6 +16,7 @@ const Index = () => {
     <div className="min-h-screen">
       <Navbar />
       {isSectionVisible("hero") && <HeroSection content={getSection("hero")} />}
+      <ProductGrid />
       {isSectionVisible("technology") && (
         <>
           <AboutSection content={getSection("technology")} />
