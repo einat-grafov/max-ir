@@ -6,12 +6,7 @@ import { useCart } from "@/contexts/CartContext";
 type MainMenuItem = "home" | "info" | "team" | "store";
 
 const anchorLinks: Record<MainMenuItem, { label: string; id: string }[]> = {
-  home: [
-    { label: "Technology", id: "Technology" },
-    { label: "The Sensor", id: "Sensor" },
-    { label: "Applications", id: "Applications" },
-    { label: "Awards & Patents", id: "Awards" },
-  ],
+  home: [],
   info: [
     { label: "Technology", id: "Technology" },
     { label: "The Sensor", id: "Sensor" },
