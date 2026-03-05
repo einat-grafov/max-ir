@@ -16,7 +16,7 @@ const Index = () => {
     <div className="min-h-screen">
       <Navbar />
       {isSectionVisible("hero") && <HeroSection content={getSection("hero")} />}
-      <ProductGrid />
+      <ProductGrid subtitle={getSection("hero")?.subtitle || "Max-IR Labs leverages state-of-the-art infrared technologies for high-value commercial and defense applications."} />
       {isSectionVisible("technology") && (
         <>
           <AboutSection content={getSection("technology")} />

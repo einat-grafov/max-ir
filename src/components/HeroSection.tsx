@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { Link } from "react-router-dom";
+
 
 interface HeroContent {
   title?: string;
@@ -26,7 +26,7 @@ const HeroSection = ({ content }: { content?: HeroContent | null }) => {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[calc(100vh+64px)] md:min-h-[calc(100vh+96px)] flex items-start justify-center overflow-x-clip section-dark pt-[120px] md:pt-[160px]"
+      className="relative min-h-[70vh] md:min-h-[75vh] flex items-start justify-center overflow-x-clip section-dark pt-[120px] md:pt-[160px]"
       style={{ '--wave-height': '120px', '--wave-height-md': '180px' } as React.CSSProperties}
     >
       {/* Background image */}
@@ -66,29 +66,8 @@ const HeroSection = ({ content }: { content?: HeroContent | null }) => {
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
-          className="accent-line-center mb-8"
+          className="accent-line-center"
         />
-        <motion.p
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
-          className="text-maxir-white text-lg md:text-xl max-w-2xl mx-auto leading-relaxed"
-        >
-          {c.subtitle}
-        </motion.p>
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.9, ease: "easeOut" }}
-          className="mt-10"
-        >
-          <Link
-            to="/store"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 text-base font-semibold transition-colors"
-          >
-            Our Products
-          </Link>
-        </motion.div>
       </div>
 
       {/* Wave SVG divider */}
