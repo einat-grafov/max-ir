@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -10,6 +10,17 @@ import ProductInquiryForm, { type SelectedVariantItem } from "@/components/Produ
 const Cart = () => {
   const { items, updateQuantity, removeItem, clearCart, totalItems, totalPrice } = useCart();
   const [quoteOpen, setQuoteOpen] = useState(false);
+  const [checkFinal, setCheckFinal] = useState(false);
+  const [checkBundled, setCheckBundled] = useState(false);
+  const [checkFTIR, setCheckFTIR] = useState(false);
+  const [checkFlow, setCheckFlow] = useState(false);
+  const [checkWaveguides, setCheckWaveguides] = useState(false);
+  const [checkTerms, setCheckTerms] = useState(false);
+
+  const allChecked = useMemo(
+    () => checkFinal && checkBundled && checkFTIR && checkFlow && checkWaveguides && checkTerms,
+    [checkFinal, checkBundled, checkFTIR, checkFlow, checkWaveguides, checkTerms]
+  );
 
   const selectedVariants: SelectedVariantItem[] = items.map((item) => ({
     name: `${item.productName}${item.variantName !== item.productName ? ` – ${item.variantName}` : ""}`,
@@ -193,9 +204,45 @@ const Cart = () => {
                     <span className="font-semibold text-foreground">Sales tax:</span> Calculated at checkout for U.S. shipping addresses. Not charged for non-U.S. shipping
                   </p>
 
+                  {/* Disclaimer checkboxes */}
+                  <div className="mb-5 space-y-3 text-xs text-foreground">
+                    <p className="font-semibold text-sm">I acknowledge and agree to the following:</p>
+
+                    <label className="flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" checked={checkFinal} onChange={() => setCheckFinal(!checkFinal)} className="mt-0.5 accent-primary" />
+                      <span>I understand that this purchase is <strong>final and non-refundable</strong>.</span>
+                    </label>
+
+                    <label className="flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" checked={checkBundled} onChange={() => setCheckBundled(!checkBundled)} className="mt-0.5 accent-primary" />
+                      <span>I understand that all waveguides require a <strong>bundled ISMIR™ system</strong>, which includes:</span>
+                    </label>
+
+                    <div className="pl-6 space-y-2">
+                      <label className="flex items-start gap-2 cursor-pointer">
+                        <input type="checkbox" checked={checkFTIR} onChange={() => setCheckFTIR(!checkFTIR)} className="mt-0.5 accent-primary" />
+                        <span>FTIR spectrometer,</span>
+                      </label>
+                      <label className="flex items-start gap-2 cursor-pointer">
+                        <input type="checkbox" checked={checkFlow} onChange={() => setCheckFlow(!checkFlow)} className="mt-0.5 accent-primary" />
+                        <span>ISMIR™ Flow module, and</span>
+                      </label>
+                      <label className="flex items-start gap-2 cursor-pointer">
+                        <input type="checkbox" checked={checkWaveguides} onChange={() => setCheckWaveguides(!checkWaveguides)} className="mt-0.5 accent-primary" />
+                        <span>ISMIR™ waveguides</span>
+                      </label>
+                    </div>
+
+                    <label className="flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" checked={checkTerms} onChange={() => setCheckTerms(!checkTerms)} className="mt-0.5 accent-primary" />
+                      <span>By proceeding with this order, I confirm that I have read and accepted these terms</span>
+                    </label>
+                  </div>
+
                   <button
                     onClick={() => setQuoteOpen(true)}
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 text-sm font-semibold rounded-md transition-colors"
+                    disabled={!allChecked}
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 text-sm font-semibold rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Check out
                   </button>
