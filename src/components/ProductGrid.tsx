@@ -36,6 +36,9 @@ const ProductGrid = () => {
   return (
     <section className="bg-white">
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10 py-12 lg:py-20">
+        <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold text-foreground text-center mb-10 lg:mb-16 font-montserrat">
+          Our Products
+        </h2>
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {[...Array(6)].map((_, i) => (
