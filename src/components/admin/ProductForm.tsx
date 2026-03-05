@@ -503,9 +503,9 @@ const ProductForm = ({
                   <Input type="number" placeholder="0.00" value={price} onChange={(e) => setPrice(e.target.value)} className="pl-7" min="0" step="0.01" />
                 </div>
                 <div className="flex items-center gap-2 pt-2 border-t border-border">
-                  <span className="text-sm text-muted-foreground">Charge tax</span>
+                  <span className="text-sm text-muted-foreground">Show price on product page</span>
                   <Switch checked={!taxExempt} onCheckedChange={(v) => setTaxExempt(!v)} />
-                  <span className="text-xs text-muted-foreground">{taxExempt ? "No" : "Yes"}</span>
+                  <span className="text-xs text-muted-foreground">{taxExempt ? "Hidden" : "Visible"}</span>
                 </div>
               </>
             )}

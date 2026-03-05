@@ -41,6 +41,7 @@ interface Product {
   variants: unknown;
   category: string | null;
   sku: string | null;
+  tax_exempt: boolean;
 }
 
 const ProductDetail = () => {
@@ -94,7 +95,7 @@ const ProductDetail = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id, name, image_url, images, price, description, overview, specifications, variants, category, sku, status, cta_add_to_cart, cta_request_quote")
+        .select("id, name, image_url, images, price, description, overview, specifications, variants, category, sku, status, cta_add_to_cart, cta_request_quote, tax_exempt")
         .eq("id", id!)
         .eq("status", "active")
         .maybeSingle();
@@ -252,7 +253,7 @@ const ProductDetail = () => {
                                       )}
                                     </div>
                                     <div className="flex items-center gap-4 shrink-0">
-                                      {parseFloat(v.price) > 0 && (
+                                      {!product.tax_exempt && parseFloat(v.price) > 0 && (
                                         <span className="text-sm font-bold text-foreground">{formatPrice(parseFloat(v.price))}</span>
                                       )}
                                       {outOfStock ? (
@@ -299,18 +300,22 @@ const ProductDetail = () => {
                               <div className="mt-3 border-t border-border pt-3">
                                 <div className="flex items-baseline justify-between">
                                   <span className="text-sm text-muted-foreground">{totalItems} item{totalItems !== 1 ? "s" : ""}</span>
-                                  <span className="text-xl font-bold text-foreground">{formatPrice(totalPrice)}</span>
+                                  {!product.tax_exempt && (
+                                    <span className="text-xl font-bold text-foreground">{formatPrice(totalPrice)}</span>
+                                  )}
                                 </div>
-                                <p className="text-xs text-muted-foreground mt-1.5 max-w-[280px] ml-auto text-right">
-                                  <span className="font-semibold text-foreground">Sales tax:</span> Calculated at checkout for U.S. shipping addresses. Not charged for non-U.S. shipping
-                                </p>
+                                {!product.tax_exempt && (
+                                  <p className="text-xs text-muted-foreground mt-1.5 max-w-[280px] ml-auto text-right">
+                                    <span className="font-semibold text-foreground">Sales tax:</span> Calculated at checkout for U.S. shipping addresses. Not charged for non-U.S. shipping
+                                  </p>
+                                )}
                               </div>
                             );
                           })()}
                         </div>
                       );
                     }
-                    return (
+                    return !product.tax_exempt ? (
                       <div>
                         <p className="text-3xl font-bold text-foreground">
                           {formatPrice(product.price)}
@@ -319,7 +324,7 @@ const ProductDetail = () => {
                           <span className="font-semibold text-foreground">Sales tax:</span> Calculated at checkout for U.S. shipping addresses. Not charged for non-U.S. shipping
                         </p>
                       </div>
-                    );
+                    ) : null;
                   })()}
 
                   {/* Action buttons */}
