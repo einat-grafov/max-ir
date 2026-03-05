@@ -12,14 +12,11 @@ const Cart = () => {
   const [quoteOpen, setQuoteOpen] = useState(false);
   const [checkFinal, setCheckFinal] = useState(false);
   const [checkBundled, setCheckBundled] = useState(false);
-  const [checkFTIR, setCheckFTIR] = useState(false);
-  const [checkFlow, setCheckFlow] = useState(false);
-  const [checkWaveguides, setCheckWaveguides] = useState(false);
   const [checkTerms, setCheckTerms] = useState(false);
 
   const allChecked = useMemo(
-    () => checkFinal && checkBundled && checkFTIR && checkFlow && checkWaveguides && checkTerms,
-    [checkFinal, checkBundled, checkFTIR, checkFlow, checkWaveguides, checkTerms]
+    () => checkFinal && checkBundled && checkTerms,
+    [checkFinal, checkBundled, checkTerms]
   );
 
   const selectedVariants: SelectedVariantItem[] = items.map((item) => ({
@@ -218,19 +215,19 @@ const Cart = () => {
                       <span>I understand that all waveguides require a <strong>bundled ISMIR™ system</strong>, which includes:</span>
                     </label>
 
-                    <div className="pl-6 space-y-2">
-                      <label className="flex items-start gap-2 cursor-pointer">
-                        <input type="checkbox" checked={checkFTIR} onChange={() => setCheckFTIR(!checkFTIR)} className="mt-0.5 accent-primary" />
+                    <div className="pl-6 space-y-1.5">
+                      <div className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">✓</span>
                         <span>FTIR spectrometer,</span>
-                      </label>
-                      <label className="flex items-start gap-2 cursor-pointer">
-                        <input type="checkbox" checked={checkFlow} onChange={() => setCheckFlow(!checkFlow)} className="mt-0.5 accent-primary" />
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">✓</span>
                         <span>ISMIR™ Flow module, and</span>
-                      </label>
-                      <label className="flex items-start gap-2 cursor-pointer">
-                        <input type="checkbox" checked={checkWaveguides} onChange={() => setCheckWaveguides(!checkWaveguides)} className="mt-0.5 accent-primary" />
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">✓</span>
                         <span>ISMIR™ waveguides</span>
-                      </label>
+                      </div>
                     </div>
 
                     <label className="flex items-start gap-2 cursor-pointer">
