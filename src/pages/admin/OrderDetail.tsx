@@ -21,7 +21,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Package, User, MapPin, FileText, Info } from "lucide-react";
+import { Package, User, MapPin, FileText, Info, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import OrderTimeline from "@/components/admin/OrderTimeline";
 
 const fmt = (n: number) =>
@@ -175,7 +186,39 @@ const OrderDetail = () => {
           <h1 className="text-2xl font-bold text-foreground">#D{order.order_number}</h1>
           <Badge variant="outline" className={s.className}>{s.text}</Badge>
         </div>
-        <div className="flex gap-3">
+        <div className="flex items-center gap-2">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:bg-destructive hover:text-white">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete order?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete this order and all its items. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  onClick={async () => {
+                    const { error } = await supabase.from("orders").delete().eq("id", id!);
+                    if (error) {
+                      toast.error("Failed to delete order");
+                      return;
+                    }
+                    toast.success("Order deleted");
+                    navigate("/admin/orders");
+                  }}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           {order.payment_status !== "paid" && (
             <Button
               onClick={() => updateOrderMutation.mutate({ payment_status: "paid" })}
