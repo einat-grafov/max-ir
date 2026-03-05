@@ -197,7 +197,7 @@ const Cart = () => {
                     onClick={() => setQuoteOpen(true)}
                     className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 text-sm font-semibold rounded-md transition-colors"
                   >
-                    Request Quote
+                    Check out
                   </button>
 
                   <p className="text-xs text-muted-foreground text-center mt-3">
