@@ -4,12 +4,10 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
 import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft } from "lucide-react";
-
-import ProductInquiryForm, { type SelectedVariantItem } from "@/components/ProductInquiryForm";
+import { toast } from "sonner";
 
 const Cart = () => {
   const { items, updateQuantity, removeItem, clearCart, totalItems, totalPrice } = useCart();
-  const [quoteOpen, setQuoteOpen] = useState(false);
   const [checkFinal, setCheckFinal] = useState(false);
   const [checkBundled, setCheckBundled] = useState(false);
   const [checkTerms, setCheckTerms] = useState(false);
@@ -18,13 +16,6 @@ const Cart = () => {
     () => checkFinal && checkBundled && checkTerms,
     [checkFinal, checkBundled, checkTerms]
   );
-
-  const selectedVariants: SelectedVariantItem[] = items.map((item) => ({
-    name: `${item.productName}${item.variantName !== item.productName ? ` – ${item.variantName}` : ""}`,
-    sku: item.sku,
-    price: `$${item.price}`,
-    quantity: item.quantity,
-  }));
 
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("en-US", {
@@ -237,7 +228,7 @@ const Cart = () => {
                   </div>
 
                   <button
-                    onClick={() => setQuoteOpen(true)}
+                    onClick={() => toast.info("Stripe checkout coming soon!")}
                     disabled={!allChecked}
                     className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 text-sm font-semibold rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
@@ -254,13 +245,6 @@ const Cart = () => {
         </div>
       </main>
       <Footer />
-
-      <ProductInquiryForm
-        open={quoteOpen}
-        onOpenChange={setQuoteOpen}
-        productName="Cart Items"
-        selectedVariants={selectedVariants}
-      />
     </div>
   );
 };
