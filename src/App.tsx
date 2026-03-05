@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider, Navigate, Outlet, useLocation } fr
 import { CartProvider } from "@/contexts/CartContext";
 import { useEffect } from "react";
 import Index from "./pages/Index";
+import Info from "./pages/Info";
 import Team from "./pages/Team";
 import Store from "./pages/Store";
 import ProductDetail from "./pages/ProductDetail";
@@ -53,6 +54,7 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       { path: "/", element: <Index /> },
+      { path: "/info", element: <Info /> },
       { path: "/team", element: <Team /> },
       { path: "/store", element: <Store /> },
       { path: "/store/:id", element: <ProductDetail /> },
