@@ -3,11 +3,11 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ShoppingCart } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 
-type MainMenuItem = "home" | "info" | "team" | "store";
+type MainMenuItem = "home" | "about" | "team" | "store";
 
 const anchorLinks: Record<MainMenuItem, { label: string; id: string }[]> = {
   home: [],
-  info: [
+  about: [
     { label: "Technology", id: "Technology" },
     { label: "The Sensor", id: "Sensor" },
     { label: "Applications", id: "Applications" },
