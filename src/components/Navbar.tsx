@@ -23,7 +23,7 @@ const anchorLinks: Record<MainMenuItem, { label: string; id: string }[]> = {
 
 const mainMenuRoutes: Record<MainMenuItem, string> = {
   home: "/",
-  info: "/info",
+  about: "/about-us",
   team: "/team",
   store: "/store",
 };
