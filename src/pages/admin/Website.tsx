@@ -36,6 +36,7 @@ const Website = () => {
   });
 
   const homeSections = sections?.filter((s) => s.page === "home") || [];
+  const aboutSections = sections?.filter((s) => s.page === "about") || [];
   const teamSections = sections?.filter((s) => s.page === "team") || [];
 
   return (
