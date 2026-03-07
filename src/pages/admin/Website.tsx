@@ -73,6 +73,23 @@ const Website = () => {
           )}
         </TabsContent>
 
+        <TabsContent value="about">
+          {isLoading ? (
+            <p className="text-sm text-muted-foreground">Loading...</p>
+          ) : (
+            <div className="space-y-4">
+              {aboutSections.map((section) => (
+                <WebsiteSectionEditor
+                  key={section.id}
+                  section={section}
+                  label={SECTION_LABELS[section.section_key] || section.section_key}
+                  onSaved={() => queryClient.invalidateQueries({ queryKey: ["website-content"] })}
+                />
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
         <TabsContent value="team">
           {isLoading ? (
             <p className="text-sm text-muted-foreground">Loading...</p>
