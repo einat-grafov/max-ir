@@ -6,7 +6,7 @@ import { createBrowserRouter, RouterProvider, Navigate, Outlet, useLocation } fr
 import { CartProvider } from "@/contexts/CartContext";
 import { useEffect } from "react";
 import Index from "./pages/Index";
-import Info from "./pages/Info";
+import AboutUs from "./pages/AboutUs";
 import Team from "./pages/Team";
 import Store from "./pages/Store";
 import ProductDetail from "./pages/ProductDetail";
