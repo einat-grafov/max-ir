@@ -37,7 +37,7 @@ const HeroSection = ({ content }: { content?: HeroContent | null }) => {
 
       {/* Decorative drops background layer */}
       <motion.div
-        className="absolute bottom-[18%] md:bottom-[22%] left-1/2 w-[90%] md:w-[70%] pointer-events-none"
+        className="absolute bottom-[12%] md:bottom-[16%] left-1/2 w-[90%] md:w-[70%] pointer-events-none"
         style={{ zIndex: 22, x: "-50%", y: dropsY }}
       >
         <img src="/images/main-drop.png" alt="" aria-hidden="true" className="w-full h-auto" />
