@@ -37,10 +37,10 @@ const HeroSection = ({ content }: { content?: HeroContent | null }) => {
 
       {/* Decorative drops background layer */}
       <motion.div
-        className="absolute bottom-[calc(-5%)] md:bottom-[calc(-2%)] left-1/2 w-[60%] md:w-[45%] pointer-events-none"
+        className="absolute bottom-[18%] md:bottom-[22%] left-1/2 w-[90%] md:w-[70%] pointer-events-none"
         style={{ zIndex: 22, x: "-50%", y: dropsY }}
       >
-        <img src="/images/drops.png" alt="" aria-hidden="true" className="w-full h-auto" />
+        <img src="/images/main-drop.png" alt="" aria-hidden="true" className="w-full h-auto" />
       </motion.div>
 
       {/* Decorative ribbon + droplet layer */}
