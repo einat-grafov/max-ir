@@ -17,15 +17,6 @@ const Index = () => {
       <Navbar />
       {isSectionVisible("hero") && <HeroSection content={getSection("hero")} />}
       <ProductGrid subtitle={getSection("hero")?.subtitle || "Max-IR Labs leverages state-of-the-art infrared technologies for high-value commercial and defense applications."} />
-      {isSectionVisible("technology") && (
-        <>
-          <AboutSection content={getSection("technology")} />
-          <TechnologySection content={getSection("technology")} />
-        </>
-      )}
-      {isSectionVisible("sensor") && <SensorSection content={getSection("sensor")} />}
-      {isSectionVisible("applications") && <ApplicationsSection content={getSection("applications")} />}
-      {isSectionVisible("awards") && <AwardsSection content={getSection("awards")} />}
       <Footer />
     </div>
   );
