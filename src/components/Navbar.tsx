@@ -3,11 +3,11 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ShoppingCart } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 
-type MainMenuItem = "home" | "info" | "team" | "store";
+type MainMenuItem = "home" | "about" | "team" | "store";
 
 const anchorLinks: Record<MainMenuItem, { label: string; id: string }[]> = {
   home: [],
-  info: [
+  about: [
     { label: "Technology", id: "Technology" },
     { label: "The Sensor", id: "Sensor" },
     { label: "Applications", id: "Applications" },
@@ -23,7 +23,7 @@ const anchorLinks: Record<MainMenuItem, { label: string; id: string }[]> = {
 
 const mainMenuRoutes: Record<MainMenuItem, string> = {
   home: "/",
-  info: "/info",
+  about: "/about-us",
   team: "/team",
   store: "/store",
 };
@@ -35,7 +35,7 @@ const Navbar = () => {
   const { totalItems } = useCart();
 
   const activeMain: MainMenuItem = useMemo(() => {
-    if (location.pathname.startsWith("/info")) return "info";
+    if (location.pathname.startsWith("/about-us")) return "about";
     if (location.pathname.startsWith("/team")) return "team";
     if (location.pathname.startsWith("/store")) return "store";
     return "home";
@@ -43,7 +43,7 @@ const Navbar = () => {
 
   // Reset active anchor when page changes; default to first anchor only for home
   useEffect(() => {
-    if (activeMain === "home" || activeMain === "info") {
+    if (activeMain === "home" || activeMain === "about") {
       const anchors = anchorLinks[activeMain];
       setActiveAnchor(anchors.length > 0 ? anchors[0].id : null);
     } else {
@@ -93,7 +93,7 @@ const Navbar = () => {
 
   const mainItems: { key: MainMenuItem; label: string }[] = [
     { key: "home", label: "Home" },
-    { key: "info", label: "Info" },
+    { key: "about", label: "About Us" },
     { key: "team", label: "Team" },
     { key: "store", label: "Our Products" },
   ];

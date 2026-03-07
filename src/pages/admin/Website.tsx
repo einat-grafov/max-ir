@@ -36,6 +36,7 @@ const Website = () => {
   });
 
   const homeSections = sections?.filter((s) => s.page === "home") || [];
+  const aboutSections = sections?.filter((s) => s.page === "about") || [];
   const teamSections = sections?.filter((s) => s.page === "team") || [];
 
   return (
@@ -51,6 +52,7 @@ const Website = () => {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-6">
           <TabsTrigger value="home">Home Page</TabsTrigger>
+          <TabsTrigger value="about">About Us Page</TabsTrigger>
           <TabsTrigger value="team">Team Page</TabsTrigger>
         </TabsList>
 
@@ -60,6 +62,23 @@ const Website = () => {
           ) : (
             <div className="space-y-4">
               {homeSections.map((section) => (
+                <WebsiteSectionEditor
+                  key={section.id}
+                  section={section}
+                  label={SECTION_LABELS[section.section_key] || section.section_key}
+                  onSaved={() => queryClient.invalidateQueries({ queryKey: ["website-content"] })}
+                />
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="about">
+          {isLoading ? (
+            <p className="text-sm text-muted-foreground">Loading...</p>
+          ) : (
+            <div className="space-y-4">
+              {aboutSections.map((section) => (
                 <WebsiteSectionEditor
                   key={section.id}
                   section={section}

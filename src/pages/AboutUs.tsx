@@ -6,10 +6,10 @@ import SensorSection from "@/components/SensorSection";
 import ApplicationsSection from "@/components/ApplicationsSection";
 import AwardsSection from "@/components/AwardsSection";
 import Footer from "@/components/Footer";
-import { useHomeContent } from "@/hooks/useHomeContent";
+import { useAboutContent } from "@/hooks/useAboutContent";
 
-const Info = () => {
-  const { getSection, isSectionVisible } = useHomeContent();
+const AboutUs = () => {
+  const { getSection, isSectionVisible } = useAboutContent();
 
   return (
     <div className="min-h-screen">
@@ -29,4 +29,4 @@ const Info = () => {
   );
 };
 
-export default Info;
+export default AboutUs;
