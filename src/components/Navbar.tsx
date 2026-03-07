@@ -43,7 +43,7 @@ const Navbar = () => {
 
   // Reset active anchor when page changes; default to first anchor only for home
   useEffect(() => {
-    if (activeMain === "home" || activeMain === "info") {
+    if (activeMain === "home" || activeMain === "about") {
       const anchors = anchorLinks[activeMain];
       setActiveAnchor(anchors.length > 0 ? anchors[0].id : null);
     } else {
