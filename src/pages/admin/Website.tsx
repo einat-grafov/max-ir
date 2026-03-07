@@ -52,6 +52,7 @@ const Website = () => {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-6">
           <TabsTrigger value="home">Home Page</TabsTrigger>
+          <TabsTrigger value="about">About Us Page</TabsTrigger>
           <TabsTrigger value="team">Team Page</TabsTrigger>
         </TabsList>
 
