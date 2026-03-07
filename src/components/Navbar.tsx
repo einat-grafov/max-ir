@@ -35,7 +35,7 @@ const Navbar = () => {
   const { totalItems } = useCart();
 
   const activeMain: MainMenuItem = useMemo(() => {
-    if (location.pathname.startsWith("/info")) return "info";
+    if (location.pathname.startsWith("/about-us")) return "about";
     if (location.pathname.startsWith("/team")) return "team";
     if (location.pathname.startsWith("/store")) return "store";
     return "home";
