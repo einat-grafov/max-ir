@@ -1,11 +1,6 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import ProductGrid from "@/components/ProductGrid";
-import AboutSection from "@/components/AboutSection";
-import TechnologySection from "@/components/TechnologySection";
-import SensorSection from "@/components/SensorSection";
-import ApplicationsSection from "@/components/ApplicationsSection";
-import AwardsSection from "@/components/AwardsSection";
 import Footer from "@/components/Footer";
 import { useHomeContent } from "@/hooks/useHomeContent";
 
