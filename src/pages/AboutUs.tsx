@@ -14,7 +14,7 @@ const AboutUs = () => {
   return (
     <div className="min-h-screen">
       <Navbar />
-      {isSectionVisible("hero") && <HeroSection content={getSection("hero")} showDecorations={false} />}
+      {isSectionVisible("hero") && <HeroSection content={{ ...getSection("hero"), title: "About Us" }} showDecorations={false} compact />}
       {isSectionVisible("technology") && (
         <>
           <AboutSection content={getSection("technology")} />
