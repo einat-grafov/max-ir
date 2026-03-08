@@ -32,7 +32,7 @@ const Cart = () => {
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
           {/* Breadcrumb */}
           <nav className="pt-6 pb-8 text-sm text-muted-foreground">
-            <Link to="/store" className="hover:text-foreground transition-colors">
+            <Link to="/#Products" className="hover:text-foreground transition-colors">
               Our products
             </Link>
             <span className="mx-2">&gt;</span>
