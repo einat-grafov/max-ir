@@ -80,7 +80,7 @@ const Cart = () => {
                         {/* Product info */}
                         <div className="min-w-0">
                           <Link
-                            to={`/store/${item.productId}`}
+                            to={`/products/${item.productId}`}
                             className="text-sm font-semibold text-foreground hover:text-primary transition-colors"
                           >
                             {item.productName}
