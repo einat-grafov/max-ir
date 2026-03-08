@@ -26,7 +26,7 @@ const HeroSection = ({ content, showDecorations = true, compact = false }: { con
   return (
     <section
       ref={sectionRef}
-      className={`relative flex items-start justify-center overflow-x-clip section-dark ${compact ? 'min-h-[40vh] md:min-h-[50vh] pt-[100px] md:pt-[140px]' : 'min-h-[85vh] md:min-h-screen pt-[120px] md:pt-[160px]'}`}
+      className={`relative flex items-start justify-center overflow-x-clip section-dark ${compact ? 'min-h-[50vh] md:min-h-[60vh] pt-[100px] md:pt-[140px]' : 'min-h-[85vh] md:min-h-screen pt-[120px] md:pt-[160px]'}`}
       style={{ '--wave-height': '120px', '--wave-height-md': '180px' } as React.CSSProperties}
     >
       {/* Background image */}
