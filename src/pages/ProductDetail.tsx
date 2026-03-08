@@ -222,6 +222,18 @@ const ProductDetail = () => {
                     />
                   )}
 
+                  {(product as any).pdf_url && (
+                    <a
+                      href={(product as any).pdf_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 underline underline-offset-2 transition-colors"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      Product Information (PDF)
+                    </a>
+                  )}
+
                   {/* Price / Variants */}
                   {(() => {
                     const variants = getVariants(product);
