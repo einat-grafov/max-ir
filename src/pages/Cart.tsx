@@ -145,7 +145,7 @@ const Cart = () => {
                 {/* Cart actions */}
                 <div className="flex items-center justify-between pt-6 flex-wrap gap-3">
                   <Link
-                    to="/store"
+                    to="/#Products"
                     className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <ArrowLeft className="w-4 h-4" />
