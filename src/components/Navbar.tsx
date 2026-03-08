@@ -143,6 +143,13 @@ const Navbar = () => {
                 )}
               </div>
             ))}
+            {/* Our Products link */}
+            <Link
+              to="/#Products"
+              className="px-3 py-1.5 text-sm font-semibold transition-colors text-maxir-white/80 hover:text-maxir-white"
+            >
+              Our Products
+            </Link>
           </div>
 
           {/* Contact Us button - pushed to right */}
