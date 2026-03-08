@@ -82,7 +82,7 @@ interface ProductFormProps {
   breadcrumbLabel: string;
   submitLabel: string;
   savingLabel: string;
-  onSubmit: (data: ProductFormData, imageUrl: string | null, allImageUrls: string[]) => Promise<void>;
+  onSubmit: (data: ProductFormData, imageUrl: string | null, allImageUrls: string[], pdfUrl: string | null) => Promise<void>;
   onDelete?: () => Promise<void>;
 }
 
