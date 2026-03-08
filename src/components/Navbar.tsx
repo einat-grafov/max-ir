@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ShoppingCart } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 
-type MainMenuItem = "home" | "about" | "team" | "store";
+type MainMenuItem = "home" | "about" | "team";
 
 const anchorLinks: Record<MainMenuItem, { label: string; id: string }[]> = {
   home: [],
@@ -18,14 +18,12 @@ const anchorLinks: Record<MainMenuItem, { label: string; id: string }[]> = {
     { label: "FCOI", id: "FCOI" },
     { label: "Careers", id: "Careers" },
   ],
-  store: [],
 };
 
 const mainMenuRoutes: Record<MainMenuItem, string> = {
   home: "/",
   about: "/about-us",
   team: "/team",
-  store: "/store",
 };
 
 const Navbar = () => {
