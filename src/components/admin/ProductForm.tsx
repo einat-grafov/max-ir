@@ -389,6 +389,14 @@ const ProductForm = ({
                   </p>
                 </div>
                 <button
+                  type="button"
+                  onClick={() => pdfInputRef.current?.click()}
+                  className="text-xs text-primary hover:text-primary/80 font-medium transition-colors"
+                >
+                  Replace
+                </button>
+                <button
+                  type="button"
                   onClick={() => { setPdfFile(null); setExistingPdfUrl(null); if (pdfInputRef.current) pdfInputRef.current.value = ""; }}
                   className="text-muted-foreground hover:text-destructive transition-colors"
                 >
