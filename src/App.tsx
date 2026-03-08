@@ -8,7 +8,6 @@ import { useEffect } from "react";
 import Index from "./pages/Index";
 import AboutUs from "./pages/AboutUs";
 import Team from "./pages/Team";
-import Store from "./pages/Store";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import AdminLogin from "./pages/AdminLogin";
