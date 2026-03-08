@@ -35,7 +35,6 @@ const Navbar = () => {
   const activeMain: MainMenuItem = useMemo(() => {
     if (location.pathname.startsWith("/about-us")) return "about";
     if (location.pathname.startsWith("/team")) return "team";
-    if (location.pathname.startsWith("/store")) return "store";
     return "home";
   }, [location.pathname]);
 
