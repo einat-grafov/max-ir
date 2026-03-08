@@ -64,6 +64,7 @@ export interface ProductFormData {
   ctaRequestQuote: boolean;
   existingImageUrl: string | null;
   existingImages: string[];
+  existingPdfUrl: string | null;
   specifications: ProductSpecification[];
   variants: ProductVariant[];
 }
