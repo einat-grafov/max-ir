@@ -192,12 +192,27 @@ const ProductForm = ({
         }
       }
 
+      // Upload PDF if new file selected
+      let finalPdfUrl: string | null = existingPdfUrl;
+      if (pdfFile) {
+        const pdfPath = `pdfs/${crypto.randomUUID()}.pdf`;
+        const { error: pdfUploadError } = await supabase.storage
+          .from("product-images")
+          .upload(pdfPath, pdfFile);
+        if (pdfUploadError) throw pdfUploadError;
+        const { data: pdfUrlData } = supabase.storage
+          .from("product-images")
+          .getPublicUrl(pdfPath);
+        finalPdfUrl = pdfUrlData.publicUrl;
+      }
+
       const primaryImageUrl = allImageUrls.length > 0 ? allImageUrls[0] : null;
 
       await onSubmit(
-        { title, overview, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, ctaAddToCart, ctaRequestQuote, existingImageUrl: null, existingImages: [], specifications: specifications.filter(s => s.label.trim() && s.value.trim()), variants: variants.filter(v => v.name.trim()) },
+        { title, overview, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, ctaAddToCart, ctaRequestQuote, existingImageUrl: null, existingImages: [], existingPdfUrl: null, specifications: specifications.filter(s => s.label.trim() && s.value.trim()), variants: variants.filter(v => v.name.trim()) },
         primaryImageUrl,
-        allImageUrls
+        allImageUrls,
+        finalPdfUrl
       );
     } catch (err: any) {
       toast.error(err.message || "Failed to save product");
