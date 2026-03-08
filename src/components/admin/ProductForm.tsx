@@ -357,6 +357,67 @@ const ProductForm = ({
             </div>
           </Card>
 
+          <Card className="p-5">
+            <Label className="mb-1 block">Product Information (PDF)</Label>
+            <p className="text-xs text-muted-foreground mb-3">Upload a PDF file with detailed product information. This will be available for download on the product page.</p>
+            <input
+              ref={pdfInputRef}
+              type="file"
+              accept="application/pdf"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  if (file.size > 20 * 1024 * 1024) {
+                    toast.error("PDF file exceeds 20MB");
+                    return;
+                  }
+                  setPdfFile(file);
+                  setExistingPdfUrl(null);
+                }
+              }}
+            />
+            {(pdfFile || existingPdfUrl) ? (
+              <div className="flex items-center gap-3 p-3 border border-border rounded-lg bg-muted/30">
+                <FileText className="h-8 w-8 text-primary shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">
+                    {pdfFile ? pdfFile.name : "Product PDF"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {pdfFile ? `${(pdfFile.size / 1024 / 1024).toFixed(2)} MB` : "Uploaded"}
+                  </p>
+                </div>
+                <button
+                  onClick={() => { setPdfFile(null); setExistingPdfUrl(null); if (pdfInputRef.current) pdfInputRef.current.value = ""; }}
+                  className="text-muted-foreground hover:text-destructive transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            ) : (
+              <div
+                className="border-2 border-dashed border-border rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors"
+                onClick={() => pdfInputRef.current?.click()}
+                onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const file = e.dataTransfer.files?.[0];
+                  if (file && file.type === "application/pdf") {
+                    if (file.size > 20 * 1024 * 1024) { toast.error("PDF file exceeds 20MB"); return; }
+                    setPdfFile(file);
+                  } else {
+                    toast.error("Please upload a PDF file");
+                  }
+                }}
+              >
+                <Upload className="h-5 w-5 text-muted-foreground mb-1" />
+                <p className="text-xs text-muted-foreground">Upload PDF</p>
+              </div>
+            )}
+          </Card>
+
           <Card className="p-5 space-y-3">
             <Label>Call to action</Label>
             <p className="text-xs text-muted-foreground">Select which buttons appear on the product page. At least one must be enabled.</p>
