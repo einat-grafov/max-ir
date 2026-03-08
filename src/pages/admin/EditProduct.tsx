@@ -24,7 +24,7 @@ const EditProduct = () => {
     enabled: !!id,
   });
 
-  const handleSubmit = async (data: ProductFormData, imageUrl: string | null, allImageUrls: string[]) => {
+  const handleSubmit = async (data: ProductFormData, imageUrl: string | null, allImageUrls: string[], pdfUrl: string | null) => {
     const { error } = await supabase
       .from("products")
       .update({
@@ -44,6 +44,7 @@ const EditProduct = () => {
         images: allImageUrls as unknown as Json,
         specifications: (data.specifications.length > 0 ? data.specifications : []) as unknown as Json,
         variants: (data.variants.length > 0 ? data.variants : []) as unknown as Json,
+        pdf_url: pdfUrl,
       })
       .eq("id", id!);
     if (error) throw error;
