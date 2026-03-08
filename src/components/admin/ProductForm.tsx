@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Upload, X, Trash2 } from "lucide-react";
+import { Upload, X, Trash2, FileText } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Tooltip,
@@ -64,6 +64,7 @@ export interface ProductFormData {
   ctaRequestQuote: boolean;
   existingImageUrl: string | null;
   existingImages: string[];
+  existingPdfUrl: string | null;
   specifications: ProductSpecification[];
   variants: ProductVariant[];
 }
@@ -81,7 +82,7 @@ interface ProductFormProps {
   breadcrumbLabel: string;
   submitLabel: string;
   savingLabel: string;
-  onSubmit: (data: ProductFormData, imageUrl: string | null, allImageUrls: string[]) => Promise<void>;
+  onSubmit: (data: ProductFormData, imageUrl: string | null, allImageUrls: string[], pdfUrl: string | null) => Promise<void>;
   onDelete?: () => Promise<void>;
 }
 
@@ -133,6 +134,11 @@ const ProductForm = ({
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // PDF support
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [existingPdfUrl, setExistingPdfUrl] = useState<string | null>(initialData?.existingPdfUrl ?? null);
+  const pdfInputRef = useRef<HTMLInputElement>(null);
 
   const canSubmit = title.trim().length > 0 && (ctaAddToCart || ctaRequestQuote);
   const hasVariants = variants.some(v => v.name.trim());
@@ -186,12 +192,27 @@ const ProductForm = ({
         }
       }
 
+      // Upload PDF if new file selected
+      let finalPdfUrl: string | null = existingPdfUrl;
+      if (pdfFile) {
+        const pdfPath = `pdfs/${crypto.randomUUID()}.pdf`;
+        const { error: pdfUploadError } = await supabase.storage
+          .from("product-images")
+          .upload(pdfPath, pdfFile);
+        if (pdfUploadError) throw pdfUploadError;
+        const { data: pdfUrlData } = supabase.storage
+          .from("product-images")
+          .getPublicUrl(pdfPath);
+        finalPdfUrl = pdfUrlData.publicUrl;
+      }
+
       const primaryImageUrl = allImageUrls.length > 0 ? allImageUrls[0] : null;
 
       await onSubmit(
-        { title, overview, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, ctaAddToCart, ctaRequestQuote, existingImageUrl: null, existingImages: [], specifications: specifications.filter(s => s.label.trim() && s.value.trim()), variants: variants.filter(v => v.name.trim()) },
+        { title, overview, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, ctaAddToCart, ctaRequestQuote, existingImageUrl: null, existingImages: [], existingPdfUrl: null, specifications: specifications.filter(s => s.label.trim() && s.value.trim()), variants: variants.filter(v => v.name.trim()) },
         primaryImageUrl,
-        allImageUrls
+        allImageUrls,
+        finalPdfUrl
       );
     } catch (err: any) {
       toast.error(err.message || "Failed to save product");
@@ -334,6 +355,67 @@ const ProductForm = ({
                 <p className="text-xs text-muted-foreground">Add image</p>
               </div>
             </div>
+          </Card>
+
+          <Card className="p-5">
+            <Label className="mb-1 block">Product Information (PDF)</Label>
+            <p className="text-xs text-muted-foreground mb-3">Upload a PDF file with detailed product information. This will be available for download on the product page.</p>
+            <input
+              ref={pdfInputRef}
+              type="file"
+              accept="application/pdf"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  if (file.size > 20 * 1024 * 1024) {
+                    toast.error("PDF file exceeds 20MB");
+                    return;
+                  }
+                  setPdfFile(file);
+                  setExistingPdfUrl(null);
+                }
+              }}
+            />
+            {(pdfFile || existingPdfUrl) ? (
+              <div className="flex items-center gap-3 p-3 border border-border rounded-lg bg-muted/30">
+                <FileText className="h-8 w-8 text-primary shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">
+                    {pdfFile ? pdfFile.name : "Product PDF"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {pdfFile ? `${(pdfFile.size / 1024 / 1024).toFixed(2)} MB` : "Uploaded"}
+                  </p>
+                </div>
+                <button
+                  onClick={() => { setPdfFile(null); setExistingPdfUrl(null); if (pdfInputRef.current) pdfInputRef.current.value = ""; }}
+                  className="text-muted-foreground hover:text-destructive transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            ) : (
+              <div
+                className="border-2 border-dashed border-border rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors"
+                onClick={() => pdfInputRef.current?.click()}
+                onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const file = e.dataTransfer.files?.[0];
+                  if (file && file.type === "application/pdf") {
+                    if (file.size > 20 * 1024 * 1024) { toast.error("PDF file exceeds 20MB"); return; }
+                    setPdfFile(file);
+                  } else {
+                    toast.error("Please upload a PDF file");
+                  }
+                }}
+              >
+                <Upload className="h-5 w-5 text-muted-foreground mb-1" />
+                <p className="text-xs text-muted-foreground">Upload PDF</p>
+              </div>
+            )}
           </Card>
 
           <Card className="p-5 space-y-3">
