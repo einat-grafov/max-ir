@@ -34,7 +34,7 @@ const ProductGrid = ({ subtitle }: { subtitle?: string }) => {
   });
 
   return (
-    <section className="bg-white">
+    <section id="Products" className="bg-white">
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10 py-12 lg:py-20">
         <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold text-foreground text-center mb-4 lg:mb-6 font-montserrat">
           Our Products
