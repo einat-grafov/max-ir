@@ -8,7 +8,6 @@ import { useEffect } from "react";
 import Index from "./pages/Index";
 import AboutUs from "./pages/AboutUs";
 import Team from "./pages/Team";
-import Store from "./pages/Store";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import AdminLogin from "./pages/AdminLogin";
@@ -56,7 +55,8 @@ const router = createBrowserRouter([
       { path: "/", element: <Index /> },
       { path: "/about-us", element: <AboutUs /> },
       { path: "/team", element: <Team /> },
-      { path: "/store", element: <Store /> },
+      { path: "/store", element: <Navigate to="/#Products" replace /> },
+      { path: "/products/:id", element: <ProductDetail /> },
       { path: "/store/:id", element: <ProductDetail /> },
       { path: "/cart", element: <Cart /> },
       { path: "/design-system", element: <DesignSystem /> },

@@ -34,7 +34,7 @@ const ProductGrid = ({ subtitle }: { subtitle?: string }) => {
   });
 
   return (
-    <section className="bg-white">
+    <section id="Products" className="bg-white">
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10 py-12 lg:py-20">
         <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold text-foreground text-center mb-4 lg:mb-6 font-montserrat">
           Our Products
@@ -58,7 +58,7 @@ const ProductGrid = ({ subtitle }: { subtitle?: string }) => {
             {products.map((product) => {
               const img = getProductImage(product);
               return (
-                <Link key={product.id} to={`/store/${product.id}`} className="group flex flex-col">
+                <Link key={product.id} to={`/products/${product.id}`} className="group flex flex-col">
                   <div className="aspect-square rounded-lg overflow-hidden bg-muted mb-4">
                     {img ? (
                       <img

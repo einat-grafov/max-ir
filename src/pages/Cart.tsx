@@ -32,7 +32,7 @@ const Cart = () => {
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
           {/* Breadcrumb */}
           <nav className="pt-6 pb-8 text-sm text-muted-foreground">
-            <Link to="/store" className="hover:text-foreground transition-colors">
+            <Link to="/#Products" className="hover:text-foreground transition-colors">
               Our products
             </Link>
             <span className="mx-2">&gt;</span>
@@ -48,7 +48,7 @@ const Cart = () => {
               <ShoppingCart className="w-16 h-16 mx-auto text-muted-foreground/40 mb-4" />
               <p className="text-lg text-muted-foreground mb-6">Your cart is empty</p>
               <Link
-                to="/store"
+                to="/#Products"
                 className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 text-sm font-semibold transition-colors rounded-md"
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -80,7 +80,7 @@ const Cart = () => {
                         {/* Product info */}
                         <div className="min-w-0">
                           <Link
-                            to={`/store/${item.productId}`}
+                            to={`/products/${item.productId}`}
                             className="text-sm font-semibold text-foreground hover:text-primary transition-colors"
                           >
                             {item.productName}
@@ -145,7 +145,7 @@ const Cart = () => {
                 {/* Cart actions */}
                 <div className="flex items-center justify-between pt-6 flex-wrap gap-3">
                   <Link
-                    to="/store"
+                    to="/#Products"
                     className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <ArrowLeft className="w-4 h-4" />

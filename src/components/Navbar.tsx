@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ShoppingCart } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 
-type MainMenuItem = "home" | "about" | "team" | "store";
+type MainMenuItem = "home" | "about" | "team";
 
 const anchorLinks: Record<MainMenuItem, { label: string; id: string }[]> = {
   home: [],
@@ -18,14 +18,12 @@ const anchorLinks: Record<MainMenuItem, { label: string; id: string }[]> = {
     { label: "FCOI", id: "FCOI" },
     { label: "Careers", id: "Careers" },
   ],
-  store: [],
 };
 
 const mainMenuRoutes: Record<MainMenuItem, string> = {
   home: "/",
   about: "/about-us",
   team: "/team",
-  store: "/store",
 };
 
 const Navbar = () => {
@@ -37,7 +35,6 @@ const Navbar = () => {
   const activeMain: MainMenuItem = useMemo(() => {
     if (location.pathname.startsWith("/about-us")) return "about";
     if (location.pathname.startsWith("/team")) return "team";
-    if (location.pathname.startsWith("/store")) return "store";
     return "home";
   }, [location.pathname]);
 
@@ -95,7 +92,6 @@ const Navbar = () => {
     { key: "home", label: "Home" },
     { key: "about", label: "About Us" },
     { key: "team", label: "Team" },
-    { key: "store", label: "Our Products" },
   ];
 
   return (
@@ -147,6 +143,13 @@ const Navbar = () => {
                 )}
               </div>
             ))}
+            {/* Our Products link */}
+            <Link
+              to="/#Products"
+              className="px-3 py-1.5 text-sm font-semibold transition-colors text-maxir-white/80 hover:text-maxir-white"
+            >
+              Our Products
+            </Link>
           </div>
 
           {/* Contact Us button - pushed to right */}
@@ -210,6 +213,13 @@ const Navbar = () => {
                 ))}
             </div>
           ))}
+          <Link
+            to="/#Products"
+            onClick={() => setMobileOpen(false)}
+            className="text-sm font-semibold text-maxir-white/80"
+          >
+            Our Products
+          </Link>
           <button
             onClick={() => scrollTo("Contact")}
             className="bg-primary text-primary-foreground px-6 py-2 rounded-full text-sm font-semibold w-fit"

@@ -32,7 +32,7 @@ const Footer = () => {
                 <Link to="/" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-semibold">Home</Link>
                 <button onClick={() => scrollTo("Technology")} className="text-maxir-white hover:text-primary transition-colors text-left text-[18px] leading-[25px] font-semibold">Technology</button>
                 <button onClick={() => scrollTo("Sensor")} className="text-maxir-white hover:text-primary transition-colors text-left text-[18px] leading-[25px] font-semibold">The Sensor</button>
-                <Link to="/store" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-semibold">Our Products</Link>
+                <Link to="/#Products" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-semibold">Our Products</Link>
               </div>
               <div className="flex flex-col gap-3">
                 <button onClick={() => scrollTo("Applications")} className="text-maxir-white hover:text-primary transition-colors text-left text-[18px] leading-[25px] font-semibold">Applications</button>
