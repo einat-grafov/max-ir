@@ -383,6 +383,17 @@ const ProductDetail = () => {
                     {!showAddToCart && !showRequestQuote && (
                       <p className="text-sm text-muted-foreground italic">Contact us for availability and pricing.</p>
                     )}
+                    {(product as any).pdf_url && (
+                      <a
+                        href={(product as any).pdf_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 border border-border hover:bg-muted text-foreground px-6 py-3 text-sm font-semibold transition-colors rounded-md"
+                      >
+                        <Download className="w-4 h-4" />
+                        Product Info (PDF)
+                      </a>
+                    )}
                   </div>
                     );
                   })()}
