@@ -14,7 +14,7 @@ const DEFAULTS: HeroContent = {
   background_image: "/images/hero-bg.png",
 };
 
-const HeroSection = ({ content, showDecorations = true }: { content?: HeroContent | null; showDecorations?: boolean }) => {
+const HeroSection = ({ content, showDecorations = true, compact = false }: { content?: HeroContent | null; showDecorations?: boolean; compact?: boolean }) => {
   const c = { ...DEFAULTS, ...content };
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
