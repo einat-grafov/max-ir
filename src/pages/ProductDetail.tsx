@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FileText, Plus, Minus, ShoppingCart, Bell } from "lucide-react";
+import { FileText, Plus, Minus, ShoppingCart, Bell, Download } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 import ProductInquiryForm, { type SelectedVariantItem } from "@/components/ProductInquiryForm";
