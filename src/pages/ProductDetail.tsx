@@ -222,6 +222,18 @@ const ProductDetail = () => {
                     />
                   )}
 
+                  {(product as any).pdf_url && (
+                    <a
+                      href={(product as any).pdf_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 underline underline-offset-2 transition-colors"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      Product Information (PDF)
+                    </a>
+                  )}
+
                   {/* Price / Variants */}
                   {(() => {
                     const variants = getVariants(product);
@@ -382,17 +394,6 @@ const ProductDetail = () => {
                     )}
                     {!showAddToCart && !showRequestQuote && (
                       <p className="text-sm text-muted-foreground italic">Contact us for availability and pricing.</p>
-                    )}
-                    {(product as any).pdf_url && (
-                      <a
-                        href={(product as any).pdf_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 border border-border hover:bg-muted text-foreground px-6 py-3 text-sm font-semibold transition-colors rounded-md"
-                      >
-                        <Download className="w-4 h-4" />
-                        Product Info (PDF)
-                      </a>
                     )}
                   </div>
                     );
