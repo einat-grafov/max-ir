@@ -143,13 +143,6 @@ const Navbar = () => {
                 )}
               </div>
             ))}
-            {/* Our Products link */}
-            <Link
-              to="/#Products"
-              className="px-3 py-1.5 text-sm font-semibold transition-colors text-maxir-white/80 hover:text-maxir-white"
-            >
-              Our Products
-            </Link>
           </div>
 
           {/* Contact Us button - pushed to right */}
@@ -213,13 +206,6 @@ const Navbar = () => {
                 ))}
             </div>
           ))}
-          <Link
-            to="/#Products"
-            onClick={() => setMobileOpen(false)}
-            className="text-sm font-semibold text-maxir-white/80"
-          >
-            Our Products
-          </Link>
           <button
             onClick={() => scrollTo("Contact")}
             className="bg-primary text-primary-foreground px-6 py-2 rounded-full text-sm font-semibold w-fit"
