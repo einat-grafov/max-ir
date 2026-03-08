@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FileText, Plus, Minus, ShoppingCart, Bell } from "lucide-react";
+import { FileText, Plus, Minus, ShoppingCart, Bell, Download } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 import ProductInquiryForm, { type SelectedVariantItem } from "@/components/ProductInquiryForm";
@@ -95,7 +95,7 @@ const ProductDetail = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id, name, image_url, images, price, description, overview, specifications, variants, category, sku, status, cta_add_to_cart, cta_request_quote, tax_exempt")
+        .select("id, name, image_url, images, price, description, overview, specifications, variants, category, sku, status, cta_add_to_cart, cta_request_quote, tax_exempt, pdf_url")
         .eq("id", id!)
         .eq("status", "active")
         .maybeSingle();
@@ -382,6 +382,17 @@ const ProductDetail = () => {
                     )}
                     {!showAddToCart && !showRequestQuote && (
                       <p className="text-sm text-muted-foreground italic">Contact us for availability and pricing.</p>
+                    )}
+                    {(product as any).pdf_url && (
+                      <a
+                        href={(product as any).pdf_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 border border-border hover:bg-muted text-foreground px-6 py-3 text-sm font-semibold transition-colors rounded-md"
+                      >
+                        <Download className="w-4 h-4" />
+                        Product Info (PDF)
+                      </a>
                     )}
                   </div>
                     );
