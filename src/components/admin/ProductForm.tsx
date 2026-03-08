@@ -135,6 +135,11 @@ const ProductForm = ({
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // PDF support
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [existingPdfUrl, setExistingPdfUrl] = useState<string | null>(initialData?.existingPdfUrl ?? null);
+  const pdfInputRef = useRef<HTMLInputElement>(null);
+
   const canSubmit = title.trim().length > 0 && (ctaAddToCart || ctaRequestQuote);
   const hasVariants = variants.some(v => v.name.trim());
 
