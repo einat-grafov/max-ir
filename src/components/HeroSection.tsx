@@ -14,7 +14,7 @@ const DEFAULTS: HeroContent = {
   background_image: "/images/hero-bg.png",
 };
 
-const HeroSection = ({ content }: { content?: HeroContent | null }) => {
+const HeroSection = ({ content, showDecorations = true }: { content?: HeroContent | null; showDecorations?: boolean }) => {
   const c = { ...DEFAULTS, ...content };
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
@@ -36,21 +36,25 @@ const HeroSection = ({ content }: { content?: HeroContent | null }) => {
       </div>
 
       {/* Decorative drops background layer */}
-      <motion.div
-        className="absolute bottom-[calc(-5%)] md:bottom-[calc(-2%)] left-1/2 w-[60%] md:w-[45%] pointer-events-none"
-        style={{ zIndex: 22, x: "-50%", y: dropsY }}
-      >
-        <img src="/images/drops.png" alt="" aria-hidden="true" className="w-full h-auto" />
-      </motion.div>
+      {showDecorations && (
+        <motion.div
+          className="absolute bottom-[calc(-5%)] md:bottom-[calc(-2%)] left-1/2 w-[60%] md:w-[45%] pointer-events-none"
+          style={{ zIndex: 22, x: "-50%", y: dropsY }}
+        >
+          <img src="/images/drops.png" alt="" aria-hidden="true" className="w-full h-auto" />
+        </motion.div>
+      )}
 
       {/* Decorative ribbon + droplet layer */}
-      <img
-        src="/images/hero-ribbon-droplet.png"
-        alt=""
-        aria-hidden="true"
-        className="absolute bottom-0 left-0 right-0 w-full h-[55%] md:h-[65%] object-cover object-bottom pointer-events-none"
-        style={{ zIndex: 25 }}
-      />
+      {showDecorations && (
+        <img
+          src="/images/hero-ribbon-droplet.png"
+          alt=""
+          aria-hidden="true"
+          className="absolute bottom-0 left-0 right-0 w-full h-[55%] md:h-[65%] object-cover object-bottom pointer-events-none"
+          style={{ zIndex: 25 }}
+        />
+      )}
 
       {/* Content */}
       <div className="relative z-30 text-center px-6 max-w-4xl mx-auto">
