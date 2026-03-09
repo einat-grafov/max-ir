@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Package, User, MapPin, FileText, Info, Trash2 } from "lucide-react";
+import { Package, User, MapPin, FileText, Info, Trash2, ArrowLeft } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -68,7 +68,10 @@ const fulfillmentBadge = (status: string) => {
 const OrderDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
+  const fromCustomer = searchParams.get("from") === "customer";
+  const fromCustomerId = searchParams.get("customerId");
 
   const { data: order, isLoading } = useQuery({
     queryKey: ["order-detail", id],
@@ -167,6 +170,18 @@ const OrderDetail = () => {
 
   return (
     <div>
+      {fromCustomer && fromCustomerId && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="mb-2 -ml-2 text-muted-foreground"
+          onClick={() => navigate(`/admin/customers/${fromCustomerId}`)}
+        >
+          <ArrowLeft className="h-4 w-4 mr-1" />
+          Back to customer
+        </Button>
+      )}
+
       <Breadcrumb className="mb-4">
         <BreadcrumbList>
           <BreadcrumbItem>
