@@ -325,7 +325,7 @@ const EditCustomer = () => {
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            onClick={() => navigate("/admin/orders/new", {
+            onClick={() => navigate("/admin/orders/create", {
               state: {
                 preselectedCustomer: {
                   id: customer?.id,
