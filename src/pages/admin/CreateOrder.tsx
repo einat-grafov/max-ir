@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Link, useBlocker, useNavigate } from "react-router-dom";
+import { Link, useBlocker, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -79,9 +79,18 @@ const CreateOrder = () => {
   }, [hasUnsavedChanges]);
 
   const navigate = useNavigate();
+  const location = useLocation();
   const [saving, setSaving] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
   const canSubmit = products.length > 0 && selectedCustomer !== null;
+
+  // Pre-select customer from navigation state (e.g. from customer page)
+  useEffect(() => {
+    const state = location.state as { preselectedCustomer?: { id: string; first_name: string; last_name: string | null; email: string | null } } | null;
+    if (state?.preselectedCustomer && !selectedCustomer) {
+      setSelectedCustomer(state.preselectedCustomer);
+    }
+  }, []);
 
   const handleCreateOrder = async () => {
     if (!canSubmit || !selectedCustomer) return;
