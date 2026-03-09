@@ -32,6 +32,9 @@ interface CustomerTimelineProps {
   customerCreatedAt: string;
   companyName?: string;
   contactPerson?: string;
+  customerFirstName?: string;
+  customerLastName?: string | null;
+  customerEmail?: string | null;
 }
 
 const groupLabel = (date: Date) => {
