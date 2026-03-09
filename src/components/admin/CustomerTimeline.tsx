@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { format, isToday, isYesterday, subDays, startOfDay, endOfDay, isWithinInterval } from "date-fns";
 import { cn } from "@/lib/utils";
 import { ShoppingCart, Mail, UserPlus, MessageSquare, Paperclip, Plus, Filter, CalendarIcon, X } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import RecordInteractionModal from "@/components/admin/RecordInteractionModal";
@@ -32,9 +32,6 @@ interface CustomerTimelineProps {
   customerCreatedAt: string;
   companyName?: string;
   contactPerson?: string;
-  customerFirstName?: string;
-  customerLastName?: string | null;
-  customerEmail?: string | null;
 }
 
 const groupLabel = (date: Date) => {
@@ -72,8 +69,7 @@ const DATE_PRESETS = [
   { value: "custom", label: "Custom" },
 ];
 
-const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, companyName, contactPerson, customerFirstName, customerLastName, customerEmail }: CustomerTimelineProps) => {
-  const navigate = useNavigate();
+const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, companyName, contactPerson }: CustomerTimelineProps) => {
   const queryClient = useQueryClient();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Tables<"customer_notes"> | null>(null);
@@ -277,34 +273,15 @@ const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, company
         </div>
       </div>
 
-      {/* Action buttons */}
-      <div className="flex gap-2 mb-5">
-        <Button
-          variant="outline"
-          className="flex-1"
-          onClick={() => setModalOpen(true)}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Leave a note
-        </Button>
-        <Button
-          variant="outline"
-          className="flex-1"
-          onClick={() => navigate("/admin/orders/create", {
-            state: {
-              preselectedCustomer: {
-                id: customerId,
-                first_name: customerFirstName || customerName,
-                last_name: customerLastName || null,
-                email: customerEmail || null,
-              },
-            },
-          })}
-        >
-          <ShoppingCart className="h-4 w-4 mr-2" />
-          Create order
-        </Button>
-      </div>
+      {/* Leave a note button */}
+      <Button
+        variant="outline"
+        className="w-full mb-5"
+        onClick={() => setModalOpen(true)}
+      >
+        <Plus className="h-4 w-4 mr-2" />
+        Leave a note
+      </Button>
 
       <RecordInteractionModal
         open={modalOpen}

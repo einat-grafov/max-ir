@@ -323,21 +323,6 @@ const EditCustomer = () => {
           </h1>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            onClick={() => navigate("/admin/orders/create", {
-              state: {
-                preselectedCustomer: {
-                  id: customer?.id,
-                  first_name: customer?.first_name,
-                  last_name: customer?.last_name,
-                  email: customer?.email,
-                },
-              },
-            })}
-          >
-            Create order
-          </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:bg-destructive hover:text-white">
@@ -360,6 +345,21 @@ const EditCustomer = () => {
           {hasUnsavedChanges && (
             <span className="text-sm text-amber-600 font-medium animate-in fade-in">Unsaved changes</span>
           )}
+          <Button
+            variant="outline"
+            onClick={() => navigate("/admin/orders/create", {
+              state: {
+                preselectedCustomer: {
+                  id: customer?.id,
+                  first_name: customer?.first_name,
+                  last_name: customer?.last_name,
+                  email: customer?.email,
+                },
+              },
+            })}
+          >
+            Create order
+          </Button>
           <Button
             variant="outline"
             disabled={!hasUnsavedChanges}
@@ -388,7 +388,7 @@ const EditCustomer = () => {
           >
             Discard
           </Button>
-          <Button onClick={handleSave} disabled={saving || !hasValidContact || !hasUnsavedChanges}>
+          <Button onClick={handleSave} disabled={saving || !hasUnsavedChanges}>
             {saving ? "Saving..." : "Save changes"}
           </Button>
         </div>
@@ -521,9 +521,6 @@ const EditCustomer = () => {
             customerCreatedAt={customer.created_at}
             companyName={companyName || customer.company || ""}
             contactPerson={contacts.length > 0 ? `${contacts[0].first_name} ${contacts[0].last_name}`.trim() : ""}
-            customerFirstName={customer.first_name}
-            customerLastName={customer.last_name}
-            customerEmail={customer.email}
           />
         </div>
       </div>
