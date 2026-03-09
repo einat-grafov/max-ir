@@ -323,6 +323,21 @@ const EditCustomer = () => {
           </h1>
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => navigate("/admin/orders/new", {
+              state: {
+                preselectedCustomer: {
+                  id: customer?.id,
+                  first_name: customer?.first_name,
+                  last_name: customer?.last_name,
+                  email: customer?.email,
+                },
+              },
+            })}
+          >
+            Create order
+          </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:bg-destructive hover:text-white">
