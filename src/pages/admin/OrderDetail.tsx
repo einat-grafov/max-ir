@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Package, User, MapPin, FileText, Info, Trash2 } from "lucide-react";
+import { Package, User, MapPin, FileText, Info, Trash2, ArrowLeft } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
