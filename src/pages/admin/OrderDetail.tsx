@@ -68,7 +68,10 @@ const fulfillmentBadge = (status: string) => {
 const OrderDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
+  const fromCustomer = searchParams.get("from") === "customer";
+  const fromCustomerId = searchParams.get("customerId");
 
   const { data: order, isLoading } = useQuery({
     queryKey: ["order-detail", id],
