@@ -277,34 +277,15 @@ const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, company
         </div>
       </div>
 
-      {/* Action buttons */}
-      <div className="flex gap-2 mb-5">
-        <Button
-          variant="outline"
-          className="flex-1"
-          onClick={() => setModalOpen(true)}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Leave a note
-        </Button>
-        <Button
-          variant="outline"
-          className="flex-1"
-          onClick={() => navigate("/admin/orders/create", {
-            state: {
-              preselectedCustomer: {
-                id: customerId,
-                first_name: customerFirstName || customerName,
-                last_name: customerLastName || null,
-                email: customerEmail || null,
-              },
-            },
-          })}
-        >
-          <ShoppingCart className="h-4 w-4 mr-2" />
-          Create order
-        </Button>
-      </div>
+      {/* Leave a note button */}
+      <Button
+        variant="outline"
+        className="w-full mb-5"
+        onClick={() => setModalOpen(true)}
+      >
+        <Plus className="h-4 w-4 mr-2" />
+        Leave a note
+      </Button>
 
       <RecordInteractionModal
         open={modalOpen}
