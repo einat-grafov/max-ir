@@ -72,7 +72,8 @@ const DATE_PRESETS = [
   { value: "custom", label: "Custom" },
 ];
 
-const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, companyName, contactPerson }: CustomerTimelineProps) => {
+const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, companyName, contactPerson, customerFirstName, customerLastName, customerEmail }: CustomerTimelineProps) => {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Tables<"customer_notes"> | null>(null);
