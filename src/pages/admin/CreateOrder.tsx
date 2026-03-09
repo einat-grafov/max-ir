@@ -85,6 +85,10 @@ const CreateOrder = () => {
   const canSubmit = products.length > 0 && selectedCustomer !== null;
 
   // Pre-select customer from navigation state (e.g. from customer page)
+  const returnToCustomer = (location.state as any)?.preselectedCustomer?.id
+    ? `/admin/customers/${(location.state as any).preselectedCustomer.id}`
+    : null;
+
   useEffect(() => {
     const state = location.state as { preselectedCustomer?: { id: string; first_name: string; last_name: string | null; email: string | null } } | null;
     if (state?.preselectedCustomer && !selectedCustomer) {
@@ -130,8 +134,12 @@ const CreateOrder = () => {
       if (itemsError) throw itemsError;
 
       isSavingRef.current = true;
-      setCreatedOrderId(order.id);
       toast.success("Order created successfully");
+      if (returnToCustomer) {
+        navigate(returnToCustomer);
+      } else {
+        setCreatedOrderId(order.id);
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to create order");
     } finally {
