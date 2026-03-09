@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { format, isToday, isYesterday, subDays, startOfDay, endOfDay, isWithinInterval } from "date-fns";
 import { cn } from "@/lib/utils";
 import { ShoppingCart, Mail, UserPlus, MessageSquare, Paperclip, Plus, Filter, CalendarIcon, X } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import RecordInteractionModal from "@/components/admin/RecordInteractionModal";
