@@ -170,6 +170,18 @@ const OrderDetail = () => {
 
   return (
     <div>
+      {fromCustomer && fromCustomerId && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="mb-2 -ml-2 text-muted-foreground"
+          onClick={() => navigate(`/admin/customers/${fromCustomerId}`)}
+        >
+          <ArrowLeft className="h-4 w-4 mr-1" />
+          Back to customer
+        </Button>
+      )}
+
       <Breadcrumb className="mb-4">
         <BreadcrumbList>
           <BreadcrumbItem>
