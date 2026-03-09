@@ -134,8 +134,12 @@ const CreateOrder = () => {
       if (itemsError) throw itemsError;
 
       isSavingRef.current = true;
-      setCreatedOrderId(order.id);
       toast.success("Order created successfully");
+      if (returnToCustomer) {
+        navigate(returnToCustomer);
+      } else {
+        setCreatedOrderId(order.id);
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to create order");
     } finally {
