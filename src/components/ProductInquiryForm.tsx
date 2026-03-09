@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { z } from "zod";
 import "flag-icons/css/flag-icons.min.css";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ChevronDown, X } from "lucide-react";
 
 const inquirySchema = z.object({
   companyName: z.string().trim().min(1, "Company name is required").max(200),
@@ -27,6 +30,11 @@ export interface SelectedVariantItem {
   quantity: number;
 }
 
+interface ProductOption {
+  id: string;
+  name: string;
+}
+
 interface ProductInquiryFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -35,22 +43,48 @@ interface ProductInquiryFormProps {
   selectedVariants?: SelectedVariantItem[];
 }
 
-
 const ProductInquiryForm = ({ open, onOpenChange, productName, productId, selectedVariants = [] }: ProductInquiryFormProps) => {
   const { toast } = useToast();
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [allProducts, setAllProducts] = useState<ProductOption[]>([]);
+  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
+  const [popoverOpen, setPopoverOpen] = useState(false);
 
-  const buildDefaultMessage = () => {
-    if (selectedVariants.length === 0) {
-      return `I'm interested in learning more about ${productName}.`;
+  // Fetch all active products
+  useEffect(() => {
+    if (!open) return;
+    const fetchProducts = async () => {
+      const { data } = await supabase
+        .from("products")
+        .select("id, name")
+        .eq("status", "active")
+        .order("name");
+      if (data) setAllProducts(data);
+    };
+    fetchProducts();
+  }, [open]);
+
+  const buildMessage = useCallback((productIds: string[], products: ProductOption[], variants: SelectedVariantItem[], currentProductName: string) => {
+    const selectedNames = products.filter(p => productIds.includes(p.id)).map(p => p.name);
+    
+    if (variants.length > 0 && productIds.length <= 1) {
+      const lines = variants.map(
+        (v) => `- ${v.name}${v.sku ? ` (${v.sku})` : ""} × ${v.quantity}`
+      );
+      return `I'd like to request a quote for ${currentProductName}:\n${lines.join("\n")}`;
     }
-    const lines = selectedVariants.map(
-      (v) => `- ${v.name}${v.sku ? ` (${v.sku})` : ""} × ${v.quantity}`
-    );
-    return `I'd like to request a quote for ${productName}:\n${lines.join("\n")}`;
-  };
+    
+    if (selectedNames.length === 0) {
+      return `I'm interested in learning more about ${currentProductName}.`;
+    }
+    if (selectedNames.length === 1) {
+      return `I'm interested in learning more about ${selectedNames[0]}.`;
+    }
+    const productList = selectedNames.map(n => `- ${n}`).join("\n");
+    return `I'm interested in learning more about the following products:\n${productList}`;
+  }, []);
 
   const [formData, setFormData] = useState({
     companyName: "",
@@ -60,13 +94,36 @@ const ProductInquiryForm = ({ open, onOpenChange, productName, productId, select
     email: "",
     country: "",
     state: "",
-    message: buildDefaultMessage(),
+    message: "",
   });
+
+  // Initialize selected products and message when dialog opens
+  useEffect(() => {
+    if (open && productId) {
+      setSelectedProductIds([productId]);
+    }
+  }, [open, productId]);
+
+  // Update message when selected products change
+  useEffect(() => {
+    if (!open) return;
+    const msg = buildMessage(selectedProductIds, allProducts, selectedVariants, productName);
+    setFormData(prev => ({ ...prev, message: msg }));
+  }, [selectedProductIds, allProducts, open, selectedVariants, productName, buildMessage]);
+
+  const handleProductToggle = (id: string) => {
+    setSelectedProductIds(prev =>
+      prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]
+    );
+  };
+
+  const removeProduct = (id: string) => {
+    setSelectedProductIds(prev => prev.filter(p => p !== id));
+  };
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => {
       const updated = { ...prev, [field]: value };
-      // Clear state when country changes away from US
       if (field === "country" && value !== "United States") {
         updated.state = "";
       }
@@ -85,10 +142,11 @@ const ProductInquiryForm = ({ open, onOpenChange, productName, productId, select
         email: "",
         country: "",
         state: "",
-        message: buildDefaultMessage(),
+        message: "",
       });
       setErrors({});
       setSubmitted(false);
+      setSelectedProductIds(productId ? [productId] : []);
     }
     onOpenChange(newOpen);
   };
@@ -102,7 +160,6 @@ const ProductInquiryForm = ({ open, onOpenChange, productName, productId, select
         fieldErrors[issue.path[0] as string] = issue.message;
       });
     }
-    // Validate state for US
     if (formData.country === "United States" && !formData.state.trim()) {
       fieldErrors.state = "State is required";
     }
@@ -112,18 +169,21 @@ const ProductInquiryForm = ({ open, onOpenChange, productName, productId, select
     }
     setLoading(true);
     try {
-      const displayName = result.data.companyName || `${result.data.firstName} ${result.data.lastName ?? ""}`.trim();
+      const displayName = result.data!.companyName || `${result.data!.firstName} ${result.data!.lastName ?? ""}`.trim();
+      const selectedNames = allProducts.filter(p => selectedProductIds.includes(p.id)).map(p => p.name);
+      const productNameForDb = selectedNames.length > 0 ? selectedNames.join(", ") : productName;
+
       const { error } = await supabase.from("inquiries").insert({
         product_id: productId ?? null,
-        product_name: productName,
+        product_name: productNameForDb,
         name: displayName,
-        email: result.data.email,
-        message: result.data.message,
-        company_name: result.data.companyName,
-        first_name: result.data.firstName,
-        last_name: result.data.lastName || null,
-        phone: result.data.phone || null,
-        country: result.data.country,
+        email: result.data!.email,
+        message: result.data!.message,
+        company_name: result.data!.companyName,
+        first_name: result.data!.firstName,
+        last_name: result.data!.lastName || null,
+        phone: result.data!.phone || null,
+        country: result.data!.country,
         state: formData.country === "United States" ? formData.state : null,
       } as any);
       if (error) throw error;
@@ -135,18 +195,20 @@ const ProductInquiryForm = ({ open, onOpenChange, productName, productId, select
     }
   };
 
+  const selectedProductNames = allProducts.filter(p => selectedProductIds.includes(p.id));
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
-          <DialogTitle>Inquire About {productName}</DialogTitle>
+          <DialogTitle>Product Inquiry</DialogTitle>
         </DialogHeader>
 
         {submitted ? (
           <div className="text-center py-8">
             <p className="font-semibold text-lg text-foreground">Thank you!</p>
             <p className="text-muted-foreground text-sm mt-2">
-              Your inquiry about {productName} has been received. We'll be in touch soon.
+              Your inquiry has been received. We'll be in touch soon.
             </p>
             <div className="flex justify-end pt-4">
               <Button variant="outline" onClick={() => handleOpenChange(false)}>Close</Button>
@@ -251,6 +313,65 @@ const ProductInquiryForm = ({ open, onOpenChange, productName, productId, select
                 {errors.state && <p className="text-destructive text-xs mt-1">{errors.state}</p>}
               </div>
             )}
+
+            {/* Products of Interest */}
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">Products of interest</label>
+              <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className="flex min-h-10 w-full items-center justify-between rounded-[10px] border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  >
+                    <span className="text-muted-foreground">
+                      {selectedProductIds.length === 0
+                        ? "Select products..."
+                        : `${selectedProductIds.length} product${selectedProductIds.length > 1 ? "s" : ""} selected`}
+                    </span>
+                    <ChevronDown className="h-4 w-4 opacity-50" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+                  <div className="max-h-60 overflow-y-auto p-1">
+                    {allProducts.map((product) => (
+                      <label
+                        key={product.id}
+                        className="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground"
+                      >
+                        <Checkbox
+                          checked={selectedProductIds.includes(product.id)}
+                          onCheckedChange={() => handleProductToggle(product.id)}
+                        />
+                        <span>{product.name}</span>
+                      </label>
+                    ))}
+                    {allProducts.length === 0 && (
+                      <p className="px-2 py-1.5 text-sm text-muted-foreground">No products available</p>
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
+              {/* Selected product chips */}
+              {selectedProductNames.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {selectedProductNames.map((p) => (
+                    <span
+                      key={p.id}
+                      className="inline-flex items-center gap-1 rounded-full bg-secondary text-secondary-foreground px-2.5 py-0.5 text-xs font-medium"
+                    >
+                      {p.name}
+                      <button
+                        type="button"
+                        onClick={() => removeProduct(p.id)}
+                        className="hover:text-destructive transition-colors"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Message */}
             <div>
