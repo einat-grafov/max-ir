@@ -143,6 +143,54 @@ const LayoutThumbnail = ({ id }: { id: string }) => {
           ))}
         </svg>
       );
+    case "cta_banner":
+      return (
+        <svg viewBox="0 0 280 160" className={base}>
+          <rect width="280" height="160" fill="hsl(var(--foreground))" rx="4" />
+          <rect x="70" y="35" width="140" height="12" rx="2" fill="hsl(var(--background) / 0.9)" />
+          <rect x="50" y="58" width="180" height="5" rx="1" fill="hsl(var(--background) / 0.4)" />
+          <rect x="65" y="67" width="150" height="5" rx="1" fill="hsl(var(--background) / 0.4)" />
+          <rect x="100" y="90" width="80" height="20" rx="4" fill="hsl(var(--primary))" />
+          <rect x="120" y="96" width="40" height="8" rx="1" fill="hsl(var(--primary-foreground) / 0.8)" />
+        </svg>
+      );
+    case "full_width_image":
+      return (
+        <svg viewBox="0 0 280 160" className={base}>
+          <rect width="280" height="160" fill="hsl(var(--muted))" rx="4" />
+          <rect x="10" y="10" width="260" height="120" rx="6" fill="hsl(var(--muted-foreground) / 0.2)" />
+          <polygon points="60,90 110,50 160,80 200,55 250,90" fill="hsl(var(--muted-foreground) / 0.15)" />
+          <circle cx="70" cy="45" r="12" fill="hsl(var(--muted-foreground) / 0.15)" />
+          <rect x="90" y="138" width="100" height="5" rx="1" fill="hsl(var(--muted-foreground) / 0.25)" />
+        </svg>
+      );
+    case "faq_accordion":
+      return (
+        <svg viewBox="0 0 280 160" className={base}>
+          <rect width="280" height="160" fill="hsl(var(--muted))" rx="4" />
+          <rect x="80" y="10" width="120" height="8" rx="2" fill="hsl(var(--muted-foreground) / 0.4)" />
+          {[0, 1, 2, 3].map((i) => (
+            <g key={i}>
+              <rect x="30" y={30 + i * 30} width="220" height="22" rx="3" fill="hsl(var(--background))" stroke="hsl(var(--border))" strokeWidth="1" />
+              <rect x="40" y={37 + i * 30} width={80 + i * 10} height="5" rx="1" fill="hsl(var(--muted-foreground) / 0.3)" />
+              <text x="238" y={45 + i * 30} fontSize="10" fill="hsl(var(--muted-foreground) / 0.3)" textAnchor="middle">+</text>
+            </g>
+          ))}
+        </svg>
+      );
+    case "text_block":
+      return (
+        <svg viewBox="0 0 280 160" className={base}>
+          <rect width="280" height="160" fill="hsl(var(--muted))" rx="4" />
+          <rect x="60" y="30" width="160" height="10" rx="2" fill="hsl(var(--muted-foreground) / 0.4)" />
+          <rect x="30" y="55" width="220" height="5" rx="1" fill="hsl(var(--muted-foreground) / 0.2)" />
+          <rect x="30" y="65" width="210" height="5" rx="1" fill="hsl(var(--muted-foreground) / 0.2)" />
+          <rect x="30" y="75" width="200" height="5" rx="1" fill="hsl(var(--muted-foreground) / 0.2)" />
+          <rect x="30" y="85" width="215" height="5" rx="1" fill="hsl(var(--muted-foreground) / 0.2)" />
+          <rect x="30" y="95" width="180" height="5" rx="1" fill="hsl(var(--muted-foreground) / 0.2)" />
+          <rect x="30" y="105" width="190" height="5" rx="1" fill="hsl(var(--muted-foreground) / 0.2)" />
+        </svg>
+      );
     default:
       return (
         <svg viewBox="0 0 280 160" className={base}>
