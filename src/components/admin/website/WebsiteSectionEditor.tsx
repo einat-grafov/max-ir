@@ -341,7 +341,7 @@ const TechnologyFieldsRich = ({ content, updateField, setContent }: { content: a
   <div className="space-y-4">
     <Field label="Title" value={content.title} onChange={(v) => updateField("title", v)} />
     <Field label="Subtitle" value={content.subtitle} onChange={(v) => updateField("subtitle", v)} multiline />
-    <Field label="Diagram Image URL" value={content.diagram_image} onChange={(v) => updateField("diagram_image", v)} />
+    <Field label="Diagram Image URL" value={content.diagram_image} onChange={(v) => updateField("diagram_image", v)} showImagePicker />
     <OurStoryFields content={{ title: "", paragraphs: content.paragraphs || [] }} updateField={() => {}} setContent={(fn: any) => {
       setContent((prev: any) => {
         const temp = fn({ paragraphs: prev.paragraphs || [] });
