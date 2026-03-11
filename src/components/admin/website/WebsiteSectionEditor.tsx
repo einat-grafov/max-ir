@@ -29,7 +29,7 @@ interface Props {
   onDelete?: () => void;
 }
 
-const WebsiteSectionEditor = ({ section, label, onSaved }: Props) => {
+const WebsiteSectionEditor = ({ section, label, onSaved, onDelete }: Props) => {
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState<any>(section.content);
   const [isVisible, setIsVisible] = useState(section.is_visible);
