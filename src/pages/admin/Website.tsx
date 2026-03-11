@@ -19,6 +19,12 @@ const SECTION_LABELS: Record<string, string> = {
   careers: "Careers",
 };
 
+const TEST_PAGE_SECTIONS = [
+  { key: "hero", label: "Hero Section" },
+  { key: "content", label: "Main Content" },
+  { key: "cta", label: "Call to Action" },
+];
+
 const Website = () => {
   const [activeTab, setActiveTab] = useState("home");
   const queryClient = useQueryClient();
