@@ -125,6 +125,70 @@ export const LAYOUT_TEMPLATES: LayoutTemplate[] = [
       },
     ],
   },
+  // === Collection layouts ===
+  {
+    id: "card_grid",
+    name: "Card Grid",
+    category: "collections",
+    fields: [
+      { key: "title", label: "Section Title", type: "text" },
+      { key: "columns", label: "Columns (2-4)", type: "text" },
+      {
+        key: "items",
+        label: "Cards",
+        type: "items",
+        itemFields: [
+          { key: "image", label: "Image URL", type: "image" },
+          { key: "title", label: "Title", type: "text" },
+          { key: "subtitle", label: "Subtitle", type: "text" },
+          { key: "description", label: "Description", type: "textarea" },
+          { key: "link", label: "Link URL", type: "text" },
+          { key: "link_text", label: "Link Text", type: "text" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "card_carousel",
+    name: "Card Carousel",
+    category: "collections",
+    fields: [
+      { key: "title", label: "Section Title", type: "text" },
+      {
+        key: "items",
+        label: "Cards",
+        type: "items",
+        itemFields: [
+          { key: "image", label: "Image URL", type: "image" },
+          { key: "title", label: "Title", type: "text" },
+          { key: "subtitle", label: "Subtitle", type: "text" },
+          { key: "description", label: "Description", type: "textarea" },
+          { key: "link", label: "Link URL", type: "text" },
+          { key: "link_text", label: "Link Text", type: "text" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "image_text_list",
+    name: "Image + Text List",
+    category: "collections",
+    fields: [
+      { key: "title", label: "Section Title", type: "text" },
+      {
+        key: "items",
+        label: "Entries",
+        type: "items",
+        itemFields: [
+          { key: "image", label: "Image URL", type: "image" },
+          { key: "name", label: "Name", type: "text" },
+          { key: "role", label: "Role / Subtitle", type: "text" },
+          { key: "description", label: "Description", type: "textarea" },
+          { key: "link", label: "Link URL (e.g. LinkedIn)", type: "text" },
+        ],
+      },
+    ],
+  },
 ];
 
 export function getDefaultContent(templateId: string): Record<string, any> {

@@ -143,6 +143,7 @@ const LayoutPicker = ({ onSelect, currentLayoutId }: Props) => {
     { key: "hero", label: "Hero Sections" },
     { key: "content", label: "Content" },
     { key: "social_proof", label: "Social Proof" },
+    { key: "collections", label: "Collections" },
   ] as const;
 
   return (
