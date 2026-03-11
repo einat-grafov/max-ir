@@ -212,7 +212,7 @@ const CreateCustomerModal = ({ open, onOpenChange, onCustomerCreated }: CreateCu
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 px-6 py-4 border-t border-border shrink-0">
+        <div className="flex justify-end gap-2 pt-4 border-t border-border">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button onClick={handleSave} disabled={saving}>{saving ? "Saving..." : "Save"}</Button>
         </div>

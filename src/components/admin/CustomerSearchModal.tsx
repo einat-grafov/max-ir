@@ -67,8 +67,8 @@ const CustomerSearchModal = ({ open, onOpenChange, onSelectCustomer }: CustomerS
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col p-0">
-        <DialogHeader className="px-6 pt-6 pb-0">
+      <DialogContent className="max-w-2xl max-h-[80vh]">
+        <DialogHeader>
           <DialogTitle>Select customer</DialogTitle>
         </DialogHeader>
 
