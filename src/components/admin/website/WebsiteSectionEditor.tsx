@@ -670,6 +670,21 @@ const BackgroundDesignFields = ({ content, updateField }: { content: any; update
   );
 };
 
+// Input with optional image picker for list items
+const ListItemInput = ({ value, onChange, showImagePicker }: { value: string; onChange: (v: string) => void; showImagePicker?: boolean }) => {
+  const [pickerOpen, setPickerOpen] = useState(false);
+  if (!showImagePicker) return <Input value={value} onChange={(e) => onChange(e.target.value)} className="mt-1" />;
+  return (
+    <div className="flex items-center gap-1.5 mt-1">
+      <Input value={value} onChange={(e) => onChange(e.target.value)} className="flex-1" />
+      <Button variant="outline" size="sm" className="h-9 shrink-0 text-xs gap-1" onClick={() => setPickerOpen(true)}>
+        <ImageIcon className="h-3 w-3" />
+      </Button>
+      <ImagePickerDialog open={pickerOpen} onOpenChange={setPickerOpen} onSelect={(url) => onChange(url)} />
+    </div>
+  );
+};
+
 // Helper to detect image fields
 const isImageField = (key: string) =>
   /image|shadow|bg_image|icon|logo|banner|avatar|thumbnail/i.test(key) && !/linkedin/i.test(key);
