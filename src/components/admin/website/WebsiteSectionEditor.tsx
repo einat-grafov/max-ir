@@ -319,6 +319,7 @@ const DynamicLayoutFields = ({
           value={content[field.key] || ""}
           onChange={(v) => updateField(field.key, v)}
           multiline={field.type === "textarea"}
+          showImagePicker={field.type === "image" || isImageField(field.key)}
         />
       );
     })}
