@@ -16,6 +16,7 @@ interface Customer {
   last_name: string | null;
   email: string | null;
   phone: string | null;
+  company: string | null;
   city: string | null;
   country: string;
 }
@@ -48,10 +49,10 @@ const CustomerSearchModal = ({ open, onOpenChange, onSelectCustomer }: CustomerS
     setLoading(true);
     let query = supabase
       .from("customers")
-      .select("id, first_name, last_name, email, phone, city, country");
+      .select("id, first_name, last_name, email, phone, company, city, country");
     if (search.trim()) {
       query = query.or(
-        `first_name.ilike.%${search.trim()}%,last_name.ilike.%${search.trim()}%,email.ilike.%${search.trim()}%`
+        `first_name.ilike.%${search.trim()}%,last_name.ilike.%${search.trim()}%,email.ilike.%${search.trim()}%,company.ilike.%${search.trim()}%`
       );
     }
     const { data } = await query.order("first_name").limit(50);
@@ -112,7 +113,7 @@ const CustomerSearchModal = ({ open, onOpenChange, onSelectCustomer }: CustomerS
                   <User className="h-4 w-4 text-muted-foreground" />
                 </div>
                 <span className="text-sm font-medium text-foreground">
-                  {customer.first_name}{customer.last_name ? ` ${customer.last_name}` : ""}
+                  {customer.company || customer.first_name}
                 </span>
               </div>
               <span className="text-sm text-muted-foreground truncate">

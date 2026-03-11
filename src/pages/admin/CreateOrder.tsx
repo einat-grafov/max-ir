@@ -54,7 +54,7 @@ const CreateOrder = () => {
   const [discount, setDiscount] = useState<{ type: "amount" | "percentage"; value: number; reason: string } | null>(null);
   const [tempDiscount, setTempDiscount] = useState<{ type: "amount" | "percentage"; value: number; reason: string }>({ type: "amount", value: 0, reason: "" });
   const [selectedCustomer, setSelectedCustomer] = useState<{
-    id: string; first_name: string; last_name: string | null; email: string | null;
+    id: string; first_name: string; last_name: string | null; email: string | null; company?: string | null;
   } | null>(null);
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
   const [invoiceSent, setInvoiceSent] = useState(false);
@@ -90,7 +90,7 @@ const CreateOrder = () => {
     : null;
 
   useEffect(() => {
-    const state = location.state as { preselectedCustomer?: { id: string; first_name: string; last_name: string | null; email: string | null } } | null;
+    const state = location.state as { preselectedCustomer?: { id: string; first_name: string; last_name: string | null; email: string | null; company?: string | null } } | null;
     if (state?.preselectedCustomer && !selectedCustomer) {
       setSelectedCustomer(state.preselectedCustomer);
     }
@@ -100,7 +100,7 @@ const CreateOrder = () => {
     if (!canSubmit || !selectedCustomer) return;
     setSaving(true);
     try {
-      const customerName = `${selectedCustomer.first_name}${selectedCustomer.last_name ? ` ${selectedCustomer.last_name}` : ""}`;
+      const customerName = selectedCustomer.company || `${selectedCustomer.first_name}${selectedCustomer.last_name ? ` ${selectedCustomer.last_name}` : ""}`;
       const { data: order, error: orderError } = await supabase
         .from("orders")
         .insert({
@@ -273,7 +273,7 @@ const CreateOrder = () => {
               <div className="flex items-center justify-between p-3 border border-border rounded-lg">
                 <div>
                   <p className="text-sm font-medium text-foreground">
-                    {selectedCustomer.first_name}{selectedCustomer.last_name ? ` ${selectedCustomer.last_name}` : ""}
+                    {selectedCustomer.company || selectedCustomer.first_name}
                   </p>
                   {selectedCustomer.email && (
                     <p className="text-xs text-muted-foreground">{selectedCustomer.email}</p>
@@ -595,7 +595,7 @@ const CreateOrder = () => {
         open={invoiceModalOpen}
         onOpenChange={setInvoiceModalOpen}
         customerEmail={selectedCustomer?.email}
-        customerName={selectedCustomer ? `${selectedCustomer.first_name}${selectedCustomer.last_name ? ` ${selectedCustomer.last_name}` : ""}` : undefined}
+        customerName={selectedCustomer ? (selectedCustomer.company || `${selectedCustomer.first_name}${selectedCustomer.last_name ? ` ${selectedCustomer.last_name}` : ""}`) : undefined}
         invoiceSent={invoiceSent}
         onInvoiceSent={() => setInvoiceSent(true)}
       />
