@@ -6,6 +6,7 @@ import { Globe, Plus, FlaskConical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import WebsiteSectionEditor from "@/components/admin/website/WebsiteSectionEditor";
+import TestPageBuilder from "@/components/admin/website/TestPageBuilder";
 
 const SECTION_LABELS: Record<string, string> = {
   hero: "Hero Banner",
