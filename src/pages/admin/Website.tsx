@@ -25,42 +25,6 @@ const SECTION_LABELS: Record<string, string> = {
   test_cta: "Call to Action",
 };
 
-const TEST_SECTIONS_DEFAULTS = [
-  {
-    page: "test",
-    section_key: "test_hero",
-    sort_order: 0,
-    is_visible: true,
-    content: {
-      title: "Test Page Hero",
-      subtitle: "This is a test page for building new layouts",
-      background_image: "",
-    },
-  },
-  {
-    page: "test",
-    section_key: "test_content",
-    sort_order: 1,
-    is_visible: true,
-    content: {
-      heading: "Main Content Section",
-      body: "Add your content here. This section can be customized from the CMS.",
-      image_url: "",
-    },
-  },
-  {
-    page: "test",
-    section_key: "test_cta",
-    sort_order: 2,
-    is_visible: true,
-    content: {
-      heading: "Ready to get started?",
-      button_text: "Contact Us",
-      button_url: "/#Contact",
-    },
-  },
-];
-
 const Website = () => {
   const [activeTab, setActiveTab] = useState("home");
   const queryClient = useQueryClient();
