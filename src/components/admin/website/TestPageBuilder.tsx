@@ -25,7 +25,14 @@ interface SectionRow {
 
 const TestPageBuilder = () => {
   const [showPicker, setShowPicker] = useState(false);
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [overIdx, setOverIdx] = useState<number | null>(null);
   const queryClient = useQueryClient();
+
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ["website-content", "test"] });
+    queryClient.invalidateQueries({ queryKey: ["website-content"] });
+  };
 
   const { data: sections = [], isLoading } = useQuery({
     queryKey: ["website-content", "test"],
@@ -53,8 +60,7 @@ const TestPageBuilder = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["website-content", "test"] });
-      queryClient.invalidateQueries({ queryKey: ["website-content"] });
+      invalidate();
       setShowPicker(false);
       toast.success("Section added!");
     },
@@ -67,30 +73,62 @@ const TestPageBuilder = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["website-content", "test"] });
-      queryClient.invalidateQueries({ queryKey: ["website-content"] });
+      invalidate();
       toast.success("Section removed");
     },
   });
+
+  const reorder = async (fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex) return;
+    const reordered = [...sections];
+    const [moved] = reordered.splice(fromIndex, 1);
+    reordered.splice(toIndex, 0, moved);
+
+    // Batch update sort_order for all affected sections
+    const updates = reordered.map((s, i) => ({ id: s.id, sort_order: i }));
+    await Promise.all(
+      updates.map(({ id, sort_order }) =>
+        supabase.from("website_content").update({ sort_order } as any).eq("id", id)
+      )
+    );
+    invalidate();
+  };
+
+  const handleDragEnd = () => {
+    if (dragIdx !== null && overIdx !== null && dragIdx !== overIdx) {
+      reorder(dragIdx, overIdx);
+    }
+    setDragIdx(null);
+    setOverIdx(null);
+  };
 
   if (isLoading) return <p className="text-sm text-muted-foreground">Loading...</p>;
 
   return (
     <div className="space-y-4">
-      {sections.map((section) => {
+      {sections.map((section, index) => {
         const layoutId = section.content?.layout;
         const template = LAYOUT_TEMPLATES.find((t) => t.id === layoutId);
         return (
-          <SectionEditor
+          <div
             key={section.id}
-            section={section}
-            template={template}
-            onDelete={() => deleteSection.mutate(section.id)}
-            onSaved={() => {
-              queryClient.invalidateQueries({ queryKey: ["website-content", "test"] });
-              queryClient.invalidateQueries({ queryKey: ["website-content"] });
-            }}
-          />
+            draggable
+            onDragStart={() => setDragIdx(index)}
+            onDragOver={(e) => { e.preventDefault(); setOverIdx(index); }}
+            onDragEnd={handleDragEnd}
+            className={cn(
+              "transition-all",
+              dragIdx === index && "opacity-50",
+              overIdx === index && dragIdx !== null && dragIdx !== index && "border-t-2 border-primary rounded-t-sm"
+            )}
+          >
+            <SectionEditor
+              section={section}
+              template={template}
+              onDelete={() => deleteSection.mutate(section.id)}
+              onSaved={invalidate}
+            />
+          </div>
         );
       })}
 
