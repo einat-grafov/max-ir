@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import IconTooltipButton from "@/components/admin/IconTooltipButton";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
