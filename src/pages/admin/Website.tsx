@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Globe, FlaskConical, Plus } from "lucide-react";
-import { toast } from "sonner";
 import WebsiteSectionEditor from "@/components/admin/website/WebsiteSectionEditor";
 import TestPageBuilder from "@/components/admin/website/TestPageBuilder";
 import LayoutPicker from "@/components/admin/website/LayoutPicker";
