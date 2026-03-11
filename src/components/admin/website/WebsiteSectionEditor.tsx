@@ -106,22 +106,20 @@ const WebsiteSectionEditor = ({ section, label, onSaved, onDelete }: Props) => {
               )}
             </div>
             <div className="flex items-center gap-2">
-              {currentTemplate && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowLayoutPicker(true);
-                      }}
-                      className="p-1.5 rounded hover:bg-muted transition-colors"
-                    >
-                      <ArrowLeftRight className="h-4 w-4 text-muted-foreground" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent>Switch layout</TooltipContent>
-                </Tooltip>
-              )}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowLayoutPicker(true);
+                    }}
+                    className="p-1.5 rounded hover:bg-muted transition-colors"
+                  >
+                    <ArrowLeftRight className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>{currentTemplate ? "Switch layout" : "Choose layout"}</TooltipContent>
+              </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
