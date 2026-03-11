@@ -319,6 +319,7 @@ const DynamicLayoutFields = ({
           value={content[field.key] || ""}
           onChange={(v) => updateField(field.key, v)}
           multiline={field.type === "textarea"}
+          showImagePicker={field.type === "image" || isImageField(field.key)}
         />
       );
     })}
@@ -333,7 +334,7 @@ const HeroFields = ({ content, updateField }: { content: any; updateField: (p: s
     {content.subtitle !== undefined && (
       <Field label="Subtitle" value={content.subtitle} onChange={(v) => updateField("subtitle", v)} multiline />
     )}
-    <Field label="Background Image URL" value={content.background_image} onChange={(v) => updateField("background_image", v)} />
+    <Field label="Background Image URL" value={content.background_image} onChange={(v) => updateField("background_image", v)} showImagePicker />
   </div>
 );
 
@@ -341,7 +342,7 @@ const TechnologyFieldsRich = ({ content, updateField, setContent }: { content: a
   <div className="space-y-4">
     <Field label="Title" value={content.title} onChange={(v) => updateField("title", v)} />
     <Field label="Subtitle" value={content.subtitle} onChange={(v) => updateField("subtitle", v)} multiline />
-    <Field label="Diagram Image URL" value={content.diagram_image} onChange={(v) => updateField("diagram_image", v)} />
+    <Field label="Diagram Image URL" value={content.diagram_image} onChange={(v) => updateField("diagram_image", v)} showImagePicker />
     <OurStoryFields content={{ title: "", paragraphs: content.paragraphs || [] }} updateField={() => {}} setContent={(fn: any) => {
       setContent((prev: any) => {
         const temp = fn({ paragraphs: prev.paragraphs || [] });
@@ -501,37 +502,40 @@ const ListSectionFields = ({
               </Button>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              {itemFields.map((field) => (
-                <div key={field} className={field === "description" || field === "bio" || field === "content" ? "col-span-2" : ""}>
-                  <Label className="text-xs text-muted-foreground capitalize">{field.replace(/_/g, " ")}</Label>
-                  {field === "description" || field === "bio" || field === "content" ? (
-                    <Textarea
-                      value={item[field] || ""}
-                      onChange={(e) =>
-                        setContent((prev: any) => {
-                          const updated = { ...prev, [itemKey]: [...prev[itemKey]] };
-                          updated[itemKey][i] = { ...updated[itemKey][i], [field]: e.target.value };
-                          return updated;
-                        })
-                      }
-                      rows={2}
-                      className="mt-1"
-                    />
-                  ) : (
-                    <Input
-                      value={item[field] || ""}
-                      onChange={(e) =>
-                        setContent((prev: any) => {
-                          const updated = { ...prev, [itemKey]: [...prev[itemKey]] };
-                          updated[itemKey][i] = { ...updated[itemKey][i], [field]: e.target.value };
-                          return updated;
-                        })
-                      }
-                      className="mt-1"
-                    />
-                  )}
-                </div>
-              ))}
+              {itemFields.map((field) => {
+                const isImg = isImageField(field);
+                return (
+                  <div key={field} className={field === "description" || field === "bio" || field === "content" ? "col-span-2" : ""}>
+                    <Label className="text-xs text-muted-foreground capitalize">{field.replace(/_/g, " ")}</Label>
+                    {field === "description" || field === "bio" || field === "content" ? (
+                      <Textarea
+                        value={item[field] || ""}
+                        onChange={(e) =>
+                          setContent((prev: any) => {
+                            const updated = { ...prev, [itemKey]: [...prev[itemKey]] };
+                            updated[itemKey][i] = { ...updated[itemKey][i], [field]: e.target.value };
+                            return updated;
+                          })
+                        }
+                        rows={2}
+                        className="mt-1"
+                      />
+                    ) : (
+                      <ListItemInput
+                        value={item[field] || ""}
+                        onChange={(val) =>
+                          setContent((prev: any) => {
+                            const updated = { ...prev, [itemKey]: [...prev[itemKey]] };
+                            updated[itemKey][i] = { ...updated[itemKey][i], [field]: val };
+                            return updated;
+                          })
+                        }
+                        showImagePicker={isImg}
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </Card>
         ))}
@@ -666,26 +670,62 @@ const BackgroundDesignFields = ({ content, updateField }: { content: any; update
   );
 };
 
+// Input with optional image picker for list items
+const ListItemInput = ({ value, onChange, showImagePicker }: { value: string; onChange: (v: string) => void; showImagePicker?: boolean }) => {
+  const [pickerOpen, setPickerOpen] = useState(false);
+  if (!showImagePicker) return <Input value={value} onChange={(e) => onChange(e.target.value)} className="mt-1" />;
+  return (
+    <div className="flex items-center gap-1.5 mt-1">
+      <Input value={value} onChange={(e) => onChange(e.target.value)} className="flex-1" />
+      <Button variant="outline" size="sm" className="h-9 shrink-0 text-xs gap-1" onClick={() => setPickerOpen(true)}>
+        <ImageIcon className="h-3 w-3" />
+      </Button>
+      <ImagePickerDialog open={pickerOpen} onOpenChange={setPickerOpen} onSelect={(url) => onChange(url)} />
+    </div>
+  );
+};
+
+// Helper to detect image fields
+const isImageField = (key: string) =>
+  /image|shadow|bg_image|icon|logo|banner|avatar|thumbnail/i.test(key) && !/linkedin/i.test(key);
+
 // Simple reusable field
 const Field = ({
   label,
   value,
   onChange,
   multiline,
+  showImagePicker,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   multiline?: boolean;
-}) => (
-  <div>
-    <Label className="text-sm font-medium text-foreground">{label}</Label>
-    {multiline ? (
-      <Textarea value={value || ""} onChange={(e) => onChange(e.target.value)} className="mt-1.5" rows={3} />
-    ) : (
-      <Input value={value || ""} onChange={(e) => onChange(e.target.value)} className="mt-1.5" />
-    )}
-  </div>
-);
+  showImagePicker?: boolean;
+}) => {
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  return (
+    <div>
+      <Label className="text-sm font-medium text-foreground">{label}</Label>
+      {multiline ? (
+        <Textarea value={value || ""} onChange={(e) => onChange(e.target.value)} className="mt-1.5" rows={3} />
+      ) : (
+        <div className="flex items-center gap-2 mt-1.5">
+          <Input value={value || ""} onChange={(e) => onChange(e.target.value)} className="flex-1" />
+          {showImagePicker && (
+            <>
+              <Button variant="outline" size="sm" className="h-10 shrink-0 text-xs gap-1.5" onClick={() => setPickerOpen(true)}>
+                <ImageIcon className="h-3.5 w-3.5" />
+                Library
+              </Button>
+              <ImagePickerDialog open={pickerOpen} onOpenChange={setPickerOpen} onSelect={(url) => onChange(url)} />
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default WebsiteSectionEditor;
