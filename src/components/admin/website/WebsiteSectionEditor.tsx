@@ -502,37 +502,40 @@ const ListSectionFields = ({
               </Button>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              {itemFields.map((field) => (
-                <div key={field} className={field === "description" || field === "bio" || field === "content" ? "col-span-2" : ""}>
-                  <Label className="text-xs text-muted-foreground capitalize">{field.replace(/_/g, " ")}</Label>
-                  {field === "description" || field === "bio" || field === "content" ? (
-                    <Textarea
-                      value={item[field] || ""}
-                      onChange={(e) =>
-                        setContent((prev: any) => {
-                          const updated = { ...prev, [itemKey]: [...prev[itemKey]] };
-                          updated[itemKey][i] = { ...updated[itemKey][i], [field]: e.target.value };
-                          return updated;
-                        })
-                      }
-                      rows={2}
-                      className="mt-1"
-                    />
-                  ) : (
-                    <Input
-                      value={item[field] || ""}
-                      onChange={(e) =>
-                        setContent((prev: any) => {
-                          const updated = { ...prev, [itemKey]: [...prev[itemKey]] };
-                          updated[itemKey][i] = { ...updated[itemKey][i], [field]: e.target.value };
-                          return updated;
-                        })
-                      }
-                      className="mt-1"
-                    />
-                  )}
-                </div>
-              ))}
+              {itemFields.map((field) => {
+                const isImg = isImageField(field);
+                return (
+                  <div key={field} className={field === "description" || field === "bio" || field === "content" ? "col-span-2" : ""}>
+                    <Label className="text-xs text-muted-foreground capitalize">{field.replace(/_/g, " ")}</Label>
+                    {field === "description" || field === "bio" || field === "content" ? (
+                      <Textarea
+                        value={item[field] || ""}
+                        onChange={(e) =>
+                          setContent((prev: any) => {
+                            const updated = { ...prev, [itemKey]: [...prev[itemKey]] };
+                            updated[itemKey][i] = { ...updated[itemKey][i], [field]: e.target.value };
+                            return updated;
+                          })
+                        }
+                        rows={2}
+                        className="mt-1"
+                      />
+                    ) : (
+                      <ListItemInput
+                        value={item[field] || ""}
+                        onChange={(val) =>
+                          setContent((prev: any) => {
+                            const updated = { ...prev, [itemKey]: [...prev[itemKey]] };
+                            updated[itemKey][i] = { ...updated[itemKey][i], [field]: val };
+                            return updated;
+                          })
+                        }
+                        showImagePicker={isImg}
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </Card>
         ))}
