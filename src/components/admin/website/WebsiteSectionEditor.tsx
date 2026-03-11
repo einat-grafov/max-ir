@@ -333,7 +333,7 @@ const HeroFields = ({ content, updateField }: { content: any; updateField: (p: s
     {content.subtitle !== undefined && (
       <Field label="Subtitle" value={content.subtitle} onChange={(v) => updateField("subtitle", v)} multiline />
     )}
-    <Field label="Background Image URL" value={content.background_image} onChange={(v) => updateField("background_image", v)} />
+    <Field label="Background Image URL" value={content.background_image} onChange={(v) => updateField("background_image", v)} showImagePicker />
   </div>
 );
 
