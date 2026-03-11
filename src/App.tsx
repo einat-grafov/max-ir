@@ -101,7 +101,7 @@ const router = createBrowserRouter([
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+    <TooltipProvider delayDuration={0}>
       <Toaster />
       <Sonner />
       <RouterProvider router={router} />
