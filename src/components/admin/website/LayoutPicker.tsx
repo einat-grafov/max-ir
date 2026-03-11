@@ -129,6 +129,55 @@ const LayoutThumbnail = ({ id }: { id: string }) => {
           ))}
         </svg>
       );
+    case "card_grid":
+      return (
+        <svg viewBox="0 0 280 160" className={base}>
+          <rect width="280" height="160" fill="hsl(var(--muted))" rx="4" />
+          <rect x="90" y="10" width="100" height="8" rx="2" fill="hsl(var(--muted-foreground) / 0.4)" />
+          {[0, 1, 2].map((i) => (
+            <g key={i}>
+              <rect x={20 + i * 85} y="30" width="75" height="50" rx="4" fill="hsl(var(--muted-foreground) / 0.15)" />
+              <rect x={25 + i * 85} y="85" width="50" height="6" rx="1" fill="hsl(var(--muted-foreground) / 0.3)" />
+              <rect x={25 + i * 85} y="95" width="65" height="4" rx="1" fill="hsl(var(--muted-foreground) / 0.2)" />
+              <rect x={25 + i * 85} y="103" width="60" height="4" rx="1" fill="hsl(var(--muted-foreground) / 0.15)" />
+            </g>
+          ))}
+        </svg>
+      );
+    case "card_carousel":
+      return (
+        <svg viewBox="0 0 280 160" className={base}>
+          <rect width="280" height="160" fill="hsl(var(--muted))" rx="4" />
+          <rect x="80" y="10" width="120" height="8" rx="2" fill="hsl(var(--muted-foreground) / 0.4)" />
+          {[0, 1, 2, 3].map((i) => (
+            <g key={i} opacity={i === 0 || i === 3 ? 0.4 : 1}>
+              <rect x={-15 + i * 80} y="30" width="70" height="95" rx="4" fill="hsl(var(--background))" stroke="hsl(var(--border))" strokeWidth="1" />
+              <rect x={-10 + i * 80} y="35" width="60" height="35" rx="2" fill="hsl(var(--muted-foreground) / 0.15)" />
+              <rect x={-10 + i * 80} y="76" width="40" height="5" rx="1" fill="hsl(var(--muted-foreground) / 0.3)" />
+              <rect x={-10 + i * 80} y="85" width="55" height="4" rx="1" fill="hsl(var(--muted-foreground) / 0.15)" />
+            </g>
+          ))}
+          {/* Arrows */}
+          <polygon points="8,78 16,72 16,84" fill="hsl(var(--muted-foreground) / 0.4)" />
+          <polygon points="272,78 264,72 264,84" fill="hsl(var(--muted-foreground) / 0.4)" />
+        </svg>
+      );
+    case "image_text_list":
+      return (
+        <svg viewBox="0 0 280 160" className={base}>
+          <rect width="280" height="160" fill="hsl(var(--muted))" rx="4" />
+          <rect x="80" y="10" width="120" height="8" rx="2" fill="hsl(var(--muted-foreground) / 0.4)" />
+          {[0, 1].map((i) => (
+            <g key={i}>
+              <rect x="20" y={30 + i * 60} width="55" height="50" rx="4" fill="hsl(var(--muted-foreground) / 0.2)" />
+              <rect x="85" y={35 + i * 60} width="80" height="7" rx="1" fill="hsl(var(--muted-foreground) / 0.35)" />
+              <rect x="85" y={46 + i * 60} width="50" height="5" rx="1" fill="hsl(var(--muted-foreground) / 0.2)" />
+              <rect x="85" y={56 + i * 60} width="170" height="4" rx="1" fill="hsl(var(--muted-foreground) / 0.15)" />
+              <rect x="85" y={63 + i * 60} width="150" height="4" rx="1" fill="hsl(var(--muted-foreground) / 0.15)" />
+            </g>
+          ))}
+        </svg>
+      );
     default:
       return (
         <svg viewBox="0 0 280 160" className={base}>
