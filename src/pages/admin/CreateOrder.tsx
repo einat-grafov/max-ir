@@ -221,8 +221,7 @@ const CreateOrder = () => {
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <Link to={returnToCustomer}>
-                    {(location.state as any)?.preselectedCustomer?.first_name}
-                    {(location.state as any)?.preselectedCustomer?.last_name ? ` ${(location.state as any).preselectedCustomer.last_name}` : ""}
+                    {(location.state as any)?.preselectedCustomer?.company || (location.state as any)?.preselectedCustomer?.first_name}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
