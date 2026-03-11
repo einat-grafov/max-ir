@@ -3,6 +3,7 @@ import { LAYOUT_TEMPLATES, type LayoutTemplate } from "./layoutTemplates";
 
 interface Props {
   onSelect: (template: LayoutTemplate) => void;
+  currentLayoutId?: string;
 }
 
 // SVG thumbnail renderers for each layout
@@ -137,7 +138,7 @@ const LayoutThumbnail = ({ id }: { id: string }) => {
   }
 };
 
-const LayoutPicker = ({ onSelect }: Props) => {
+const LayoutPicker = ({ onSelect, currentLayoutId }: Props) => {
   const categories = [
     { key: "hero", label: "Hero Sections" },
     { key: "content", label: "Content" },
@@ -159,9 +160,12 @@ const LayoutPicker = ({ onSelect }: Props) => {
                 <button
                   key={template.id}
                   onClick={() => onSelect(template)}
+                  disabled={template.id === currentLayoutId}
                   className={cn(
                     "group rounded-lg border border-border bg-card p-2 text-left transition-all",
-                    "hover:border-primary hover:shadow-md hover:shadow-primary/5"
+                    template.id === currentLayoutId
+                      ? "border-primary bg-primary/5 opacity-70 cursor-default"
+                      : "hover:border-primary hover:shadow-md hover:shadow-primary/5"
                   )}
                 >
                   <div className="aspect-[7/4] rounded overflow-hidden mb-2">
