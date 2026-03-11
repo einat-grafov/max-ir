@@ -206,6 +206,10 @@ const WebsiteSectionEditor = ({ section, label, onSaved, onDelete }: Props) => {
                 </div>
               )}
             </button>
+
+            {/* Background Design */}
+            <BackgroundDesignFields content={content} updateField={updateField} />
+
             <SectionFields
               sectionKey={section.section_key}
               content={content}
