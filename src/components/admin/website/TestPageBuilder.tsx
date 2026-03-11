@@ -1,0 +1,356 @@
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Plus, Trash2, Save, GripVertical, ChevronDown, Eye, EyeOff } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
+import LayoutPicker from "./LayoutPicker";
+import { LAYOUT_TEMPLATES, getDefaultContent, type LayoutTemplate, type LayoutField } from "./layoutTemplates";
+
+interface SectionRow {
+  id: string;
+  page: string;
+  section_key: string;
+  content: any;
+  sort_order: number;
+  is_visible: boolean;
+}
+
+const TestPageBuilder = () => {
+  const [showPicker, setShowPicker] = useState(false);
+  const queryClient = useQueryClient();
+
+  const { data: sections = [], isLoading } = useQuery({
+    queryKey: ["website-content", "test"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("website_content")
+        .select("*")
+        .eq("page", "test")
+        .order("sort_order");
+      if (error) throw error;
+      return data as SectionRow[];
+    },
+  });
+
+  const addSection = useMutation({
+    mutationFn: async (template: LayoutTemplate) => {
+      const maxOrder = sections.length > 0 ? Math.max(...sections.map((s) => s.sort_order)) + 1 : 0;
+      const { error } = await supabase.from("website_content").insert({
+        page: "test",
+        section_key: `test_${template.id}_${Date.now()}`,
+        sort_order: maxOrder,
+        is_visible: true,
+        content: getDefaultContent(template.id),
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["website-content", "test"] });
+      queryClient.invalidateQueries({ queryKey: ["website-content"] });
+      setShowPicker(false);
+      toast.success("Section added!");
+    },
+    onError: (err: any) => toast.error(err.message),
+  });
+
+  const deleteSection = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("website_content").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["website-content", "test"] });
+      queryClient.invalidateQueries({ queryKey: ["website-content"] });
+      toast.success("Section removed");
+    },
+  });
+
+  if (isLoading) return <p className="text-sm text-muted-foreground">Loading...</p>;
+
+  return (
+    <div className="space-y-4">
+      {sections.map((section) => {
+        const layoutId = section.content?.layout;
+        const template = LAYOUT_TEMPLATES.find((t) => t.id === layoutId);
+        return (
+          <SectionEditor
+            key={section.id}
+            section={section}
+            template={template}
+            onDelete={() => deleteSection.mutate(section.id)}
+            onSaved={() => {
+              queryClient.invalidateQueries({ queryKey: ["website-content", "test"] });
+              queryClient.invalidateQueries({ queryKey: ["website-content"] });
+            }}
+          />
+        );
+      })}
+
+      <button
+        onClick={() => setShowPicker(true)}
+        className="w-full border-2 border-dashed border-border rounded-lg p-8 flex flex-col items-center gap-2 text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+      >
+        <Plus className="h-6 w-6" />
+        <span className="text-sm font-medium">Add Section</span>
+      </button>
+
+      <Dialog open={showPicker} onOpenChange={setShowPicker}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Choose a Layout</DialogTitle>
+          </DialogHeader>
+          <LayoutPicker onSelect={(t) => addSection.mutate(t)} />
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+// Individual section editor with collapsible content fields
+const SectionEditor = ({
+  section,
+  template,
+  onDelete,
+  onSaved,
+}: {
+  section: SectionRow;
+  template?: LayoutTemplate;
+  onDelete: () => void;
+  onSaved: () => void;
+}) => {
+  const [open, setOpen] = useState(false);
+  const [content, setContent] = useState<any>(section.content);
+  const [isVisible, setIsVisible] = useState(section.is_visible);
+  const [saving, setSaving] = useState(false);
+
+  const layoutName = template?.name || content?.layout || "Unknown Layout";
+
+  const handleSave = async () => {
+    setSaving(true);
+    const { error } = await supabase
+      .from("website_content")
+      .update({ content, is_visible: isVisible } as any)
+      .eq("id", section.id);
+    setSaving(false);
+    if (error) {
+      toast.error("Failed to save");
+      return;
+    }
+    toast.success(`${layoutName} saved`);
+    onSaved();
+  };
+
+  const toggleVisibility = async () => {
+    const newVal = !isVisible;
+    setIsVisible(newVal);
+    await supabase
+      .from("website_content")
+      .update({ is_visible: newVal } as any)
+      .eq("id", section.id);
+    onSaved();
+  };
+
+  const updateField = (key: string, value: any) => {
+    setContent((prev: any) => ({ ...prev, [key]: value }));
+  };
+
+  return (
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <Card className="overflow-hidden">
+        <CollapsibleTrigger asChild>
+          <button className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors text-left">
+            <div className="flex items-center gap-3">
+              <GripVertical className="h-4 w-4 text-muted-foreground/40" />
+              <span className="font-semibold text-sm text-foreground">{layoutName}</span>
+              {!isVisible && (
+                <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">Hidden</span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={(e) => { e.stopPropagation(); toggleVisibility(); }}
+                className="p-1.5 rounded hover:bg-muted transition-colors"
+              >
+                {isVisible ? <Eye className="h-4 w-4 text-muted-foreground" /> : <EyeOff className="h-4 w-4 text-muted-foreground" />}
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                className="p-1.5 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+              <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform", open && "rotate-180")} />
+            </div>
+          </button>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div className="border-t border-border p-4 space-y-4">
+            {template ? (
+              <TemplateFields fields={template.fields} content={content} updateField={updateField} setContent={setContent} />
+            ) : (
+              <p className="text-sm text-muted-foreground">Unknown layout type: {content?.layout}</p>
+            )}
+            <div className="flex justify-end pt-2 border-t border-border">
+              <Button onClick={handleSave} disabled={saving} size="sm">
+                <Save className="h-4 w-4 mr-1" />
+                {saving ? "Saving..." : "Save changes"}
+              </Button>
+            </div>
+          </div>
+        </CollapsibleContent>
+      </Card>
+    </Collapsible>
+  );
+};
+
+// Render fields dynamically based on template definition
+const TemplateFields = ({
+  fields,
+  content,
+  updateField,
+  setContent,
+}: {
+  fields: LayoutField[];
+  content: any;
+  updateField: (key: string, value: any) => void;
+  setContent: (fn: (prev: any) => any) => void;
+}) => (
+  <div className="space-y-4">
+    {fields.map((field) => {
+      if (field.type === "items" && field.itemFields) {
+        return (
+          <ItemListEditor
+            key={field.key}
+            fieldKey={field.key}
+            label={field.label}
+            itemFields={field.itemFields}
+            items={content[field.key] || []}
+            setContent={setContent}
+          />
+        );
+      }
+      return (
+        <div key={field.key}>
+          <Label className="text-sm font-medium text-foreground">{field.label}</Label>
+          {field.type === "textarea" ? (
+            <Textarea
+              value={content[field.key] || ""}
+              onChange={(e) => updateField(field.key, e.target.value)}
+              className="mt-1.5"
+              rows={3}
+            />
+          ) : (
+            <Input
+              value={content[field.key] || ""}
+              onChange={(e) => updateField(field.key, e.target.value)}
+              className="mt-1.5"
+            />
+          )}
+        </div>
+      );
+    })}
+  </div>
+);
+
+// Reusable list editor for items (testimonials, metrics, logos)
+const ItemListEditor = ({
+  fieldKey,
+  label,
+  itemFields,
+  items,
+  setContent,
+}: {
+  fieldKey: string;
+  label: string;
+  itemFields: { key: string; label: string; type: string }[];
+  items: any[];
+  setContent: (fn: (prev: any) => any) => void;
+}) => {
+  const friendlyName = label.replace(/s$/, "").toLowerCase();
+
+  return (
+    <div>
+      <Label className="text-sm font-medium text-foreground mb-2 block">{label}</Label>
+      <div className="space-y-3">
+        {items.map((item: any, i: number) => (
+          <Card key={i} className="p-3 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-muted-foreground capitalize">{friendlyName} {i + 1}</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-muted-foreground hover:bg-destructive hover:text-white"
+                onClick={() =>
+                  setContent((prev: any) => ({
+                    ...prev,
+                    [fieldKey]: prev[fieldKey].filter((_: any, idx: number) => idx !== i),
+                  }))
+                }
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {itemFields.map((f) => (
+                <div key={f.key} className={f.type === "textarea" ? "col-span-2" : ""}>
+                  <Label className="text-xs text-muted-foreground">{f.label}</Label>
+                  {f.type === "textarea" ? (
+                    <Textarea
+                      value={item[f.key] || ""}
+                      onChange={(e) =>
+                        setContent((prev: any) => {
+                          const updated = [...prev[fieldKey]];
+                          updated[i] = { ...updated[i], [f.key]: e.target.value };
+                          return { ...prev, [fieldKey]: updated };
+                        })
+                      }
+                      rows={2}
+                      className="mt-1"
+                    />
+                  ) : (
+                    <Input
+                      value={item[f.key] || ""}
+                      onChange={(e) =>
+                        setContent((prev: any) => {
+                          const updated = [...prev[fieldKey]];
+                          updated[i] = { ...updated[i], [f.key]: e.target.value };
+                          return { ...prev, [fieldKey]: updated };
+                        })
+                      }
+                      className="mt-1"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          </Card>
+        ))}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            const newItem: any = {};
+            itemFields.forEach((f) => (newItem[f.key] = ""));
+            setContent((prev: any) => ({
+              ...prev,
+              [fieldKey]: [...(prev[fieldKey] || []), newItem],
+            }));
+          }}
+        >
+          <Plus className="h-4 w-4 mr-1" />
+          Add {friendlyName}
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+export default TestPageBuilder;
