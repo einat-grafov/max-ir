@@ -273,7 +273,7 @@ const CreateOrder = () => {
               <div className="flex items-center justify-between p-3 border border-border rounded-lg">
                 <div>
                   <p className="text-sm font-medium text-foreground">
-                    {selectedCustomer.first_name}{selectedCustomer.last_name ? ` ${selectedCustomer.last_name}` : ""}
+                    {selectedCustomer.company || selectedCustomer.first_name}
                   </p>
                   {selectedCustomer.email && (
                     <p className="text-xs text-muted-foreground">{selectedCustomer.email}</p>
