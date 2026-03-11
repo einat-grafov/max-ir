@@ -171,34 +171,7 @@ const Website = () => {
         </TabsContent>
 
         <TabsContent value="test">
-          {isLoading ? (
-            <p className="text-sm text-muted-foreground">Loading...</p>
-          ) : testSections.length === 0 ? (
-            <div className="border border-dashed border-border rounded-lg p-12 flex flex-col items-center gap-4 text-center">
-              <FlaskConical className="h-10 w-10 text-muted-foreground" />
-              <div>
-                <h3 className="text-lg font-semibold text-foreground mb-1">No test page sections yet</h3>
-                <p className="text-sm text-muted-foreground max-w-md">
-                  Initialize the test page with default sections (Hero, Content, CTA) to start building.
-                </p>
-              </div>
-              <Button onClick={() => seedTestPage.mutate()} disabled={seedTestPage.isPending}>
-                <Plus className="h-4 w-4 mr-2" />
-                {seedTestPage.isPending ? "Creating..." : "Create Test Page Sections"}
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {testSections.map((section) => (
-                <WebsiteSectionEditor
-                  key={section.id}
-                  section={section}
-                  label={SECTION_LABELS[section.section_key] || section.section_key}
-                  onSaved={() => queryClient.invalidateQueries({ queryKey: ["website-content"] })}
-                />
-              ))}
-            </div>
-          )}
+          <TestPageBuilder />
         </TabsContent>
       </Tabs>
     </div>
