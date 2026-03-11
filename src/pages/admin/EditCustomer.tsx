@@ -1,4 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
+import IconTooltipButton from "@/components/admin/IconTooltipButton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import "flag-icons/css/flag-icons.min.css";
 import { COUNTRIES, getCountryCode } from "@/lib/countries";
@@ -324,11 +326,16 @@ const EditCustomer = () => {
         </div>
         <div className="flex items-center gap-2">
           <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:bg-destructive hover:text-white">
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </AlertDialogTrigger>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <AlertDialogTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:bg-destructive hover:text-white">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+              </TooltipTrigger>
+              <TooltipContent>Delete</TooltipContent>
+            </Tooltip>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Delete customer?</AlertDialogTitle>
@@ -431,9 +438,9 @@ const EditCustomer = () => {
                   <div key={contact.id || index} className="border border-border rounded-lg p-4 space-y-4">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-muted-foreground">Contact {index + 1}</span>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:bg-destructive hover:text-white" onClick={() => removeContact(index)}>
+                      <IconTooltipButton label="Remove contact" className="h-8 w-8 text-muted-foreground hover:bg-destructive hover:text-white" onClick={() => removeContact(index)}>
                         <Trash2 className="h-4 w-4" />
-                      </Button>
+                      </IconTooltipButton>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>

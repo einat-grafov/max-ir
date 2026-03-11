@@ -1,4 +1,5 @@
 import { useState } from "react";
+import IconTooltipButton from "@/components/admin/IconTooltipButton";
 import { Link, useNavigate } from "react-router-dom";
 import "flag-icons/css/flag-icons.min.css";
 import { COUNTRIES, getCountryCode } from "@/lib/countries";
@@ -184,9 +185,9 @@ const CreateCustomer = () => {
                 <div key={index} className="border border-border rounded-lg p-4 space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-muted-foreground">Contact {index + 1}</span>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:bg-destructive hover:text-white" onClick={() => removeContact(index)}>
+                    <IconTooltipButton label="Remove contact" className="h-8 w-8 text-muted-foreground hover:bg-destructive hover:text-white" onClick={() => removeContact(index)}>
                       <Trash2 className="h-4 w-4" />
-                    </Button>
+                    </IconTooltipButton>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>

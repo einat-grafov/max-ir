@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
@@ -83,20 +84,24 @@ const WebsiteSectionEditor = ({ section, label, onSaved }: Props) => {
               )}
             </div>
             <div className="flex items-center gap-2">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleVisibility();
-                }}
-                className="p-1.5 rounded hover:bg-muted transition-colors"
-                title={isVisible ? "Hide section" : "Show section"}
-              >
-                {isVisible ? (
-                  <Eye className="h-4 w-4 text-muted-foreground" />
-                ) : (
-                  <EyeOff className="h-4 w-4 text-muted-foreground" />
-                )}
-              </button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleVisibility();
+                    }}
+                    className="p-1.5 rounded hover:bg-muted transition-colors"
+                  >
+                    {isVisible ? (
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>{isVisible ? "Hide section" : "Show section"}</TooltipContent>
+              </Tooltip>
               <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform", open && "rotate-180")} />
             </div>
           </button>

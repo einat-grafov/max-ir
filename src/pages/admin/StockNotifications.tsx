@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import IconTooltipButton from "@/components/admin/IconTooltipButton";
 import { supabase } from "@/integrations/supabase/client";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -92,14 +93,13 @@ const StockNotifications = () => {
                     {format(new Date(n.created_at), "MMM d, yyyy")}
                   </TableCell>
                   <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-maxir-gray hover:text-destructive"
+                    <IconTooltipButton
+                      label="Delete"
+                      className="text-muted-foreground hover:text-destructive"
                       onClick={() => deleteMutation.mutate(n.id)}
                     >
                       <Trash2 className="w-4 h-4" />
-                    </Button>
+                    </IconTooltipButton>
                   </TableCell>
                 </TableRow>
               ))

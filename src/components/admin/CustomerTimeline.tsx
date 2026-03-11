@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import IconTooltipButton from "@/components/admin/IconTooltipButton";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -220,9 +221,9 @@ const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, company
           )}
           <Popover open={filterOpen} onOpenChange={setFilterOpen}>
             <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon" className={cn("h-8 w-8", isFiltering && "text-primary")}>
+              <IconTooltipButton label="Filter" className={cn("h-8 w-8", isFiltering && "text-primary")}>
                 <Filter className="h-4 w-4" />
-              </Button>
+              </IconTooltipButton>
             </PopoverTrigger>
             <PopoverContent className="w-[280px] p-4" align="end">
               <div className="space-y-4">
