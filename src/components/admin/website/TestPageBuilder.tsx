@@ -142,7 +142,7 @@ const TestPageBuilder = () => {
       </button>
 
       <Dialog open={showPicker} onOpenChange={setShowPicker}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[80vh]">
           <DialogHeader>
             <DialogTitle>Choose a Layout</DialogTitle>
           </DialogHeader>
@@ -298,7 +298,7 @@ const SectionEditor = ({
       </Collapsible>
 
       <Dialog open={showLayoutSwitch} onOpenChange={setShowLayoutSwitch}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[80vh]">
           <DialogHeader>
             <DialogTitle>Switch Layout</DialogTitle>
           </DialogHeader>

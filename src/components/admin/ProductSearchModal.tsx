@@ -79,12 +79,12 @@ const ProductSearchModal = ({ open, onOpenChange, onAddProducts }: ProductSearch
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col p-0">
-        <DialogHeader className="px-6 pt-6 pb-0">
+      <DialogContent className="max-w-2xl max-h-[80vh]">
+        <DialogHeader>
           <DialogTitle>Select products</DialogTitle>
         </DialogHeader>
 
-        <div className="px-6 pt-4">
+        <div className="mt-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -98,7 +98,7 @@ const ProductSearchModal = ({ open, onOpenChange, onAddProducts }: ProductSearch
         </div>
 
         {/* Table header */}
-        <div className="px-6 pt-3">
+        <div className="pt-3">
           <div className="grid grid-cols-[auto_1fr_auto_auto] gap-4 items-center text-sm text-muted-foreground border-b border-border pb-2">
             <span className="w-6" />
             <span>Product</span>
@@ -108,7 +108,7 @@ const ProductSearchModal = ({ open, onOpenChange, onAddProducts }: ProductSearch
         </div>
 
         {/* Product list */}
-        <div className="flex-1 overflow-y-auto px-6">
+        <div>
           {loading && (
             <p className="text-sm text-muted-foreground py-8 text-center">Loading...</p>
           )}
@@ -151,7 +151,7 @@ const ProductSearchModal = ({ open, onOpenChange, onAddProducts }: ProductSearch
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-border">
+        <div className="flex items-center justify-between pt-4 border-t border-border">
           <span className="text-sm text-muted-foreground">
             {selected.size}/{products.length} variants selected
           </span>
