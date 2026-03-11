@@ -259,8 +259,15 @@ const SectionFields = ({
       return <SimpleTextFields content={content} updateField={updateField} fields={["title", "content"]} />;
     case "careers":
       return <SimpleTextFields content={content} updateField={updateField} fields={["title", "description"]} />;
-    default:
+    default: {
+      // Dynamic fields from layout template
+      const layoutId = content?.layout;
+      const template = layoutId ? LAYOUT_TEMPLATES.find((t) => t.id === layoutId) : null;
+      if (template) {
+        return <DynamicLayoutFields content={content} updateField={updateField} setContent={setContent} template={template} />;
+      }
       return <p className="text-sm text-muted-foreground">No editor available for this section.</p>;
+    }
   }
 };
 
