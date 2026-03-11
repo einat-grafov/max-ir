@@ -271,6 +271,45 @@ const SectionFields = ({
   }
 };
 
+// Dynamic field renderer for layout-based sections
+const DynamicLayoutFields = ({
+  content,
+  updateField,
+  setContent,
+  template,
+}: {
+  content: any;
+  updateField: (p: string, v: any) => void;
+  setContent: (fn: (prev: any) => any) => void;
+  template: LayoutTemplate;
+}) => (
+  <div className="space-y-4">
+    {template.fields.map((field) => {
+      if (field.type === "items" && field.itemFields) {
+        return (
+          <ListSectionFields
+            key={field.key}
+            content={content}
+            updateField={updateField}
+            setContent={setContent}
+            itemKey={field.key}
+            itemFields={field.itemFields.map((f) => f.key)}
+          />
+        );
+      }
+      return (
+        <Field
+          key={field.key}
+          label={field.label}
+          value={content[field.key] || ""}
+          onChange={(v) => updateField(field.key, v)}
+          multiline={field.type === "textarea"}
+        />
+      );
+    })}
+  </div>
+);
+
 // === Field Components ===
 
 const HeroFields = ({ content, updateField }: { content: any; updateField: (p: string, v: any) => void }) => (
