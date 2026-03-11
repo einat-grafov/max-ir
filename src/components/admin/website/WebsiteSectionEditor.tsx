@@ -666,26 +666,47 @@ const BackgroundDesignFields = ({ content, updateField }: { content: any; update
   );
 };
 
+// Helper to detect image fields
+const isImageField = (key: string) =>
+  /image|shadow|bg_image|icon|logo|banner|avatar|thumbnail/i.test(key) && !/linkedin/i.test(key);
+
 // Simple reusable field
 const Field = ({
   label,
   value,
   onChange,
   multiline,
+  showImagePicker,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   multiline?: boolean;
-}) => (
-  <div>
-    <Label className="text-sm font-medium text-foreground">{label}</Label>
-    {multiline ? (
-      <Textarea value={value || ""} onChange={(e) => onChange(e.target.value)} className="mt-1.5" rows={3} />
-    ) : (
-      <Input value={value || ""} onChange={(e) => onChange(e.target.value)} className="mt-1.5" />
-    )}
-  </div>
-);
+  showImagePicker?: boolean;
+}) => {
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  return (
+    <div>
+      <Label className="text-sm font-medium text-foreground">{label}</Label>
+      {multiline ? (
+        <Textarea value={value || ""} onChange={(e) => onChange(e.target.value)} className="mt-1.5" rows={3} />
+      ) : (
+        <div className="flex items-center gap-2 mt-1.5">
+          <Input value={value || ""} onChange={(e) => onChange(e.target.value)} className="flex-1" />
+          {showImagePicker && (
+            <>
+              <Button variant="outline" size="sm" className="h-10 shrink-0 text-xs gap-1.5" onClick={() => setPickerOpen(true)}>
+                <ImageIcon className="h-3.5 w-3.5" />
+                Library
+              </Button>
+              <ImagePickerDialog open={pickerOpen} onOpenChange={setPickerOpen} onSelect={(url) => onChange(url)} />
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default WebsiteSectionEditor;
