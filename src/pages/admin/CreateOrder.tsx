@@ -54,7 +54,7 @@ const CreateOrder = () => {
   const [discount, setDiscount] = useState<{ type: "amount" | "percentage"; value: number; reason: string } | null>(null);
   const [tempDiscount, setTempDiscount] = useState<{ type: "amount" | "percentage"; value: number; reason: string }>({ type: "amount", value: 0, reason: "" });
   const [selectedCustomer, setSelectedCustomer] = useState<{
-    id: string; first_name: string; last_name: string | null; email: string | null;
+    id: string; first_name: string; last_name: string | null; email: string | null; company?: string | null;
   } | null>(null);
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
   const [invoiceSent, setInvoiceSent] = useState(false);
