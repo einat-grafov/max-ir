@@ -72,7 +72,7 @@ const CustomerSearchModal = ({ open, onOpenChange, onSelectCustomer }: CustomerS
           <DialogTitle>Select customer</DialogTitle>
         </DialogHeader>
 
-        <div className="px-6 pt-4">
+        <div className="mt-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -86,7 +86,7 @@ const CustomerSearchModal = ({ open, onOpenChange, onSelectCustomer }: CustomerS
         </div>
 
         {/* Table header */}
-        <div className="px-6 pt-3">
+        <div className="pt-3">
           <div className="grid grid-cols-[1fr_1fr_auto] gap-4 items-center text-sm text-muted-foreground border-b border-border pb-2">
             <span>Name</span>
             <span>Email</span>
@@ -95,7 +95,7 @@ const CustomerSearchModal = ({ open, onOpenChange, onSelectCustomer }: CustomerS
         </div>
 
         {/* Customer list */}
-        <div className="flex-1 overflow-y-auto px-6">
+        <div>
           {loading && (
             <p className="text-sm text-muted-foreground py-8 text-center">Loading...</p>
           )}
