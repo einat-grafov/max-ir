@@ -191,6 +191,116 @@ const LayoutThumbnail = ({ id }: { id: string }) => {
           <rect x="30" y="105" width="190" height="5" rx="1" fill="hsl(var(--muted-foreground) / 0.2)" />
         </svg>
       );
+    case "two_col_text":
+      return (
+        <svg viewBox="0 0 280 160" className={base}>
+          <rect width="280" height="160" fill="hsl(var(--muted))" rx="4" />
+          {/* Left column */}
+          <rect x="20" y="30" width="115" height="5" rx="1" fill="hsl(var(--muted-foreground) / 0.25)" />
+          <rect x="20" y="40" width="110" height="5" rx="1" fill="hsl(var(--muted-foreground) / 0.25)" />
+          <rect x="20" y="50" width="100" height="5" rx="1" fill="hsl(var(--muted-foreground) / 0.25)" />
+          <rect x="20" y="60" width="105" height="5" rx="1" fill="hsl(var(--muted-foreground) / 0.25)" />
+          <rect x="20" y="70" width="95" height="5" rx="1" fill="hsl(var(--muted-foreground) / 0.25)" />
+          {/* Right column */}
+          <rect x="148" y="30" width="115" height="5" rx="1" fill="hsl(var(--muted-foreground) / 0.25)" />
+          <rect x="148" y="40" width="110" height="5" rx="1" fill="hsl(var(--muted-foreground) / 0.25)" />
+          <rect x="148" y="50" width="100" height="5" rx="1" fill="hsl(var(--muted-foreground) / 0.25)" />
+          <rect x="148" y="60" width="112" height="5" rx="1" fill="hsl(var(--muted-foreground) / 0.25)" />
+          <rect x="148" y="70" width="90" height="5" rx="1" fill="hsl(var(--muted-foreground) / 0.25)" />
+          {/* Divider */}
+          <rect x="139" y="25" width="1" height="60" fill="hsl(var(--border))" />
+        </svg>
+      );
+    case "icon_feature_grid":
+      return (
+        <svg viewBox="0 0 280 160" className={base}>
+          <rect width="280" height="160" fill="hsl(var(--muted))" rx="4" />
+          {[0, 1, 2, 3, 4].map((i) => (
+            <g key={i}>
+              <rect x={16 + i * 52} y="40" width="40" height="40" rx="8" fill="hsl(var(--background))" stroke="hsl(var(--border))" strokeWidth="1" />
+              <circle cx={36 + i * 52} cy="55" r="8" fill="hsl(var(--muted-foreground) / 0.2)" />
+              <rect x={22 + i * 52} y="90" width="28" height="4" rx="1" fill="hsl(var(--muted-foreground) / 0.3)" />
+            </g>
+          ))}
+        </svg>
+      );
+    case "dark_centered_text":
+      return (
+        <svg viewBox="0 0 280 160" className={base}>
+          <rect width="280" height="160" fill="hsl(var(--foreground))" rx="4" />
+          <rect x="100" y="20" width="80" height="10" rx="2" fill="hsl(var(--background) / 0.8)" />
+          <rect x="50" y="42" width="180" height="4" rx="1" fill="hsl(var(--background) / 0.35)" />
+          <rect x="60" y="50" width="160" height="4" rx="1" fill="hsl(var(--background) / 0.35)" />
+          <rect x="55" y="58" width="170" height="4" rx="1" fill="hsl(var(--background) / 0.35)" />
+          <rect x="50" y="75" width="180" height="65" rx="4" fill="hsl(var(--background) / 0.15)" />
+        </svg>
+      );
+    case "split_title_text":
+      return (
+        <svg viewBox="0 0 280 160" className={base}>
+          <rect width="280" height="160" fill="hsl(var(--muted))" rx="4" />
+          {/* Left: title + subtitle */}
+          <rect x="20" y="15" width="4" height="20" rx="1" fill="hsl(var(--primary))" />
+          <rect x="30" y="15" width="90" height="10" rx="2" fill="hsl(var(--muted-foreground) / 0.4)" />
+          <rect x="30" y="30" width="80" height="10" rx="2" fill="hsl(var(--muted-foreground) / 0.4)" />
+          <rect x="20" y="52" width="110" height="4" rx="1" fill="hsl(var(--muted-foreground) / 0.2)" />
+          <rect x="20" y="60" width="100" height="4" rx="1" fill="hsl(var(--muted-foreground) / 0.2)" />
+          {/* Right: body */}
+          <rect x="148" y="15" width="112" height="4" rx="1" fill="hsl(var(--muted-foreground) / 0.25)" />
+          <rect x="148" y="23" width="108" height="4" rx="1" fill="hsl(var(--muted-foreground) / 0.25)" />
+          <rect x="148" y="31" width="100" height="4" rx="1" fill="hsl(var(--muted-foreground) / 0.25)" />
+          <rect x="148" y="39" width="110" height="4" rx="1" fill="hsl(var(--muted-foreground) / 0.25)" />
+          <rect x="148" y="47" width="95" height="4" rx="1" fill="hsl(var(--muted-foreground) / 0.25)" />
+          <rect x="148" y="55" width="105" height="4" rx="1" fill="hsl(var(--muted-foreground) / 0.25)" />
+          {/* Bottom diagram */}
+          <rect x="20" y="80" width="240" height="60" rx="4" fill="hsl(var(--muted-foreground) / 0.12)" />
+        </svg>
+      );
+    case "alternating_image_text":
+      return (
+        <svg viewBox="0 0 280 160" className={base}>
+          <rect width="280" height="160" fill="hsl(var(--foreground))" rx="4" />
+          <rect x="90" y="8" width="100" height="7" rx="2" fill="hsl(var(--background) / 0.7)" />
+          {/* Row 1: image left */}
+          <rect x="20" y="22" width="55" height="42" rx="3" fill="hsl(var(--background) / 0.2)" />
+          <rect x="85" y="27" width="70" height="5" rx="1" fill="hsl(var(--background) / 0.5)" />
+          <rect x="85" y="36" width="90" height="3" rx="1" fill="hsl(var(--background) / 0.25)" />
+          <rect x="85" y="42" width="85" height="3" rx="1" fill="hsl(var(--background) / 0.25)" />
+          <rect x="85" y="48" width="80" height="3" rx="1" fill="hsl(var(--background) / 0.25)" />
+          {/* Row 2: text left */}
+          <rect x="20" y="75" width="70" height="5" rx="1" fill="hsl(var(--background) / 0.5)" />
+          <rect x="20" y="84" width="90" height="3" rx="1" fill="hsl(var(--background) / 0.25)" />
+          <rect x="20" y="90" width="85" height="3" rx="1" fill="hsl(var(--background) / 0.25)" />
+          <rect x="20" y="96" width="80" height="3" rx="1" fill="hsl(var(--background) / 0.25)" />
+          <rect x="205" y="70" width="55" height="42" rx="3" fill="hsl(var(--background) / 0.2)" />
+          {/* Divider line */}
+          <rect x="30" y="68" width="220" height="1" fill="hsl(var(--background) / 0.1)" />
+          {/* Row 3 hint */}
+          <rect x="20" y="120" width="55" height="30" rx="3" fill="hsl(var(--background) / 0.15)" />
+          <rect x="85" y="125" width="70" height="4" rx="1" fill="hsl(var(--background) / 0.4)" />
+          <rect x="85" y="133" width="80" height="3" rx="1" fill="hsl(var(--background) / 0.2)" />
+        </svg>
+      );
+    case "publication_cards":
+      return (
+        <svg viewBox="0 0 280 160" className={base}>
+          <rect width="280" height="160" fill="hsl(var(--muted))" rx="4" />
+          <rect x="80" y="8" width="120" height="8" rx="2" fill="hsl(var(--muted-foreground) / 0.4)" />
+          {[0, 1].map((i) => (
+            <g key={i}>
+              <rect x={20 + i * 130} y="25" width="120" height="110" rx="6" fill="hsl(var(--background))" stroke="hsl(var(--border))" strokeWidth="1" />
+              <rect x={30 + i * 130} y="35" width="80" height="6" rx="1" fill="hsl(var(--primary) / 0.6)" />
+              <rect x={30 + i * 130} y="45" width="65" height="5" rx="1" fill="hsl(var(--primary) / 0.4)" />
+              <rect x={30 + i * 130} y="58" width="100" height="3" rx="1" fill="hsl(var(--muted-foreground) / 0.2)" />
+              <rect x={30 + i * 130} y="65" width="95" height="3" rx="1" fill="hsl(var(--muted-foreground) / 0.2)" />
+              <rect x={30 + i * 130} y="72" width="90" height="3" rx="1" fill="hsl(var(--muted-foreground) / 0.2)" />
+              <rect x={30 + i * 130} y="79" width="85" height="3" rx="1" fill="hsl(var(--muted-foreground) / 0.2)" />
+              <rect x={30 + i * 130} y="100" width="40" height="4" rx="1" fill="hsl(var(--muted-foreground) / 0.2)" />
+              <rect x={85 + i * 130} y="100" width="45" height="4" rx="1" fill="hsl(var(--primary) / 0.5)" />
+            </g>
+          ))}
+        </svg>
+      );
     default:
       return (
         <svg viewBox="0 0 280 160" className={base}>
