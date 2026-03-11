@@ -174,6 +174,101 @@ export const LAYOUT_TEMPLATES: LayoutTemplate[] = [
       { key: "body", label: "Body", type: "textarea" },
     ],
   },
+  // === Inspired by existing website sections ===
+  {
+    id: "two_col_text",
+    name: "Two-Column Text",
+    category: "content",
+    fields: [
+      { key: "title", label: "Title (optional)", type: "text" },
+      {
+        key: "items",
+        label: "Paragraphs / Columns",
+        type: "items",
+        itemFields: [
+          { key: "body", label: "Paragraph", type: "textarea" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "icon_feature_grid",
+    name: "Icon Feature Grid",
+    category: "content",
+    fields: [
+      { key: "title", label: "Section Title (optional)", type: "text" },
+      {
+        key: "items",
+        label: "Features",
+        type: "items",
+        itemFields: [
+          { key: "icon", label: "Icon URL", type: "image" },
+          { key: "title", label: "Feature Title", type: "text" },
+          { key: "description", label: "Description (optional)", type: "textarea" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "dark_centered_text",
+    name: "Dark Centered Section",
+    category: "content",
+    fields: [
+      { key: "title", label: "Title", type: "text" },
+      { key: "description", label: "Body", type: "textarea" },
+      { key: "image", label: "Image / Diagram URL (optional)", type: "image" },
+    ],
+  },
+  {
+    id: "split_title_text",
+    name: "Split Title + Text",
+    category: "content",
+    fields: [
+      { key: "title", label: "Title", type: "text" },
+      { key: "subtitle", label: "Subtitle", type: "textarea" },
+      { key: "description", label: "Body Paragraphs", type: "textarea" },
+      { key: "image", label: "Diagram / Image URL (optional)", type: "image" },
+    ],
+  },
+  {
+    id: "alternating_image_text",
+    name: "Alternating Image + Text",
+    category: "collections",
+    fields: [
+      { key: "title", label: "Section Title", type: "text" },
+      {
+        key: "items",
+        label: "Rows",
+        type: "items",
+        itemFields: [
+          { key: "title", label: "Title", type: "text" },
+          { key: "description", label: "Description", type: "textarea" },
+          { key: "image", label: "Image URL", type: "image" },
+          { key: "bg_image", label: "Background Image URL (optional)", type: "image" },
+          { key: "layout", label: "Layout (image-left / text-left)", type: "text" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "publication_cards",
+    name: "Publication Cards",
+    category: "collections",
+    fields: [
+      { key: "title", label: "Section Title", type: "text" },
+      {
+        key: "items",
+        label: "Publications",
+        type: "items",
+        itemFields: [
+          { key: "title", label: "Title", type: "text" },
+          { key: "body", label: "Body / Summary", type: "textarea" },
+          { key: "date", label: "Date", type: "text" },
+          { key: "link", label: "Link URL", type: "text" },
+        ],
+      },
+    ],
+  },
   // === Collection layouts ===
   {
     id: "card_grid",
