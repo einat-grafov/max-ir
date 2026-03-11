@@ -241,8 +241,7 @@ const ProductForm = ({
         <h1 className="text-2xl font-bold text-foreground">{pageTitle}</h1>
         <div className="flex gap-3">
           {onDelete && (
-            <TooltipProvider delayDuration={0}>
-              <Tooltip>
+             <Tooltip>
                 <AlertDialog>
                   <TooltipTrigger asChild>
                     <AlertDialogTrigger asChild>
@@ -278,7 +277,6 @@ const ProductForm = ({
                   </AlertDialogContent>
                 </AlertDialog>
               </Tooltip>
-            </TooltipProvider>
           )}
           <Button variant="outline" asChild>
             <Link to="/admin/products">Discard</Link>
