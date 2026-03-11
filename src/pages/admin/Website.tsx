@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Globe, FlaskConical, Plus } from "lucide-react";
+import { cn } from "@/lib/utils";
 import WebsiteSectionEditor from "@/components/admin/website/WebsiteSectionEditor";
 import TestPageBuilder from "@/components/admin/website/TestPageBuilder";
 import LayoutPicker from "@/components/admin/website/LayoutPicker";
@@ -73,6 +74,9 @@ const AddSectionButton = ({ page, sections, onAdded }: { page: string; sections:
 };
 
 const PageSections = ({ sections, isLoading, page, onInvalidate }: { sections: any[]; isLoading: boolean; page: string; onInvalidate: () => void }) => {
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [overIdx, setOverIdx] = useState<number | null>(null);
+
   const handleDelete = async (id: string) => {
     const { error } = await supabase.from("website_content").delete().eq("id", id);
     if (error) {
@@ -83,18 +87,51 @@ const PageSections = ({ sections, isLoading, page, onInvalidate }: { sections: a
     onInvalidate();
   };
 
+  const reorder = async (fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex) return;
+    const reordered = [...sections];
+    const [moved] = reordered.splice(fromIndex, 1);
+    reordered.splice(toIndex, 0, moved);
+    await Promise.all(
+      reordered.map((s, i) =>
+        supabase.from("website_content").update({ sort_order: i } as any).eq("id", s.id)
+      )
+    );
+    onInvalidate();
+  };
+
+  const handleDragEnd = () => {
+    if (dragIdx !== null && overIdx !== null && dragIdx !== overIdx) {
+      reorder(dragIdx, overIdx);
+    }
+    setDragIdx(null);
+    setOverIdx(null);
+  };
+
   if (isLoading) return <p className="text-sm text-muted-foreground">Loading...</p>;
 
   return (
     <div className="space-y-4">
-      {sections.map((section) => (
-        <WebsiteSectionEditor
+      {sections.map((section, index) => (
+        <div
           key={section.id}
-          section={section}
-          label={SECTION_LABELS[section.section_key] || (section.content?.layout ? `Custom: ${section.content.layout}` : section.section_key)}
-          onSaved={onInvalidate}
-          onDelete={() => handleDelete(section.id)}
-        />
+          draggable
+          onDragStart={() => setDragIdx(index)}
+          onDragOver={(e) => { e.preventDefault(); setOverIdx(index); }}
+          onDragEnd={handleDragEnd}
+          className={cn(
+            "transition-all",
+            dragIdx === index && "opacity-50",
+            overIdx === index && dragIdx !== null && dragIdx !== index && "border-t-2 border-primary rounded-t-sm"
+          )}
+        >
+          <WebsiteSectionEditor
+            section={section}
+            label={SECTION_LABELS[section.section_key] || (section.content?.layout ? `Custom: ${section.content.layout}` : section.section_key)}
+            onSaved={onInvalidate}
+            onDelete={() => handleDelete(section.id)}
+          />
+        </div>
       ))}
       <AddSectionButton page={page} sections={sections} onAdded={onInvalidate} />
     </div>
