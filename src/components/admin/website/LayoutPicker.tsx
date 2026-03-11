@@ -3,6 +3,7 @@ import { LAYOUT_TEMPLATES, type LayoutTemplate } from "./layoutTemplates";
 
 interface Props {
   onSelect: (template: LayoutTemplate) => void;
+  currentLayoutId?: string;
 }
 
 // SVG thumbnail renderers for each layout
