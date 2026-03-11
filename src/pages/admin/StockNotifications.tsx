@@ -92,14 +92,13 @@ const StockNotifications = () => {
                     {format(new Date(n.created_at), "MMM d, yyyy")}
                   </TableCell>
                   <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-maxir-gray hover:text-destructive"
+                    <IconTooltipButton
+                      label="Delete"
+                      className="text-muted-foreground hover:text-destructive"
                       onClick={() => deleteMutation.mutate(n.id)}
                     >
                       <Trash2 className="w-4 h-4" />
-                    </Button>
+                    </IconTooltipButton>
                   </TableCell>
                 </TableRow>
               ))
