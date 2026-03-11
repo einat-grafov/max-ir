@@ -41,10 +41,10 @@ const DialogContent = React.forwardRef<
       )}
       {...props}
     >
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 overflow-y-auto p-6 pt-0">
         {children}
       </div>
-      <DialogPrimitive.Close className="absolute right-4 top-4 z-20 rounded-sm opacity-70 ring-offset-background transition-opacity data-[state=open]:bg-accent data-[state=open]:text-muted-foreground hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
+      <DialogPrimitive.Close className="absolute right-4 top-3 z-20 rounded-sm opacity-70 ring-offset-background transition-opacity data-[state=open]:bg-accent data-[state=open]:text-muted-foreground hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
         <X className="h-4 w-4" />
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>
@@ -54,7 +54,7 @@ const DialogContent = React.forwardRef<
 DialogContent.displayName = DialogPrimitive.Content.displayName;
 
 const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("sticky top-0 z-10 bg-background pb-4 -mx-6 -mt-6 px-6 pt-6 mb-4 flex flex-col space-y-1.5 text-center sm:text-left border-b border-border", className)} {...props} />
+  <div className={cn("sticky top-0 z-10 bg-background py-3 px-6 mb-4 flex flex-col space-y-1.5 text-center sm:text-left border-b border-border", className)} {...props} />
 );
 DialogHeader.displayName = "DialogHeader";
 
