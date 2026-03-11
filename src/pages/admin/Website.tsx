@@ -138,15 +138,7 @@ const PageSections = ({ sections, isLoading, page, onInvalidate }: { sections: a
   );
 };
 
-/* ── Placeholder panels for SEO & Library ── */
-
-const SeoPanel = () => (
-  <div className="rounded-lg border border-dashed border-border p-12 text-center text-muted-foreground">
-    <Search className="h-10 w-10 mx-auto mb-3 opacity-40" />
-    <h3 className="font-semibold text-foreground mb-1">SEO Settings</h3>
-    <p className="text-sm">Manage meta titles, descriptions, and Open Graph tags for each page. Coming soon.</p>
-  </div>
-);
+import SeoPanel from "@/components/admin/website/SeoPanel";
 
 const LibraryPanel = () => (
   <div className="rounded-lg border border-dashed border-border p-12 text-center text-muted-foreground">
