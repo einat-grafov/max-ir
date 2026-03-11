@@ -49,7 +49,7 @@ const CustomerSearchModal = ({ open, onOpenChange, onSelectCustomer }: CustomerS
     setLoading(true);
     let query = supabase
       .from("customers")
-      .select("id, first_name, last_name, email, phone, city, country");
+      .select("id, first_name, last_name, email, phone, company, city, country");
     if (search.trim()) {
       query = query.or(
         `first_name.ilike.%${search.trim()}%,last_name.ilike.%${search.trim()}%,email.ilike.%${search.trim()}%`
