@@ -11,7 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, Eye, EyeOff, Save, Plus, Trash2, GripVertical, ArrowLeftRight, Paintbrush } from "lucide-react";
+import { ChevronDown, Eye, EyeOff, Save, Plus, Trash2, GripVertical, ArrowLeftRight, Paintbrush, ImageIcon } from "lucide-react";
+import ImagePickerDialog from "./ImagePickerDialog";
 import { cn } from "@/lib/utils";
 import { LAYOUT_TEMPLATES, getDefaultContent, type LayoutTemplate } from "./layoutTemplates";
 import LayoutThumbnail from "./LayoutThumbnail";
@@ -557,6 +558,7 @@ const ListSectionFields = ({
 // Background design fields
 const BackgroundDesignFields = ({ content, updateField }: { content: any; updateField: (p: string, v: any) => void }) => {
   const [open, setOpen] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const hasBg = content.bg_color || content.bg_image;
 
   return (
@@ -609,13 +611,20 @@ const BackgroundDesignFields = ({ content, updateField }: { content: any; update
 
           {/* Image */}
           <div>
-            <Label className="text-xs font-medium text-foreground">Background Image URL</Label>
-            <Input
-              value={content.bg_image || ""}
-              onChange={(e) => updateField("bg_image", e.target.value)}
-              placeholder="/images/hero-bg.png or https://..."
-              className="mt-1.5 h-8 text-xs"
-            />
+            <Label className="text-xs font-medium text-foreground">Background Image</Label>
+            <div className="flex items-center gap-2 mt-1.5">
+              <Input
+                value={content.bg_image || ""}
+                onChange={(e) => updateField("bg_image", e.target.value)}
+                placeholder="/images/hero-bg.png or https://..."
+                className="flex-1 h-8 text-xs"
+              />
+              <Button variant="outline" size="sm" className="h-8 shrink-0 text-xs gap-1.5" onClick={() => setPickerOpen(true)}>
+                <ImageIcon className="h-3.5 w-3.5" />
+                Library
+              </Button>
+            </div>
+            <ImagePickerDialog open={pickerOpen} onOpenChange={setPickerOpen} onSelect={(url) => updateField("bg_image", url)} />
             {content.bg_image && (
               <div className="mt-2 relative rounded overflow-hidden border border-border">
                 <img
