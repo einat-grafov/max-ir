@@ -178,22 +178,34 @@ const WebsiteSectionEditor = ({ section, label, onSaved, onDelete }: Props) => {
         </CollapsibleTrigger>
         <CollapsibleContent>
           <div className="border-t border-border p-4 space-y-4">
-            {currentTemplate && (
-              <button
-                onClick={() => setShowLayoutPicker(true)}
-                className="group flex items-start gap-3 rounded-lg border border-border bg-muted/30 p-3 hover:border-primary hover:bg-primary/5 transition-all text-left w-auto"
-              >
-                <div className="w-[140px] shrink-0 rounded overflow-hidden">
-                  <LayoutThumbnail id={currentTemplate.id} />
+            <button
+              onClick={() => setShowLayoutPicker(true)}
+              className="group flex items-start gap-3 rounded-lg border border-dashed border-border bg-muted/30 p-3 hover:border-primary hover:bg-primary/5 transition-all text-left w-auto"
+            >
+              {currentTemplate ? (
+                <>
+                  <div className="w-[140px] shrink-0 rounded overflow-hidden">
+                    <LayoutThumbnail id={currentTemplate.id} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
+                      {currentTemplate.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Click to change layout</p>
+                  </div>
+                </>
+              ) : (
+                <div className="flex items-center gap-2 py-1">
+                  <ArrowLeftRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                  <div>
+                    <p className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
+                      No layout selected
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Click to choose a layout</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
-                    {currentTemplate.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Click to change layout</p>
-                </div>
-              </button>
-            )}
+              )}
+            </button>
             <SectionFields
               sectionKey={section.section_key}
               content={content}
