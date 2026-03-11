@@ -140,13 +140,7 @@ const PageSections = ({ sections, isLoading, page, onInvalidate }: { sections: a
 
 import SeoPanel from "@/components/admin/website/SeoPanel";
 
-const LibraryPanel = () => (
-  <div className="rounded-lg border border-dashed border-border p-12 text-center text-muted-foreground">
-    <BookOpen className="h-10 w-10 mx-auto mb-3 opacity-40" />
-    <h3 className="font-semibold text-foreground mb-1">Section Library</h3>
-    <p className="text-sm">Browse and manage reusable section templates. Coming soon.</p>
-  </div>
-);
+import LibraryPanel from "@/components/admin/website/LibraryPanel";
 
 const Website = () => {
   const [topTab, setTopTab] = useState("pages");
