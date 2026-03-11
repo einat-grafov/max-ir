@@ -26,6 +26,7 @@ interface Props {
   section: SectionRow;
   label: string;
   onSaved: () => void;
+  onDelete?: () => void;
 }
 
 const WebsiteSectionEditor = ({ section, label, onSaved }: Props) => {
