@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Globe, Plus, FlaskConical } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { Globe, FlaskConical } from "lucide-react";
 import WebsiteSectionEditor from "@/components/admin/website/WebsiteSectionEditor";
+import TestPageBuilder from "@/components/admin/website/TestPageBuilder";
 
 const SECTION_LABELS: Record<string, string> = {
   hero: "Hero Banner",
@@ -24,42 +23,6 @@ const SECTION_LABELS: Record<string, string> = {
   test_cta: "Call to Action",
 };
 
-const TEST_SECTIONS_DEFAULTS = [
-  {
-    page: "test",
-    section_key: "test_hero",
-    sort_order: 0,
-    is_visible: true,
-    content: {
-      title: "Test Page Hero",
-      subtitle: "This is a test page for building new layouts",
-      background_image: "",
-    },
-  },
-  {
-    page: "test",
-    section_key: "test_content",
-    sort_order: 1,
-    is_visible: true,
-    content: {
-      heading: "Main Content Section",
-      body: "Add your content here. This section can be customized from the CMS.",
-      image_url: "",
-    },
-  },
-  {
-    page: "test",
-    section_key: "test_cta",
-    sort_order: 2,
-    is_visible: true,
-    content: {
-      heading: "Ready to get started?",
-      button_text: "Contact Us",
-      button_url: "/#Contact",
-    },
-  },
-];
-
 const Website = () => {
   const [activeTab, setActiveTab] = useState("home");
   const queryClient = useQueryClient();
@@ -76,26 +39,10 @@ const Website = () => {
     },
   });
 
-  const seedTestPage = useMutation({
-    mutationFn: async () => {
-      const { error } = await supabase
-        .from("website_content")
-        .insert(TEST_SECTIONS_DEFAULTS);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["website-content"] });
-      toast.success("Test page sections created!");
-    },
-    onError: (err: any) => {
-      toast.error(err.message || "Failed to create test page sections");
-    },
-  });
 
   const homeSections = sections?.filter((s) => s.page === "home") || [];
   const aboutSections = sections?.filter((s) => s.page === "about") || [];
   const teamSections = sections?.filter((s) => s.page === "team") || [];
-  const testSections = sections?.filter((s) => s.page === "test") || [];
 
   return (
     <div>
@@ -170,34 +117,7 @@ const Website = () => {
         </TabsContent>
 
         <TabsContent value="test">
-          {isLoading ? (
-            <p className="text-sm text-muted-foreground">Loading...</p>
-          ) : testSections.length === 0 ? (
-            <div className="border border-dashed border-border rounded-lg p-12 flex flex-col items-center gap-4 text-center">
-              <FlaskConical className="h-10 w-10 text-muted-foreground" />
-              <div>
-                <h3 className="text-lg font-semibold text-foreground mb-1">No test page sections yet</h3>
-                <p className="text-sm text-muted-foreground max-w-md">
-                  Initialize the test page with default sections (Hero, Content, CTA) to start building.
-                </p>
-              </div>
-              <Button onClick={() => seedTestPage.mutate()} disabled={seedTestPage.isPending}>
-                <Plus className="h-4 w-4 mr-2" />
-                {seedTestPage.isPending ? "Creating..." : "Create Test Page Sections"}
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {testSections.map((section) => (
-                <WebsiteSectionEditor
-                  key={section.id}
-                  section={section}
-                  label={SECTION_LABELS[section.section_key] || section.section_key}
-                  onSaved={() => queryClient.invalidateQueries({ queryKey: ["website-content"] })}
-                />
-              ))}
-            </div>
-          )}
+          <TestPageBuilder />
         </TabsContent>
       </Tabs>
     </div>
