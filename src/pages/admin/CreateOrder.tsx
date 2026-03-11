@@ -100,7 +100,7 @@ const CreateOrder = () => {
     if (!canSubmit || !selectedCustomer) return;
     setSaving(true);
     try {
-      const customerName = `${selectedCustomer.first_name}${selectedCustomer.last_name ? ` ${selectedCustomer.last_name}` : ""}`;
+      const customerName = selectedCustomer.company || `${selectedCustomer.first_name}${selectedCustomer.last_name ? ` ${selectedCustomer.last_name}` : ""}`;
       const { data: order, error: orderError } = await supabase
         .from("orders")
         .insert({
