@@ -168,6 +168,7 @@ const SectionEditor = ({
   const [content, setContent] = useState<any>(section.content);
   const [isVisible, setIsVisible] = useState(section.is_visible);
   const [saving, setSaving] = useState(false);
+  const [showLayoutSwitch, setShowLayoutSwitch] = useState(false);
 
   const layoutName = template?.name || content?.layout || "Unknown Layout";
 
@@ -200,52 +201,97 @@ const SectionEditor = ({
     setContent((prev: any) => ({ ...prev, [key]: value }));
   };
 
+  const handleLayoutSwitch = async (newTemplate: LayoutTemplate) => {
+    // Build new content, preserving matching field values
+    const newDefault = getDefaultContent(newTemplate.id);
+    const preserved: any = { layout: newTemplate.id };
+    for (const field of newTemplate.fields) {
+      if (field.key in content && content[field.key] !== undefined) {
+        preserved[field.key] = content[field.key];
+      } else {
+        preserved[field.key] = newDefault[field.key];
+      }
+    }
+    setContent(preserved);
+    setShowLayoutSwitch(false);
+    // Auto-save the layout change
+    const { error } = await supabase
+      .from("website_content")
+      .update({ content: preserved } as any)
+      .eq("id", section.id);
+    if (error) {
+      toast.error("Failed to switch layout");
+    } else {
+      toast.success(`Switched to ${newTemplate.name}`);
+      onSaved();
+    }
+  };
+
   return (
-    <Collapsible open={open} onOpenChange={setOpen}>
-      <Card className="overflow-hidden">
-        <CollapsibleTrigger asChild>
-          <button className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors text-left">
-            <div className="flex items-center gap-3">
-              <GripVertical className="h-4 w-4 text-muted-foreground/40" />
-              <span className="font-semibold text-sm text-foreground">{layoutName}</span>
-              {!isVisible && (
-                <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">Hidden</span>
+    <>
+      <Collapsible open={open} onOpenChange={setOpen}>
+        <Card className="overflow-hidden">
+          <CollapsibleTrigger asChild>
+            <button className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors text-left">
+              <div className="flex items-center gap-3">
+                <GripVertical className="h-4 w-4 text-muted-foreground/40" />
+                <span className="font-semibold text-sm text-foreground">{layoutName}</span>
+                {!isVisible && (
+                  <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">Hidden</span>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={(e) => { e.stopPropagation(); setShowLayoutSwitch(true); }}
+                  className="p-1.5 rounded hover:bg-muted transition-colors"
+                  title="Change layout"
+                >
+                  <ArrowLeftRight className="h-4 w-4 text-muted-foreground" />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); toggleVisibility(); }}
+                  className="p-1.5 rounded hover:bg-muted transition-colors"
+                >
+                  {isVisible ? <Eye className="h-4 w-4 text-muted-foreground" /> : <EyeOff className="h-4 w-4 text-muted-foreground" />}
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                  className="p-1.5 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+                <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform", open && "rotate-180")} />
+              </div>
+            </button>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="border-t border-border p-4 space-y-4">
+              {template ? (
+                <TemplateFields fields={template.fields} content={content} updateField={updateField} setContent={setContent} />
+              ) : (
+                <p className="text-sm text-muted-foreground">Unknown layout type: {content?.layout}</p>
               )}
+              <div className="flex justify-end pt-2 border-t border-border">
+                <Button onClick={handleSave} disabled={saving} size="sm">
+                  <Save className="h-4 w-4 mr-1" />
+                  {saving ? "Saving..." : "Save changes"}
+                </Button>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={(e) => { e.stopPropagation(); toggleVisibility(); }}
-                className="p-1.5 rounded hover:bg-muted transition-colors"
-              >
-                {isVisible ? <Eye className="h-4 w-4 text-muted-foreground" /> : <EyeOff className="h-4 w-4 text-muted-foreground" />}
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); onDelete(); }}
-                className="p-1.5 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-              <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform", open && "rotate-180")} />
-            </div>
-          </button>
-        </CollapsibleTrigger>
-        <CollapsibleContent>
-          <div className="border-t border-border p-4 space-y-4">
-            {template ? (
-              <TemplateFields fields={template.fields} content={content} updateField={updateField} setContent={setContent} />
-            ) : (
-              <p className="text-sm text-muted-foreground">Unknown layout type: {content?.layout}</p>
-            )}
-            <div className="flex justify-end pt-2 border-t border-border">
-              <Button onClick={handleSave} disabled={saving} size="sm">
-                <Save className="h-4 w-4 mr-1" />
-                {saving ? "Saving..." : "Save changes"}
-              </Button>
-            </div>
-          </div>
-        </CollapsibleContent>
-      </Card>
-    </Collapsible>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
+
+      <Dialog open={showLayoutSwitch} onOpenChange={setShowLayoutSwitch}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Switch Layout</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground -mt-2 mb-2">Matching fields (title, description, etc.) will be preserved.</p>
+          <LayoutPicker onSelect={handleLayoutSwitch} currentLayoutId={content?.layout} />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
