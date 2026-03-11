@@ -3,6 +3,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,9 +26,10 @@ interface Props {
   section: SectionRow;
   label: string;
   onSaved: () => void;
+  onDelete?: () => void;
 }
 
-const WebsiteSectionEditor = ({ section, label, onSaved }: Props) => {
+const WebsiteSectionEditor = ({ section, label, onSaved, onDelete }: Props) => {
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState<any>(section.content);
   const [isVisible, setIsVisible] = useState(section.is_visible);
@@ -102,6 +104,40 @@ const WebsiteSectionEditor = ({ section, label, onSaved }: Props) => {
                 </TooltipTrigger>
                 <TooltipContent>{isVisible ? "Hide section" : "Show section"}</TooltipContent>
               </Tooltip>
+              {onDelete && (
+                <AlertDialog>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <AlertDialogTrigger asChild>
+                        <button
+                          onClick={(e) => e.stopPropagation()}
+                          className="p-1.5 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </AlertDialogTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>Delete section</TooltipContent>
+                  </Tooltip>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete section?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will permanently delete the "{label}" section. This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        onClick={onDelete}
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
               <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform", open && "rotate-180")} />
             </div>
           </button>
