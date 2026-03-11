@@ -2,9 +2,7 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Globe, Plus, FlaskConical } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { Globe, FlaskConical } from "lucide-react";
 import WebsiteSectionEditor from "@/components/admin/website/WebsiteSectionEditor";
 import TestPageBuilder from "@/components/admin/website/TestPageBuilder";
 
