@@ -1,10 +1,12 @@
-import { useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useMemo, useRef } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Search, Image as ImageIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, Image as ImageIcon, Upload, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const WEBSITE_ASSETS = [
   "advisor-abraham-katzir.png", "advisor-david-hitt.png", "advisor-john-randall.png",
@@ -32,6 +34,9 @@ interface ImagePickerDialogProps {
 
 const ImagePickerDialog = ({ open, onOpenChange, onSelect }: ImagePickerDialogProps) => {
   const [search, setSearch] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClient();
 
   const { data: uploadedFiles } = useQuery({
     queryKey: ["website-assets-storage"],
@@ -58,21 +63,70 @@ const ImagePickerDialog = ({ open, onOpenChange, onSelect }: ImagePickerDialogPr
     return allAssets.filter((a) => a.filename.toLowerCase().includes(q));
   }, [allAssets, search]);
 
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowed = ["image/png", "image/jpeg", "image/webp", "image/gif", "image/svg+xml"];
+    if (!allowed.includes(file.type)) {
+      toast.error("Unsupported file type");
+      return;
+    }
+
+    setUploading(true);
+    const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+    const { error } = await supabase.storage.from("website-assets").upload(safeName, file);
+    if (error) {
+      toast.error("Upload failed: " + error.message);
+      setUploading(false);
+      return;
+    }
+
+    await queryClient.invalidateQueries({ queryKey: ["website-assets-storage"] });
+    const { data } = supabase.storage.from("website-assets").getPublicUrl(safeName);
+    setUploading(false);
+    toast.success("Image uploaded");
+    onSelect(data.publicUrl);
+    onOpenChange(false);
+
+    // Reset input
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Pick an image</DialogTitle>
         </DialogHeader>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search assets..."
-            className="pl-9"
-            autoFocus
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search assets..."
+              className="pl-9"
+              autoFocus
+            />
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleUpload}
           />
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-10 gap-1.5 shrink-0"
+            disabled={uploading}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+            Add image
+          </Button>
         </div>
         <div className="flex-1 overflow-y-auto min-h-0">
           {filtered.length === 0 ? (
