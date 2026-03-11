@@ -52,7 +52,7 @@ const CustomerSearchModal = ({ open, onOpenChange, onSelectCustomer }: CustomerS
       .select("id, first_name, last_name, email, phone, company, city, country");
     if (search.trim()) {
       query = query.or(
-        `first_name.ilike.%${search.trim()}%,last_name.ilike.%${search.trim()}%,email.ilike.%${search.trim()}%`
+        `first_name.ilike.%${search.trim()}%,last_name.ilike.%${search.trim()}%,email.ilike.%${search.trim()}%,company.ilike.%${search.trim()}%`
       );
     }
     const { data } = await query.order("first_name").limit(50);
