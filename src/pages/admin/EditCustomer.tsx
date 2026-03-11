@@ -354,6 +354,7 @@ const EditCustomer = () => {
                   first_name: customer?.first_name,
                   last_name: customer?.last_name,
                   email: customer?.email,
+                  company: customer?.company || companyName,
                 },
               },
             })}
