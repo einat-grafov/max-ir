@@ -90,7 +90,7 @@ const CreateOrder = () => {
     : null;
 
   useEffect(() => {
-    const state = location.state as { preselectedCustomer?: { id: string; first_name: string; last_name: string | null; email: string | null } } | null;
+    const state = location.state as { preselectedCustomer?: { id: string; first_name: string; last_name: string | null; email: string | null; company?: string | null } } | null;
     if (state?.preselectedCustomer && !selectedCustomer) {
       setSelectedCustomer(state.preselectedCustomer);
     }
