@@ -554,6 +554,109 @@ const ListSectionFields = ({
   );
 };
 
+// Background design fields
+const BackgroundDesignFields = ({ content, updateField }: { content: any; updateField: (p: string, v: any) => void }) => {
+  const [open, setOpen] = useState(false);
+  const hasBg = content.bg_color || content.bg_image;
+
+  return (
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <CollapsibleTrigger asChild>
+        <button className="w-full flex items-center gap-2 rounded-lg border border-border bg-muted/30 px-3 py-2.5 hover:bg-muted/60 transition-colors text-left">
+          <Paintbrush className="h-4 w-4 text-muted-foreground" />
+          <span className="text-xs font-medium text-foreground flex-1">Background Design</span>
+          {hasBg && (
+            <div className="flex items-center gap-1.5">
+              {content.bg_color && (
+                <span
+                  className="inline-block w-4 h-4 rounded-full border border-border"
+                  style={{ backgroundColor: content.bg_color }}
+                />
+              )}
+              {content.bg_image && (
+                <span className="text-[10px] text-muted-foreground truncate max-w-[80px]">img</span>
+              )}
+            </div>
+          )}
+          <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground transition-transform", open && "rotate-180")} />
+        </button>
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <div className="mt-2 rounded-lg border border-border bg-card p-3 space-y-3">
+          {/* Color */}
+          <div>
+            <Label className="text-xs font-medium text-foreground">Background Color</Label>
+            <div className="flex items-center gap-2 mt-1.5">
+              <input
+                type="color"
+                value={content.bg_color || "#000000"}
+                onChange={(e) => updateField("bg_color", e.target.value)}
+                className="w-8 h-8 rounded border border-border cursor-pointer bg-transparent p-0"
+              />
+              <Input
+                value={content.bg_color || ""}
+                onChange={(e) => updateField("bg_color", e.target.value)}
+                placeholder="#000000 or transparent"
+                className="flex-1 h-8 text-xs"
+              />
+              {content.bg_color && (
+                <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={() => updateField("bg_color", "")}>
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {/* Image */}
+          <div>
+            <Label className="text-xs font-medium text-foreground">Background Image URL</Label>
+            <Input
+              value={content.bg_image || ""}
+              onChange={(e) => updateField("bg_image", e.target.value)}
+              placeholder="/images/hero-bg.png or https://..."
+              className="mt-1.5 h-8 text-xs"
+            />
+            {content.bg_image && (
+              <div className="mt-2 relative rounded overflow-hidden border border-border">
+                <img
+                  src={content.bg_image}
+                  alt="Background preview"
+                  className="w-full h-20 object-cover"
+                  onError={(e) => { e.currentTarget.style.display = "none"; }}
+                />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-1 right-1 h-6 w-6 bg-background/80"
+                  onClick={() => updateField("bg_image", "")}
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Preview swatch */}
+          {(content.bg_color || content.bg_image) && (
+            <div className="rounded border border-border overflow-hidden">
+              <div
+                className="h-12 w-full"
+                style={{
+                  backgroundColor: content.bg_color || undefined,
+                  backgroundImage: content.bg_image ? `url(${content.bg_image})` : undefined,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              />
+              <p className="text-[10px] text-muted-foreground text-center py-1">Combined preview</p>
+            </div>
+          )}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
+  );
+};
+
 // Simple reusable field
 const Field = ({
   label,
