@@ -206,7 +206,7 @@ const RecordInteractionModal = ({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-[640px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-[640px] max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>{isEditing ? "Edit Interaction" : "Record Customer Interaction"}</DialogTitle>
         </DialogHeader>

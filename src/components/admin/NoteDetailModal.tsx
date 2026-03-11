@@ -81,7 +81,7 @@ const NoteDetailModal = ({ open, onOpenChange, note, customerId, customerName, c
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         {note && (
-          <DialogContent className="sm:max-w-[560px] max-h-[85vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-[560px] max-h-[85vh]">
             <DialogHeader>
               <div className="flex items-center justify-between">
                 <DialogTitle className="flex items-center gap-2">
