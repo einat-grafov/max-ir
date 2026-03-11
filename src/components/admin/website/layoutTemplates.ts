@@ -125,6 +125,55 @@ export const LAYOUT_TEMPLATES: LayoutTemplate[] = [
       },
     ],
   },
+  // === CTA / Content layouts ===
+  {
+    id: "cta_banner",
+    name: "CTA Banner",
+    category: "content",
+    fields: [
+      { key: "title", label: "Title", type: "text" },
+      { key: "description", label: "Description", type: "textarea" },
+      { key: "button_text", label: "Button Text", type: "text" },
+      { key: "button_url", label: "Button URL", type: "text" },
+      { key: "image", label: "Background Image URL", type: "image" },
+    ],
+  },
+  {
+    id: "full_width_image",
+    name: "Full-Width Image",
+    category: "content",
+    fields: [
+      { key: "image", label: "Image URL", type: "image" },
+      { key: "alt", label: "Alt Text", type: "text" },
+      { key: "caption", label: "Caption (optional)", type: "text" },
+    ],
+  },
+  {
+    id: "faq_accordion",
+    name: "FAQ Accordion",
+    category: "content",
+    fields: [
+      { key: "title", label: "Section Title", type: "text" },
+      {
+        key: "items",
+        label: "Questions",
+        type: "items",
+        itemFields: [
+          { key: "question", label: "Question", type: "text" },
+          { key: "answer", label: "Answer", type: "textarea" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "text_block",
+    name: "Text Block",
+    category: "content",
+    fields: [
+      { key: "title", label: "Title", type: "text" },
+      { key: "body", label: "Body", type: "textarea" },
+    ],
+  },
   // === Collection layouts ===
   {
     id: "card_grid",
