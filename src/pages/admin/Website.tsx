@@ -41,26 +41,10 @@ const Website = () => {
     },
   });
 
-  const seedTestPage = useMutation({
-    mutationFn: async () => {
-      const { error } = await supabase
-        .from("website_content")
-        .insert(TEST_SECTIONS_DEFAULTS);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["website-content"] });
-      toast.success("Test page sections created!");
-    },
-    onError: (err: any) => {
-      toast.error(err.message || "Failed to create test page sections");
-    },
-  });
 
   const homeSections = sections?.filter((s) => s.page === "home") || [];
   const aboutSections = sections?.filter((s) => s.page === "about") || [];
   const teamSections = sections?.filter((s) => s.page === "team") || [];
-  const testSections = sections?.filter((s) => s.page === "test") || [];
 
   return (
     <div>
