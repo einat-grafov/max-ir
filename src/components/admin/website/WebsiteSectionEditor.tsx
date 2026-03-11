@@ -558,6 +558,7 @@ const ListSectionFields = ({
 // Background design fields
 const BackgroundDesignFields = ({ content, updateField }: { content: any; updateField: (p: string, v: any) => void }) => {
   const [open, setOpen] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const hasBg = content.bg_color || content.bg_image;
 
   return (
