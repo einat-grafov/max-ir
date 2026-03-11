@@ -32,65 +32,90 @@ type Asset = { filename: string; url: string; source: "static" | "uploaded"; sto
 
 const AssetCard = ({ asset, onDelete }: { asset: Asset; onDelete: (a: Asset) => void }) => {
   const svg = isSvg(asset.filename);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const copyLink = () => {
     navigator.clipboard.writeText(asset.url);
     toast.success("URL copied to clipboard");
   };
 
+  const downloadAsset = async () => {
+    try {
+      const res = await fetch(asset.url);
+      const blob = await res.blob();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = asset.filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    } catch {
+      toast.error("Failed to download");
+    }
+  };
+
   return (
-    <div className="group rounded-lg border border-border bg-card overflow-hidden transition-shadow hover:shadow-md">
-      <div className={cn("aspect-square flex items-center justify-center overflow-hidden", svg ? "bg-foreground/5 p-4" : "bg-muted")}>
-        <img
-          src={asset.url}
-          alt={asset.filename}
-          className={cn("object-contain transition-transform group-hover:scale-105", svg ? "max-h-full max-w-full" : "w-full h-full object-cover")}
-          loading="lazy"
-          onError={(e) => {
-            e.currentTarget.style.display = "none";
-            e.currentTarget.parentElement!.innerHTML =
-              '<div class="flex flex-col items-center gap-1 text-muted-foreground"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg><span class="text-xs">Preview unavailable</span></div>';
-          }}
-        />
-      </div>
-      <div className="p-2.5">
-        <div className="flex items-center gap-1.5 mb-2">
-          {asset.source === "uploaded" && (
-            <span className="shrink-0 inline-block w-1.5 h-1.5 rounded-full bg-primary" title="Uploaded" />
-          )}
-          <p className="text-xs font-medium text-foreground truncate" title={asset.filename}>{asset.filename}</p>
+    <>
+      <div className="group rounded-lg border border-border bg-card overflow-hidden transition-shadow hover:shadow-md">
+        <div className={cn("aspect-square flex items-center justify-center overflow-hidden", svg ? "bg-foreground/5 p-4" : "bg-muted")}>
+          <img
+            src={asset.url}
+            alt={asset.filename}
+            className={cn("object-contain transition-transform group-hover:scale-105", svg ? "max-h-full max-w-full" : "w-full h-full object-cover")}
+            loading="lazy"
+            onError={(e) => {
+              e.currentTarget.style.display = "none";
+              e.currentTarget.parentElement!.innerHTML =
+                '<div class="flex flex-col items-center gap-1 text-muted-foreground"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg><span class="text-xs">Preview unavailable</span></div>';
+            }}
+          />
         </div>
-        <div className="flex items-center gap-1">
-          <Tooltip><TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={copyLink}><Copy className="h-3.5 w-3.5" /></Button>
-          </TooltipTrigger><TooltipContent>Copy URL</TooltipContent></Tooltip>
-
-          <Tooltip><TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => window.open(asset.url, "_blank")}><ExternalLink className="h-3.5 w-3.5" /></Button>
-          </TooltipTrigger><TooltipContent>Open in new tab</TooltipContent></Tooltip>
-
-          <AlertDialog>
-            <Tooltip><TooltipTrigger asChild>
-              <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5" /></Button>
-              </AlertDialogTrigger>
-            </TooltipTrigger><TooltipContent>Delete asset</TooltipContent></Tooltip>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Delete asset?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will remove <strong>{asset.filename}</strong>. {asset.source === "static" ? "It will be hidden from the library." : "The file will be permanently deleted from storage."}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => onDelete(asset)}>Delete</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+        <div className="p-2.5 flex items-center justify-between gap-1">
+          <div className="flex items-center gap-1.5 min-w-0">
+            {asset.source === "uploaded" && (
+              <span className="shrink-0 inline-block w-1.5 h-1.5 rounded-full bg-primary" title="Uploaded" />
+            )}
+            <p className="text-xs font-medium text-foreground truncate" title={asset.filename}>{asset.filename}</p>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0">
+                <MoreVertical className="h-3.5 w-3.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuItem onClick={copyLink}>
+                <Copy className="h-3.5 w-3.5 mr-2" /> Copy URL
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => window.open(asset.url, "_blank")}>
+                <ExternalLink className="h-3.5 w-3.5 mr-2" /> Open link
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={downloadAsset}>
+                <Download className="h-3.5 w-3.5 mr-2" /> Download
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setConfirmOpen(true)}>
+                <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
-    </div>
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete asset?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove <strong>{asset.filename}</strong>. {asset.source === "static" ? "It will be hidden from the library." : "The file will be permanently deleted from storage."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => onDelete(asset)}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
 
