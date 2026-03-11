@@ -113,7 +113,7 @@ const CustomerSearchModal = ({ open, onOpenChange, onSelectCustomer }: CustomerS
                   <User className="h-4 w-4 text-muted-foreground" />
                 </div>
                 <span className="text-sm font-medium text-foreground">
-                  {customer.first_name}{customer.last_name ? ` ${customer.last_name}` : ""}
+                  {customer.company || customer.first_name}
                 </span>
               </div>
               <span className="text-sm text-muted-foreground truncate">

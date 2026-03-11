@@ -595,7 +595,7 @@ const CreateOrder = () => {
         open={invoiceModalOpen}
         onOpenChange={setInvoiceModalOpen}
         customerEmail={selectedCustomer?.email}
-        customerName={selectedCustomer ? `${selectedCustomer.first_name}${selectedCustomer.last_name ? ` ${selectedCustomer.last_name}` : ""}` : undefined}
+        customerName={selectedCustomer ? (selectedCustomer.company || `${selectedCustomer.first_name}${selectedCustomer.last_name ? ` ${selectedCustomer.last_name}` : ""}`) : undefined}
         invoiceSent={invoiceSent}
         onInvoiceSent={() => setInvoiceSent(true)}
       />
