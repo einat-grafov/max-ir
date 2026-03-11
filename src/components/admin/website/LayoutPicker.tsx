@@ -138,7 +138,7 @@ const LayoutThumbnail = ({ id }: { id: string }) => {
   }
 };
 
-const LayoutPicker = ({ onSelect }: Props) => {
+const LayoutPicker = ({ onSelect, currentLayoutId }: Props) => {
   const categories = [
     { key: "hero", label: "Hero Sections" },
     { key: "content", label: "Content" },
