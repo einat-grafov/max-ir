@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Globe, FlaskConical, Plus } from "lucide-react";
+import { Globe, FlaskConical, Plus, Search, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import WebsiteSectionEditor from "@/components/admin/website/WebsiteSectionEditor";
 import TestPageBuilder from "@/components/admin/website/TestPageBuilder";
@@ -138,8 +138,27 @@ const PageSections = ({ sections, isLoading, page, onInvalidate }: { sections: a
   );
 };
 
+/* ── Placeholder panels for SEO & Library ── */
+
+const SeoPanel = () => (
+  <div className="rounded-lg border border-dashed border-border p-12 text-center text-muted-foreground">
+    <Search className="h-10 w-10 mx-auto mb-3 opacity-40" />
+    <h3 className="font-semibold text-foreground mb-1">SEO Settings</h3>
+    <p className="text-sm">Manage meta titles, descriptions, and Open Graph tags for each page. Coming soon.</p>
+  </div>
+);
+
+const LibraryPanel = () => (
+  <div className="rounded-lg border border-dashed border-border p-12 text-center text-muted-foreground">
+    <BookOpen className="h-10 w-10 mx-auto mb-3 opacity-40" />
+    <h3 className="font-semibold text-foreground mb-1">Section Library</h3>
+    <p className="text-sm">Browse and manage reusable section templates. Coming soon.</p>
+  </div>
+);
+
 const Website = () => {
-  const [activeTab, setActiveTab] = useState("home");
+  const [topTab, setTopTab] = useState("pages");
+  const [activePageTab, setActivePageTab] = useState("home");
   const queryClient = useQueryClient();
 
   const { data: sections, isLoading } = useQuery({
@@ -170,31 +189,51 @@ const Website = () => {
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-6">
-          <TabsTrigger value="home">Home Page</TabsTrigger>
-          <TabsTrigger value="about">About Us Page</TabsTrigger>
-          <TabsTrigger value="team">Team Page</TabsTrigger>
-          <TabsTrigger value="test" className="gap-1.5">
-            <FlaskConical className="h-3.5 w-3.5" />
-            Test Page
-          </TabsTrigger>
+      {/* Top-level tabs: SEO | Pages | Library */}
+      <Tabs value={topTab} onValueChange={setTopTab}>
+        <TabsList className="mb-4">
+          <TabsTrigger value="seo">SEO</TabsTrigger>
+          <TabsTrigger value="pages">Pages</TabsTrigger>
+          <TabsTrigger value="library">Library</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="home">
-          <PageSections sections={homeSections} isLoading={isLoading} page="home" onInvalidate={invalidate} />
+        <TabsContent value="seo">
+          <SeoPanel />
         </TabsContent>
 
-        <TabsContent value="about">
-          <PageSections sections={aboutSections} isLoading={isLoading} page="about" onInvalidate={invalidate} />
+        <TabsContent value="pages">
+          {/* Nested page tabs */}
+          <Tabs value={activePageTab} onValueChange={setActivePageTab}>
+            <TabsList className="mb-6">
+              <TabsTrigger value="home">Home Page</TabsTrigger>
+              <TabsTrigger value="about">About Us Page</TabsTrigger>
+              <TabsTrigger value="team">Team Page</TabsTrigger>
+              <TabsTrigger value="test" className="gap-1.5">
+                <FlaskConical className="h-3.5 w-3.5" />
+                Test Page
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="home">
+              <PageSections sections={homeSections} isLoading={isLoading} page="home" onInvalidate={invalidate} />
+            </TabsContent>
+
+            <TabsContent value="about">
+              <PageSections sections={aboutSections} isLoading={isLoading} page="about" onInvalidate={invalidate} />
+            </TabsContent>
+
+            <TabsContent value="team">
+              <PageSections sections={teamSections} isLoading={isLoading} page="team" onInvalidate={invalidate} />
+            </TabsContent>
+
+            <TabsContent value="test">
+              <TestPageBuilder />
+            </TabsContent>
+          </Tabs>
         </TabsContent>
 
-        <TabsContent value="team">
-          <PageSections sections={teamSections} isLoading={isLoading} page="team" onInvalidate={invalidate} />
-        </TabsContent>
-
-        <TabsContent value="test">
-          <TestPageBuilder />
+        <TabsContent value="library">
+          <LibraryPanel />
         </TabsContent>
       </Tabs>
     </div>
