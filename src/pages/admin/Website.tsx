@@ -74,6 +74,16 @@ const AddSectionButton = ({ page, sections, onAdded }: { page: string; sections:
 };
 
 const PageSections = ({ sections, isLoading, page, onInvalidate }: { sections: any[]; isLoading: boolean; page: string; onInvalidate: () => void }) => {
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase.from("website_content").delete().eq("id", id);
+    if (error) {
+      toast.error("Failed to delete section");
+      return;
+    }
+    toast.success("Section deleted");
+    onInvalidate();
+  };
+
   if (isLoading) return <p className="text-sm text-muted-foreground">Loading...</p>;
 
   return (
@@ -84,6 +94,7 @@ const PageSections = ({ sections, isLoading, page, onInvalidate }: { sections: a
           section={section}
           label={SECTION_LABELS[section.section_key] || (section.content?.layout ? `Custom: ${section.content.layout}` : section.section_key)}
           onSaved={onInvalidate}
+          onDelete={() => handleDelete(section.id)}
         />
       ))}
       <AddSectionButton page={page} sections={sections} onAdded={onInvalidate} />
