@@ -38,6 +38,22 @@ const WebsiteSectionEditor = ({ section, label, onSaved, onDelete }: Props) => {
   const [content, setContent] = useState<any>(section.content);
   const [isVisible, setIsVisible] = useState(section.is_visible);
   const [saving, setSaving] = useState(false);
+  const [showLayoutPicker, setShowLayoutPicker] = useState(false);
+
+  const currentLayoutId = content?.layout;
+  const currentTemplate = currentLayoutId ? LAYOUT_TEMPLATES.find((t) => t.id === currentLayoutId) : null;
+
+  const handleLayoutChange = (template: LayoutTemplate) => {
+    // Preserve matching fields from old content
+    const newContent = getDefaultContent(template.id);
+    for (const field of template.fields) {
+      if (content[field.key] !== undefined && content[field.key] !== "") {
+        newContent[field.key] = content[field.key];
+      }
+    }
+    setContent(newContent);
+    setShowLayoutPicker(false);
+  };
 
   const updateField = (path: string, value: any) => {
     setContent((prev: any) => {
