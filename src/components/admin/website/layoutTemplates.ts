@@ -3,7 +3,7 @@
 export interface LayoutTemplate {
   id: string;
   name: string;
-  category: "hero" | "content" | "social_proof";
+  category: "hero" | "content" | "social_proof" | "collections";
   fields: LayoutField[];
 }
 
