@@ -30,13 +30,13 @@ const Footer = () => {
             <div className="grid grid-cols-2 gap-8 mb-12">
               <div className="flex flex-col gap-3">
                 <Link to="/" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-semibold">Home</Link>
-                <button onClick={() => scrollTo("Technology")} className="text-maxir-white hover:text-primary transition-colors text-left text-[18px] leading-[25px] font-semibold">Technology</button>
-                <button onClick={() => scrollTo("Sensor")} className="text-maxir-white hover:text-primary transition-colors text-left text-[18px] leading-[25px] font-semibold">The Sensor</button>
+                <Link to="/about-us#Technology" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-semibold">Technology</Link>
+                <Link to="/about-us#Sensor" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-semibold">The Sensor</Link>
                 
               </div>
               <div className="flex flex-col gap-3">
-                <button onClick={() => scrollTo("Applications")} className="text-maxir-white hover:text-primary transition-colors text-left text-[18px] leading-[25px] font-semibold">Applications</button>
-                <button onClick={() => scrollTo("Awards")} className="text-maxir-white hover:text-primary transition-colors text-left text-[18px] leading-[25px] font-semibold">Awards & Patents</button>
+                <Link to="/about-us#Applications" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-semibold">Applications</Link>
+                <Link to="/about-us#Awards" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-semibold">Awards & Patents</Link>
                 <Link to="/team" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-semibold">The Team</Link>
               </div>
             </div>
