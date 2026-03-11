@@ -242,25 +242,39 @@ const SectionEditor = ({
                 )}
               </div>
               <div className="flex items-center gap-2">
-                <button
-                  onClick={(e) => { e.stopPropagation(); setShowLayoutSwitch(true); }}
-                  className="p-1.5 rounded hover:bg-muted transition-colors"
-                  title="Change layout"
-                >
-                  <ArrowLeftRight className="h-4 w-4 text-muted-foreground" />
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); toggleVisibility(); }}
-                  className="p-1.5 rounded hover:bg-muted transition-colors"
-                >
-                  {isVisible ? <Eye className="h-4 w-4 text-muted-foreground" /> : <EyeOff className="h-4 w-4 text-muted-foreground" />}
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); onDelete(); }}
-                  className="p-1.5 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setShowLayoutSwitch(true); }}
+                      className="p-1.5 rounded hover:bg-muted transition-colors"
+                    >
+                      <ArrowLeftRight className="h-4 w-4 text-muted-foreground" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>Change layout</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); toggleVisibility(); }}
+                      className="p-1.5 rounded hover:bg-muted transition-colors"
+                    >
+                      {isVisible ? <Eye className="h-4 w-4 text-muted-foreground" /> : <EyeOff className="h-4 w-4 text-muted-foreground" />}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>{isVisible ? "Hide section" : "Show section"}</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                      className="p-1.5 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>Delete section</TooltipContent>
+                </Tooltip>
                 <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform", open && "rotate-180")} />
               </div>
             </button>
