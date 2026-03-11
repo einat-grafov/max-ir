@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Globe, FlaskConical, Plus, Search, BookOpen } from "lucide-react";
+import { Globe, FlaskConical, Plus, Search, BookOpen, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import WebsiteSectionEditor from "@/components/admin/website/WebsiteSectionEditor";
 import TestPageBuilder from "@/components/admin/website/TestPageBuilder";
@@ -190,8 +190,33 @@ const Website = () => {
       </div>
 
       {/* Top-level tabs: SEO | Pages | Library */}
+      <div className="border-b border-border mb-6">
+        <div className="flex gap-6">
+          {[
+            { value: "seo", label: "SEO", icon: Search },
+            { value: "pages", label: "Pages", icon: FileText },
+            { value: "library", label: "Library", icon: BookOpen },
+          ].map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => setTopTab(tab.value)}
+              className={cn(
+                "flex items-center gap-2 pb-3 text-sm font-semibold transition-colors border-b-2 -mb-px",
+                topTab === tab.value
+                  ? "border-primary text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <tab.icon className="h-4 w-4" />
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <Tabs value={topTab} onValueChange={setTopTab}>
-        <TabsList className="mb-4">
+        {/* Hidden TabsList for radix state */}
+        <TabsList className="hidden">
           <TabsTrigger value="seo">SEO</TabsTrigger>
           <TabsTrigger value="pages">Pages</TabsTrigger>
           <TabsTrigger value="library">Library</TabsTrigger>
