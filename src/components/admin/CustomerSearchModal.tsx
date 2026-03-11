@@ -127,7 +127,7 @@ const CustomerSearchModal = ({ open, onOpenChange, onSelectCustomer }: CustomerS
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end px-6 py-4 border-t border-border">
+        <div className="flex items-center justify-end pt-4 border-t border-border">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
