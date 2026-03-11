@@ -4,14 +4,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, Eye, EyeOff, Save, Plus, Trash2, GripVertical } from "lucide-react";
+import { ChevronDown, Eye, EyeOff, Save, Plus, Trash2, GripVertical, ArrowLeftRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { LAYOUT_TEMPLATES, getDefaultContent, type LayoutTemplate } from "./layoutTemplates";
+import LayoutThumbnail from "./LayoutThumbnail";
+import LayoutPicker from "./LayoutPicker";
 
 interface SectionRow {
   id: string;
@@ -34,6 +38,22 @@ const WebsiteSectionEditor = ({ section, label, onSaved, onDelete }: Props) => {
   const [content, setContent] = useState<any>(section.content);
   const [isVisible, setIsVisible] = useState(section.is_visible);
   const [saving, setSaving] = useState(false);
+  const [showLayoutPicker, setShowLayoutPicker] = useState(false);
+
+  const currentLayoutId = content?.layout;
+  const currentTemplate = currentLayoutId ? LAYOUT_TEMPLATES.find((t) => t.id === currentLayoutId) : null;
+
+  const handleLayoutChange = (template: LayoutTemplate) => {
+    // Preserve matching fields from old content
+    const newContent = getDefaultContent(template.id);
+    for (const field of template.fields) {
+      if (content[field.key] !== undefined && content[field.key] !== "") {
+        newContent[field.key] = content[field.key];
+      }
+    }
+    setContent(newContent);
+    setShowLayoutPicker(false);
+  };
 
   const updateField = (path: string, value: any) => {
     setContent((prev: any) => {
@@ -86,6 +106,22 @@ const WebsiteSectionEditor = ({ section, label, onSaved, onDelete }: Props) => {
               )}
             </div>
             <div className="flex items-center gap-2">
+              {currentTemplate && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowLayoutPicker(true);
+                      }}
+                      className="p-1.5 rounded hover:bg-muted transition-colors"
+                    >
+                      <ArrowLeftRight className="h-4 w-4 text-muted-foreground" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>Switch layout</TooltipContent>
+                </Tooltip>
+              )}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
@@ -144,6 +180,22 @@ const WebsiteSectionEditor = ({ section, label, onSaved, onDelete }: Props) => {
         </CollapsibleTrigger>
         <CollapsibleContent>
           <div className="border-t border-border p-4 space-y-4">
+            {currentTemplate && (
+              <button
+                onClick={() => setShowLayoutPicker(true)}
+                className="group flex items-start gap-3 rounded-lg border border-border bg-muted/30 p-3 hover:border-primary hover:bg-primary/5 transition-all text-left w-auto"
+              >
+                <div className="w-[140px] shrink-0 rounded overflow-hidden">
+                  <LayoutThumbnail id={currentTemplate.id} />
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
+                    {currentTemplate.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Click to change layout</p>
+                </div>
+              </button>
+            )}
             <SectionFields
               sectionKey={section.section_key}
               content={content}
@@ -159,6 +211,15 @@ const WebsiteSectionEditor = ({ section, label, onSaved, onDelete }: Props) => {
           </div>
         </CollapsibleContent>
       </Card>
+
+      <Dialog open={showLayoutPicker} onOpenChange={setShowLayoutPicker}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Change Layout</DialogTitle>
+          </DialogHeader>
+          <LayoutPicker onSelect={handleLayoutChange} currentLayoutId={currentLayoutId} />
+        </DialogContent>
+      </Dialog>
     </Collapsible>
   );
 };
@@ -198,10 +259,56 @@ const SectionFields = ({
       return <SimpleTextFields content={content} updateField={updateField} fields={["title", "content"]} />;
     case "careers":
       return <SimpleTextFields content={content} updateField={updateField} fields={["title", "description"]} />;
-    default:
+    default: {
+      // Dynamic fields from layout template
+      const layoutId = content?.layout;
+      const template = layoutId ? LAYOUT_TEMPLATES.find((t) => t.id === layoutId) : null;
+      if (template) {
+        return <DynamicLayoutFields content={content} updateField={updateField} setContent={setContent} template={template} />;
+      }
       return <p className="text-sm text-muted-foreground">No editor available for this section.</p>;
+    }
   }
 };
+
+// Dynamic field renderer for layout-based sections
+const DynamicLayoutFields = ({
+  content,
+  updateField,
+  setContent,
+  template,
+}: {
+  content: any;
+  updateField: (p: string, v: any) => void;
+  setContent: (fn: (prev: any) => any) => void;
+  template: LayoutTemplate;
+}) => (
+  <div className="space-y-4">
+    {template.fields.map((field) => {
+      if (field.type === "items" && field.itemFields) {
+        return (
+          <ListSectionFields
+            key={field.key}
+            content={content}
+            updateField={updateField}
+            setContent={setContent}
+            itemKey={field.key}
+            itemFields={field.itemFields.map((f) => f.key)}
+          />
+        );
+      }
+      return (
+        <Field
+          key={field.key}
+          label={field.label}
+          value={content[field.key] || ""}
+          onChange={(v) => updateField(field.key, v)}
+          multiline={field.type === "textarea"}
+        />
+      );
+    })}
+  </div>
+);
 
 // === Field Components ===
 
