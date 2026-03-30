@@ -10,4 +10,16 @@ export interface TemplateEntry {
   to?: string
 }
 
-export const TEMPLATES: Record<string, TemplateEntry> = {}
+import { template as inquiryConfirmation } from './inquiry-confirmation.tsx'
+import { template as contactConfirmation } from './contact-confirmation.tsx'
+import { template as careersConfirmation } from './careers-confirmation.tsx'
+import { template as orderConfirmation } from './order-confirmation.tsx'
+import { template as invoiceEmail } from './invoice-email.tsx'
+
+export const TEMPLATES: Record<string, TemplateEntry> = {
+  'inquiry-confirmation': inquiryConfirmation,
+  'contact-confirmation': contactConfirmation,
+  'careers-confirmation': careersConfirmation,
+  'order-confirmation': orderConfirmation,
+  'invoice-email': invoiceEmail,
+}

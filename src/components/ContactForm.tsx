@@ -1,11 +1,55 @@
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const ContactForm = () => {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    subject: "",
+    name: "",
+    email: "",
+    message: "",
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) return;
+    setLoading(true);
+    try {
+      const id = crypto.randomUUID();
+      await supabase.from("inquiries").insert({
+        id,
+        product_name: formData.subject || "General Inquiry",
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+        first_name: formData.name.split(" ")[0],
+        last_name: formData.name.split(" ").slice(1).join(" ") || null,
+      } as any);
+
+      await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "contact-confirmation",
+          recipientEmail: formData.email,
+          idempotencyKey: `contact-confirm-${id}`,
+          templateData: {
+            name: formData.name,
+            subject: formData.subject || undefined,
+          },
+        },
+      });
+
+      setSubmitted(true);
+    } catch {
+      // Still show success to user
+      setSubmitted(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
@@ -20,19 +64,48 @@ const ContactForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <select className="bg-maxir-dark-surface border border-maxir-white/20 text-maxir-white/80 px-4 py-3 text-sm focus:outline-none focus:border-primary">
-        <option>Please select a subject</option>
+      <select
+        value={formData.subject}
+        onChange={(e) => handleChange("subject", e.target.value)}
+        className="bg-maxir-dark-surface border border-maxir-white/20 text-maxir-white/80 px-4 py-3 text-sm focus:outline-none focus:border-primary"
+      >
+        <option value="">Please select a subject</option>
         <option>Product Purchase</option>
         <option>Technology Information</option>
         <option>Partnering</option>
         <option>Investment Options</option>
         <option>Other/General Inquiry</option>
       </select>
-      <input type="text" placeholder="Name" className="bg-maxir-dark-surface border border-maxir-white/20 text-maxir-white px-4 py-3 text-sm placeholder:text-maxir-white/40 focus:outline-none focus:border-primary" />
-      <input type="email" placeholder="Email Address" className="bg-maxir-dark-surface border border-maxir-white/20 text-maxir-white px-4 py-3 text-sm placeholder:text-maxir-white/40 focus:outline-none focus:border-primary" />
-      <textarea placeholder="Message" rows={4} className="bg-maxir-dark-surface border border-maxir-white/20 text-maxir-white px-4 py-3 text-sm placeholder:text-maxir-white/40 focus:outline-none focus:border-primary resize-none" />
-      <button type="submit" className="bg-primary hover:bg-maxir-red-hover text-primary-foreground px-8 py-3 text-sm font-semibold transition-colors w-fit">
-        Submit
+      <input
+        type="text"
+        placeholder="Name"
+        value={formData.name}
+        onChange={(e) => handleChange("name", e.target.value)}
+        required
+        className="bg-maxir-dark-surface border border-maxir-white/20 text-maxir-white px-4 py-3 text-sm placeholder:text-maxir-white/40 focus:outline-none focus:border-primary"
+      />
+      <input
+        type="email"
+        placeholder="Email Address"
+        value={formData.email}
+        onChange={(e) => handleChange("email", e.target.value)}
+        required
+        className="bg-maxir-dark-surface border border-maxir-white/20 text-maxir-white px-4 py-3 text-sm placeholder:text-maxir-white/40 focus:outline-none focus:border-primary"
+      />
+      <textarea
+        placeholder="Message"
+        rows={4}
+        value={formData.message}
+        onChange={(e) => handleChange("message", e.target.value)}
+        required
+        className="bg-maxir-dark-surface border border-maxir-white/20 text-maxir-white px-4 py-3 text-sm placeholder:text-maxir-white/40 focus:outline-none focus:border-primary resize-none"
+      />
+      <button
+        type="submit"
+        disabled={loading}
+        className="bg-primary hover:bg-maxir-red-hover text-primary-foreground px-8 py-3 text-sm font-semibold transition-colors w-fit disabled:opacity-50"
+      >
+        {loading ? "Sending..." : "Submit"}
       </button>
     </form>
   );

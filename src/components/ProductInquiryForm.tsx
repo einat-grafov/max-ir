@@ -173,7 +173,9 @@ const ProductInquiryForm = ({ open, onOpenChange, productName, productId, select
       const selectedNames = allProducts.filter(p => selectedProductIds.includes(p.id)).map(p => p.name);
       const productNameForDb = selectedNames.length > 0 ? selectedNames.join(", ") : productName;
 
+      const inquiryId = crypto.randomUUID();
       const { error } = await supabase.from("inquiries").insert({
+        id: inquiryId,
         product_id: productId ?? null,
         product_name: productNameForDb,
         name: displayName,
@@ -187,6 +189,19 @@ const ProductInquiryForm = ({ open, onOpenChange, productName, productId, select
         state: formData.country === "United States" ? formData.state : null,
       } as any);
       if (error) throw error;
+
+      await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "inquiry-confirmation",
+          recipientEmail: result.data!.email,
+          idempotencyKey: `inquiry-confirm-${inquiryId}`,
+          templateData: {
+            name: result.data!.firstName,
+            products: productNameForDb,
+          },
+        },
+      });
+
       setSubmitted(true);
     } catch {
       toast({ title: "Error", description: "Failed to send inquiry. Please try again.", variant: "destructive" });

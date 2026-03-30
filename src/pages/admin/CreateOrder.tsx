@@ -133,6 +133,24 @@ const CreateOrder = () => {
       const { error: itemsError } = await supabase.from("order_items").insert(items);
       if (itemsError) throw itemsError;
 
+      // Send order confirmation email
+      if (selectedCustomer.email) {
+        const itemsSummary = products.map(p => `${p.name} × ${p.quantity}`).join(", ");
+        await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "order-confirmation",
+            recipientEmail: selectedCustomer.email,
+            idempotencyKey: `order-confirm-${order.id}`,
+            templateData: {
+              customerName: customerName,
+              orderNumber: order.order_number,
+              total: fmt(total),
+              items: itemsSummary,
+            },
+          },
+        });
+      }
+
       isSavingRef.current = true;
       toast.success("Order created successfully");
       if (returnToCustomer) {
