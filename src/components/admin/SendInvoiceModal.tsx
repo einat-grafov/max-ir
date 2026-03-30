@@ -45,10 +45,31 @@ const SendInvoiceModal = ({ open, onOpenChange, customerEmail, customerName, inv
     onOpenChange(newOpen);
   };
 
-  const handleSend = () => {
-    onInvoiceSent();
-    onOpenChange(false);
-    toast.success("Invoice sent successfully");
+  const handleSend = async () => {
+    if (!to.trim()) {
+      toast.error("Recipient email is required");
+      return;
+    }
+    try {
+      const invoiceId = crypto.randomUUID();
+      await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "invoice-email",
+          recipientEmail: to,
+          idempotencyKey: `invoice-${invoiceId}`,
+          templateData: {
+            customerName: customerName ?? "there",
+            subject,
+            customMessage: customMessage || undefined,
+          },
+        },
+      });
+      onInvoiceSent();
+      onOpenChange(false);
+      toast.success("Invoice sent successfully");
+    } catch {
+      toast.error("Failed to send invoice");
+    }
   };
 
   if (step === "preview") {
