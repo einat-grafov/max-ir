@@ -30,6 +30,7 @@ import BillingSettings from "./pages/admin/settings/BillingSettings";
 import ShippingSettings from "./pages/admin/settings/ShippingSettings";
 import NotFound from "./pages/NotFound";
 import DesignSystem from "./pages/DesignSystem";
+import Unsubscribe from "./pages/Unsubscribe";
 
 const queryClient = new QueryClient();
 
