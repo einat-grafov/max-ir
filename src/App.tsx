@@ -71,6 +71,7 @@ const router = createBrowserRouter([
       { path: "/store/:id", element: <ProductDetail /> },
       { path: "/cart", element: <Cart /> },
       { path: "/design-system", element: <DesignSystem /> },
+      { path: "/unsubscribe", element: <Unsubscribe /> },
       { path: "/admin/login", element: <AdminLogin /> },
       { path: "/forgot-password", element: <ForgotPassword /> },
       { path: "/reset-password", element: <ResetPassword /> },
