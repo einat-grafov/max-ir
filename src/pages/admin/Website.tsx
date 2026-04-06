@@ -164,6 +164,10 @@ const Website = () => {
   const homeSections = sections?.filter((s) => s.page === "home") || [];
   const aboutSections = sections?.filter((s) => s.page === "about") || [];
   const teamSections = sections?.filter((s) => s.page === "team") || [];
+  const privacySections = sections?.filter((s) => s.page === "privacy-policy") || [];
+  const refundSections = sections?.filter((s) => s.page === "refund-and-return") || [];
+  const shippingSections = sections?.filter((s) => s.page === "shipping-policy") || [];
+  const termsSections = sections?.filter((s) => s.page === "terms-and-conditions") || [];
 
   return (
     <div>
