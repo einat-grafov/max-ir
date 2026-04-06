@@ -219,13 +219,17 @@ const Website = () => {
         <TabsContent value="pages">
           {/* Nested page tabs */}
           <Tabs value={activePageTab} onValueChange={setActivePageTab}>
-            <TabsList className="mb-6">
-              <TabsTrigger value="home">Home Page</TabsTrigger>
-              <TabsTrigger value="about">About Us Page</TabsTrigger>
-              <TabsTrigger value="team">Team Page</TabsTrigger>
+            <TabsList className="mb-6 flex-wrap h-auto gap-1">
+              <TabsTrigger value="home">Home</TabsTrigger>
+              <TabsTrigger value="about">About Us</TabsTrigger>
+              <TabsTrigger value="team">Team</TabsTrigger>
+              <TabsTrigger value="privacy-policy">Privacy Policy</TabsTrigger>
+              <TabsTrigger value="refund-and-return">Refund & Return</TabsTrigger>
+              <TabsTrigger value="shipping-policy">Shipping Policy</TabsTrigger>
+              <TabsTrigger value="terms-and-conditions">Terms & Conditions</TabsTrigger>
               <TabsTrigger value="test" className="gap-1.5">
                 <FlaskConical className="h-3.5 w-3.5" />
-                Test Page
+                Test
               </TabsTrigger>
             </TabsList>
 
