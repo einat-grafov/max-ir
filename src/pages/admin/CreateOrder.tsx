@@ -135,7 +135,7 @@ const CreateOrder = () => {
       if (itemsError) throw itemsError;
 
       // Send order confirmation email
-      if (selectedCustomer.email) {
+      if (sendConfirmationEmail && selectedCustomer.email) {
         const itemsSummary = products.map(p => `${p.name} × ${p.quantity}`).join(", ");
         await supabase.functions.invoke("send-transactional-email", {
           body: {
