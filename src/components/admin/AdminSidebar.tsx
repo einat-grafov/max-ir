@@ -12,6 +12,7 @@ import {
   Globe,
   PanelLeft,
   Mail,
+  Briefcase,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate, Link } from "react-router-dom";
