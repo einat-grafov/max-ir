@@ -479,6 +479,16 @@ const CreateOrder = () => {
                 Payment due later
               </label>
             </div>
+            <div className="flex items-center gap-2 mt-3">
+              <Checkbox
+                id="send-confirmation-email"
+                checked={sendConfirmationEmail}
+                onCheckedChange={(checked) => setSendConfirmationEmail(checked as boolean)}
+              />
+              <label htmlFor="send-confirmation-email" className="text-sm text-foreground cursor-pointer">
+                Send confirmation email to customer
+              </label>
+            </div>
           </Card>
         </div>
 
