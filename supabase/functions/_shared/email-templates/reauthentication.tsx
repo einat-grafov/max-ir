@@ -23,7 +23,7 @@ export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => 
     <Preview>Your verification code</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Img src={LOGO_URL} alt="Max-IR" width="120" height="40" style={logo} />
+        <Img src={LOGO_URL} alt="Max-IR" width="150" height="26" style={logo} />
         <Heading style={h1}>Confirm reauthentication</Heading>
         <Text style={text}>Use the code below to confirm your identity:</Text>
         <Text style={codeStyle}>{token}</Text>

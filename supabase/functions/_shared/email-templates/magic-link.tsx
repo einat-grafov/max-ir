@@ -28,7 +28,7 @@ export const MagicLinkEmail = ({
     <Preview>Your login link for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Img src={LOGO_URL} alt={siteName} width="120" height="40" style={logo} />
+        <Img src={LOGO_URL} alt={siteName} width="150" height="26" style={logo} />
         <Heading style={h1}>Your login link</Heading>
         <Text style={text}>
           Click the button below to log in to {siteName}. This link will expire

@@ -20,7 +20,7 @@ const ContactConfirmationEmail = ({ name, subject }: Props) => (
     <Preview>Thanks for reaching out — {SITE_NAME}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Img src={LOGO_URL} alt={SITE_NAME} width="120" height="40" style={logo} />
+        <Img src={LOGO_URL} alt={SITE_NAME} width="150" height="26" style={logo} />
         <Heading style={h1}>
           {name ? `Thank you, ${name}!` : 'Thank you for reaching out!'}
         </Heading>
