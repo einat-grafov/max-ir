@@ -141,7 +141,7 @@ const Team = () => {
           <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold text-maxir-white mb-12 leading-none">Our Team</h2>
           <div className="space-y-16 md:space-y-20">
             {teamMembers.map((member) => (
-              <div key={member.name} className="grid grid-cols-1 md:grid-cols-[minmax(250px,380px)_1fr] gap-8 md:gap-12">
+              <div key={member.name} className="grid grid-cols-1 lg:grid-cols-[minmax(250px,380px)_1fr] gap-8 lg:gap-12">
                 {/* Photo */}
                 <div className="relative w-full aspect-[4/5] overflow-hidden">
                   <img
