@@ -44,7 +44,7 @@ const Unsubscribe = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="max-w-md w-full text-center space-y-6">
-        <img src="/images/maxir-logo.svg" alt="Max-IR" className="h-10 mx-auto" />
+        <img src="/images/maxir-logo-dark.svg" alt="Max-IR Labs" className="h-10 mx-auto" />
 
         {status === "loading" && <p className="text-muted-foreground">Loading...</p>}
 
