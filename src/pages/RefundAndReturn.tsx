@@ -1,7 +1,13 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import usePageSeo from "@/hooks/usePageSeo";
 
 const RefundAndReturn = () => {
+  usePageSeo({
+    title: "Refund & Return Policy | Max-IR Labs",
+    description: "Max-IR Labs refund and return policy for optical products. Learn about RMA process, restocking fees, and eligibility.",
+    canonicalPath: "/refund-and-return",
+  });
   return (
     <div className="min-h-screen">
       <Navbar />
