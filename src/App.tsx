@@ -33,6 +33,10 @@ import EmailTemplateEditor from "./pages/admin/settings/EmailTemplateEditor";
 import NotFound from "./pages/NotFound";
 import DesignSystem from "./pages/DesignSystem";
 import Unsubscribe from "./pages/Unsubscribe";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import RefundAndReturn from "./pages/RefundAndReturn";
+import ShippingPolicy from "./pages/ShippingPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions";
 
 const queryClient = new QueryClient();
 
@@ -74,6 +78,10 @@ const router = createBrowserRouter([
       { path: "/cart", element: <Cart /> },
       { path: "/design-system", element: <DesignSystem /> },
       { path: "/unsubscribe", element: <Unsubscribe /> },
+      { path: "/privacy-policy", element: <PrivacyPolicy /> },
+      { path: "/refund-and-return", element: <RefundAndReturn /> },
+      { path: "/shipping-policy", element: <ShippingPolicy /> },
+      { path: "/terms-and-conditions", element: <TermsAndConditions /> },
       { path: "/admin/login", element: <AdminLogin /> },
       { path: "/forgot-password", element: <ForgotPassword /> },
       { path: "/reset-password", element: <ResetPassword /> },
