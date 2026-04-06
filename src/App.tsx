@@ -96,6 +96,8 @@ const router = createBrowserRouter([
           { path: "settings/users", element: <UsersSettings /> },
           { path: "settings/billing", element: <BillingSettings /> },
           { path: "settings/shipping", element: <ShippingSettings /> },
+          { path: "settings/emails", element: <EmailSettings /> },
+          { path: "settings/emails/:templateKey", element: <EmailTemplateEditor /> },
         ],
       },
       { path: "*", element: <NotFound /> },
