@@ -30,6 +30,7 @@ import BillingSettings from "./pages/admin/settings/BillingSettings";
 import ShippingSettings from "./pages/admin/settings/ShippingSettings";
 import EmailSettings from "./pages/admin/settings/EmailSettings";
 import EmailTemplateEditor from "./pages/admin/settings/EmailTemplateEditor";
+import CareerApplications from "./pages/admin/CareerApplications";
 import NotFound from "./pages/NotFound";
 import DesignSystem from "./pages/DesignSystem";
 import Unsubscribe from "./pages/Unsubscribe";
