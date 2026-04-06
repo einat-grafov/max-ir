@@ -11,6 +11,7 @@ import {
   Home,
   Globe,
   PanelLeft,
+  Mail,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate, Link } from "react-router-dom";
@@ -41,6 +42,7 @@ const mainItems = [
 
 const settingsItems = [
   { title: "Users", url: "/admin/settings/users", icon: UserCog },
+  { title: "Emails", url: "/admin/settings/emails", icon: Mail },
   { title: "Billing", url: "/admin/settings/billing", icon: CreditCard },
   { title: "Shipping", url: "/admin/settings/shipping", icon: Truck },
 ];

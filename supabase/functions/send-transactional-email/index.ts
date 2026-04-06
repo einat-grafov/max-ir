@@ -282,18 +282,66 @@ Deno.serve(async (req) => {
     )
   }
 
-  // 4. Render React Email template to HTML and plain text
+  // 4. Check for custom template overrides in the database
+  const { data: customTemplate } = await supabase
+    .from('email_templates')
+    .select('subject, sections')
+    .eq('template_key', templateName)
+    .maybeSingle()
+
+  // If custom template exists, merge override content into templateData
+  let effectiveTemplateData = { ...templateData }
+  let customSubject: string | null = null
+
+  if (customTemplate) {
+    customSubject = customTemplate.subject || null
+    const sections = customTemplate.sections as Record<string, string> | null
+    if (sections) {
+      // Replace {{variable}} placeholders in custom sections
+      const replaceVars = (text: string) => {
+        return text.replace(/\{\{(\w+)\}\}/g, (_, key) => {
+          return templateData[key] ?? `{{${key}}}`
+        })
+      }
+
+      // Build override content string from sections
+      const parts: string[] = []
+      if (sections.greeting) parts.push(replaceVars(sections.greeting))
+      if (sections.body) parts.push(replaceVars(sections.body))
+      if (sections.closing) parts.push(replaceVars(sections.closing))
+
+      if (parts.length > 0) {
+        effectiveTemplateData = {
+          ...templateData,
+          _customContent: parts.join('\n\n'),
+          _customGreeting: sections.greeting ? replaceVars(sections.greeting) : undefined,
+          _customBody: sections.body ? replaceVars(sections.body) : undefined,
+          _customClosing: sections.closing ? replaceVars(sections.closing) : undefined,
+        }
+      }
+    }
+
+    // Replace variables in custom subject
+    if (customSubject) {
+      customSubject = customSubject.replace(/\{\{(\w+)\}\}/g, (_, key) => {
+        return templateData[key] ?? `{{${key}}}`
+      })
+    }
+  }
+
+  // 5. Render React Email template to HTML and plain text
   const html = await renderAsync(
-    React.createElement(template.component, templateData)
+    React.createElement(template.component, effectiveTemplateData)
   )
   const plainText = await renderAsync(
-    React.createElement(template.component, templateData),
+    React.createElement(template.component, effectiveTemplateData),
     { plainText: true }
   )
 
-  // Resolve subject — supports static string or dynamic function
-  const resolvedSubject =
-    typeof template.subject === 'function'
+  // Resolve subject — custom override takes precedence
+  const resolvedSubject = customSubject
+    ? customSubject
+    : typeof template.subject === 'function'
       ? template.subject(templateData)
       : template.subject
 

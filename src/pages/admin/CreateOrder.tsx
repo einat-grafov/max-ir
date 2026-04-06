@@ -44,6 +44,7 @@ interface OrderProduct {
 const CreateOrder = () => {
   const [products, setProducts] = useState<OrderProduct[]>([]);
   const [paymentDueLater, setPaymentDueLater] = useState(false);
+  const [sendConfirmationEmail, setSendConfirmationEmail] = useState(true);
   const [browseModalOpen, setBrowseModalOpen] = useState(false);
   const [notesModalOpen, setNotesModalOpen] = useState(false);
   const [customerModalOpen, setCustomerModalOpen] = useState(false);
@@ -134,7 +135,7 @@ const CreateOrder = () => {
       if (itemsError) throw itemsError;
 
       // Send order confirmation email
-      if (selectedCustomer.email) {
+      if (sendConfirmationEmail && selectedCustomer.email) {
         const itemsSummary = products.map(p => `${p.name} × ${p.quantity}`).join(", ");
         await supabase.functions.invoke("send-transactional-email", {
           body: {
@@ -476,6 +477,16 @@ const CreateOrder = () => {
               />
               <label htmlFor="payment-due-later" className="text-sm text-foreground cursor-pointer">
                 Payment due later
+              </label>
+            </div>
+            <div className="flex items-center gap-2 mt-3">
+              <Checkbox
+                id="send-confirmation-email"
+                checked={sendConfirmationEmail}
+                onCheckedChange={(checked) => setSendConfirmationEmail(checked as boolean)}
+              />
+              <label htmlFor="send-confirmation-email" className="text-sm text-foreground cursor-pointer">
+                Send confirmation email to customer
               </label>
             </div>
           </Card>
