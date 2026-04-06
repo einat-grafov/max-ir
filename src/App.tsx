@@ -33,6 +33,10 @@ import EmailTemplateEditor from "./pages/admin/settings/EmailTemplateEditor";
 import NotFound from "./pages/NotFound";
 import DesignSystem from "./pages/DesignSystem";
 import Unsubscribe from "./pages/Unsubscribe";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import RefundAndReturn from "./pages/RefundAndReturn";
+import ShippingPolicy from "./pages/ShippingPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions";
 
 const queryClient = new QueryClient();
 
