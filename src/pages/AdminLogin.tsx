@@ -47,14 +47,8 @@ const AdminLogin = () => {
     <div className="min-h-screen bg-maxir-dark flex items-center justify-center px-6">
       <div className="w-full max-w-[420px]">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 justify-center mb-10">
-          <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
-            <path d="M5 35L20 5L25 15L15 35H5Z" fill="hsl(348,100%,61%)" />
-            <path d="M15 35L25 15L35 35H15Z" fill="hsl(348,100%,61%)" opacity="0.7" />
-          </svg>
-          <span className="text-maxir-white font-bold text-lg tracking-wide">
-            MAX-IR <span className="font-light">LABS</span>
-          </span>
+        <Link to="/" className="flex justify-center mb-10">
+          <img src="/images/maxir-logo-light.svg" alt="Max-IR Labs" className="h-10" />
         </Link>
 
         <div className="bg-maxir-dark-surface border border-white/10 rounded-lg p-8">
