@@ -102,6 +102,7 @@ const router = createBrowserRouter([
           { path: "customers/create", element: <CreateCustomer /> },
           { path: "customers/:id", element: <EditCustomer /> },
           { path: "website", element: <Website /> },
+          { path: "careers", element: <CareerApplications /> },
           { path: "settings/users", element: <UsersSettings /> },
           { path: "settings/billing", element: <BillingSettings /> },
           { path: "settings/shipping", element: <ShippingSettings /> },
