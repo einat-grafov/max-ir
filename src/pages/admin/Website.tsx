@@ -245,6 +245,22 @@ const Website = () => {
               <PageSections sections={teamSections} isLoading={isLoading} page="team" onInvalidate={invalidate} />
             </TabsContent>
 
+            <TabsContent value="privacy-policy">
+              <PageSections sections={privacySections} isLoading={isLoading} page="privacy-policy" onInvalidate={invalidate} />
+            </TabsContent>
+
+            <TabsContent value="refund-and-return">
+              <PageSections sections={refundSections} isLoading={isLoading} page="refund-and-return" onInvalidate={invalidate} />
+            </TabsContent>
+
+            <TabsContent value="shipping-policy">
+              <PageSections sections={shippingSections} isLoading={isLoading} page="shipping-policy" onInvalidate={invalidate} />
+            </TabsContent>
+
+            <TabsContent value="terms-and-conditions">
+              <PageSections sections={termsSections} isLoading={isLoading} page="terms-and-conditions" onInvalidate={invalidate} />
+            </TabsContent>
+
             <TabsContent value="test">
               <TestPageBuilder />
             </TabsContent>
