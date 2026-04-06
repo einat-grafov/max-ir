@@ -20,7 +20,7 @@ const InquiryConfirmationEmail = ({ name, products }: Props) => (
     <Preview>We received your inquiry — {SITE_NAME}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Img src={LOGO_URL} alt={SITE_NAME} width="120" height="40" style={logo} />
+        <Img src={LOGO_URL} alt={SITE_NAME} width="150" height="26" style={logo} />
         <Heading style={h1}>
           {name ? `Thank you, ${name}!` : 'Thank you for your inquiry!'}
         </Heading>

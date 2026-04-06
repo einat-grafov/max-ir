@@ -33,7 +33,7 @@ export const EmailChangeEmail = ({
     <Preview>Confirm your email change for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Img src={LOGO_URL} alt={siteName} width="120" height="40" style={logo} />
+        <Img src={LOGO_URL} alt={siteName} width="150" height="26" style={logo} />
         <Heading style={h1}>Confirm your email change</Heading>
         <Text style={text}>
           You requested to change your email address for {siteName} from{' '}
