@@ -44,6 +44,7 @@ interface OrderProduct {
 const CreateOrder = () => {
   const [products, setProducts] = useState<OrderProduct[]>([]);
   const [paymentDueLater, setPaymentDueLater] = useState(false);
+  const [sendConfirmationEmail, setSendConfirmationEmail] = useState(true);
   const [browseModalOpen, setBrowseModalOpen] = useState(false);
   const [notesModalOpen, setNotesModalOpen] = useState(false);
   const [customerModalOpen, setCustomerModalOpen] = useState(false);
