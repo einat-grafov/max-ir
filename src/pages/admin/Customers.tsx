@@ -1,4 +1,4 @@
-import { Users, Plus, Filter } from "lucide-react";
+import { Users, Plus, Filter, MailX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
@@ -40,19 +40,39 @@ const Customers = () => {
     },
   });
 
+  const { data: suppressedEmails = [] } = useQuery({
+    queryKey: ["suppressed-emails"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("suppressed_emails")
+        .select("email");
+      if (error) throw error;
+      return data.map((s) => s.email.toLowerCase());
+    },
+  });
+
+  const suppressedSet = useMemo(() => new Set(suppressedEmails), [suppressedEmails]);
+
   const filtered = useMemo(() => {
-    let list = [...customers];
-    if (statusFilter !== "all") {
-      list = list.filter((c) => (c as any).status === statusFilter);
+    let list = customers.map((c) => ({
+      ...c,
+      unsubscribed: c.email ? suppressedSet.has(c.email.toLowerCase()) : false,
+    }));
+
+    if (statusFilter === "unsubscribed") {
+      list = list.filter((c) => c.unsubscribed);
+    } else if (statusFilter !== "all") {
+      list = list.filter((c) => c.status === statusFilter);
     }
+
     list.sort((a, b) => {
       let aVal: string, bVal: string;
       if (sortField === "first_name") {
         aVal = a.first_name.toLowerCase();
         bVal = b.first_name.toLowerCase();
       } else if (sortField === "status") {
-        aVal = (a as any).status || "new_lead";
-        bVal = (b as any).status || "new_lead";
+        aVal = a.status || "new_lead";
+        bVal = b.status || "new_lead";
       } else {
         aVal = a.created_at;
         bVal = b.created_at;
@@ -61,7 +81,7 @@ const Customers = () => {
       return sortDir === "asc" ? cmp : -cmp;
     });
     return list;
-  }, [customers, statusFilter, sortField, sortDir]);
+  }, [customers, suppressedSet, statusFilter, sortField, sortDir]);
 
   return (
     <div>
@@ -81,7 +101,7 @@ const Customers = () => {
       <div className="flex items-center gap-3 mb-4">
         <Filter className="h-4 w-4 text-muted-foreground" />
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[160px] h-9 text-sm">
+          <SelectTrigger className="w-[180px] h-9 text-sm">
             <SelectValue placeholder="All statuses" />
           </SelectTrigger>
           <SelectContent>
@@ -89,6 +109,7 @@ const Customers = () => {
             <SelectItem value="active">Active</SelectItem>
             <SelectItem value="new_lead">New Lead</SelectItem>
             <SelectItem value="new_inquiry">New Inquiry</SelectItem>
+            <SelectItem value="unsubscribed">Unsubscribed</SelectItem>
           </SelectContent>
         </Select>
         <Select value={`${sortField}:${sortDir}`} onValueChange={(v) => { const [f, d] = v.split(":"); setSortField(f as SortField); setSortDir(d as SortDir); }}>
@@ -136,10 +157,18 @@ const Customers = () => {
                       </Link>
                     </td>
                     <td className="px-6 py-3">
-                      {(() => {
-                        const config = statusConfig[(c as any).status] || statusConfig.new_lead;
-                        return <Badge variant="outline" className={config.className}>{config.label}</Badge>;
-                      })()}
+                      <div className="flex items-center gap-1.5">
+                        {(() => {
+                          const config = statusConfig[c.status] || statusConfig.new_lead;
+                          return <Badge variant="outline" className={config.className}>{config.label}</Badge>;
+                        })()}
+                        {c.unsubscribed && (
+                          <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 gap-1">
+                            <MailX className="h-3 w-3" />
+                            Unsubscribed
+                          </Badge>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-3 text-muted-foreground">{c.email || "—"}</td>
                     <td className="px-6 py-3 text-muted-foreground">{c.country || "—"}</td>
