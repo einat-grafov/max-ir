@@ -1,7 +1,4 @@
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders } from "@supabase/supabase-js/cors";
 
 interface ShipmentRequest {
   origin: { postalCode: string; country: string; city?: string; state?: string };
