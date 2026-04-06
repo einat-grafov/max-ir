@@ -164,6 +164,10 @@ const Website = () => {
   const homeSections = sections?.filter((s) => s.page === "home") || [];
   const aboutSections = sections?.filter((s) => s.page === "about") || [];
   const teamSections = sections?.filter((s) => s.page === "team") || [];
+  const privacySections = sections?.filter((s) => s.page === "privacy-policy") || [];
+  const refundSections = sections?.filter((s) => s.page === "refund-and-return") || [];
+  const shippingSections = sections?.filter((s) => s.page === "shipping-policy") || [];
+  const termsSections = sections?.filter((s) => s.page === "terms-and-conditions") || [];
 
   return (
     <div>
@@ -215,13 +219,17 @@ const Website = () => {
         <TabsContent value="pages">
           {/* Nested page tabs */}
           <Tabs value={activePageTab} onValueChange={setActivePageTab}>
-            <TabsList className="mb-6">
-              <TabsTrigger value="home">Home Page</TabsTrigger>
-              <TabsTrigger value="about">About Us Page</TabsTrigger>
-              <TabsTrigger value="team">Team Page</TabsTrigger>
+            <TabsList className="mb-6 flex-wrap h-auto gap-1">
+              <TabsTrigger value="home">Home</TabsTrigger>
+              <TabsTrigger value="about">About Us</TabsTrigger>
+              <TabsTrigger value="team">Team</TabsTrigger>
+              <TabsTrigger value="privacy-policy">Privacy Policy</TabsTrigger>
+              <TabsTrigger value="refund-and-return">Refund & Return</TabsTrigger>
+              <TabsTrigger value="shipping-policy">Shipping Policy</TabsTrigger>
+              <TabsTrigger value="terms-and-conditions">Terms & Conditions</TabsTrigger>
               <TabsTrigger value="test" className="gap-1.5">
                 <FlaskConical className="h-3.5 w-3.5" />
-                Test Page
+                Test
               </TabsTrigger>
             </TabsList>
 
@@ -235,6 +243,22 @@ const Website = () => {
 
             <TabsContent value="team">
               <PageSections sections={teamSections} isLoading={isLoading} page="team" onInvalidate={invalidate} />
+            </TabsContent>
+
+            <TabsContent value="privacy-policy">
+              <PageSections sections={privacySections} isLoading={isLoading} page="privacy-policy" onInvalidate={invalidate} />
+            </TabsContent>
+
+            <TabsContent value="refund-and-return">
+              <PageSections sections={refundSections} isLoading={isLoading} page="refund-and-return" onInvalidate={invalidate} />
+            </TabsContent>
+
+            <TabsContent value="shipping-policy">
+              <PageSections sections={shippingSections} isLoading={isLoading} page="shipping-policy" onInvalidate={invalidate} />
+            </TabsContent>
+
+            <TabsContent value="terms-and-conditions">
+              <PageSections sections={termsSections} isLoading={isLoading} page="terms-and-conditions" onInvalidate={invalidate} />
             </TabsContent>
 
             <TabsContent value="test">

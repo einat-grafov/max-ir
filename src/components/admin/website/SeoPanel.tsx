@@ -27,6 +27,10 @@ const PAGE_LABELS: Record<string, string> = {
   about: "About Us Page",
   team: "Team Page",
   store: "Store Page",
+  "privacy-policy": "Privacy Policy",
+  "refund-and-return": "Refund & Return",
+  "shipping-policy": "Shipping Policy",
+  "terms-and-conditions": "Terms & Conditions",
 };
 
 const SeoPageEditor = ({ seo, onSaved }: { seo: SeoRow; onSaved: () => void }) => {
