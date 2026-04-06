@@ -219,7 +219,7 @@ const TechnologyDiagramSection = ({ embedded }: { embedded?: boolean }) => {
         {/* Desktop info card overlay (absolute) */}
         <AnimatePresence>
           {activeHotspot && (
-            <div className="hidden md:block">
+            <div className="hidden lg:block">
               <InfoCard
                 hotspot={activeHotspot}
                 onMouseEnter={() => showCard(activeHotspot.id)}
