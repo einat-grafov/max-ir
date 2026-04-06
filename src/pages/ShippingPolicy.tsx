@@ -1,7 +1,13 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import usePageSeo from "@/hooks/usePageSeo";
 
 const ShippingPolicy = () => {
+  usePageSeo({
+    title: "Shipping & Delivery Policy | Max-IR Labs",
+    description: "Max-IR Labs shipping terms, delivery timelines, export compliance, and international duties. FCA Dallas, Incoterms 2020.",
+    canonicalPath: "/shipping-policy",
+  });
   return (
     <div className="min-h-screen">
       <Navbar />

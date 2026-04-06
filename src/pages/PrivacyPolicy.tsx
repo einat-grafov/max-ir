@@ -1,7 +1,13 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import usePageSeo from "@/hooks/usePageSeo";
 
 const PrivacyPolicy = () => {
+  usePageSeo({
+    title: "Privacy Policy | Max-IR Labs",
+    description: "Learn how Max-IR Labs collects, uses, and protects your personal information. Read our full privacy policy.",
+    canonicalPath: "/privacy-policy",
+  });
   return (
     <div className="min-h-screen">
       <Navbar />

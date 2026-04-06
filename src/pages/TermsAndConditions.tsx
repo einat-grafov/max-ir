@@ -1,7 +1,13 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import usePageSeo from "@/hooks/usePageSeo";
 
 const TermsAndConditions = () => {
+  usePageSeo({
+    title: "Terms & Conditions | Max-IR Labs",
+    description: "Terms and conditions of sale for Max-IR Labs products. Covers pricing, warranty, liability, export compliance, and governing law.",
+    canonicalPath: "/terms-and-conditions",
+  });
   return (
     <div className="min-h-screen">
       <Navbar />
