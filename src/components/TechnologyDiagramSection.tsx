@@ -219,7 +219,7 @@ const TechnologyDiagramSection = ({ embedded }: { embedded?: boolean }) => {
         {/* Desktop info card overlay (absolute) */}
         <AnimatePresence>
           {activeHotspot && (
-            <div className="hidden md:block">
+            <div className="hidden lg:block">
               <InfoCard
                 hotspot={activeHotspot}
                 onMouseEnter={() => showCard(activeHotspot.id)}
@@ -235,7 +235,7 @@ const TechnologyDiagramSection = ({ embedded }: { embedded?: boolean }) => {
         {activeHotspot && (
           <motion.div
             key={activeHotspot.id + "-mobile"}
-            className="md:hidden mt-4 px-1"
+            className="lg:hidden mt-4 px-1"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 12 }}
