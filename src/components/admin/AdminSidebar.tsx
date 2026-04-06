@@ -65,10 +65,11 @@ export function AdminSidebar() {
       className={`${collapsed ? "w-14" : "w-60"} bg-maxir-dark border-r border-white/10`}
       collapsible="icon"
     >
-      <div className="p-4 border-b border-white/10 bg-maxir-dark">
+      <div className="p-4 border-b border-white/10 bg-maxir-dark flex items-center justify-between">
         <Link to="/admin/home" className="flex items-center">
           <img src="/images/maxir-logo.svg" alt="MAX-IR Labs" className={collapsed ? "h-6 w-auto" : "h-7 w-auto"} />
         </Link>
+        <SidebarTrigger className="text-maxir-gray hover:text-maxir-white h-7 w-7" />
       </div>
 
       <SidebarContent className="bg-maxir-dark">
