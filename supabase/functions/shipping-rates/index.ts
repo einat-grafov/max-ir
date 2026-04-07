@@ -121,7 +121,7 @@ async function getUPSRates(token: string, accountNumber: string, req: ShipmentRe
     },
   };
 
-  const res = await fetch("https://onlinetools.ups.com/api/rating/v1/Shop", {
+  const res = await fetch("https://wwwcie.ups.com/api/rating/v1/Shop", {
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify(body),
