@@ -61,7 +61,7 @@ async function getFedExRates(token: string, accountNumber: string, req: Shipment
     },
   };
 
-  const res = await fetch("https://apis.fedex.com/rate/v1/rates/quotes", {
+  const res = await fetch("https://apis-sandbox.fedex.com/rate/v1/rates/quotes", {
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify(body),
