@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Link, useBlocker, useNavigate, useLocation } from "react-router-dom";
+import ShippingRateModal from "@/components/admin/ShippingRateModal";
+import type { ShippingRate } from "@/hooks/useShippingRates";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
