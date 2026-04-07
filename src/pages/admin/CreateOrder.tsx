@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Link, useBlocker, useNavigate, useLocation } from "react-router-dom";
+import ShippingRateModal from "@/components/admin/ShippingRateModal";
+import type { ShippingRate } from "@/hooks/useShippingRates";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -59,6 +61,8 @@ const CreateOrder = () => {
   } | null>(null);
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
   const [invoiceSent, setInvoiceSent] = useState(false);
+  const [shippingModalOpen, setShippingModalOpen] = useState(false);
+  const [shippingRate, setShippingRate] = useState<ShippingRate | null>(null);
   const [timelineEvents, setTimelineEvents] = useState<Array<{ id: string; message: string; timestamp: string; attachment?: { name: string; url: string } | null }>>([
     { id: "1", message: "You created this draft order.", timestamp: "Just now" },
   ]);
@@ -109,6 +113,8 @@ const CreateOrder = () => {
           customer_name: customerName,
           customer_email: selectedCustomer.email,
           subtotal: subtotal,
+          shipping_cost: shippingCost,
+          shipping_method: shippingRate ? `${shippingRate.carrier} ${shippingRate.service}` : null,
           discount_amount: discountAmount,
           tax: tax,
           total: total,
@@ -226,8 +232,9 @@ const CreateOrder = () => {
       : Math.round(subtotal * (discount.value / 100) * 100) / 100
     : 0;
   const taxableSubtotal = subtotal - discountAmount;
+  const shippingCost = shippingRate?.price ?? 0;
   const tax = Math.round(taxableSubtotal * 0.18 * 100) / 100;
-  const total = taxableSubtotal + tax;
+  const total = taxableSubtotal + shippingCost + tax;
 
   const fmt = (n: number) => "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -452,9 +459,18 @@ const CreateOrder = () => {
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-4 px-4 py-3 text-sm">
-                <span className="text-primary cursor-pointer hover:underline">Add shipping or delivery</span>
-                <span className="text-muted-foreground">—</span>
-                <span className="text-right text-foreground">$0.00</span>
+                <span
+                  className="text-primary cursor-pointer hover:underline"
+                  onClick={() => setShippingModalOpen(true)}
+                >
+                  {shippingRate ? "Edit shipping" : "Add shipping or delivery"}
+                </span>
+                <span className="text-muted-foreground">
+                  {shippingRate ? `${shippingRate.carrier} ${shippingRate.service}` : "—"}
+                </span>
+                <span className="text-right text-foreground">
+                  {shippingCost > 0 ? fmt(shippingCost) : "$0.00"}
+                </span>
               </div>
               <div className="grid grid-cols-3 gap-4 px-4 py-3 text-sm">
                 <span className="text-primary cursor-pointer hover:underline flex items-center gap-1">
@@ -627,6 +643,14 @@ const CreateOrder = () => {
         customerName={selectedCustomer ? (selectedCustomer.company || `${selectedCustomer.first_name}${selectedCustomer.last_name ? ` ${selectedCustomer.last_name}` : ""}`) : undefined}
         invoiceSent={invoiceSent}
         onInvoiceSent={() => setInvoiceSent(true)}
+      />
+
+      <ShippingRateModal
+        open={shippingModalOpen}
+        onOpenChange={setShippingModalOpen}
+        onSelect={(rate) => setShippingRate(rate)}
+        defaultCountry={selectedCustomer ? undefined : undefined}
+        defaultPostalCode=""
       />
 
       {/* Leave confirmation */}
