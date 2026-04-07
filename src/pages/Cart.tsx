@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
-import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft, Loader2, Truck } from "lucide-react";
 import { toast } from "sonner";
+import { COUNTRIES } from "@/lib/countries";
+import { useShippingRates, type ShippingRate } from "@/hooks/useShippingRates";
 
 const Cart = () => {
   const { items, updateQuantity, removeItem, clearCart, totalItems, totalPrice } = useCart();
@@ -12,9 +14,33 @@ const Cart = () => {
   const [checkBundled, setCheckBundled] = useState(false);
   const [checkTerms, setCheckTerms] = useState(false);
 
+  // Shipping address state
+  const [shipCountry, setShipCountry] = useState("US");
+  const [shipPostal, setShipPostal] = useState("");
+  const [shipCity, setShipCity] = useState("");
+  const [shipState, setShipState] = useState("");
+  const [selectedRate, setSelectedRate] = useState<ShippingRate | null>(null);
+
+  const { rates, loading: ratesLoading, error: ratesError, fetchRates } = useShippingRates();
+
+  const handleFetchRates = () => {
+    if (!shipPostal) {
+      toast.error("Please enter a postal code");
+      return;
+    }
+    setSelectedRate(null);
+    fetchRates(
+      { postalCode: shipPostal, country: shipCountry, city: shipCity || undefined, state: shipState || undefined },
+      [{ weight: 1 }]
+    );
+  };
+
+  const shippingCost = selectedRate?.price ?? 0;
+  const orderTotal = totalPrice + shippingCost;
+
   const allChecked = useMemo(
-    () => checkFinal && checkBundled && checkTerms,
-    [checkFinal, checkBundled, checkTerms]
+    () => checkFinal && checkBundled && checkTerms && selectedRate !== null,
+    [checkFinal, checkBundled, checkTerms, selectedRate]
   );
 
   const formatPrice = (price: number) =>
@@ -22,7 +48,7 @@ const Cart = () => {
       style: "currency",
       currency: "USD",
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: 2,
     }).format(price);
 
   return (
@@ -174,7 +200,9 @@ const Cart = () => {
                     </div>
                     <div className="flex justify-between text-muted-foreground">
                       <span>Shipping</span>
-                      <span className="text-foreground font-medium">Calculated later</span>
+                      <span className="text-foreground font-medium">
+                        {selectedRate ? formatPrice(shippingCost) : "Select below"}
+                      </span>
                     </div>
                     <div className="flex justify-between text-muted-foreground">
                       <span>Tax</span>
@@ -186,11 +214,113 @@ const Cart = () => {
 
                   <div className="flex justify-between items-baseline mb-2">
                     <span className="text-base font-bold text-foreground">Total</span>
-                    <span className="text-xl font-bold text-foreground">{formatPrice(totalPrice)}</span>
+                    <span className="text-xl font-bold text-foreground">{formatPrice(orderTotal)}</span>
                   </div>
                   <p className="text-xs text-muted-foreground mb-6">
                     <span className="font-semibold text-foreground">Sales tax:</span> Calculated at checkout for U.S. shipping addresses. Not charged for non-U.S. shipping
                   </p>
+
+                  {/* Shipping address */}
+                  <div className="mb-5 border border-border rounded-lg p-4">
+                    <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                      <Truck className="h-4 w-4" />
+                      Shipping Address
+                    </h3>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground mb-1 block">Country</label>
+                        <select
+                          value={shipCountry}
+                          onChange={(e) => { setShipCountry(e.target.value); setSelectedRate(null); }}
+                          className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground"
+                        >
+                          {COUNTRIES.map((c) => (
+                            <option key={c.code} value={c.code}>{c.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-xs font-medium text-muted-foreground mb-1 block">Postal Code *</label>
+                          <input
+                            value={shipPostal}
+                            onChange={(e) => { setShipPostal(e.target.value); setSelectedRate(null); }}
+                            placeholder="e.g. 10001"
+                            className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-muted-foreground mb-1 block">City</label>
+                          <input
+                            value={shipCity}
+                            onChange={(e) => setShipCity(e.target.value)}
+                            placeholder="Optional"
+                            className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground mb-1 block">State / Province</label>
+                        <input
+                          value={shipState}
+                          onChange={(e) => setShipState(e.target.value)}
+                          placeholder="Optional"
+                          className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground"
+                        />
+                      </div>
+                      <button
+                        onClick={handleFetchRates}
+                        disabled={ratesLoading || !shipPostal}
+                        className="w-full bg-muted hover:bg-muted/80 text-foreground py-2 text-sm font-medium rounded-md transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                      >
+                        {ratesLoading ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Calculating…
+                          </>
+                        ) : (
+                          "Calculate Shipping"
+                        )}
+                      </button>
+                      {ratesError && (
+                        <p className="text-xs text-destructive">{ratesError}</p>
+                      )}
+                      {rates.length > 0 && (
+                        <div className="space-y-1.5 mt-2">
+                          {rates.map((rate, i) => (
+                            <label
+                              key={`${rate.carrier}-${rate.service}-${i}`}
+                              className={`flex items-center gap-2 p-2.5 rounded-md border cursor-pointer transition-colors text-sm ${
+                                selectedRate?.carrier === rate.carrier && selectedRate?.service === rate.service
+                                  ? "border-primary bg-primary/5"
+                                  : "border-border hover:bg-muted/50"
+                              }`}
+                            >
+                              <input
+                                type="radio"
+                                name="cart-shipping"
+                                checked={selectedRate?.carrier === rate.carrier && selectedRate?.service === rate.service}
+                                onChange={() => setSelectedRate(rate)}
+                                className="accent-primary"
+                              />
+                              <div className="flex-1 min-w-0">
+                                <span className="font-medium text-foreground">{rate.carrier}</span>
+                                <span className="text-muted-foreground"> — {rate.service}</span>
+                                {rate.transitDays != null && (
+                                  <span className="text-muted-foreground text-xs ml-1">
+                                    ({rate.transitDays}d)
+                                  </span>
+                                )}
+                              </div>
+                              <span className="font-semibold text-foreground shrink-0">
+                                {formatPrice(rate.price)}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
 
                   {/* Disclaimer checkboxes */}
                   <div className="mb-5 space-y-3 text-xs text-foreground">
@@ -236,7 +366,7 @@ const Cart = () => {
                   </button>
 
                   <p className="text-xs text-muted-foreground text-center mt-3">
-                    Our team will contact you with a final quote including shipping and applicable taxes.
+                    Our team will contact you with a final quote including applicable taxes.
                   </p>
                 </div>
               </div>

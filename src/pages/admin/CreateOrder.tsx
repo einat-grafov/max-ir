@@ -645,6 +645,14 @@ const CreateOrder = () => {
         onInvoiceSent={() => setInvoiceSent(true)}
       />
 
+      <ShippingRateModal
+        open={shippingModalOpen}
+        onOpenChange={setShippingModalOpen}
+        onSelect={(rate) => setShippingRate(rate)}
+        defaultCountry={selectedCustomer ? undefined : undefined}
+        defaultPostalCode=""
+      />
+
       {/* Leave confirmation */}
       <Dialog open={blocker.state === "blocked"} onOpenChange={(open) => { if (!open) blocker.reset?.(); }}>
         <DialogContent className="max-w-md">
