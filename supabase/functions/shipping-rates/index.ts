@@ -21,7 +21,7 @@ interface RateResult {
 
 // FedEx OAuth token
 async function getFedExToken(apiKey: string, secretKey: string): Promise<string> {
-  const res = await fetch("https://apis.fedex.com/oauth/token", {
+  const res = await fetch("https://apis-sandbox.fedex.com/oauth/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: `grant_type=client_credentials&client_id=${apiKey}&client_secret=${secretKey}`,
