@@ -113,6 +113,8 @@ const CreateOrder = () => {
           customer_name: customerName,
           customer_email: selectedCustomer.email,
           subtotal: subtotal,
+          shipping_cost: shippingCost,
+          shipping_method: shippingRate ? `${shippingRate.carrier} ${shippingRate.service}` : null,
           discount_amount: discountAmount,
           tax: tax,
           total: total,
