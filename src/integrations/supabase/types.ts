@@ -478,6 +478,8 @@ export type Database = {
           order_number: number
           payment_due_later: boolean
           payment_status: string
+          shipping_cost: number
+          shipping_method: string | null
           status: string
           subtotal: number
           tax: number
@@ -496,6 +498,8 @@ export type Database = {
           order_number?: number
           payment_due_later?: boolean
           payment_status?: string
+          shipping_cost?: number
+          shipping_method?: string | null
           status?: string
           subtotal?: number
           tax?: number
@@ -514,6 +518,8 @@ export type Database = {
           order_number?: number
           payment_due_later?: boolean
           payment_status?: string
+          shipping_cost?: number
+          shipping_method?: string | null
           status?: string
           subtotal?: number
           tax?: number
