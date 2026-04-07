@@ -61,6 +61,8 @@ const CreateOrder = () => {
   } | null>(null);
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
   const [invoiceSent, setInvoiceSent] = useState(false);
+  const [shippingModalOpen, setShippingModalOpen] = useState(false);
+  const [shippingRate, setShippingRate] = useState<ShippingRate | null>(null);
   const [timelineEvents, setTimelineEvents] = useState<Array<{ id: string; message: string; timestamp: string; attachment?: { name: string; url: string } | null }>>([
     { id: "1", message: "You created this draft order.", timestamp: "Just now" },
   ]);
