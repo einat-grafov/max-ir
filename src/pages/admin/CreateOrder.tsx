@@ -459,9 +459,18 @@ const CreateOrder = () => {
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-4 px-4 py-3 text-sm">
-                <span className="text-primary cursor-pointer hover:underline">Add shipping or delivery</span>
-                <span className="text-muted-foreground">—</span>
-                <span className="text-right text-foreground">$0.00</span>
+                <span
+                  className="text-primary cursor-pointer hover:underline"
+                  onClick={() => setShippingModalOpen(true)}
+                >
+                  {shippingRate ? "Edit shipping" : "Add shipping or delivery"}
+                </span>
+                <span className="text-muted-foreground">
+                  {shippingRate ? `${shippingRate.carrier} ${shippingRate.service}` : "—"}
+                </span>
+                <span className="text-right text-foreground">
+                  {shippingCost > 0 ? fmt(shippingCost) : "$0.00"}
+                </span>
               </div>
               <div className="grid grid-cols-3 gap-4 px-4 py-3 text-sm">
                 <span className="text-primary cursor-pointer hover:underline flex items-center gap-1">
