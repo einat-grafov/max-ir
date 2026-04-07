@@ -21,7 +21,7 @@ interface RateResult {
 
 // FedEx OAuth token
 async function getFedExToken(apiKey: string, secretKey: string): Promise<string> {
-  const res = await fetch("https://apis.fedex.com/oauth/token", {
+  const res = await fetch("https://apis-sandbox.fedex.com/oauth/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: `grant_type=client_credentials&client_id=${apiKey}&client_secret=${secretKey}`,
@@ -33,7 +33,7 @@ async function getFedExToken(apiKey: string, secretKey: string): Promise<string>
 
 // UPS OAuth token
 async function getUPSToken(clientId: string, clientSecret: string): Promise<string> {
-  const res = await fetch("https://onlinetools.ups.com/security/v1/oauth/token", {
+  const res = await fetch("https://wwwcie.ups.com/security/v1/oauth/token", {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -61,7 +61,7 @@ async function getFedExRates(token: string, accountNumber: string, req: Shipment
     },
   };
 
-  const res = await fetch("https://apis.fedex.com/rate/v1/rates/quotes", {
+  const res = await fetch("https://apis-sandbox.fedex.com/rate/v1/rates/quotes", {
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -121,7 +121,7 @@ async function getUPSRates(token: string, accountNumber: string, req: ShipmentRe
     },
   };
 
-  const res = await fetch("https://onlinetools.ups.com/api/rating/v1/Shop", {
+  const res = await fetch("https://wwwcie.ups.com/api/rating/v1/Shop", {
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify(body),
