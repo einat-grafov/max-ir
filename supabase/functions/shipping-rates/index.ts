@@ -33,7 +33,7 @@ async function getFedExToken(apiKey: string, secretKey: string): Promise<string>
 
 // UPS OAuth token
 async function getUPSToken(clientId: string, clientSecret: string): Promise<string> {
-  const res = await fetch("https://onlinetools.ups.com/security/v1/oauth/token", {
+  const res = await fetch("https://wwwcie.ups.com/security/v1/oauth/token", {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
