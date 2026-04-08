@@ -90,7 +90,27 @@ async function getFedExRates(token: string, accountNumber: string, req: Shipment
   return results;
 }
 
+function usesUPSImperialUnits(countryCode: string): boolean {
+  const normalizedCountry = countryCode.trim().toUpperCase();
+  return normalizedCountry === "US" || normalizedCountry === "PR";
+}
+
+function formatUPSWeight(weightKg: number, useImperialUnits: boolean): string {
+  if (!useImperialUnits) return String(weightKg);
+  return (weightKg * 2.20462).toFixed(2);
+}
+
+function formatUPSDimension(sizeCm: number | undefined, useImperialUnits: boolean): string | undefined {
+  if (sizeCm == null) return undefined;
+  if (!useImperialUnits) return String(sizeCm);
+  return (sizeCm / 2.54).toFixed(2);
+}
+
 async function getUPSRates(token: string, accountNumber: string, req: ShipmentRequest): Promise<RateResult[]> {
+  const useImperialUnits = usesUPSImperialUnits(req.origin.country);
+  const weightUnitCode = useImperialUnits ? "LBS" : "KGS";
+  const dimensionUnitCode = useImperialUnits ? "IN" : "CM";
+
   const body = {
     RateRequest: {
       Request: { TransactionReference: { CustomerContext: "Rate Request" } },
@@ -107,13 +127,16 @@ async function getUPSRates(token: string, accountNumber: string, req: ShipmentRe
         },
         Package: req.packages.map((p) => ({
           PackagingType: { Code: "02" },
-          PackageWeight: { UnitOfMeasurement: { Code: "KGS" }, Weight: String(p.weight) },
+          PackageWeight: {
+            UnitOfMeasurement: { Code: weightUnitCode },
+            Weight: formatUPSWeight(p.weight, useImperialUnits),
+          },
           Dimensions: p.length
             ? {
-                UnitOfMeasurement: { Code: "CM" },
-                Length: String(p.length),
-                Width: String(p.width),
-                Height: String(p.height),
+                UnitOfMeasurement: { Code: dimensionUnitCode },
+                Length: formatUPSDimension(p.length, useImperialUnits),
+                Width: formatUPSDimension(p.width, useImperialUnits),
+                Height: formatUPSDimension(p.height, useImperialUnits),
               }
             : undefined,
         })),
@@ -130,7 +153,23 @@ async function getUPSRates(token: string, accountNumber: string, req: ShipmentRe
   if (!res.ok) {
     const err = await res.text();
     console.error("UPS rates error:", err);
-    return [{ carrier: "UPS", service: "Error", price: 0, currency: "USD", error: `UPS API error: ${res.status}` }];
+
+    let errorMessage = `UPS API error: ${res.status}`;
+    try {
+      const parsed = JSON.parse(err);
+      const upsMessage = parsed?.response?.errors
+        ?.map((item: { message?: string }) => item.message)
+        .filter(Boolean)
+        .join("; ");
+
+      if (upsMessage) {
+        errorMessage = `${errorMessage} — ${upsMessage}`;
+      }
+    } catch {
+      // Ignore non-JSON error bodies and keep the generic error message.
+    }
+
+    return [{ carrier: "UPS", service: "Error", price: 0, currency: "USD", error: errorMessage }];
   }
 
   const data = await res.json();
