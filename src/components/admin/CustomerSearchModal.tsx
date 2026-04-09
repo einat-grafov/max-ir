@@ -72,7 +72,7 @@ const CustomerSearchModal = ({ open, onOpenChange, onSelectCustomer }: CustomerS
           <DialogTitle>Select customer</DialogTitle>
         </DialogHeader>
 
-        <div className="pt-4 overflow-y-auto flex-1">
+        <div className="overflow-y-auto flex-1 pt-4 space-y-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -83,51 +83,51 @@ const CustomerSearchModal = ({ open, onOpenChange, onSelectCustomer }: CustomerS
               autoFocus
             />
           </div>
-        </div>
 
-        {/* Table header */}
-        <div className="pt-3">
-          <div className="grid grid-cols-[1fr_1fr_auto] gap-4 items-center text-sm text-muted-foreground border-b border-border pb-2">
-            <span>Name</span>
-            <span>Email</span>
-            <span className="w-32 text-right">Location</span>
+          {/* Table header */}
+          <div className="pt-3">
+            <div className="grid grid-cols-[1fr_1fr_auto] gap-4 items-center text-sm text-muted-foreground border-b border-border pb-2">
+              <span>Name</span>
+              <span>Email</span>
+              <span className="w-32 text-right">Location</span>
+            </div>
+          </div>
+
+          {/* Customer list */}
+          <div>
+            {loading && (
+              <p className="text-sm text-muted-foreground py-8 text-center">Loading...</p>
+            )}
+            {!loading && customers.length === 0 && (
+              <p className="text-sm text-muted-foreground py-8 text-center">No customers found.</p>
+            )}
+            {customers.map((customer) => (
+              <div
+                key={customer.id}
+                className="grid grid-cols-[1fr_1fr_auto] gap-4 items-center py-3 border-b border-border cursor-pointer hover:bg-muted/50 transition-colors"
+                onClick={() => handleSelect(customer)}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0">
+                    <User className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <span className="text-sm font-medium text-foreground">
+                    {customer.company || customer.first_name}
+                  </span>
+                </div>
+                <span className="text-sm text-muted-foreground truncate">
+                  {customer.email || "—"}
+                </span>
+                <span className="w-32 text-right text-sm text-muted-foreground">
+                  {[customer.city, customer.country].filter(Boolean).join(", ") || "—"}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Customer list */}
-        <div>
-          {loading && (
-            <p className="text-sm text-muted-foreground py-8 text-center">Loading...</p>
-          )}
-          {!loading && customers.length === 0 && (
-            <p className="text-sm text-muted-foreground py-8 text-center">No customers found.</p>
-          )}
-          {customers.map((customer) => (
-            <div
-              key={customer.id}
-              className="grid grid-cols-[1fr_1fr_auto] gap-4 items-center py-3 border-b border-border cursor-pointer hover:bg-muted/50 transition-colors"
-              onClick={() => handleSelect(customer)}
-            >
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <span className="text-sm font-medium text-foreground">
-                  {customer.company || customer.first_name}
-                </span>
-              </div>
-              <span className="text-sm text-muted-foreground truncate">
-                {customer.email || "—"}
-              </span>
-              <span className="w-32 text-right text-sm text-muted-foreground">
-                {[customer.city, customer.country].filter(Boolean).join(", ") || "—"}
-              </span>
-            </div>
-          ))}
-        </div>
-
         {/* Footer */}
-        <div className="flex items-center justify-end pt-4 border-t border-border">
+        <div className="flex items-center justify-end pt-4 border-t border-border shrink-0">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
