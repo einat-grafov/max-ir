@@ -429,7 +429,7 @@ const RecordInteractionModal = ({
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-2 pt-4">
+        <div className="flex justify-end gap-2 pt-4 shrink-0 border-t border-border">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
