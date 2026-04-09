@@ -228,11 +228,13 @@ const WebsiteSectionEditor = ({ section, label, onSaved, onDelete }: Props) => {
       </Card>
 
       <Dialog open={showLayoutPicker} onOpenChange={setShowLayoutPicker}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="max-w-3xl max-h-[80vh] flex flex-col overflow-hidden">
+          <DialogHeader className="shrink-0 border-b border-border pb-4">
             <DialogTitle>Change Layout</DialogTitle>
           </DialogHeader>
-          <LayoutPicker onSelect={handleLayoutChange} currentLayoutId={currentLayoutId} />
+          <div className="overflow-y-auto flex-1 pt-4">
+            <LayoutPicker onSelect={handleLayoutChange} currentLayoutId={currentLayoutId} />
+          </div>
         </DialogContent>
       </Dialog>
     </Collapsible>

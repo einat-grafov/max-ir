@@ -95,8 +95,8 @@ const ImagePickerDialog = ({ open, onOpenChange, onSelect }: ImagePickerDialogPr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
-        <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col overflow-hidden">
+        <DialogHeader className="shrink-0 border-b border-border pb-4">
           <DialogTitle>Pick an image</DialogTitle>
         </DialogHeader>
         <div className="flex items-center gap-2">

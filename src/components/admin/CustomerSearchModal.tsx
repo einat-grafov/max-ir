@@ -67,12 +67,12 @@ const CustomerSearchModal = ({ open, onOpenChange, onSelectCustomer }: CustomerS
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh]">
-        <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col overflow-hidden">
+        <DialogHeader className="shrink-0 border-b border-border pb-4">
           <DialogTitle>Select customer</DialogTitle>
         </DialogHeader>
 
-        <div className="mt-4">
+        <div className="pt-4 overflow-y-auto flex-1">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input

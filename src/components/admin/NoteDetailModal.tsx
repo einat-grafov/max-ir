@@ -81,8 +81,8 @@ const NoteDetailModal = ({ open, onOpenChange, note, customerId, customerName, c
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         {note && (
-          <DialogContent className="sm:max-w-[560px] max-h-[85vh]">
-            <DialogHeader>
+          <DialogContent className="sm:max-w-[560px] max-h-[85vh] flex flex-col overflow-hidden">
+            <DialogHeader className="shrink-0 border-b border-border pb-4">
               <div className="flex items-center justify-between">
                 <DialogTitle className="flex items-center gap-2">
                   Interaction Details
@@ -109,7 +109,7 @@ const NoteDetailModal = ({ open, onOpenChange, note, customerId, customerName, c
               </div>
             </DialogHeader>
 
-            <div className="space-y-4 pt-2">
+            <div className="space-y-4 overflow-y-auto flex-1 pt-4">
               <div className="grid grid-cols-2 gap-4">
                 <DetailRow icon={User} label="Customer" value={note.customer_name} />
                 <DetailRow icon={Building2} label="Company" value={note.company} />

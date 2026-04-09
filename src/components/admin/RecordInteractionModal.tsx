@@ -206,12 +206,12 @@ const RecordInteractionModal = ({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-[640px] max-h-[90vh]">
-        <DialogHeader>
+      <DialogContent className="max-w-[640px] max-h-[90vh] flex flex-col overflow-hidden">
+        <DialogHeader className="shrink-0 border-b border-border pb-4">
           <DialogTitle>{isEditing ? "Edit Interaction" : "Record Customer Interaction"}</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-5 pt-2">
+        <div className="space-y-5 overflow-y-auto flex-1 pt-4">
           {/* Row 1: Date + Contact Person */}
           <div className="grid grid-cols-2 gap-4">
             <div>
