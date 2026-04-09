@@ -142,11 +142,13 @@ const TestPageBuilder = () => {
       </button>
 
       <Dialog open={showPicker} onOpenChange={setShowPicker}>
-        <DialogContent className="max-w-3xl max-h-[80vh]">
-          <DialogHeader>
+        <DialogContent className="max-w-3xl max-h-[80vh] flex flex-col overflow-hidden">
+          <DialogHeader className="shrink-0 border-b border-border pb-4">
             <DialogTitle>Choose a Layout</DialogTitle>
           </DialogHeader>
-          <LayoutPicker onSelect={(t) => addSection.mutate(t)} />
+          <div className="overflow-y-auto flex-1 pt-4">
+            <LayoutPicker onSelect={(t) => addSection.mutate(t)} />
+          </div>
         </DialogContent>
       </Dialog>
     </div>
