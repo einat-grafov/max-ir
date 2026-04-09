@@ -99,7 +99,7 @@ const ImagePickerDialog = ({ open, onOpenChange, onSelect }: ImagePickerDialogPr
         <DialogHeader className="shrink-0 border-b border-border pb-4">
           <DialogTitle>Pick an image</DialogTitle>
         </DialogHeader>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 pt-4 shrink-0">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
