@@ -528,7 +528,7 @@ const CreateOrder = () => {
                 <DialogHeader>
                   <DialogTitle>Add note</DialogTitle>
                 </DialogHeader>
-                <div>
+                <div className="pt-4">
                   <div className="relative">
                     <Textarea
                       value={tempNotes}
