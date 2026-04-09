@@ -79,12 +79,12 @@ const ProductSearchModal = ({ open, onOpenChange, onAddProducts }: ProductSearch
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh]">
-        <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col overflow-hidden">
+        <DialogHeader className="shrink-0 border-b border-border pb-4">
           <DialogTitle>Select products</DialogTitle>
         </DialogHeader>
 
-        <div className="mt-4">
+        <div className="overflow-y-auto flex-1 pt-4 space-y-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -95,63 +95,63 @@ const ProductSearchModal = ({ open, onOpenChange, onAddProducts }: ProductSearch
               autoFocus
             />
           </div>
-        </div>
 
-        {/* Table header */}
-        <div className="pt-3">
-          <div className="grid grid-cols-[auto_1fr_auto_auto] gap-4 items-center text-sm text-muted-foreground border-b border-border pb-2">
-            <span className="w-6" />
-            <span>Product</span>
-            <span className="w-20 text-center">Available</span>
-            <span className="w-32 text-right">Price</span>
+          {/* Table header */}
+          <div className="pt-3">
+            <div className="grid grid-cols-[auto_1fr_auto_auto] gap-4 items-center text-sm text-muted-foreground border-b border-border pb-2">
+              <span className="w-6" />
+              <span>Product</span>
+              <span className="w-20 text-center">Available</span>
+              <span className="w-32 text-right">Price</span>
+            </div>
+          </div>
+
+          {/* Product list */}
+          <div>
+            {loading && (
+              <p className="text-sm text-muted-foreground py-8 text-center">Loading...</p>
+            )}
+            {!loading && products.length === 0 && (
+              <p className="text-sm text-muted-foreground py-8 text-center">No products found.</p>
+            )}
+            {products.map((product) => (
+              <div key={product.id}>
+                <div
+                  className="grid grid-cols-[auto_1fr_auto_auto] gap-4 items-center py-3 border-b border-border cursor-pointer hover:bg-muted/50 transition-colors"
+                  onClick={() => toggleSelect(product.id)}
+                >
+                  <Checkbox
+                    checked={selected.has(product.id)}
+                    onCheckedChange={() => toggleSelect(product.id)}
+                    className="w-5 h-5"
+                  />
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                      {product.image_url ? (
+                        <img src={product.image_url} alt={product.name} className="h-10 w-10 rounded-lg object-cover" />
+                      ) : (
+                        <Package className="h-5 w-5 text-muted-foreground" />
+                      )}
+                    </div>
+                    <span className="text-sm font-medium text-foreground">{product.name}</span>
+                  </div>
+                  <span className="w-20 text-center text-sm text-foreground">{product.stock}</span>
+                  <span className="w-32 text-right text-sm text-foreground">{fmt(product.price)}</span>
+                </div>
+                {product.stock === 0 && selected.has(product.id) && (
+                  <Alert variant="destructive" className="mt-1 mb-1">
+                    <AlertDescription className="text-xs">
+                      This product is out of stock. You can still add it to the order.
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Product list */}
-        <div>
-          {loading && (
-            <p className="text-sm text-muted-foreground py-8 text-center">Loading...</p>
-          )}
-          {!loading && products.length === 0 && (
-            <p className="text-sm text-muted-foreground py-8 text-center">No products found.</p>
-          )}
-          {products.map((product) => (
-            <div key={product.id}>
-              <div
-                className="grid grid-cols-[auto_1fr_auto_auto] gap-4 items-center py-3 border-b border-border cursor-pointer hover:bg-muted/50 transition-colors"
-                onClick={() => toggleSelect(product.id)}
-              >
-                <Checkbox
-                  checked={selected.has(product.id)}
-                  onCheckedChange={() => toggleSelect(product.id)}
-                  className="w-5 h-5"
-                />
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                    {product.image_url ? (
-                      <img src={product.image_url} alt={product.name} className="h-10 w-10 rounded-lg object-cover" />
-                    ) : (
-                      <Package className="h-5 w-5 text-muted-foreground" />
-                    )}
-                  </div>
-                  <span className="text-sm font-medium text-foreground">{product.name}</span>
-                </div>
-                <span className="w-20 text-center text-sm text-foreground">{product.stock}</span>
-                <span className="w-32 text-right text-sm text-foreground">{fmt(product.price)}</span>
-              </div>
-              {product.stock === 0 && selected.has(product.id) && (
-                <Alert variant="destructive" className="mt-1 mb-1">
-                  <AlertDescription className="text-xs">
-                    This product is out of stock. You can still add it to the order.
-                  </AlertDescription>
-                </Alert>
-              )}
-            </div>
-          ))}
-        </div>
-
         {/* Footer */}
-        <div className="flex items-center justify-between pt-4 border-t border-border">
+        <div className="flex items-center justify-between pt-4 border-t border-border shrink-0">
           <span className="text-sm text-muted-foreground">
             {selected.size}/{products.length} variants selected
           </span>

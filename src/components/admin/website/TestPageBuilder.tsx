@@ -300,12 +300,14 @@ const SectionEditor = ({
       </Collapsible>
 
       <Dialog open={showLayoutSwitch} onOpenChange={setShowLayoutSwitch}>
-        <DialogContent className="max-w-3xl max-h-[80vh]">
-          <DialogHeader>
+        <DialogContent className="max-w-3xl max-h-[80vh] flex flex-col overflow-hidden">
+          <DialogHeader className="shrink-0 border-b border-border pb-4">
             <DialogTitle>Switch Layout</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground -mt-2 mb-2">Matching fields (title, description, etc.) will be preserved.</p>
-          <LayoutPicker onSelect={handleLayoutSwitch} currentLayoutId={content?.layout} />
+          <div className="overflow-y-auto flex-1 pt-4">
+            <p className="text-sm text-muted-foreground mb-2">Matching fields (title, description, etc.) will be preserved.</p>
+            <LayoutPicker onSelect={handleLayoutSwitch} currentLayoutId={content?.layout} />
+          </div>
         </DialogContent>
       </Dialog>
     </>
