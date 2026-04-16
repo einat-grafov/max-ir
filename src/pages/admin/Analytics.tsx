@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
+import WebsiteAnalytics from "@/components/admin/WebsiteAnalytics";
 import type { DateRange } from "react-day-picker";
 
 const PERIOD_OPTIONS = [
@@ -312,6 +313,11 @@ const Analytics = () => {
             <p className="text-2xl font-bold text-foreground">{card.value}</p>
           </Card>
         ))}
+      </div>
+
+      {/* Website Analytics */}
+      <div className="mb-8">
+        <WebsiteAnalytics />
       </div>
 
       {/* Inquiries Table */}
