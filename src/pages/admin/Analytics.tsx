@@ -315,6 +315,11 @@ const Analytics = () => {
         ))}
       </div>
 
+      {/* Website Analytics */}
+      <div className="mb-8">
+        <WebsiteAnalytics />
+      </div>
+
       {/* Inquiries Table */}
       <Card className="p-6 mb-8">
         <div className="flex items-center justify-between mb-4">
