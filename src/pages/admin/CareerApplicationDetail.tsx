@@ -25,6 +25,7 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import CareerApplicationTimeline from "@/components/admin/CareerApplicationTimeline";
+import CareerApplicationFiles from "@/components/admin/CareerApplicationFiles";
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   new: { label: "New", className: "bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200 cursor-pointer" },
@@ -337,6 +338,8 @@ const CareerApplicationDetail = () => {
               className="min-h-[120px] resize-none"
             />
           </Card>
+
+          <CareerApplicationFiles applicationId={id!} />
         </div>
 
         <div className="space-y-6">
