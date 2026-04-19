@@ -14,6 +14,74 @@ export type Database = {
   }
   public: {
     Tables: {
+      career_application_notes: {
+        Row: {
+          action_items: string | null
+          application_id: string
+          attachment_name: string | null
+          attachment_url: string | null
+          contact_person: string | null
+          content: string
+          created_at: string
+          customer_feedback: string | null
+          date_of_interaction: string
+          follow_up_details: string | null
+          follow_up_required: boolean
+          id: string
+          interaction_type: string | null
+          interaction_type_other: string | null
+          next_follow_up_date: string | null
+          sales_representative: string | null
+          summary: string | null
+        }
+        Insert: {
+          action_items?: string | null
+          application_id: string
+          attachment_name?: string | null
+          attachment_url?: string | null
+          contact_person?: string | null
+          content: string
+          created_at?: string
+          customer_feedback?: string | null
+          date_of_interaction?: string
+          follow_up_details?: string | null
+          follow_up_required?: boolean
+          id?: string
+          interaction_type?: string | null
+          interaction_type_other?: string | null
+          next_follow_up_date?: string | null
+          sales_representative?: string | null
+          summary?: string | null
+        }
+        Update: {
+          action_items?: string | null
+          application_id?: string
+          attachment_name?: string | null
+          attachment_url?: string | null
+          contact_person?: string | null
+          content?: string
+          created_at?: string
+          customer_feedback?: string | null
+          date_of_interaction?: string
+          follow_up_details?: string | null
+          follow_up_required?: boolean
+          id?: string
+          interaction_type?: string | null
+          interaction_type_other?: string | null
+          next_follow_up_date?: string | null
+          sales_representative?: string | null
+          summary?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "career_application_notes_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "career_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       career_applications: {
         Row: {
           about: string | null
@@ -23,7 +91,12 @@ export type Database = {
           email: string
           full_name: string
           id: string
+          notes: string | null
+          phone: string | null
+          position: string | null
           read: boolean
+          resume_url: string | null
+          status: string
         }
         Insert: {
           about?: string | null
@@ -33,7 +106,12 @@ export type Database = {
           email: string
           full_name: string
           id?: string
+          notes?: string | null
+          phone?: string | null
+          position?: string | null
           read?: boolean
+          resume_url?: string | null
+          status?: string
         }
         Update: {
           about?: string | null
@@ -43,7 +121,12 @@ export type Database = {
           email?: string
           full_name?: string
           id?: string
+          notes?: string | null
+          phone?: string | null
+          position?: string | null
           read?: boolean
+          resume_url?: string | null
+          status?: string
         }
         Relationships: []
       }
