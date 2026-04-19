@@ -79,13 +79,14 @@ const CareerApplicationTimeline = ({ applicationId, applicantName, applicationCr
     onError: () => toast.error("Failed to delete interaction"),
   });
 
+  const appliedEvent: TimelineEvent = {
+    id: "applied",
+    type: "applied",
+    message: "Application submitted",
+    date: new Date(applicationCreatedAt),
+  };
   const events: TimelineEvent[] = [
-    {
-      id: "applied",
-      type: "applied",
-      message: "Application submitted",
-      date: new Date(applicationCreatedAt),
-    },
+    appliedEvent,
     ...(notes || []).map<TimelineEvent>((n) => ({
       id: `note-${n.id}`,
       type: "note",
