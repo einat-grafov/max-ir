@@ -44,6 +44,22 @@ export const useShippingRates = () => {
       setLoading(true);
       setError(null);
       setRates([]);
+
+      // Test address: postal code "00000" returns a free shipping rate
+      // for end-to-end checkout testing without needing a real carrier quote.
+      if (destination.postalCode?.trim() === "00000") {
+        const testRate: ShippingRate = {
+          carrier: "Test",
+          service: "Free Test Shipping",
+          price: 0,
+          currency: "USD",
+          transitDays: 1,
+        };
+        setRates([testRate]);
+        setLoading(false);
+        return [testRate];
+      }
+
       try {
         const { data, error: fnError } = await supabase.functions.invoke(
           "shipping-rates",
