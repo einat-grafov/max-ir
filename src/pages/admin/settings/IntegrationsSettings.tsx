@@ -99,6 +99,7 @@ const IntegrationsSettings = () => {
   const [testResults, setTestResults] = useState<any[] | null>(null);
   const [addProviderOpen, setAddProviderOpen] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState<ProviderOption | null>(null);
+  const [addIntegrationOpen, setAddIntegrationOpen] = useState(false);
 
   const [originZip, setOriginZip] = useState("10001");
   const [originCountry, setOriginCountry] = useState("US");
@@ -215,10 +216,16 @@ const IntegrationsSettings = () => {
           <Plug className="h-6 w-6 text-primary" />
           <h1 className="text-2xl font-bold text-foreground">Integrations</h1>
         </div>
-        <Button variant="outline" size="sm" onClick={refreshAll} disabled={shippingLoading || stripeLoading}>
-          <RefreshCw className={`h-4 w-4 mr-1 ${shippingLoading || stripeLoading ? "animate-spin" : ""}`} />
-          Refresh
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={refreshAll} disabled={shippingLoading || stripeLoading}>
+            <RefreshCw className={`h-4 w-4 mr-1 ${shippingLoading || stripeLoading ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
+          <Button size="sm" onClick={() => setAddIntegrationOpen(true)}>
+            <Plus className="h-4 w-4 mr-1" />
+            Add integration
+          </Button>
+        </div>
       </div>
 
       <div className="max-w-2xl space-y-10">
