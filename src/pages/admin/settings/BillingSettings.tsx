@@ -76,7 +76,7 @@ const BillingSettings = () => {
             {!loading && status && (
               <div className="flex items-center gap-2">
                 {status.connected ? (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-green-500/10 text-green-700 dark:text-green-400 border border-green-500/20">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-secondary/10 text-secondary border border-secondary/20">
                     <CheckCircle2 className="h-3.5 w-3.5" />
                     Connected
                   </span>
@@ -91,7 +91,7 @@ const BillingSettings = () => {
                     className={`inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full border ${
                       status.mode === "live"
                         ? "bg-primary/10 text-primary border-primary/20"
-                        : "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20"
+                        : "bg-muted text-muted-foreground border-border"
                     }`}
                   >
                     {status.mode === "live" ? "Live mode" : status.mode === "test" ? "Test mode" : "Unknown mode"}
