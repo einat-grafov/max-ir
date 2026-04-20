@@ -167,7 +167,13 @@ const ShippingSettings = () => {
       <div className="max-w-2xl space-y-6">
         {/* Carrier Status */}
         <div>
-          <h2 className="text-base font-semibold text-foreground mb-3">Carriers</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-base font-semibold text-foreground">Carriers</h2>
+            <Button variant="outline" size="sm" onClick={() => setAddProviderOpen(true)}>
+              <Plus className="h-4 w-4 mr-1" />
+              Add provider
+            </Button>
+          </div>
           <div className="space-y-3">
             {loading ? (
               <Card className="p-5">
