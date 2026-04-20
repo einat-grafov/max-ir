@@ -11,6 +11,8 @@ import {
   ExternalLink,
   Loader2,
   AlertTriangle,
+  Mail,
+  BarChart3,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
