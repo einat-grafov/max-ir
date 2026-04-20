@@ -536,7 +536,7 @@ const IntegrationsSettings = () => {
             </DialogTitle>
             <DialogDescription>
               {selectedProvider
-                ? "Add the API credentials below as backend secrets to enable this carrier."
+                ? "Enter the API credentials below to enable this carrier."
                 : "Choose a carrier to connect. Each provider requires its own API credentials."}
             </DialogDescription>
           </DialogHeader>
