@@ -7,12 +7,14 @@ import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft, Loader2, Truck } from "lu
 import { toast } from "sonner";
 import { COUNTRIES } from "@/lib/countries";
 import { useShippingRates, type ShippingRate } from "@/hooks/useShippingRates";
+import { supabase } from "@/integrations/supabase/client";
 
 const Cart = () => {
   const { items, updateQuantity, removeItem, clearCart, totalItems, totalPrice } = useCart();
   const [checkFinal, setCheckFinal] = useState(false);
   const [checkBundled, setCheckBundled] = useState(false);
   const [checkTerms, setCheckTerms] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   // Shipping address state
   const [shipCountry, setShipCountry] = useState("US");
@@ -42,6 +44,37 @@ const Cart = () => {
     () => checkFinal && checkBundled && checkTerms && selectedRate !== null,
     [checkFinal, checkBundled, checkTerms, selectedRate]
   );
+
+  const handleCheckout = async () => {
+    if (!selectedRate) {
+      toast.error("Please select a shipping option");
+      return;
+    }
+    setCheckoutLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout-session", {
+        body: {
+          items,
+          shippingRate: selectedRate,
+          shippingAddress: {
+            postalCode: shipPostal,
+            country: shipCountry,
+            city: shipCity || undefined,
+            state: shipState || undefined,
+          },
+          successUrl: `${window.location.origin}/checkout/success`,
+          cancelUrl: `${window.location.origin}/checkout/cancel`,
+        },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      if (!data?.url) throw new Error("No checkout URL returned");
+      window.location.href = data.url;
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to start checkout");
+      setCheckoutLoading(false);
+    }
+  };
 
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("en-US", {
@@ -358,11 +391,18 @@ const Cart = () => {
                   </div>
 
                   <button
-                    onClick={() => toast.info("Stripe checkout coming soon!")}
-                    disabled={!allChecked}
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 text-sm font-semibold rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={handleCheckout}
+                    disabled={!allChecked || checkoutLoading}
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 text-sm font-semibold rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
-                    Check out
+                    {checkoutLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Redirecting…
+                      </>
+                    ) : (
+                      "Check out"
+                    )}
                   </button>
 
                   <p className="text-xs text-muted-foreground text-center mt-3">

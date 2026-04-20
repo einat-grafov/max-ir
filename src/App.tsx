@@ -10,6 +10,8 @@ import AboutUs from "./pages/AboutUs";
 import Team from "./pages/Team";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
+import CheckoutSuccess from "./pages/CheckoutSuccess";
+import CheckoutCancel from "./pages/CheckoutCancel";
 import AdminLogin from "./pages/AdminLogin";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
@@ -78,6 +80,8 @@ const router = createBrowserRouter([
       { path: "/products/:id", element: <ProductDetail /> },
       { path: "/store/:id", element: <ProductDetail /> },
       { path: "/cart", element: <Cart /> },
+      { path: "/checkout/success", element: <CheckoutSuccess /> },
+      { path: "/checkout/cancel", element: <CheckoutCancel /> },
       { path: "/design-system", element: <DesignSystem /> },
       { path: "/unsubscribe", element: <Unsubscribe /> },
       { path: "/privacy-policy", element: <PrivacyPolicy /> },
