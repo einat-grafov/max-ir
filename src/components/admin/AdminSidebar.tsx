@@ -5,7 +5,7 @@ import {
   Settings,
   UserCog,
   CreditCard,
-  Truck,
+  Plug,
   LogOut,
   ChevronDown,
   Home,
@@ -46,7 +46,7 @@ const settingsItems = [
   { title: "Users", url: "/admin/settings/users", icon: UserCog },
   { title: "Emails", url: "/admin/settings/emails", icon: Mail },
   { title: "Billing", url: "/admin/settings/billing", icon: CreditCard },
-  { title: "Shipping", url: "/admin/settings/shipping", icon: Truck },
+  { title: "Integrations", url: "/admin/settings/integrations", icon: Plug },
 ];
 
 export function AdminSidebar() {
