@@ -253,6 +253,111 @@ const ShippingSettings = () => {
           )}
         </Card>
       </div>
+
+      {/* Add Provider dialog */}
+      <Dialog
+        open={addProviderOpen}
+        onOpenChange={(open) => {
+          setAddProviderOpen(open);
+          if (!open) setSelectedProvider(null);
+        }}
+      >
+        <DialogContent className="max-w-lg max-h-[85vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle>{selectedProvider ? `Connect ${selectedProvider.name}` : "Add a shipping provider"}</DialogTitle>
+            <DialogDescription>
+              {selectedProvider
+                ? "Add the API credentials below as backend secrets to enable this carrier."
+                : "Choose a carrier to connect. Each provider requires its own API credentials."}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex-1 overflow-y-auto pt-4">
+            {!selectedProvider ? (
+              <div className="space-y-2">
+                {AVAILABLE_PROVIDERS.map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => setSelectedProvider(p)}
+                    className="w-full flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted transition-colors text-left"
+                  >
+                    <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center text-sm font-bold text-foreground shrink-0">
+                      {p.icon}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-semibold text-foreground">{p.name}</div>
+                      <div className="text-xs text-muted-foreground truncate">{p.description}</div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-muted-foreground mb-2">{selectedProvider.description}</p>
+                  <a
+                    href={selectedProvider.docsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                  >
+                    View {selectedProvider.name} API docs
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-semibold text-foreground mb-2">Required secrets</h4>
+                  <div className="space-y-1.5">
+                    {selectedProvider.secretsRequired.map((s) => (
+                      <div
+                        key={s}
+                        className="font-mono text-xs px-3 py-2 rounded-md bg-muted/50 border border-border text-foreground"
+                      >
+                        {s}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="text-sm text-muted-foreground border-t border-border pt-4">
+                  <p className="mb-1 font-medium text-foreground">Next steps:</p>
+                  <ol className="list-decimal list-inside space-y-1">
+                    <li>Get your credentials from {selectedProvider.name}'s developer portal.</li>
+                    <li>Add each secret above in your backend secret manager.</li>
+                    <li>The shipping rates function will pick them up automatically once an integration is built for this carrier.</li>
+                  </ol>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="gap-2">
+            {selectedProvider ? (
+              <>
+                <Button variant="outline" onClick={() => setSelectedProvider(null)}>
+                  Back
+                </Button>
+                <Button
+                  onClick={() => {
+                    toast.info(
+                      `${selectedProvider.name} integration request noted. Add the listed secrets in Cloud → Secrets to begin.`,
+                    );
+                    setAddProviderOpen(false);
+                    setSelectedProvider(null);
+                  }}
+                >
+                  Got it
+                </Button>
+              </>
+            ) : (
+              <Button variant="outline" onClick={() => setAddProviderOpen(false)}>
+                Cancel
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
