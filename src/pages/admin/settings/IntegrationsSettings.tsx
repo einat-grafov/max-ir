@@ -614,6 +614,93 @@ const IntegrationsSettings = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Add Integration dialog */}
+      <Dialog open={addIntegrationOpen} onOpenChange={setAddIntegrationOpen}>
+        <DialogContent className="max-w-lg max-h-[85vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Add an integration</DialogTitle>
+            <DialogDescription>
+              Choose a category to connect a new service to your store.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex-1 overflow-y-auto pt-4 space-y-2">
+            {[
+              {
+                id: "shipping",
+                name: "Shipping carrier",
+                icon: Truck,
+                description: "Connect FedEx, UPS, DHL, USPS, Aramex, Israel Post and more.",
+                action: () => {
+                  setAddIntegrationOpen(false);
+                  setAddProviderOpen(true);
+                },
+              },
+              {
+                id: "payments",
+                name: "Payment processor",
+                icon: CreditCard,
+                description: "Stripe is currently connected. More processors coming soon.",
+                action: () => {
+                  toast.info("Stripe is the only payment processor available right now.");
+                },
+              },
+              {
+                id: "email",
+                name: "Email & marketing",
+                icon: Mail,
+                description: "Manage transactional email at Settings → Emails.",
+                action: () => {
+                  setAddIntegrationOpen(false);
+                  window.location.href = "/admin/settings/emails";
+                },
+              },
+              {
+                id: "analytics",
+                name: "Analytics & tracking",
+                icon: BarChart3,
+                description: "GA4 and Meta Pixel — request via support to enable.",
+                action: () => {
+                  toast.info("Analytics integration is configured in code. Ask the team to set it up.");
+                },
+              },
+              {
+                id: "other",
+                name: "Other / custom",
+                icon: Plug,
+                description: "Need something else? We can wire up custom integrations on request.",
+                action: () => {
+                  toast.info("Tell us which service you'd like to integrate and we'll add it.");
+                },
+              },
+            ].map((opt) => {
+              const Icon = opt.icon;
+              return (
+                <button
+                  key={opt.id}
+                  onClick={opt.action}
+                  className="w-full flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted transition-colors text-left"
+                >
+                  <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center text-foreground shrink-0">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-semibold text-foreground">{opt.name}</div>
+                    <div className="text-xs text-muted-foreground">{opt.description}</div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAddIntegrationOpen(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
