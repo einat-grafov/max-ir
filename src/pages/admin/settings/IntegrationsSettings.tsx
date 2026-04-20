@@ -674,4 +674,147 @@ const IntegrationsSettings = () => {
   );
 };
 
+interface ProviderCredentialsFormProps {
+  provider: ProviderOption;
+  onCancel: () => void;
+  onSaved: () => void;
+}
+
+const ProviderCredentialsForm = ({ provider, onCancel, onSaved }: ProviderCredentialsFormProps) => {
+  const [values, setValues] = useState<Record<string, string>>(() =>
+    Object.fromEntries(provider.secretsRequired.map((k) => [k, ""])),
+  );
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [hasExisting, setHasExisting] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      setLoading(true);
+      const { data } = await supabase
+        .from("integration_credentials")
+        .select("credentials")
+        .eq("provider", provider.id)
+        .maybeSingle();
+      if (!active) return;
+      if (data?.credentials && typeof data.credentials === "object") {
+        const stored = data.credentials as Record<string, string>;
+        setValues((prev) => {
+          const next = { ...prev };
+          for (const k of provider.secretsRequired) {
+            if (typeof stored[k] === "string") next[k] = stored[k];
+          }
+          return next;
+        });
+        setHasExisting(true);
+      }
+      setLoading(false);
+    })();
+    return () => {
+      active = false;
+    };
+  }, [provider.id, provider.secretsRequired]);
+
+  const allFilled = provider.secretsRequired.every((k) => (values[k] || "").trim().length > 0);
+
+  const handleSave = async () => {
+    if (!allFilled) {
+      toast.error("Please fill in all credentials");
+      return;
+    }
+    setSaving(true);
+    const trimmed = Object.fromEntries(
+      Object.entries(values).map(([k, v]) => [k, v.trim()]),
+    );
+    const { error } = await supabase.from("integration_credentials").upsert(
+      {
+        provider: provider.id,
+        display_name: provider.name,
+        category: "shipping",
+        credentials: trimmed,
+        enabled: true,
+      },
+      { onConflict: "provider" },
+    );
+    setSaving(false);
+    if (error) {
+      toast.error(error.message || "Failed to save credentials");
+      return;
+    }
+    onSaved();
+  };
+
+  const handleDisconnect = async () => {
+    setSaving(true);
+    const { error } = await supabase
+      .from("integration_credentials")
+      .delete()
+      .eq("provider", provider.id);
+    setSaving(false);
+    if (error) {
+      toast.error(error.message || "Failed to disconnect");
+      return;
+    }
+    toast.success(`${provider.name} disconnected`);
+    onSaved();
+  };
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <p className="text-sm text-muted-foreground mb-2">{provider.description}</p>
+        <a
+          href={provider.docsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+        >
+          View {provider.name} API docs
+          <ExternalLink className="h-3.5 w-3.5" />
+        </a>
+      </div>
+
+      {loading ? (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Loading saved credentials…
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {provider.secretsRequired.map((key) => (
+            <div key={key}>
+              <Label className="text-xs font-mono text-muted-foreground">{key}</Label>
+              <Input
+                type="password"
+                autoComplete="off"
+                value={values[key] || ""}
+                onChange={(e) => setValues((p) => ({ ...p, [key]: e.target.value }))}
+                placeholder={hasExisting ? "•••••••• (saved)" : `Enter ${key}`}
+                className="mt-1 font-mono text-sm"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="flex items-center justify-between gap-2 pt-2 border-t border-border">
+        <Button variant="ghost" onClick={onCancel} disabled={saving}>
+          Back
+        </Button>
+        <div className="flex items-center gap-2">
+          {hasExisting && (
+            <Button variant="outline" onClick={handleDisconnect} disabled={saving}>
+              Disconnect
+            </Button>
+          )}
+          <Button onClick={handleSave} disabled={saving || !allFilled}>
+            {saving ? "Saving…" : hasExisting ? "Update" : "Connect"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default IntegrationsSettings;
