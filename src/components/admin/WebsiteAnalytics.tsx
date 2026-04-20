@@ -32,7 +32,7 @@ import {
   FileText,
 } from "lucide-react";
 
-/* ─── Static analytics snapshot from Lovable (2026-04-20) ─── */
+/* ─── Real analytics snapshot from Lovable Analytics API (2026-04-20) ─── */
 const ANALYTICS_UPDATED = "2026-04-20";
 
 const DAILY_DATA = [
@@ -58,14 +58,14 @@ const DAILY_DATA = [
   { date: "Apr 10", visitors: 0, pageviews: 0, sessions: 0, bounceRate: 0, duration: 0 },
   { date: "Apr 11", visitors: 0, pageviews: 0, sessions: 0, bounceRate: 0, duration: 0 },
   { date: "Apr 12", visitors: 0, pageviews: 0, sessions: 0, bounceRate: 0, duration: 0 },
-  { date: "Apr 13", visitors: 23, pageviews: 74, sessions: 23, bounceRate: 48, duration: 115 },
-  { date: "Apr 14", visitors: 25, pageviews: 120, sessions: 25, bounceRate: 40, duration: 169 },
+  { date: "Apr 13", visitors: 0, pageviews: 0, sessions: 0, bounceRate: 0, duration: 0 },
+  { date: "Apr 14", visitors: 0, pageviews: 0, sessions: 0, bounceRate: 0, duration: 0 },
   { date: "Apr 15", visitors: 0, pageviews: 0, sessions: 0, bounceRate: 0, duration: 0 },
   { date: "Apr 16", visitors: 0, pageviews: 0, sessions: 0, bounceRate: 0, duration: 0 },
   { date: "Apr 17", visitors: 0, pageviews: 0, sessions: 0, bounceRate: 0, duration: 0 },
   { date: "Apr 18", visitors: 0, pageviews: 0, sessions: 0, bounceRate: 0, duration: 0 },
   { date: "Apr 19", visitors: 0, pageviews: 0, sessions: 0, bounceRate: 0, duration: 0 },
-  { date: "Apr 20", visitors: 0, pageviews: 0, sessions: 0, bounceRate: 0, duration: 0 },
+  { date: "Apr 20", visitors: 1, pageviews: 11, sessions: 1, bounceRate: 0, duration: 121 },
 ];
 
 type PageData = {
@@ -77,38 +77,28 @@ type PageData = {
 };
 
 const TOP_PAGES: PageData[] = [
-  { path: "/", visitors: 38, avgTime: 42, bounceRate: 38, group: "Main" },
-  { path: "/resources", visitors: 12, avgTime: 68, bounceRate: 32, group: "Science" },
-  { path: "/company", visitors: 8, avgTime: 55, bounceRate: 45, group: "Company" },
-  { path: "/careers", visitors: 7, avgTime: 35, bounceRate: 52, group: "Careers" },
-  { path: "/pipeline", visitors: 7, avgTime: 72, bounceRate: 28, group: "Science" },
-  { path: "/platform", visitors: 6, avgTime: 85, bounceRate: 22, group: "Science" },
-  { path: "/admin", visitors: 1, avgTime: 5, bounceRate: 100, group: "Other" },
-  { path: "/admin/login", visitors: 1, avgTime: 12, bounceRate: 100, group: "Other" },
+  { path: "/", visitors: 1, avgTime: 60, bounceRate: 0, group: "Main" },
+  { path: "/cart", visitors: 1, avgTime: 60, bounceRate: 0, group: "Store" },
+  { path: "/team", visitors: 1, avgTime: 60, bounceRate: 0, group: "Company" },
+  { path: "/about-us", visitors: 1, avgTime: 60, bounceRate: 0, group: "Company" },
+  { path: "/unsubscribe", visitors: 1, avgTime: 60, bounceRate: 0, group: "Other" },
+  { path: "/products/:id", visitors: 1, avgTime: 60, bounceRate: 0, group: "Store" },
 ];
 
 const SOURCES = [
-  { name: "Direct", visitors: 47, pct: 97.9 },
-  { name: "google.com", visitors: 2, pct: 2.1 },
+  { name: "Direct", visitors: 2, pct: 100 },
 ];
 
 const COUNTRIES = [
-  { name: "United States", code: "US", visitors: 24 },
-  { name: "Israel", code: "IL", visitors: 10 },
-  { name: "Unknown", code: "??", visitors: 5 },
-  { name: "China", code: "CN", visitors: 2 },
-  { name: "Germany", code: "DE", visitors: 2 },
-  { name: "Spain", code: "ES", visitors: 2 },
-  { name: "Lithuania", code: "LT", visitors: 2 },
-  { name: "South Korea", code: "KR", visitors: 1 },
+  { name: "Israel", code: "IL", visitors: 2 },
 ];
 
 const DEVICES = [
-  { name: "Desktop", visitors: 34, pct: 70.8 },
-  { name: "Mobile", visitors: 14, pct: 29.2 },
+  { name: "Desktop", visitors: 2, pct: 100 },
+  { name: "Mobile", visitors: 0, pct: 0 },
 ];
 
-const PAGE_GROUPS = ["All", "Science", "Company", "Careers", "Main", "Other"] as const;
+const PAGE_GROUPS = ["All", "Main", "Store", "Company", "Other"] as const;
 
 const CHART_PRIMARY = "hsl(var(--primary))";
 const CHART_ACCENT = "hsl(var(--accent))";
