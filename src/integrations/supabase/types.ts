@@ -541,6 +541,39 @@ export type Database = {
           },
         ]
       }
+      integration_credentials: {
+        Row: {
+          category: string
+          created_at: string
+          credentials: Json
+          display_name: string
+          enabled: boolean
+          id: string
+          provider: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          credentials?: Json
+          display_name: string
+          enabled?: boolean
+          id?: string
+          provider: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          credentials?: Json
+          display_name?: string
+          enabled?: boolean
+          id?: string
+          provider?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string

@@ -41,6 +41,22 @@ interface ProviderOption {
 
 const AVAILABLE_PROVIDERS: ProviderOption[] = [
   {
+    id: "fedex",
+    name: "FedEx",
+    icon: "FX",
+    description: "Live rates from FedEx Web Services.",
+    secretsRequired: ["FEDEX_API_KEY", "FEDEX_SECRET_KEY", "FEDEX_ACCOUNT_NUMBER"],
+    docsUrl: "https://developer.fedex.com/",
+  },
+  {
+    id: "ups",
+    name: "UPS",
+    icon: "UP",
+    description: "Live rates and tracking from UPS Developer Kit.",
+    secretsRequired: ["UPS_CLIENT_ID", "UPS_CLIENT_SECRET", "UPS_ACCOUNT_NUMBER"],
+    docsUrl: "https://developer.ups.com/",
+  },
+  {
     id: "dhl",
     name: "DHL Express",
     icon: "DH",
@@ -520,7 +536,7 @@ const IntegrationsSettings = () => {
             </DialogTitle>
             <DialogDescription>
               {selectedProvider
-                ? "Add the API credentials below as backend secrets to enable this carrier."
+                ? "Enter the API credentials below to enable this carrier."
                 : "Choose a carrier to connect. Each provider requires its own API credentials."}
             </DialogDescription>
           </DialogHeader>
@@ -545,73 +561,26 @@ const IntegrationsSettings = () => {
                 ))}
               </div>
             ) : (
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">{selectedProvider.description}</p>
-                  <a
-                    href={selectedProvider.docsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
-                  >
-                    View {selectedProvider.name} API docs
-                    <ExternalLink className="h-3.5 w-3.5" />
-                  </a>
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-semibold text-foreground mb-2">Required secrets</h4>
-                  <div className="space-y-1.5">
-                    {selectedProvider.secretsRequired.map((s) => (
-                      <div
-                        key={s}
-                        className="font-mono text-xs px-3 py-2 rounded-md bg-muted/50 border border-border text-foreground"
-                      >
-                        {s}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="text-sm text-muted-foreground border-t border-border pt-4">
-                  <p className="mb-1 font-medium text-foreground">Next steps:</p>
-                  <ol className="list-decimal list-inside space-y-1">
-                    <li>Get your credentials from {selectedProvider.name}'s developer portal.</li>
-                    <li>Add each secret above in your backend secret manager.</li>
-                    <li>
-                      The shipping rates function will pick them up automatically once an integration is built for
-                      this carrier.
-                    </li>
-                  </ol>
-                </div>
-              </div>
+              <ProviderCredentialsForm
+                provider={selectedProvider}
+                onCancel={() => setSelectedProvider(null)}
+                onSaved={() => {
+                  setAddProviderOpen(false);
+                  setSelectedProvider(null);
+                  toast.success(`${selectedProvider.name} credentials saved`);
+                  fetchShippingStatus();
+                }}
+              />
             )}
           </div>
 
-          <DialogFooter className="gap-2">
-            {selectedProvider ? (
-              <>
-                <Button variant="outline" onClick={() => setSelectedProvider(null)}>
-                  Back
-                </Button>
-                <Button
-                  onClick={() => {
-                    toast.info(
-                      `${selectedProvider.name} integration request noted. Add the listed secrets in Cloud → Secrets to begin.`,
-                    );
-                    setAddProviderOpen(false);
-                    setSelectedProvider(null);
-                  }}
-                >
-                  Got it
-                </Button>
-              </>
-            ) : (
+          {!selectedProvider && (
+            <DialogFooter className="gap-2">
               <Button variant="outline" onClick={() => setAddProviderOpen(false)}>
                 Cancel
               </Button>
-            )}
-          </DialogFooter>
+            </DialogFooter>
+          )}
         </DialogContent>
       </Dialog>
 
@@ -701,6 +670,149 @@ const IntegrationsSettings = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
+  );
+};
+
+interface ProviderCredentialsFormProps {
+  provider: ProviderOption;
+  onCancel: () => void;
+  onSaved: () => void;
+}
+
+const ProviderCredentialsForm = ({ provider, onCancel, onSaved }: ProviderCredentialsFormProps) => {
+  const [values, setValues] = useState<Record<string, string>>(() =>
+    Object.fromEntries(provider.secretsRequired.map((k) => [k, ""])),
+  );
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [hasExisting, setHasExisting] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      setLoading(true);
+      const { data } = await supabase
+        .from("integration_credentials")
+        .select("credentials")
+        .eq("provider", provider.id)
+        .maybeSingle();
+      if (!active) return;
+      if (data?.credentials && typeof data.credentials === "object") {
+        const stored = data.credentials as Record<string, string>;
+        setValues((prev) => {
+          const next = { ...prev };
+          for (const k of provider.secretsRequired) {
+            if (typeof stored[k] === "string") next[k] = stored[k];
+          }
+          return next;
+        });
+        setHasExisting(true);
+      }
+      setLoading(false);
+    })();
+    return () => {
+      active = false;
+    };
+  }, [provider.id, provider.secretsRequired]);
+
+  const allFilled = provider.secretsRequired.every((k) => (values[k] || "").trim().length > 0);
+
+  const handleSave = async () => {
+    if (!allFilled) {
+      toast.error("Please fill in all credentials");
+      return;
+    }
+    setSaving(true);
+    const trimmed = Object.fromEntries(
+      Object.entries(values).map(([k, v]) => [k, v.trim()]),
+    );
+    const { error } = await supabase.from("integration_credentials").upsert(
+      {
+        provider: provider.id,
+        display_name: provider.name,
+        category: "shipping",
+        credentials: trimmed,
+        enabled: true,
+      },
+      { onConflict: "provider" },
+    );
+    setSaving(false);
+    if (error) {
+      toast.error(error.message || "Failed to save credentials");
+      return;
+    }
+    onSaved();
+  };
+
+  const handleDisconnect = async () => {
+    setSaving(true);
+    const { error } = await supabase
+      .from("integration_credentials")
+      .delete()
+      .eq("provider", provider.id);
+    setSaving(false);
+    if (error) {
+      toast.error(error.message || "Failed to disconnect");
+      return;
+    }
+    toast.success(`${provider.name} disconnected`);
+    onSaved();
+  };
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <p className="text-sm text-muted-foreground mb-2">{provider.description}</p>
+        <a
+          href={provider.docsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+        >
+          View {provider.name} API docs
+          <ExternalLink className="h-3.5 w-3.5" />
+        </a>
+      </div>
+
+      {loading ? (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Loading saved credentials…
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {provider.secretsRequired.map((key) => (
+            <div key={key}>
+              <Label className="text-xs font-mono text-muted-foreground">{key}</Label>
+              <Input
+                type="password"
+                autoComplete="off"
+                value={values[key] || ""}
+                onChange={(e) => setValues((p) => ({ ...p, [key]: e.target.value }))}
+                placeholder={hasExisting ? "•••••••• (saved)" : `Enter ${key}`}
+                className="mt-1 font-mono text-sm"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="flex items-center justify-between gap-2 pt-2 border-t border-border">
+        <Button variant="ghost" onClick={onCancel} disabled={saving}>
+          Back
+        </Button>
+        <div className="flex items-center gap-2">
+          {hasExisting && (
+            <Button variant="outline" onClick={handleDisconnect} disabled={saving}>
+              Disconnect
+            </Button>
+          )}
+          <Button onClick={handleSave} disabled={saving || !allFilled}>
+            {saving ? "Saving…" : hasExisting ? "Update" : "Connect"}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
