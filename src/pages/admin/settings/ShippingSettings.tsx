@@ -69,6 +69,8 @@ const ShippingSettings = () => {
   const [loading, setLoading] = useState(true);
   const [testLoading, setTestLoading] = useState(false);
   const [testResults, setTestResults] = useState<any[] | null>(null);
+  const [addProviderOpen, setAddProviderOpen] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState<ProviderOption | null>(null);
 
   // Test shipment fields
   const [originZip, setOriginZip] = useState("10001");
