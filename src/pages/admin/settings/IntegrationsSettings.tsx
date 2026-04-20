@@ -41,6 +41,22 @@ interface ProviderOption {
 
 const AVAILABLE_PROVIDERS: ProviderOption[] = [
   {
+    id: "fedex",
+    name: "FedEx",
+    icon: "FX",
+    description: "Live rates from FedEx Web Services.",
+    secretsRequired: ["FEDEX_API_KEY", "FEDEX_SECRET_KEY", "FEDEX_ACCOUNT_NUMBER"],
+    docsUrl: "https://developer.fedex.com/",
+  },
+  {
+    id: "ups",
+    name: "UPS",
+    icon: "UP",
+    description: "Live rates and tracking from UPS Developer Kit.",
+    secretsRequired: ["UPS_CLIENT_ID", "UPS_CLIENT_SECRET", "UPS_ACCOUNT_NUMBER"],
+    docsUrl: "https://developer.ups.com/",
+  },
+  {
     id: "dhl",
     name: "DHL Express",
     icon: "DH",
@@ -545,73 +561,26 @@ const IntegrationsSettings = () => {
                 ))}
               </div>
             ) : (
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">{selectedProvider.description}</p>
-                  <a
-                    href={selectedProvider.docsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
-                  >
-                    View {selectedProvider.name} API docs
-                    <ExternalLink className="h-3.5 w-3.5" />
-                  </a>
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-semibold text-foreground mb-2">Required secrets</h4>
-                  <div className="space-y-1.5">
-                    {selectedProvider.secretsRequired.map((s) => (
-                      <div
-                        key={s}
-                        className="font-mono text-xs px-3 py-2 rounded-md bg-muted/50 border border-border text-foreground"
-                      >
-                        {s}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="text-sm text-muted-foreground border-t border-border pt-4">
-                  <p className="mb-1 font-medium text-foreground">Next steps:</p>
-                  <ol className="list-decimal list-inside space-y-1">
-                    <li>Get your credentials from {selectedProvider.name}'s developer portal.</li>
-                    <li>Add each secret above in your backend secret manager.</li>
-                    <li>
-                      The shipping rates function will pick them up automatically once an integration is built for
-                      this carrier.
-                    </li>
-                  </ol>
-                </div>
-              </div>
+              <ProviderCredentialsForm
+                provider={selectedProvider}
+                onCancel={() => setSelectedProvider(null)}
+                onSaved={() => {
+                  setAddProviderOpen(false);
+                  setSelectedProvider(null);
+                  toast.success(`${selectedProvider.name} credentials saved`);
+                  fetchShippingStatus();
+                }}
+              />
             )}
           </div>
 
-          <DialogFooter className="gap-2">
-            {selectedProvider ? (
-              <>
-                <Button variant="outline" onClick={() => setSelectedProvider(null)}>
-                  Back
-                </Button>
-                <Button
-                  onClick={() => {
-                    toast.info(
-                      `${selectedProvider.name} integration request noted. Add the listed secrets in Cloud → Secrets to begin.`,
-                    );
-                    setAddProviderOpen(false);
-                    setSelectedProvider(null);
-                  }}
-                >
-                  Got it
-                </Button>
-              </>
-            ) : (
+          {!selectedProvider && (
+            <DialogFooter className="gap-2">
               <Button variant="outline" onClick={() => setAddProviderOpen(false)}>
                 Cancel
               </Button>
-            )}
-          </DialogFooter>
+            </DialogFooter>
+          )}
         </DialogContent>
       </Dialog>
 
