@@ -1,12 +1,64 @@
 import { useState, useEffect } from "react";
-import { Truck, CheckCircle2, XCircle, RefreshCw, Package } from "lucide-react";
+import { Truck, CheckCircle2, XCircle, RefreshCw, Package, Plus, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
+
+interface ProviderOption {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  secretsRequired: string[];
+  docsUrl: string;
+}
+
+const AVAILABLE_PROVIDERS: ProviderOption[] = [
+  {
+    id: "dhl",
+    name: "DHL Express",
+    icon: "DH",
+    description: "Worldwide express shipping with strong international coverage.",
+    secretsRequired: ["DHL_API_KEY", "DHL_API_SECRET", "DHL_ACCOUNT_NUMBER"],
+    docsUrl: "https://developer.dhl.com/api-reference/dhl-express-mydhl-api",
+  },
+  {
+    id: "usps",
+    name: "USPS",
+    icon: "US",
+    description: "United States Postal Service — domestic and international rates.",
+    secretsRequired: ["USPS_CLIENT_ID", "USPS_CLIENT_SECRET"],
+    docsUrl: "https://developer.usps.com/",
+  },
+  {
+    id: "aramex",
+    name: "Aramex",
+    icon: "AR",
+    description: "Middle East and global express logistics provider.",
+    secretsRequired: ["ARAMEX_USERNAME", "ARAMEX_PASSWORD", "ARAMEX_ACCOUNT_NUMBER", "ARAMEX_ACCOUNT_PIN"],
+    docsUrl: "https://www.aramex.com/developers",
+  },
+  {
+    id: "israel-post",
+    name: "Israel Post",
+    icon: "IL",
+    description: "Domestic Israeli postal service.",
+    secretsRequired: ["ISRAEL_POST_API_KEY"],
+    docsUrl: "https://www.israelpost.co.il/",
+  },
+];
 
 interface CarrierStatus {
   configured: boolean;
