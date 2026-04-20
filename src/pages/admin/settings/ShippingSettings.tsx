@@ -188,6 +188,27 @@ const ShippingSettings = () => {
           </div>
         </div>
 
+        {/* Test address banner */}
+        <Card className="p-5 border-dashed">
+          <div className="flex items-start gap-3">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center text-sm font-bold text-primary shrink-0">
+              $0
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-sm font-semibold text-foreground mb-1">Free shipping test address</h3>
+              <p className="text-xs text-muted-foreground mb-2">
+                Use this postal code at checkout to bypass live carrier rates and apply $0 shipping. Works in the Cart and the admin shipping calculator.
+              </p>
+              <div className="flex items-center gap-2">
+                <code className="font-mono text-sm font-semibold px-3 py-1.5 rounded-md bg-muted border border-border text-foreground">
+                  00000
+                </code>
+                <Badge variant="secondary" className="text-xs">Any country</Badge>
+              </div>
+            </div>
+          </div>
+        </Card>
+
         {/* Test Rates */}
         <Card className="p-5">
           <div className="flex items-center gap-2 mb-4">
