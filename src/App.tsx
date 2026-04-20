@@ -29,7 +29,7 @@ import Analytics from "./pages/admin/Analytics";
 import Website from "./pages/admin/Website";
 import UsersSettings from "./pages/admin/settings/UsersSettings";
 import BillingSettings from "./pages/admin/settings/BillingSettings";
-import ShippingSettings from "./pages/admin/settings/ShippingSettings";
+import IntegrationsSettings from "./pages/admin/settings/IntegrationsSettings";
 import EmailSettings from "./pages/admin/settings/EmailSettings";
 import EmailTemplateEditor from "./pages/admin/settings/EmailTemplateEditor";
 import CareerApplications from "./pages/admin/CareerApplications";
@@ -111,7 +111,8 @@ const router = createBrowserRouter([
           { path: "careers/:id", element: <CareerApplicationDetail /> },
           { path: "settings/users", element: <UsersSettings /> },
           { path: "settings/billing", element: <BillingSettings /> },
-          { path: "settings/shipping", element: <ShippingSettings /> },
+          { path: "settings/integrations", element: <IntegrationsSettings /> },
+          { path: "settings/shipping", element: <Navigate to="/admin/settings/integrations" replace /> },
           { path: "settings/emails", element: <EmailSettings /> },
           { path: "settings/emails/:templateKey", element: <EmailTemplateEditor /> },
         ],
