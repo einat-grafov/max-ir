@@ -11,6 +11,7 @@ import { Search, Sparkles, HelpCircle, Loader2, Save, Plus, X } from "lucide-rea
 import { toast } from "sonner";
 import { calculateAiReadinessScore, type FaqItem } from "@/lib/seoUtils";
 import CitationChecklist from "@/components/admin/seo/CitationChecklist";
+import SchemaPicker, { type SchemaType, type SchemaData } from "@/components/admin/seo/SchemaPicker";
 
 interface AiItem {
   id: string; // seo_settings.id for pages, product_seo.id (empty if none) for products
@@ -31,6 +32,7 @@ interface AiItem {
   body_content: string;
   kind: "page" | "product";
   product_id?: string;
+  schema_data: SchemaData;
 }
 
 const PAGE_LABELS: Record<string, string> = {
@@ -71,6 +73,8 @@ const PerPageGeoEditor = () => {
   const [aiSummary, setAiSummary] = useState("");
   const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
   const [aiIndexingAllowed, setAiIndexingAllowed] = useState(true);
+  const [schemaType, setSchemaType] = useState<SchemaType>("auto");
+  const [schemaData, setSchemaData] = useState<SchemaData>({});
 
   const load = async () => {
     const [seoRes, contentRes, productsRes, productSeoRes] = await Promise.all([
@@ -101,6 +105,7 @@ const PerPageGeoEditor = () => {
       faq_last_generated_by: r.faq_last_generated_by,
       body_content: (bodyByPage[r.page] || "").trim(),
       kind: "page" as const,
+      schema_data: (r.schema_data as SchemaData) || {},
     }));
     const seoByProduct: Record<string, any> = {};
     ((productSeoRes as any).data || []).forEach((r: any) => {
@@ -129,6 +134,7 @@ const PerPageGeoEditor = () => {
         body_content: body,
         kind: "product" as const,
         product_id: p.id,
+        schema_data: (r?.schema_data as SchemaData) || {},
       };
     });
     setItems([...pageRows, ...productRows]);
@@ -149,6 +155,8 @@ const PerPageGeoEditor = () => {
     setAiSummary(item.ai_summary || "");
     setFaqItems(item.faq_items || []);
     setAiIndexingAllowed(item.ai_indexing_allowed ?? true);
+    setSchemaType((item.schema_type as SchemaType) || "auto");
+    setSchemaData(item.schema_data || {});
   };
 
   const score = selected
@@ -191,6 +199,8 @@ const PerPageGeoEditor = () => {
       faq_items: faqItems,
       ai_readiness_score: newScore,
       ai_indexing_allowed: aiIndexingAllowed,
+      schema_type: schemaType,
+      schema_data: schemaData,
     });
     setSaving(false);
     if (error) {
@@ -316,11 +326,21 @@ const PerPageGeoEditor = () => {
                   key_entities: keyEntities.split(",").map((s) => s.trim()).filter(Boolean),
                   faq_items: faqItems,
                   supporting_topics: supportingTopics.split(",").map((s) => s.trim()).filter(Boolean),
-                  schema_type: selected.schema_type,
+                  schema_type: schemaType,
                   primary_topic: primaryTopic,
                 }}
               />
             </div>
+
+            {/* Schema type */}
+            <SchemaPicker
+              schemaType={schemaType}
+              schemaData={schemaData}
+              onChange={(t, d) => {
+                setSchemaType(t);
+                setSchemaData(d);
+              }}
+            />
 
             {/* AI indexing toggle */}
             <div className="flex items-center justify-between rounded-lg border p-4">
