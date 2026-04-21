@@ -791,39 +791,144 @@ export type Database = {
       }
       seo_settings: {
         Row: {
+          ai_indexing_allowed: boolean
+          ai_last_generated_at: string | null
+          ai_last_generated_by: string | null
+          ai_readiness_score: number
+          ai_summary: string | null
           canonical_url: string | null
           created_at: string
+          faq_items: Json
+          faq_last_generated_at: string | null
+          faq_last_generated_by: string | null
           id: string
+          key_entities: string[]
           meta_description: string | null
           meta_title: string | null
           og_description: string | null
           og_image: string | null
           og_title: string | null
           page: string
+          primary_topic: string | null
+          robots_index: boolean
+          schema_data: Json
+          schema_type: string | null
+          supporting_topics: string[]
           updated_at: string
         }
         Insert: {
+          ai_indexing_allowed?: boolean
+          ai_last_generated_at?: string | null
+          ai_last_generated_by?: string | null
+          ai_readiness_score?: number
+          ai_summary?: string | null
           canonical_url?: string | null
           created_at?: string
+          faq_items?: Json
+          faq_last_generated_at?: string | null
+          faq_last_generated_by?: string | null
           id?: string
+          key_entities?: string[]
           meta_description?: string | null
           meta_title?: string | null
           og_description?: string | null
           og_image?: string | null
           og_title?: string | null
           page: string
+          primary_topic?: string | null
+          robots_index?: boolean
+          schema_data?: Json
+          schema_type?: string | null
+          supporting_topics?: string[]
           updated_at?: string
         }
         Update: {
+          ai_indexing_allowed?: boolean
+          ai_last_generated_at?: string | null
+          ai_last_generated_by?: string | null
+          ai_readiness_score?: number
+          ai_summary?: string | null
           canonical_url?: string | null
           created_at?: string
+          faq_items?: Json
+          faq_last_generated_at?: string | null
+          faq_last_generated_by?: string | null
           id?: string
+          key_entities?: string[]
           meta_description?: string | null
           meta_title?: string | null
           og_description?: string | null
           og_image?: string | null
           og_title?: string | null
           page?: string
+          primary_topic?: string | null
+          robots_index?: boolean
+          schema_data?: Json
+          schema_type?: string | null
+          supporting_topics?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      site_seo_settings: {
+        Row: {
+          ai_bot_controls: Json
+          base_url: string
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          default_og_image: string | null
+          google_site_verification: string | null
+          id: string
+          llms_txt_auto: boolean
+          llms_txt_override: string | null
+          organization_logo: string | null
+          organization_name: string | null
+          robots_default: string
+          robots_txt: string
+          singleton: boolean
+          sitemap_enabled: boolean
+          social_profiles: Json
+          updated_at: string
+        }
+        Insert: {
+          ai_bot_controls?: Json
+          base_url?: string
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          default_og_image?: string | null
+          google_site_verification?: string | null
+          id?: string
+          llms_txt_auto?: boolean
+          llms_txt_override?: string | null
+          organization_logo?: string | null
+          organization_name?: string | null
+          robots_default?: string
+          robots_txt?: string
+          singleton?: boolean
+          sitemap_enabled?: boolean
+          social_profiles?: Json
+          updated_at?: string
+        }
+        Update: {
+          ai_bot_controls?: Json
+          base_url?: string
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          default_og_image?: string | null
+          google_site_verification?: string | null
+          id?: string
+          llms_txt_auto?: boolean
+          llms_txt_override?: string | null
+          organization_logo?: string | null
+          organization_name?: string | null
+          robots_default?: string
+          robots_txt?: string
+          singleton?: boolean
+          sitemap_enabled?: boolean
+          social_profiles?: Json
           updated_at?: string
         }
         Relationships: []
