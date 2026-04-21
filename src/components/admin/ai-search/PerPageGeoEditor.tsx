@@ -73,15 +73,17 @@ const PerPageGeoEditor = () => {
   const [aiIndexingAllowed, setAiIndexingAllowed] = useState(true);
 
   const load = async () => {
-    const [seoRes, contentRes] = await Promise.all([
+    const [seoRes, contentRes, productsRes, productSeoRes] = await Promise.all([
       supabase.from("seo_settings").select("*").order("page"),
       supabase.from("website_content").select("page, content"),
+      supabase.from("products").select("id, name, overview, description"),
+      (supabase as any).from("product_seo").select("*"),
     ]);
     const bodyByPage: Record<string, string> = {};
     (contentRes.data || []).forEach((row: any) => {
       bodyByPage[row.page] = (bodyByPage[row.page] || "") + " " + extractText(row.content);
     });
-    const rows: AiItem[] = (seoRes.data || []).map((r: any) => ({
+    const pageRows: AiItem[] = (seoRes.data || []).map((r: any) => ({
       id: r.id,
       page: r.page,
       title: PAGE_LABELS[r.page] || r.page,
@@ -98,8 +100,38 @@ const PerPageGeoEditor = () => {
       faq_last_generated_at: r.faq_last_generated_at,
       faq_last_generated_by: r.faq_last_generated_by,
       body_content: (bodyByPage[r.page] || "").trim(),
+      kind: "page" as const,
     }));
-    setItems(rows);
+    const seoByProduct: Record<string, any> = {};
+    ((productSeoRes as any).data || []).forEach((r: any) => {
+      seoByProduct[r.product_id] = r;
+    });
+    const productRows: AiItem[] = (productsRes.data || []).map((p: any) => {
+      const r = seoByProduct[p.id];
+      const stripHtml = (s: string) => (s || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+      const body = `${p.name} ${stripHtml(p.overview || "")} ${stripHtml(p.description || "")}`.trim();
+      return {
+        id: r?.id || "",
+        page: `products/${p.id}`,
+        title: `Product: ${p.name}`,
+        primary_topic: r?.primary_topic ?? null,
+        supporting_topics: r?.supporting_topics || [],
+        key_entities: r?.key_entities || [],
+        ai_summary: r?.ai_summary ?? null,
+        faq_items: Array.isArray(r?.faq_items) ? r.faq_items : [],
+        ai_readiness_score: r?.ai_readiness_score || 0,
+        ai_indexing_allowed: r?.ai_indexing_allowed ?? true,
+        schema_type: r?.schema_type || "Product",
+        ai_last_generated_at: r?.ai_last_generated_at ?? null,
+        ai_last_generated_by: r?.ai_last_generated_by ?? null,
+        faq_last_generated_at: r?.faq_last_generated_at ?? null,
+        faq_last_generated_by: r?.faq_last_generated_by ?? null,
+        body_content: body,
+        kind: "product" as const,
+        product_id: p.id,
+      };
+    });
+    setItems([...pageRows, ...productRows]);
     setLoading(false);
   };
 
