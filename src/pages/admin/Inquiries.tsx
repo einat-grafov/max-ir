@@ -38,36 +38,36 @@ const Inquiries = () => {
     <div className="p-6 lg:p-8 max-w-[1400px]">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-maxir-white">Inquiries</h1>
-          <p className="text-maxir-gray text-sm mt-1">
+          <h1 className="text-2xl font-bold text-foreground">Inquiries</h1>
+          <p className="text-muted-foreground text-sm mt-1">
             {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
           </p>
         </div>
       </div>
 
-      <div className="bg-maxir-dark-surface border border-white/10 rounded-lg overflow-hidden">
+      <div className="bg-card border border-border rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="border-white/10 hover:bg-transparent">
-              <TableHead className="text-maxir-gray w-10"></TableHead>
-              <TableHead className="text-maxir-gray">Name</TableHead>
-              <TableHead className="text-maxir-gray">Customer</TableHead>
-              <TableHead className="text-maxir-gray">Email</TableHead>
-              <TableHead className="text-maxir-gray">Product</TableHead>
-              <TableHead className="text-maxir-gray">Message</TableHead>
-              <TableHead className="text-maxir-gray">Date</TableHead>
+            <TableRow className="hover:bg-transparent">
+              <TableHead className="w-10"></TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Customer</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Product</TableHead>
+              <TableHead>Message</TableHead>
+              <TableHead>Date</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow className="border-white/10">
-                <TableCell colSpan={7} className="text-center text-maxir-gray py-12">
+              <TableRow>
+                <TableCell colSpan={7} className="text-center text-muted-foreground py-12">
                   Loading…
                 </TableCell>
               </TableRow>
             ) : !inquiries?.length ? (
-              <TableRow className="border-white/10">
-                <TableCell colSpan={7} className="text-center text-maxir-gray py-12">
+              <TableRow>
+                <TableCell colSpan={7} className="text-center text-muted-foreground py-12">
                   No inquiries yet
                 </TableCell>
               </TableRow>
@@ -75,20 +75,20 @@ const Inquiries = () => {
               inquiries.map((inq) => (
                 <TableRow
                   key={inq.id}
-                  className={`border-white/10 cursor-pointer ${!inq.read ? "bg-primary/5" : ""}`}
+                  className={`cursor-pointer hover:bg-muted/50 ${!inq.read ? "bg-primary/5" : ""}`}
                   onClick={() => toggleRead.mutate({ id: inq.id, read: inq.read })}
                 >
                   <TableCell>
                     {inq.read ? (
-                      <MailOpen className="w-4 h-4 text-maxir-gray" />
+                      <MailOpen className="w-4 h-4 text-muted-foreground" />
                     ) : (
                       <Mail className="w-4 h-4 text-primary" />
                     )}
                   </TableCell>
-                  <TableCell className={`${!inq.read ? "text-maxir-white font-semibold" : "text-maxir-gray"}`}>
+                  <TableCell className={!inq.read ? "text-foreground font-semibold" : "text-foreground"}>
                     {inq.name}
                   </TableCell>
-                  <TableCell className="text-maxir-gray">
+                  <TableCell className="text-muted-foreground">
                     {(inq as any).customers ? (
                       <Link
                         to={`/admin/customers/${(inq as any).customers.id}`}
@@ -101,16 +101,16 @@ const Inquiries = () => {
                       "—"
                     )}
                   </TableCell>
-                  <TableCell className="text-maxir-gray">{inq.email}</TableCell>
+                  <TableCell className="text-muted-foreground">{inq.email}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary" className="bg-white/10 text-maxir-white border-0 text-xs">
+                    <Badge variant="secondary" className="text-xs">
                       {inq.product_name}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-maxir-gray max-w-[300px] truncate">
+                  <TableCell className="text-muted-foreground max-w-[300px] truncate">
                     {inq.message}
                   </TableCell>
-                  <TableCell className="text-maxir-gray text-sm whitespace-nowrap">
+                  <TableCell className="text-muted-foreground text-sm whitespace-nowrap">
                     {format(new Date(inq.created_at), "MMM d, yyyy")}
                   </TableCell>
                 </TableRow>
