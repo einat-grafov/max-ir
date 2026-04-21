@@ -11,6 +11,7 @@ import { Search, Sparkles, HelpCircle, Loader2, Save, Plus, X } from "lucide-rea
 import { toast } from "sonner";
 import { calculateAiReadinessScore, type FaqItem } from "@/lib/seoUtils";
 import CitationChecklist from "@/components/admin/seo/CitationChecklist";
+import SchemaPicker, { type SchemaType, type SchemaData } from "@/components/admin/seo/SchemaPicker";
 
 interface AiItem {
   id: string; // seo_settings.id for pages, product_seo.id (empty if none) for products
