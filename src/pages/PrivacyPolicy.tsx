@@ -13,7 +13,7 @@ const PrivacyPolicy = () => {
       <Navbar />
       <div className="max-w-[900px] mx-auto px-6 lg:px-10 py-24 lg:py-32">
         <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">Privacy Policy — Max-IR Labs</h1>
-        <p className="text-sm text-muted-foreground mb-10">Effective Date: March 25, 2026 · Last Updated: March 25, 2026</p>
+        <p className="text-sm text-muted-foreground mb-10">Effective Date: March 25, 2026 · Last Updated: April 21, 2026</p>
 
         <div className="prose prose-neutral max-w-none text-foreground/90 space-y-8">
           <p>
@@ -29,14 +29,26 @@ const PrivacyPolicy = () => {
             </ul>
           </section>
 
-          <section>
-            <h2 className="text-xl font-semibold text-foreground">2. Use of Cookies</h2>
-            <p>We do not use Google Analytics or third-party marketing trackers. Our website utilizes Strictly Necessary Cookies provided by our hosting platform to:</p>
+          <section id="cookies">
+            <h2 className="text-xl font-semibold text-foreground">2. Cookies and Similar Technologies</h2>
+            <p>
+              This section describes the cookies and similar device-storage technologies (such as localStorage) used on this website, and how you can manage them. You can change your choices at any time by clicking "Cookie Settings" in the footer.
+            </p>
+            <h3 className="text-lg font-semibold text-foreground mt-6">2.1 Categories of cookies we use</h3>
+            <p><strong>Strictly Necessary (always active).</strong> These cookies are required for core functionality — authentication, shopping cart, secure checkout, and remembering your cookie choices. The site cannot function without them, and they do not require consent under applicable law.</p>
             <ul className="list-disc pl-6 space-y-2">
-              <li>Maintain your shopping cart during your session.</li>
-              <li>Secure the checkout process and prevent fraudulent transactions.</li>
-              <li>Ensure the website functions correctly across different devices.</li>
+              <li><strong>Authentication (Supabase):</strong> <code>sb-access-token</code>, <code>sb-refresh-token</code> — keep you signed in during a session.</li>
+              <li><strong>Shopping cart (Max-IR Labs):</strong> <code>cart_state</code> — remembers items in your cart.</li>
+              <li><strong>Checkout security (Stripe):</strong> <code>__stripe_mid</code>, <code>__stripe_sid</code> — fraud prevention during payment.</li>
+              <li><strong>Consent preferences (Max-IR Labs):</strong> <code>consent_state</code> — remembers the cookie choices you have made.</li>
             </ul>
+            <p className="mt-4"><strong>Functional, Analytics, and Advertising cookies.</strong> We do not currently use any functional, analytics, or advertising cookies. If this changes in the future, those cookies will only be set after you have given explicit consent through the cookie settings. You can review the current list of cookies by category at any time via "Cookie Settings".</p>
+            <h3 className="text-lg font-semibold text-foreground mt-6">2.2 Your choices</h3>
+            <p>On your first visit from the EU, UK, or European Economic Area, a cookie banner lets you accept, reject, or customize non-essential cookies. Visitors from other regions can manage the same choices at any time via the "Cookie Settings" link in the footer. You can also control cookies through your browser settings, though disabling strictly necessary cookies may prevent parts of the site (such as the shopping cart or sign-in) from working.</p>
+            <h3 className="text-lg font-semibold text-foreground mt-6">2.3 California residents</h3>
+            <p>If you are a California resident, you have the right to opt out of the "sale" or "sharing" of your personal information under the CCPA/CPRA. We currently do not sell or share personal information for cross-context behavioral advertising. If this changes, you will be able to exercise this right via the "Do Not Sell or Share My Personal Information" link in the footer, and we will honor browser-level Global Privacy Control (GPC) signals as valid opt-out requests.</p>
+            <h3 className="text-lg font-semibold text-foreground mt-6">2.4 Retention of consent records</h3>
+            <p>When you make a cookie choice, we log a record consisting of a timestamp, the choices you made, and the version of this policy in effect at that time. This record is kept to demonstrate compliance with data protection law, as required by GDPR Article 7(1). Your consent is valid for 12 months, after which we will ask you again.</p>
           </section>
 
           <section>
