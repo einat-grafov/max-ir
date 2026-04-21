@@ -32,12 +32,14 @@ export interface SeoItem {
 function ScoreBadge({ score }: { score: number }) {
   const color =
     score >= 80
-      ? "text-green-600 bg-green-50 border-green-200"
+      ? "text-white bg-green-600 border-green-700"
       : score >= 50
-        ? "text-amber-600 bg-amber-50 border-amber-200"
-        : "text-red-600 bg-red-50 border-red-200";
+        ? "text-amber-700 bg-amber-100 border-amber-300"
+        : "text-red-700 bg-red-100 border-red-300";
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full border ${color}`}>
+    <span
+      className={`inline-flex items-center px-3 py-1 text-base font-bold rounded-full border-2 shadow-sm ${color}`}
+    >
       {score}%
     </span>
   );
