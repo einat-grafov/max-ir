@@ -32,6 +32,7 @@ interface AiItem {
   body_content: string;
   kind: "page" | "product";
   product_id?: string;
+  schema_data: SchemaData;
 }
 
 const PAGE_LABELS: Record<string, string> = {
