@@ -9,6 +9,7 @@ import {
   Home,
   Globe,
   Mail,
+  MessageSquare,
   Briefcase,
   Search,
   Sparkles,
@@ -38,6 +39,7 @@ const mainItems = [
   { title: "Products", url: "/admin/products", icon: Package },
   { title: "Customers", url: "/admin/customers", icon: Users },
   { title: "Website", url: "/admin/website", icon: Globe },
+  { title: "Inquiries", url: "/admin/inquiries", icon: MessageSquare },
   { title: "Careers", url: "/admin/careers", icon: Briefcase },
 ];
 
