@@ -107,6 +107,19 @@ const ProductDetail = () => {
     enabled: !!id,
   });
 
+  const { data: productSeo } = useQuery({
+    queryKey: ["product-seo", id],
+    queryFn: async () => {
+      const { data } = await (supabase as any)
+        .from("product_seo")
+        .select("*")
+        .eq("product_id", id!)
+        .maybeSingle();
+      return data as any;
+    },
+    enabled: !!id,
+  });
+
   const getImages = (product: Product): string[] => {
     if (product.images && Array.isArray(product.images) && (product.images as string[]).length > 0) {
       return product.images as string[];
@@ -136,25 +149,31 @@ const ProductDetail = () => {
     }).format(price);
   };
 
-  // ---- Auto-generated SEO (derived from product fields) ----
+  // ---- SEO: admin overrides win, otherwise auto-generate from product fields ----
   const stripHtml = (s: string) => s.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
   const truncate = (s: string, n: number) => (s.length <= n ? s : s.slice(0, n - 1).trimEnd() + "…");
   const seoName = product?.name || "Product";
   const seoDescSource = stripHtml((product as any)?.overview || product?.description || "");
-  const seoDescription = truncate(
+  const autoDescription = truncate(
     seoDescSource || `${seoName} — available from MAX-IR Labs.`,
     158
   );
-  const seoTitle = truncate(`${seoName} | MAX-IR Labs`, 60);
-  const seoImage = product
+  const autoTitle = truncate(`${seoName} | MAX-IR Labs`, 60);
+  const autoImage = product
     ? (Array.isArray(product.images) && (product.images as string[])[0]) || product.image_url || undefined
     : undefined;
+
+  const seoTitle = productSeo?.meta_title || autoTitle;
+  const seoDescription = productSeo?.meta_description || autoDescription;
+  const seoOgTitle = productSeo?.og_title || seoTitle;
+  const seoOgDescription = productSeo?.og_description || seoDescription;
+  const seoImage = productSeo?.og_image || autoImage;
 
   usePageSeo({
     title: seoTitle,
     description: seoDescription,
-    ogTitle: seoTitle,
-    ogDescription: seoDescription,
+    ogTitle: seoOgTitle,
+    ogDescription: seoOgDescription,
     ogImage: seoImage || undefined,
     canonicalPath: id ? `/products/${id}` : undefined,
   });

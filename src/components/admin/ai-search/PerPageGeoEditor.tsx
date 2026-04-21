@@ -13,7 +13,7 @@ import { calculateAiReadinessScore, type FaqItem } from "@/lib/seoUtils";
 import CitationChecklist from "@/components/admin/seo/CitationChecklist";
 
 interface AiItem {
-  id: string;
+  id: string; // seo_settings.id for pages, product_seo.id (empty if none) for products
   page: string;
   title: string;
   primary_topic: string | null;
@@ -29,6 +29,8 @@ interface AiItem {
   faq_last_generated_at: string | null;
   faq_last_generated_by: string | null;
   body_content: string;
+  kind: "page" | "product";
+  product_id?: string;
 }
 
 const PAGE_LABELS: Record<string, string> = {
@@ -71,15 +73,17 @@ const PerPageGeoEditor = () => {
   const [aiIndexingAllowed, setAiIndexingAllowed] = useState(true);
 
   const load = async () => {
-    const [seoRes, contentRes] = await Promise.all([
+    const [seoRes, contentRes, productsRes, productSeoRes] = await Promise.all([
       supabase.from("seo_settings").select("*").order("page"),
       supabase.from("website_content").select("page, content"),
+      supabase.from("products").select("id, name, overview, description"),
+      (supabase as any).from("product_seo").select("*"),
     ]);
     const bodyByPage: Record<string, string> = {};
     (contentRes.data || []).forEach((row: any) => {
       bodyByPage[row.page] = (bodyByPage[row.page] || "") + " " + extractText(row.content);
     });
-    const rows: AiItem[] = (seoRes.data || []).map((r: any) => ({
+    const pageRows: AiItem[] = (seoRes.data || []).map((r: any) => ({
       id: r.id,
       page: r.page,
       title: PAGE_LABELS[r.page] || r.page,
@@ -96,8 +100,38 @@ const PerPageGeoEditor = () => {
       faq_last_generated_at: r.faq_last_generated_at,
       faq_last_generated_by: r.faq_last_generated_by,
       body_content: (bodyByPage[r.page] || "").trim(),
+      kind: "page" as const,
     }));
-    setItems(rows);
+    const seoByProduct: Record<string, any> = {};
+    ((productSeoRes as any).data || []).forEach((r: any) => {
+      seoByProduct[r.product_id] = r;
+    });
+    const productRows: AiItem[] = (productsRes.data || []).map((p: any) => {
+      const r = seoByProduct[p.id];
+      const stripHtml = (s: string) => (s || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+      const body = `${p.name} ${stripHtml(p.overview || "")} ${stripHtml(p.description || "")}`.trim();
+      return {
+        id: r?.id || "",
+        page: `products/${p.id}`,
+        title: `Product: ${p.name}`,
+        primary_topic: r?.primary_topic ?? null,
+        supporting_topics: r?.supporting_topics || [],
+        key_entities: r?.key_entities || [],
+        ai_summary: r?.ai_summary ?? null,
+        faq_items: Array.isArray(r?.faq_items) ? r.faq_items : [],
+        ai_readiness_score: r?.ai_readiness_score || 0,
+        ai_indexing_allowed: r?.ai_indexing_allowed ?? true,
+        schema_type: r?.schema_type || "Product",
+        ai_last_generated_at: r?.ai_last_generated_at ?? null,
+        ai_last_generated_by: r?.ai_last_generated_by ?? null,
+        faq_last_generated_at: r?.faq_last_generated_at ?? null,
+        faq_last_generated_by: r?.faq_last_generated_by ?? null,
+        body_content: body,
+        kind: "product" as const,
+        product_id: p.id,
+      };
+    });
+    setItems([...pageRows, ...productRows]);
     setLoading(false);
   };
 
@@ -105,10 +139,10 @@ const PerPageGeoEditor = () => {
     load();
   }, []);
 
-  const selected = items.find((i) => i.id === selectedId) || null;
+  const selected = items.find((i) => i.page === selectedId) || null;
 
   const selectItem = (item: AiItem) => {
-    setSelectedId(item.id);
+    setSelectedId(item.page);
     setPrimaryTopic(item.primary_topic || "");
     setSupportingTopics((item.supporting_topics || []).join(", "));
     setKeyEntities((item.key_entities || []).join(", "));
@@ -127,6 +161,16 @@ const PerPageGeoEditor = () => {
       })
     : 0;
 
+  const updateAiRow = async (extra: Record<string, any>) => {
+    if (!selected) return { error: null as any };
+    if (selected.kind === "product") {
+      return await (supabase as any)
+        .from("product_seo")
+        .upsert({ product_id: selected.product_id, ...extra }, { onConflict: "product_id" });
+    }
+    return await supabase.from("seo_settings").update(extra as any).eq("id", selected.id);
+  };
+
   const saveFields = async () => {
     if (!selected) return;
     setSaving(true);
@@ -139,18 +183,15 @@ const PerPageGeoEditor = () => {
       faq_items: faqItems,
       supporting_topics: topics,
     });
-    const { error } = await supabase
-      .from("seo_settings")
-      .update({
-        primary_topic: primaryTopic || null,
-        supporting_topics: topics,
-        key_entities: entities,
-        ai_summary: aiSummary || null,
-        faq_items: faqItems as any,
-        ai_readiness_score: newScore,
-        ai_indexing_allowed: aiIndexingAllowed,
-      } as any)
-      .eq("id", selected.id);
+    const { error } = await updateAiRow({
+      primary_topic: primaryTopic || null,
+      supporting_topics: topics,
+      key_entities: entities,
+      ai_summary: aiSummary || null,
+      faq_items: faqItems,
+      ai_readiness_score: newScore,
+      ai_indexing_allowed: aiIndexingAllowed,
+    });
     setSaving(false);
     if (error) {
       toast.error(error.message);
@@ -174,13 +215,10 @@ const PerPageGeoEditor = () => {
         setKeyEntities((data.key_entities || []).join(", "));
         setAiSummary(data.ai_summary || aiSummary);
         const { data: userData } = await supabase.auth.getUser();
-        await supabase
-          .from("seo_settings")
-          .update({
-            ai_last_generated_at: new Date().toISOString(),
-            ai_last_generated_by: userData.user?.email || "unknown",
-          } as any)
-          .eq("id", selected.id);
+        await updateAiRow({
+          ai_last_generated_at: new Date().toISOString(),
+          ai_last_generated_by: userData.user?.email || "unknown",
+        });
         toast.success("AI summary generated");
       }
     } catch (e: any) {
@@ -200,13 +238,10 @@ const PerPageGeoEditor = () => {
       if (data?.faq_items) {
         setFaqItems(data.faq_items);
         const { data: userData } = await supabase.auth.getUser();
-        await supabase
-          .from("seo_settings")
-          .update({
-            faq_last_generated_at: new Date().toISOString(),
-            faq_last_generated_by: userData.user?.email || "unknown",
-          } as any)
-          .eq("id", selected.id);
+        await updateAiRow({
+          faq_last_generated_at: new Date().toISOString(),
+          faq_last_generated_by: userData.user?.email || "unknown",
+        });
         toast.success("FAQs generated");
       }
     } catch (e: any) {
@@ -238,10 +273,10 @@ const PerPageGeoEditor = () => {
         <div className="space-y-1.5">
           {filtered.map((item) => (
             <button
-              key={item.id}
+              key={item.page}
               onClick={() => selectItem(item)}
               className={`w-full text-left p-3 rounded-lg border transition-colors ${
-                selectedId === item.id ? "border-primary bg-primary/5" : "hover:bg-muted/30"
+                selectedId === item.page ? "border-primary bg-primary/5" : "hover:bg-muted/30"
               }`}
             >
               <div className="flex items-center justify-between gap-2">

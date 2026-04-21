@@ -27,11 +27,13 @@ const Seo = () => {
 
   useEffect(() => {
     (async () => {
-      const [seoRes, siteRes] = await Promise.all([
+      const [seoRes, siteRes, productsRes, productSeoRes] = await Promise.all([
         supabase.from("seo_settings").select("*").order("page"),
         supabase.from("site_seo_settings" as any).select("base_url").limit(1).maybeSingle(),
+        supabase.from("products").select("id, name").order("name"),
+        (supabase as any).from("product_seo").select("*"),
       ]);
-      const rows = (seoRes.data || []).map((r: any) => ({
+      const pageRows: SeoItem[] = (seoRes.data || []).map((r: any) => ({
         id: r.id,
         page: r.page,
         title: PAGE_LABELS[r.page] || r.page,
@@ -44,19 +46,43 @@ const Seo = () => {
         canonical_url: r.canonical_url,
         schema_type: r.schema_type || "auto",
         schema_data: r.schema_data || {},
+        kind: "page" as const,
       }));
-      setItems(rows);
+      const seoByProduct: Record<string, any> = {};
+      ((productSeoRes as any).data || []).forEach((r: any) => {
+        seoByProduct[r.product_id] = r;
+      });
+      const productRows: SeoItem[] = (productsRes.data || []).map((p: any) => {
+        const r = seoByProduct[p.id];
+        return {
+          id: r?.id || "",
+          page: `products/${p.id}`,
+          title: `Product: ${p.name}`,
+          meta_title: r?.meta_title ?? null,
+          meta_description: r?.meta_description ?? null,
+          og_image: r?.og_image ?? null,
+          og_title: r?.og_title ?? null,
+          og_description: r?.og_description ?? null,
+          robots_index: r?.robots_index ?? false,
+          canonical_url: r?.canonical_url ?? null,
+          schema_type: r?.schema_type || "Product",
+          schema_data: r?.schema_data || {},
+          kind: "product" as const,
+          product_id: p.id,
+        };
+      });
+      setItems([...pageRows, ...productRows]);
       if (siteRes.data && (siteRes.data as any).base_url) setBaseUrl((siteRes.data as any).base_url);
       setLoading(false);
     })();
   }, []);
 
   const handleSaved = (updated: SeoItem) => {
-    setItems((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
+    setItems((prev) => prev.map((i) => (i.page === updated.page ? updated : i)));
   };
 
   const filtered = items.filter((i) => !search || i.title.toLowerCase().includes(search.toLowerCase()));
-  const selected = items.find((i) => i.id === selectedId) || null;
+  const selected = items.find((i) => i.page === selectedId) || null;
 
   const avgScore = items.length > 0 ? Math.round(items.reduce((sum, i) => sum + getSeoScore(i), 0) / items.length) : 0;
   const totalWarnings = items.reduce((sum, i) => sum + getSeoWarnings(i).length, 0);
@@ -111,10 +137,10 @@ const Seo = () => {
                 const warnings = getSeoWarnings(item).length;
                 return (
                   <button
-                    key={item.id}
-                    onClick={() => setSelectedId(item.id)}
+                    key={item.page}
+                    onClick={() => setSelectedId(item.page)}
                     className={`w-full text-left p-3 rounded-lg border transition-colors ${
-                      selectedId === item.id ? "border-primary bg-primary/5" : "hover:bg-muted/30"
+                      selectedId === item.page ? "border-primary bg-primary/5" : "hover:bg-muted/30"
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
