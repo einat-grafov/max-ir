@@ -107,6 +107,19 @@ const ProductDetail = () => {
     enabled: !!id,
   });
 
+  const { data: productSeo } = useQuery({
+    queryKey: ["product-seo", id],
+    queryFn: async () => {
+      const { data } = await (supabase as any)
+        .from("product_seo")
+        .select("*")
+        .eq("product_id", id!)
+        .maybeSingle();
+      return data as any;
+    },
+    enabled: !!id,
+  });
+
   const getImages = (product: Product): string[] => {
     if (product.images && Array.isArray(product.images) && (product.images as string[]).length > 0) {
       return product.images as string[];
