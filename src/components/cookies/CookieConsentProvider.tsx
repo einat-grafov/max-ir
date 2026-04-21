@@ -101,7 +101,7 @@ export default function CookieConsentProvider() {
 
   return (
     <>
-      {bannerVisible && (
+      {bannerVisible && !modalOpen && (
         <CookieBanner
           onAcceptAll={handleBannerAcceptAll}
           onRejectAll={handleBannerRejectAll}
