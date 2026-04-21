@@ -78,7 +78,7 @@ const Seo = () => {
   }, []);
 
   const handleSaved = (updated: SeoItem) => {
-    setItems((prev) => prev.map((i) => (i.product_id ? i.product_id === updated.product_id : i.id === updated.id) ? updated : i));
+    setItems((prev) => prev.map((i) => (i.page === updated.page ? updated : i)));
   };
 
   const filtered = items.filter((i) => !search || i.title.toLowerCase().includes(search.toLowerCase()));
