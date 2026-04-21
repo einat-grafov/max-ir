@@ -720,6 +720,95 @@ export type Database = {
           },
         ]
       }
+      product_seo: {
+        Row: {
+          ai_indexing_allowed: boolean
+          ai_last_generated_at: string | null
+          ai_last_generated_by: string | null
+          ai_readiness_score: number
+          ai_summary: string | null
+          canonical_url: string | null
+          created_at: string
+          faq_items: Json
+          faq_last_generated_at: string | null
+          faq_last_generated_by: string | null
+          id: string
+          key_entities: string[]
+          meta_description: string | null
+          meta_title: string | null
+          og_description: string | null
+          og_image: string | null
+          og_title: string | null
+          primary_topic: string | null
+          product_id: string
+          robots_index: boolean
+          schema_data: Json
+          schema_type: string | null
+          supporting_topics: string[]
+          updated_at: string
+        }
+        Insert: {
+          ai_indexing_allowed?: boolean
+          ai_last_generated_at?: string | null
+          ai_last_generated_by?: string | null
+          ai_readiness_score?: number
+          ai_summary?: string | null
+          canonical_url?: string | null
+          created_at?: string
+          faq_items?: Json
+          faq_last_generated_at?: string | null
+          faq_last_generated_by?: string | null
+          id?: string
+          key_entities?: string[]
+          meta_description?: string | null
+          meta_title?: string | null
+          og_description?: string | null
+          og_image?: string | null
+          og_title?: string | null
+          primary_topic?: string | null
+          product_id: string
+          robots_index?: boolean
+          schema_data?: Json
+          schema_type?: string | null
+          supporting_topics?: string[]
+          updated_at?: string
+        }
+        Update: {
+          ai_indexing_allowed?: boolean
+          ai_last_generated_at?: string | null
+          ai_last_generated_by?: string | null
+          ai_readiness_score?: number
+          ai_summary?: string | null
+          canonical_url?: string | null
+          created_at?: string
+          faq_items?: Json
+          faq_last_generated_at?: string | null
+          faq_last_generated_by?: string | null
+          id?: string
+          key_entities?: string[]
+          meta_description?: string | null
+          meta_title?: string | null
+          og_description?: string | null
+          og_image?: string | null
+          og_title?: string | null
+          primary_topic?: string | null
+          product_id?: string
+          robots_index?: boolean
+          schema_data?: Json
+          schema_type?: string | null
+          supporting_topics?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_seo_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: true
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category: string | null
