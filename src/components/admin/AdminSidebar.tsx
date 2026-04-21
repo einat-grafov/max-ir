@@ -13,6 +13,10 @@ import {
   PanelLeft,
   Mail,
   Briefcase,
+  Search,
+  Sparkles,
+  Accessibility,
+  TrendingUp,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate, Link } from "react-router-dom";
@@ -40,6 +44,12 @@ const mainItems = [
   { title: "Customers", url: "/admin/customers", icon: Users },
   { title: "Website", url: "/admin/website", icon: Globe },
   { title: "Careers", url: "/admin/careers", icon: Briefcase },
+];
+
+const optimizationItems = [
+  { title: "SEO", url: "/admin/website?tab=seo", icon: Search, matchPath: "/admin/website" },
+  { title: "AI Search", url: "/admin/optimization/ai-search", icon: Sparkles, disabled: true },
+  { title: "Accessibility", url: "/admin/optimization/accessibility", icon: Accessibility },
 ];
 
 const settingsItems = [
