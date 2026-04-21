@@ -41,6 +41,8 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import RefundAndReturn from "./pages/RefundAndReturn";
 import ShippingPolicy from "./pages/ShippingPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
+import AccessibilitySettings from "./pages/admin/optimization/Accessibility";
+import AccessibilityWidget from "./components/AccessibilityWidget";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +68,7 @@ const RootLayout = () => (
   <CartProvider>
     <ScrollToTop />
     <Outlet />
+    <AccessibilityWidget />
   </CartProvider>
 );
 
@@ -115,6 +118,7 @@ const router = createBrowserRouter([
           { path: "settings/shipping", element: <Navigate to="/admin/settings/integrations" replace /> },
           { path: "settings/emails", element: <EmailSettings /> },
           { path: "settings/emails/:templateKey", element: <EmailTemplateEditor /> },
+          { path: "optimization/accessibility", element: <AccessibilitySettings /> },
         ],
       },
       { path: "*", element: <NotFound /> },
