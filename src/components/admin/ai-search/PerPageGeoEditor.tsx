@@ -103,6 +103,7 @@ const PerPageGeoEditor = () => {
       faq_last_generated_by: r.faq_last_generated_by,
       body_content: (bodyByPage[r.page] || "").trim(),
       kind: "page" as const,
+      schema_data: (r.schema_data as SchemaData) || {},
     }));
     const seoByProduct: Record<string, any> = {};
     ((productSeoRes as any).data || []).forEach((r: any) => {
