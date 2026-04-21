@@ -326,7 +326,7 @@ const PerPageGeoEditor = () => {
                   key_entities: keyEntities.split(",").map((s) => s.trim()).filter(Boolean),
                   faq_items: faqItems,
                   supporting_topics: supportingTopics.split(",").map((s) => s.trim()).filter(Boolean),
-                  schema_type: selected.schema_type,
+                  schema_type: schemaType,
                   primary_topic: primaryTopic,
                 }}
               />
