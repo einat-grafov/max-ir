@@ -155,6 +155,8 @@ const PerPageGeoEditor = () => {
     setAiSummary(item.ai_summary || "");
     setFaqItems(item.faq_items || []);
     setAiIndexingAllowed(item.ai_indexing_allowed ?? true);
+    setSchemaType((item.schema_type as SchemaType) || "auto");
+    setSchemaData(item.schema_data || {});
   };
 
   const score = selected
