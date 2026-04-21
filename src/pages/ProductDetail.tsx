@@ -136,6 +136,93 @@ const ProductDetail = () => {
     }).format(price);
   };
 
+  // ---- Auto-generated SEO (derived from product fields) ----
+  const stripHtml = (s: string) => s.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  const truncate = (s: string, n: number) => (s.length <= n ? s : s.slice(0, n - 1).trimEnd() + "…");
+  const seoName = product?.name || "Product";
+  const seoDescSource = stripHtml((product as any)?.overview || product?.description || "");
+  const seoDescription = truncate(
+    seoDescSource || `${seoName} — available from MAX-IR Labs.`,
+    158
+  );
+  const seoTitle = truncate(`${seoName} | MAX-IR Labs`, 60);
+  const seoImage = product
+    ? (Array.isArray(product.images) && (product.images as string[])[0]) || product.image_url || undefined
+    : undefined;
+
+  usePageSeo({
+    title: seoTitle,
+    description: seoDescription,
+    ogTitle: seoTitle,
+    ogDescription: seoDescription,
+    ogImage: seoImage || undefined,
+    canonicalPath: id ? `/products/${id}` : undefined,
+  });
+
+  // Inject Product JSON-LD
+  useEffect(() => {
+    if (!product) return;
+    const variants = (Array.isArray(product.variants) ? (product.variants as ProductVariant[]) : []).filter(
+      (v) => v.name?.trim()
+    );
+    const prices = variants
+      .map((v) => parseFloat(v.price))
+      .filter((p) => !isNaN(p) && p > 0);
+    const lowPrice = prices.length > 0 ? Math.min(...prices) : product.price;
+    const highPrice = prices.length > 0 ? Math.max(...prices) : product.price;
+    const showPrice = !product.tax_exempt && lowPrice > 0;
+
+    const ldImages = (Array.isArray(product.images) && (product.images as string[]).length > 0
+      ? (product.images as string[])
+      : product.image_url
+        ? [product.image_url]
+        : []);
+
+    const ld: Record<string, any> = {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      name: product.name,
+      description: seoDescSource || product.name,
+      sku: product.sku || undefined,
+      category: product.category || undefined,
+      image: ldImages.length > 0 ? ldImages : undefined,
+      brand: { "@type": "Brand", name: "MAX-IR Labs" },
+    };
+    if (showPrice) {
+      ld.offers = prices.length > 1
+        ? {
+            "@type": "AggregateOffer",
+            priceCurrency: "USD",
+            lowPrice: lowPrice.toFixed(2),
+            highPrice: highPrice.toFixed(2),
+            offerCount: prices.length,
+            availability: "https://schema.org/InStock",
+          }
+        : {
+            "@type": "Offer",
+            priceCurrency: "USD",
+            price: lowPrice.toFixed(2),
+            availability: "https://schema.org/InStock",
+            url: typeof window !== "undefined" ? window.location.href : undefined,
+          };
+    }
+    Object.keys(ld).forEach((k) => ld[k] === undefined && delete ld[k]);
+
+    const scriptId = "product-jsonld";
+    let el = document.getElementById(scriptId) as HTMLScriptElement | null;
+    if (!el) {
+      el = document.createElement("script");
+      el.id = scriptId;
+      el.type = "application/ld+json";
+      document.head.appendChild(el);
+    }
+    el.textContent = JSON.stringify(ld);
+    return () => {
+      const cur = document.getElementById(scriptId);
+      if (cur) cur.remove();
+    };
+  }, [product, seoDescSource]);
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
