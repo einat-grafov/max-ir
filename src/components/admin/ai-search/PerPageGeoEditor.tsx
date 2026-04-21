@@ -273,10 +273,10 @@ const PerPageGeoEditor = () => {
         <div className="space-y-1.5">
           {filtered.map((item) => (
             <button
-              key={item.id}
+              key={item.page}
               onClick={() => selectItem(item)}
               className={`w-full text-left p-3 rounded-lg border transition-colors ${
-                selectedId === item.id ? "border-primary bg-primary/5" : "hover:bg-muted/30"
+                selectedId === item.page ? "border-primary bg-primary/5" : "hover:bg-muted/30"
               }`}
             >
               <div className="flex items-center justify-between gap-2">
