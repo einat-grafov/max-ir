@@ -132,6 +132,7 @@ const PerPageGeoEditor = () => {
         body_content: body,
         kind: "product" as const,
         product_id: p.id,
+        schema_data: (r?.schema_data as SchemaData) || {},
       };
     });
     setItems([...pageRows, ...productRows]);
