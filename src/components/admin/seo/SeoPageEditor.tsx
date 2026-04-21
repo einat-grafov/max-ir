@@ -13,8 +13,8 @@ import SocialPreviews from "./SocialPreviews";
 import { getSeoScore, getSeoWarnings } from "@/lib/seoUtils";
 
 export interface SeoItem {
-  id: string;
-  page: string;
+  id: string; // seo_settings.id for pages, product_seo.id (empty if no row yet) for products
+  page: string; // page slug for pages, "products/:id" for products
   title: string;
   meta_title: string | null;
   meta_description: string | null;
@@ -25,6 +25,8 @@ export interface SeoItem {
   canonical_url: string | null;
   schema_type: string | null;
   schema_data: any;
+  kind?: "page" | "product";
+  product_id?: string;
 }
 
 function ScoreBadge({ score }: { score: number }) {
@@ -124,16 +126,29 @@ const SeoPageEditor = ({ item, baseUrl, onSaved }: Props) => {
       schema_type: form.schema_type,
       schema_data: form.schema_data || {},
     };
-    const { error } = await supabase
-      .from("seo_settings")
-      .update(payload as any)
-      .eq("id", item.id);
+    let error: any = null;
+    let newId = item.id;
+    if (item.kind === "product") {
+      const { data, error: upsertError } = await (supabase as any)
+        .from("product_seo")
+        .upsert({ product_id: item.product_id, ...payload }, { onConflict: "product_id" })
+        .select("id")
+        .single();
+      error = upsertError;
+      if (data?.id) newId = data.id;
+    } else {
+      const { error: updateError } = await supabase
+        .from("seo_settings")
+        .update(payload as any)
+        .eq("id", item.id);
+      error = updateError;
+    }
     setSaving(false);
     if (error) {
       toast.error(error.message);
     } else {
       toast.success("SEO data saved");
-      onSaved({ ...item, ...payload } as SeoItem);
+      onSaved({ ...item, id: newId, ...payload } as SeoItem);
     }
   };
 
