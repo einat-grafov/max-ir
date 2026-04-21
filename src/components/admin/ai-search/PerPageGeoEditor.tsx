@@ -139,10 +139,10 @@ const PerPageGeoEditor = () => {
     load();
   }, []);
 
-  const selected = items.find((i) => i.id === selectedId) || null;
+  const selected = items.find((i) => i.page === selectedId) || null;
 
   const selectItem = (item: AiItem) => {
-    setSelectedId(item.id);
+    setSelectedId(item.page);
     setPrimaryTopic(item.primary_topic || "");
     setSupportingTopics((item.supporting_topics || []).join(", "));
     setKeyEntities((item.key_entities || []).join(", "));
