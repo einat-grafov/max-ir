@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import ContactForm from "./ContactForm";
+import CookieFooterLinks from "@/components/cookies/CookieFooterLinks";
 
 const Footer = () => {
 
@@ -48,6 +49,7 @@ const Footer = () => {
               <Link to="/refund-and-return" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Refund & Return</Link>
               <Link to="/shipping-policy" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Shipping Policy</Link>
               <Link to="/terms-and-conditions" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Terms & Conditions</Link>
+              <CookieFooterLinks />
             </div>
             <div className="h-[2px] bg-primary mt-8 mb-4" />
             <p className="text-maxir-white text-[14px] leading-[20px] font-normal">© {new Date().getFullYear()} MaxIR Labs. All rights reserved.</p>
