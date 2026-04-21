@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -145,9 +146,16 @@ import SeoPanel from "@/components/admin/website/SeoPanel";
 import LibraryPanel from "@/components/admin/website/LibraryPanel";
 
 const Website = () => {
-  const [topTab, setTopTab] = useState("pages");
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get("tab") === "seo" || searchParams.get("tab") === "library" ? searchParams.get("tab")! : "pages";
+  const [topTab, setTopTab] = useState(initialTab);
   const [activePageTab, setActivePageTab] = useState("home");
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const t = searchParams.get("tab");
+    if (t === "seo" || t === "pages" || t === "library") setTopTab(t);
+  }, [searchParams]);
 
   const { data: sections, isLoading } = useQuery({
     queryKey: ["website-content"],
