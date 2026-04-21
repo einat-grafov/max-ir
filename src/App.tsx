@@ -45,6 +45,7 @@ import AccessibilitySettings from "./pages/admin/optimization/Accessibility";
 import Seo from "./pages/admin/optimization/Seo";
 import AiSearch from "./pages/admin/optimization/AiSearch";
 import AccessibilityWidget from "./components/AccessibilityWidget";
+import CookieConsentProvider from "@/components/cookies/CookieConsentProvider";
 
 const queryClient = new QueryClient();
 
@@ -71,6 +72,7 @@ const RootLayout = () => (
     <ScrollToTop />
     <Outlet />
     <AccessibilityWidget />
+    <CookieConsentProvider />
   </CartProvider>
 );
 
