@@ -161,6 +161,16 @@ const PerPageGeoEditor = () => {
       })
     : 0;
 
+  const updateAiRow = async (extra: Record<string, any>) => {
+    if (!selected) return { error: null as any };
+    if (selected.kind === "product") {
+      return await (supabase as any)
+        .from("product_seo")
+        .upsert({ product_id: selected.product_id, ...extra }, { onConflict: "product_id" });
+    }
+    return await supabase.from("seo_settings").update(extra as any).eq("id", selected.id);
+  };
+
   const saveFields = async () => {
     if (!selected) return;
     setSaving(true);
@@ -173,18 +183,15 @@ const PerPageGeoEditor = () => {
       faq_items: faqItems,
       supporting_topics: topics,
     });
-    const { error } = await supabase
-      .from("seo_settings")
-      .update({
-        primary_topic: primaryTopic || null,
-        supporting_topics: topics,
-        key_entities: entities,
-        ai_summary: aiSummary || null,
-        faq_items: faqItems as any,
-        ai_readiness_score: newScore,
-        ai_indexing_allowed: aiIndexingAllowed,
-      } as any)
-      .eq("id", selected.id);
+    const { error } = await updateAiRow({
+      primary_topic: primaryTopic || null,
+      supporting_topics: topics,
+      key_entities: entities,
+      ai_summary: aiSummary || null,
+      faq_items: faqItems,
+      ai_readiness_score: newScore,
+      ai_indexing_allowed: aiIndexingAllowed,
+    });
     setSaving(false);
     if (error) {
       toast.error(error.message);
@@ -208,13 +215,10 @@ const PerPageGeoEditor = () => {
         setKeyEntities((data.key_entities || []).join(", "));
         setAiSummary(data.ai_summary || aiSummary);
         const { data: userData } = await supabase.auth.getUser();
-        await supabase
-          .from("seo_settings")
-          .update({
-            ai_last_generated_at: new Date().toISOString(),
-            ai_last_generated_by: userData.user?.email || "unknown",
-          } as any)
-          .eq("id", selected.id);
+        await updateAiRow({
+          ai_last_generated_at: new Date().toISOString(),
+          ai_last_generated_by: userData.user?.email || "unknown",
+        });
         toast.success("AI summary generated");
       }
     } catch (e: any) {
@@ -234,13 +238,10 @@ const PerPageGeoEditor = () => {
       if (data?.faq_items) {
         setFaqItems(data.faq_items);
         const { data: userData } = await supabase.auth.getUser();
-        await supabase
-          .from("seo_settings")
-          .update({
-            faq_last_generated_at: new Date().toISOString(),
-            faq_last_generated_by: userData.user?.email || "unknown",
-          } as any)
-          .eq("id", selected.id);
+        await updateAiRow({
+          faq_last_generated_at: new Date().toISOString(),
+          faq_last_generated_by: userData.user?.email || "unknown",
+        });
         toast.success("FAQs generated");
       }
     } catch (e: any) {
