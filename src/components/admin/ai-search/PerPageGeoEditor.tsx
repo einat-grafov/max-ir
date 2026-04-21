@@ -332,6 +332,16 @@ const PerPageGeoEditor = () => {
               />
             </div>
 
+            {/* Schema type */}
+            <SchemaPicker
+              schemaType={schemaType}
+              schemaData={schemaData}
+              onChange={(t, d) => {
+                setSchemaType(t);
+                setSchemaData(d);
+              }}
+            />
+
             {/* AI indexing toggle */}
             <div className="flex items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
