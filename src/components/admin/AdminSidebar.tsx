@@ -2,26 +2,21 @@ import {
   ShoppingCart,
   Package,
   Users,
-  Settings,
   UserCog,
   CreditCard,
   Plug,
   LogOut,
-  ChevronDown,
   Home,
   Globe,
-  PanelLeft,
   Mail,
   Briefcase,
   Search,
   Sparkles,
   Accessibility,
-  TrendingUp,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
 
 import {
   Sidebar,
@@ -64,12 +59,7 @@ export function AdminSidebar() {
   const collapsed = state === "collapsed";
   const location = useLocation();
   const navigate = useNavigate();
-  const [settingsOpen, setSettingsOpen] = useState(
-    location.pathname.startsWith("/admin/settings")
-  );
-  const [optimizationOpen, setOptimizationOpen] = useState(
-    location.pathname.startsWith("/admin/optimization")
-  );
+  // Sidebar groups are always expanded — no collapse state.
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -120,100 +110,40 @@ export function AdminSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <button
-            onClick={() => setOptimizationOpen(!optimizationOpen)}
-            className="flex items-center justify-between px-4 py-2 mx-2 text-maxir-gray hover:text-maxir-white transition-colors w-[calc(100%-1rem)]"
-          >
-            <div className="flex items-center gap-3">
-              <TrendingUp className="h-4 w-4 shrink-0" />
-              {!collapsed && <span className="text-xs uppercase tracking-wider font-medium">Optimization</span>}
-            </div>
-            {!collapsed && (
-              <ChevronDown
-                className={`h-3 w-3 transition-transform ${optimizationOpen ? "rotate-180" : ""}`}
-              />
-            )}
-          </button>
-          {optimizationOpen && (
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {optimizationItems.map((item) => {
-                  const active = item.matchPath
-                    ? location.pathname.startsWith(item.matchPath)
-                    : isActive(item.url);
-                  if (item.disabled) {
-                    return (
-                      <SidebarMenuItem key={item.title}>
-                        <div
-                          className={`flex items-center gap-3 px-4 py-2.5 text-sm rounded-md mx-2 ${
-                            collapsed ? "" : "pl-11"
-                          } text-maxir-gray/40 cursor-not-allowed`}
-                          title="Coming soon"
-                        >
-                          <item.icon className="h-4 w-4 shrink-0" />
-                          {!collapsed && (
-                            <span className="flex items-center gap-2">
-                              {item.title}
-                              <span className="text-[9px] uppercase tracking-wider bg-white/5 px-1.5 py-0.5 rounded">Soon</span>
-                            </span>
-                          )}
-                        </div>
-                      </SidebarMenuItem>
-                    );
-                  }
+          <SidebarGroupLabel className="text-maxir-gray text-xs uppercase tracking-wider px-4 mb-1">
+            Optimization
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {optimizationItems.map((item) => {
+                const active = item.matchPath
+                  ? location.pathname.startsWith(item.matchPath)
+                  : isActive(item.url);
+                if (item.disabled) {
                   return (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild>
-                        <NavLink
-                          to={item.url}
-                          className={`flex items-center gap-3 px-4 py-2.5 text-sm rounded-md transition-colors mx-2 ${
-                            collapsed ? "" : "pl-11"
-                          } ${
-                            active
-                              ? "bg-primary/10 text-primary"
-                              : "text-maxir-gray hover:text-maxir-white hover:bg-white/5"
-                          }`}
-                          activeClassName=""
-                        >
-                          <item.icon className="h-4 w-4 shrink-0" />
-                          {!collapsed && <span>{item.title}</span>}
-                        </NavLink>
-                      </SidebarMenuButton>
+                      <div
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm rounded-md mx-2 text-maxir-gray/40 cursor-not-allowed"
+                        title="Coming soon"
+                      >
+                        <item.icon className="h-4 w-4 shrink-0" />
+                        {!collapsed && (
+                          <span className="flex items-center gap-2">
+                            {item.title}
+                            <span className="text-[9px] uppercase tracking-wider bg-white/5 px-1.5 py-0.5 rounded">Soon</span>
+                          </span>
+                        )}
+                      </div>
                     </SidebarMenuItem>
                   );
-                })}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          )}
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <button
-            onClick={() => setSettingsOpen(!settingsOpen)}
-            className="flex items-center justify-between px-4 py-2 mx-2 text-maxir-gray hover:text-maxir-white transition-colors"
-          >
-            <div className="flex items-center gap-3">
-              <Settings className="h-4 w-4 shrink-0" />
-              {!collapsed && <span className="text-xs uppercase tracking-wider font-medium">Settings</span>}
-            </div>
-            {!collapsed && (
-              <ChevronDown
-                className={`h-3 w-3 transition-transform ${settingsOpen ? "rotate-180" : ""}`}
-              />
-            )}
-          </button>
-          {settingsOpen && (
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {settingsItems.map((item) => (
+                }
+                return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
                       <NavLink
                         to={item.url}
                         className={`flex items-center gap-3 px-4 py-2.5 text-sm rounded-md transition-colors mx-2 ${
-                          collapsed ? "" : "pl-11"
-                        } ${
-                          isActive(item.url)
+                          active
                             ? "bg-primary/10 text-primary"
                             : "text-maxir-gray hover:text-maxir-white hover:bg-white/5"
                         }`}
@@ -224,10 +154,38 @@ export function AdminSidebar() {
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          )}
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-maxir-gray text-xs uppercase tracking-wider px-4 mb-1">
+            Settings
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {settingsItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink
+                      to={item.url}
+                      className={`flex items-center gap-3 px-4 py-2.5 text-sm rounded-md transition-colors mx-2 ${
+                        isActive(item.url)
+                          ? "bg-primary/10 text-primary"
+                          : "text-maxir-gray hover:text-maxir-white hover:bg-white/5"
+                      }`}
+                      activeClassName=""
+                    >
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      {!collapsed && <span>{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
 
