@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Globe, FlaskConical, Plus, Search, BookOpen, FileText } from "lucide-react";
+import { Globe, FlaskConical, Plus, BookOpen, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import WebsiteSectionEditor from "@/components/admin/website/WebsiteSectionEditor";
 import TestPageBuilder from "@/components/admin/website/TestPageBuilder";
@@ -141,20 +141,18 @@ const PageSections = ({ sections, isLoading, page, onInvalidate }: { sections: a
   );
 };
 
-import SeoPanel from "@/components/admin/website/SeoPanel";
-
 import LibraryPanel from "@/components/admin/website/LibraryPanel";
 
 const Website = () => {
   const [searchParams] = useSearchParams();
-  const initialTab = searchParams.get("tab") === "seo" || searchParams.get("tab") === "library" ? searchParams.get("tab")! : "pages";
+  const initialTab = searchParams.get("tab") === "library" ? "library" : "pages";
   const [topTab, setTopTab] = useState(initialTab);
   const [activePageTab, setActivePageTab] = useState("home");
   const queryClient = useQueryClient();
 
   useEffect(() => {
     const t = searchParams.get("tab");
-    if (t === "seo" || t === "pages" || t === "library") setTopTab(t);
+    if (t === "pages" || t === "library") setTopTab(t);
   }, [searchParams]);
 
   const { data: sections, isLoading } = useQuery({
@@ -189,11 +187,10 @@ const Website = () => {
         </div>
       </div>
 
-      {/* Top-level tabs: SEO | Pages | Library */}
+      {/* Top-level tabs: Pages | Library */}
       <div className="border-b border-border mb-6">
         <div className="flex gap-6">
           {[
-            { value: "seo", label: "SEO", icon: Search },
             { value: "pages", label: "Pages", icon: FileText },
             { value: "library", label: "Library", icon: BookOpen },
           ].map((tab) => (
@@ -217,14 +214,9 @@ const Website = () => {
       <Tabs value={topTab} onValueChange={setTopTab}>
         {/* Hidden TabsList for radix state */}
         <TabsList className="hidden">
-          <TabsTrigger value="seo">SEO</TabsTrigger>
           <TabsTrigger value="pages">Pages</TabsTrigger>
           <TabsTrigger value="library">Library</TabsTrigger>
         </TabsList>
-
-        <TabsContent value="seo">
-          <SeoPanel />
-        </TabsContent>
 
         <TabsContent value="pages">
           {/* Nested page tabs */}

@@ -42,8 +42,8 @@ const mainItems = [
 ];
 
 const optimizationItems = [
-  { title: "SEO", url: "/admin/website?tab=seo", icon: Search, matchPath: "/admin/website" },
-  { title: "AI Search", url: "/admin/optimization/ai-search", icon: Sparkles, disabled: true },
+  { title: "SEO", url: "/admin/optimization/seo", icon: Search },
+  { title: "AI Search", url: "/admin/optimization/ai-search", icon: Sparkles },
   { title: "Accessibility", url: "/admin/optimization/accessibility", icon: Accessibility },
 ];
 
@@ -115,47 +115,24 @@ export function AdminSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {optimizationItems.map((item) => {
-                const active = item.matchPath
-                  ? location.pathname.startsWith(item.matchPath)
-                  : isActive(item.url);
-                if (item.disabled) {
-                  return (
-                    <SidebarMenuItem key={item.title}>
-                      <div
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm rounded-md mx-2 text-maxir-gray/40 cursor-not-allowed"
-                        title="Coming soon"
-                      >
-                        <item.icon className="h-4 w-4 shrink-0" />
-                        {!collapsed && (
-                          <span className="flex items-center gap-2">
-                            {item.title}
-                            <span className="text-[9px] uppercase tracking-wider bg-white/5 px-1.5 py-0.5 rounded">Soon</span>
-                          </span>
-                        )}
-                      </div>
-                    </SidebarMenuItem>
-                  );
-                }
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <NavLink
-                        to={item.url}
-                        className={`flex items-center gap-3 px-4 py-2.5 text-sm rounded-md transition-colors mx-2 ${
-                          active
-                            ? "bg-primary/10 text-primary"
-                            : "text-maxir-gray hover:text-maxir-white hover:bg-white/5"
-                        }`}
-                        activeClassName=""
-                      >
-                        <item.icon className="h-4 w-4 shrink-0" />
-                        {!collapsed && <span>{item.title}</span>}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
+              {optimizationItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink
+                      to={item.url}
+                      className={`flex items-center gap-3 px-4 py-2.5 text-sm rounded-md transition-colors mx-2 ${
+                        isActive(item.url)
+                          ? "bg-primary/10 text-primary"
+                          : "text-maxir-gray hover:text-maxir-white hover:bg-white/5"
+                      }`}
+                      activeClassName=""
+                    >
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      {!collapsed && <span>{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
