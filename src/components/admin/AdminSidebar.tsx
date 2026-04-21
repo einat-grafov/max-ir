@@ -2,26 +2,21 @@ import {
   ShoppingCart,
   Package,
   Users,
-  Settings,
   UserCog,
   CreditCard,
   Plug,
   LogOut,
-  ChevronDown,
   Home,
   Globe,
-  PanelLeft,
   Mail,
   Briefcase,
   Search,
   Sparkles,
   Accessibility,
-  TrendingUp,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
 
 import {
   Sidebar,
