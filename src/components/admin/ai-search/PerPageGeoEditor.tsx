@@ -199,6 +199,8 @@ const PerPageGeoEditor = () => {
       faq_items: faqItems,
       ai_readiness_score: newScore,
       ai_indexing_allowed: aiIndexingAllowed,
+      schema_type: schemaType,
+      schema_data: schemaData,
     });
     setSaving(false);
     if (error) {
