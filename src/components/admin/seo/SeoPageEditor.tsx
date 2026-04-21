@@ -11,7 +11,6 @@ import { AlertCircle, Save, Loader2, Sparkles } from "lucide-react";
 import SchemaPicker, { type SchemaType, type SchemaData } from "./SchemaPicker";
 import SocialPreviews from "./SocialPreviews";
 import { getSeoScore, getSeoWarnings } from "@/lib/seoUtils";
-import { cn } from "@/lib/utils";
 
 export interface SeoItem {
   id: string;
