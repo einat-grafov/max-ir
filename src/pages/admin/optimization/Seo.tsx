@@ -145,11 +145,21 @@ const Seo = () => {
                   >
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-sm font-medium truncate">{item.title}</span>
-                      <div className="flex items-center gap-1.5 shrink-0">
+                      <div className="flex items-center gap-2 shrink-0">
                         {warnings > 0 && (
                           <span className="text-[10px] text-amber-600 font-medium">{warnings} ⚠</span>
                         )}
-                        <span className="text-[10px] font-semibold text-muted-foreground">{score}%</span>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-1 text-sm font-bold rounded-full border ${
+                            score >= 80
+                              ? "text-white bg-green-600 border-green-700"
+                              : score >= 50
+                                ? "text-amber-700 bg-amber-100 border-amber-300"
+                                : "text-red-700 bg-red-100 border-red-300"
+                          }`}
+                        >
+                          {score}%
+                        </span>
                       </div>
                     </div>
                     <span className="text-[10px] text-muted-foreground truncate block mt-0.5">
