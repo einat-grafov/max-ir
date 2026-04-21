@@ -1,2 +1,13 @@
+# Allow Anthropic's Claude crawlers
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+# Block everyone else
 User-agent: *
 Disallow: /
