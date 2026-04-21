@@ -13,7 +13,7 @@ import { calculateAiReadinessScore, type FaqItem } from "@/lib/seoUtils";
 import CitationChecklist from "@/components/admin/seo/CitationChecklist";
 
 interface AiItem {
-  id: string;
+  id: string; // seo_settings.id for pages, product_seo.id (empty if none) for products
   page: string;
   title: string;
   primary_topic: string | null;
@@ -29,6 +29,8 @@ interface AiItem {
   faq_last_generated_at: string | null;
   faq_last_generated_by: string | null;
   body_content: string;
+  kind: "page" | "product";
+  product_id?: string;
 }
 
 const PAGE_LABELS: Record<string, string> = {
