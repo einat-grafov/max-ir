@@ -82,7 +82,7 @@ const Seo = () => {
   };
 
   const filtered = items.filter((i) => !search || i.title.toLowerCase().includes(search.toLowerCase()));
-  const selected = items.find((i) => i.id === selectedId) || null;
+  const selected = items.find((i) => i.page === selectedId) || null;
 
   const avgScore = items.length > 0 ? Math.round(items.reduce((sum, i) => sum + getSeoScore(i), 0) / items.length) : 0;
   const totalWarnings = items.reduce((sum, i) => sum + getSeoWarnings(i).length, 0);
@@ -137,10 +137,10 @@ const Seo = () => {
                 const warnings = getSeoWarnings(item).length;
                 return (
                   <button
-                    key={item.id}
-                    onClick={() => setSelectedId(item.id)}
+                    key={item.page}
+                    onClick={() => setSelectedId(item.page)}
                     className={`w-full text-left p-3 rounded-lg border transition-colors ${
-                      selectedId === item.id ? "border-primary bg-primary/5" : "hover:bg-muted/30"
+                      selectedId === item.page ? "border-primary bg-primary/5" : "hover:bg-muted/30"
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
