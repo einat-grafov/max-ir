@@ -73,6 +73,8 @@ const PerPageGeoEditor = () => {
   const [aiSummary, setAiSummary] = useState("");
   const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
   const [aiIndexingAllowed, setAiIndexingAllowed] = useState(true);
+  const [schemaType, setSchemaType] = useState<SchemaType>("auto");
+  const [schemaData, setSchemaData] = useState<SchemaData>({});
 
   const load = async () => {
     const [seoRes, contentRes, productsRes, productSeoRes] = await Promise.all([
