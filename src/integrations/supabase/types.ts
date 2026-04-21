@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      accessibility_settings: {
+        Row: {
+          button_color: string
+          enabled: boolean
+          id: string
+          position: string
+          singleton: boolean
+          updated_at: string
+        }
+        Insert: {
+          button_color?: string
+          enabled?: boolean
+          id?: string
+          position?: string
+          singleton?: boolean
+          updated_at?: string
+        }
+        Update: {
+          button_color?: string
+          enabled?: boolean
+          id?: string
+          position?: string
+          singleton?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       career_application_files: {
         Row: {
           application_id: string
