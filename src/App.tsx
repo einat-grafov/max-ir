@@ -42,6 +42,8 @@ import RefundAndReturn from "./pages/RefundAndReturn";
 import ShippingPolicy from "./pages/ShippingPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import AccessibilitySettings from "./pages/admin/optimization/Accessibility";
+import Seo from "./pages/admin/optimization/Seo";
+import AiSearch from "./pages/admin/optimization/AiSearch";
 import AccessibilityWidget from "./components/AccessibilityWidget";
 
 const queryClient = new QueryClient();
@@ -118,6 +120,8 @@ const router = createBrowserRouter([
           { path: "settings/shipping", element: <Navigate to="/admin/settings/integrations" replace /> },
           { path: "settings/emails", element: <EmailSettings /> },
           { path: "settings/emails/:templateKey", element: <EmailTemplateEditor /> },
+          { path: "optimization/seo", element: <Seo /> },
+          { path: "optimization/ai-search", element: <AiSearch /> },
           { path: "optimization/accessibility", element: <AccessibilitySettings /> },
         ],
       },
