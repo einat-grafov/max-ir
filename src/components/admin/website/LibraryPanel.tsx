@@ -34,9 +34,39 @@ const AssetCard = ({ asset, onDelete }: { asset: Asset; onDelete: (a: Asset) => 
   const svg = isSvg(asset.filename);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const copyLink = () => {
-    navigator.clipboard.writeText(asset.url);
-    toast.success("URL copied to clipboard");
+  const copyLink = async () => {
+    const text = asset.url;
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        toast.success("URL copied to clipboard");
+        return;
+      }
+      throw new Error("Clipboard API unavailable");
+    } catch {
+      // Fallback for restricted contexts (e.g., iframe without clipboard permission)
+      try {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.top = "0";
+        textarea.style.left = "0";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        const ok = document.execCommand("copy");
+        document.body.removeChild(textarea);
+        if (ok) {
+          toast.success("URL copied to clipboard");
+        } else {
+          toast.error("Could not copy. Please copy manually.");
+        }
+      } catch {
+        toast.error("Could not copy. Please copy manually.");
+      }
+    }
   };
 
   const downloadAsset = async () => {
