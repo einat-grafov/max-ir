@@ -199,7 +199,7 @@ export default function CookiePreferencesModal({
           })}
         </div>
 
-        <DialogFooter className="flex flex-col gap-2 sm:flex-row sm:justify-between">
+        <DialogFooter className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-between">
           <Button
             variant="default"
             size="default"
