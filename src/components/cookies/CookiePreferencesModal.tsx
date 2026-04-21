@@ -201,7 +201,7 @@ export default function CookiePreferencesModal({
 
         <DialogFooter className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-between">
           <Button
-            variant="default"
+            variant="secondary"
             size="default"
             onClick={handleRejectAll}
             className="w-full sm:flex-1"
@@ -209,10 +209,10 @@ export default function CookiePreferencesModal({
             Reject All
           </Button>
           <Button
-            variant="default"
+            variant="outline"
             size="default"
             onClick={handleSave}
-            className="w-full sm:flex-1"
+            className="w-full border-primary text-primary hover:bg-primary/10 hover:text-primary sm:flex-1"
           >
             Save Preferences
           </Button>

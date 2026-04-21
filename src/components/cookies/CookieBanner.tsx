@@ -51,7 +51,7 @@ export default function CookieBanner({
 
       <div className="mt-5 flex flex-col gap-2 sm:flex-row">
         <Button
-          variant="default"
+          variant="secondary"
           size="default"
           onClick={onRejectAll}
           className="w-full sm:flex-1"
@@ -59,10 +59,10 @@ export default function CookieBanner({
           Reject All
         </Button>
         <Button
-          variant="default"
+          variant="outline"
           size="default"
           onClick={onCustomize}
-          className="w-full sm:flex-1"
+          className="w-full border-primary text-primary hover:bg-primary/10 hover:text-primary sm:flex-1"
         >
           Customize
         </Button>
