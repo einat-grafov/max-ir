@@ -860,6 +860,7 @@ const SnippetSection = ({
   onAdd,
   onEdit,
   onChanged,
+  ensureBannerEnabledForTracker,
 }: {
   title: string;
   description: string;
@@ -869,6 +870,7 @@ const SnippetSection = ({
   onAdd: () => void;
   onEdit: (s: SnippetRow) => void;
   onChanged: () => void;
+  ensureBannerEnabledForTracker: () => Promise<void>;
 }) => {
   const handleToggle = async (s: SnippetRow, enabled: boolean) => {
     if (!s.id) return;
@@ -879,6 +881,10 @@ const SnippetSection = ({
     if (error) {
       toast.error(error.message);
       return;
+    }
+    // Compliance lock: enabling a non-necessary snippet auto-enables the banner.
+    if (enabled && s.consent_category !== "necessary") {
+      await ensureBannerEnabledForTracker();
     }
     toast.success(`Snippet ${enabled ? "enabled" : "disabled"}`);
     onChanged();
