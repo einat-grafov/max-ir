@@ -1089,6 +1089,17 @@ const SnippetEditor = ({
               compact
             />
           </div>
+          {draft.consent_category === "necessary" && (
+            <div className="rounded-md border border-yellow-500/40 bg-yellow-500/10 px-3 py-2 text-xs text-yellow-900 dark:text-yellow-200">
+              ⚠ <strong>"Necessary"</strong> bypasses the cookie banner. This snippet
+              will run for every visitor, even those who reject cookies. Only use
+              "Necessary" for truly essential scripts (CSRF tokens, session
+              helpers, consent-management helpers). For trackers like Google
+              Analytics, Meta Pixel, Hotjar, HubSpot, etc., choose "Analytics" or
+              "Marketing" instead — they'll be automatically gated by the consent
+              banner.
+            </div>
+          )}
 
           <div>
             <div className="flex items-center justify-between mb-1">
