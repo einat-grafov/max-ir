@@ -160,6 +160,44 @@ const IntegrationsSettings = () => {
     loadBannerSetting();
   }, []);
 
+  // True if any tracker (non-necessary) is currently enabled.
+  const hasActiveTrackers = useMemo(() => {
+    const integrationTrackers = Object.values(integrations).some((row) => {
+      if (!row.enabled) return false;
+      const def = getDefinition(row.provider);
+      const category = row.consent_category || def?.defaultConsent || "analytics";
+      return category !== "necessary";
+    });
+    const snippetTrackers = snippets.some(
+      (s) => s.enabled && s.consent_category !== "necessary",
+    );
+    return integrationTrackers || snippetTrackers;
+  }, [integrations, snippets]);
+
+  // Compliance lock helper: ensure the banner is enabled in DB + state.
+  // Used after enabling a tracker (integration or snippet) with a non-necessary
+  // consent category, so the impossible state "trackers on, banner off" cannot exist.
+  const ensureBannerEnabledForTracker = async () => {
+    if (bannerEnabled) return;
+    const { data: existing } = await supabase
+      .from("site_seo_settings")
+      .select("id")
+      .maybeSingle();
+    const payload = { cookie_banner_enabled: true };
+    if (existing?.id) {
+      await supabase
+        .from("site_seo_settings")
+        .update(payload)
+        .eq("id", existing.id);
+    } else {
+      await supabase.from("site_seo_settings").insert(payload);
+    }
+    setBannerEnabled(true);
+    toast.info(
+      "Cookie banner was automatically enabled because a tracker is now active.",
+    );
+  };
+
   // Filter
   const filteredCatalog = useMemo(() => {
     const q = search.trim().toLowerCase();
