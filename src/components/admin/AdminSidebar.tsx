@@ -14,6 +14,7 @@ import {
   Search,
   Sparkles,
   Accessibility,
+  ArrowRightLeft,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate, Link } from "react-router-dom";
@@ -46,6 +47,7 @@ const mainItems = [
 const optimizationItems = [
   { title: "SEO", url: "/admin/optimization/seo", icon: Search },
   { title: "AI Search", url: "/admin/optimization/ai-search", icon: Sparkles },
+  { title: "Redirects", url: "/admin/optimization/redirects", icon: ArrowRightLeft },
   { title: "Accessibility", url: "/admin/optimization/accessibility", icon: Accessibility },
 ];
 
