@@ -15,6 +15,7 @@ import {
   Sparkles,
   Accessibility,
   ArrowRightLeft,
+  Palette,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate, Link } from "react-router-dom";
@@ -40,6 +41,7 @@ const mainItems = [
   { title: "Products", url: "/admin/products", icon: Package },
   { title: "Customers", url: "/admin/customers", icon: Users },
   { title: "Website", url: "/admin/website", icon: Globe },
+  { title: "Brand", url: "/admin/brand", icon: Palette },
   { title: "Inquiries", url: "/admin/inquiries", icon: MessageSquare },
   { title: "Careers", url: "/admin/careers", icon: Briefcase },
 ];

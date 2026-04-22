@@ -46,6 +46,7 @@ import AccessibilitySettings from "./pages/admin/optimization/Accessibility";
 import Seo from "./pages/admin/optimization/Seo";
 import AiSearch from "./pages/admin/optimization/AiSearch";
 import Redirects from "./pages/admin/optimization/Redirects";
+import Brand from "./pages/admin/Brand";
 import AccessibilityWidget from "./components/AccessibilityWidget";
 import CookieConsentProvider from "@/components/cookies/CookieConsentProvider";
 
@@ -116,6 +117,7 @@ const router = createBrowserRouter([
           { path: "customers/create", element: <CreateCustomer /> },
           { path: "customers/:id", element: <EditCustomer /> },
           { path: "website", element: <Website /> },
+          { path: "brand", element: <Brand /> },
           { path: "inquiries", element: <Inquiries /> },
           { path: "careers", element: <CareerApplications /> },
           { path: "careers/:id", element: <CareerApplicationDetail /> },
