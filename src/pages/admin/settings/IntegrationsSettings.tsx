@@ -143,9 +143,20 @@ const IntegrationsSettings = () => {
     setLoadingSnippets(false);
   };
 
+  const loadBannerSetting = async () => {
+    setBannerLoading(true);
+    const { data } = await supabase
+      .from("site_seo_settings")
+      .select("id,cookie_banner_enabled")
+      .maybeSingle();
+    setBannerEnabled(data?.cookie_banner_enabled !== false);
+    setBannerLoading(false);
+  };
+
   useEffect(() => {
     loadIntegrations();
     loadSnippets();
+    loadBannerSetting();
   }, []);
 
   // Filter
