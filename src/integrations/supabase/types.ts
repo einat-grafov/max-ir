@@ -198,6 +198,42 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_code_snippets: {
+        Row: {
+          code: string
+          consent_category: string
+          created_at: string
+          enabled: boolean
+          id: string
+          location: string
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          code?: string
+          consent_category?: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          location?: string
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          consent_category?: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          location?: string
+          name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       customer_contacts: {
         Row: {
           created_at: string
@@ -955,6 +991,42 @@ export type Database = {
           schema_data?: Json
           schema_type?: string | null
           supporting_topics?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      site_integrations: {
+        Row: {
+          category: string
+          config: Json
+          consent_category: string
+          created_at: string
+          display_name: string
+          enabled: boolean
+          id: string
+          provider: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          config?: Json
+          consent_category?: string
+          created_at?: string
+          display_name: string
+          enabled?: boolean
+          id?: string
+          provider: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          config?: Json
+          consent_category?: string
+          created_at?: string
+          display_name?: string
+          enabled?: boolean
+          id?: string
+          provider?: string
           updated_at?: string
         }
         Relationships: []
