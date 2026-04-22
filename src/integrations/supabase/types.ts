@@ -637,6 +637,30 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_settings: {
+        Row: {
+          careers_notification_email: string | null
+          id: string
+          inquiries_notification_email: string | null
+          singleton: boolean
+          updated_at: string
+        }
+        Insert: {
+          careers_notification_email?: string | null
+          id?: string
+          inquiries_notification_email?: string | null
+          singleton?: boolean
+          updated_at?: string
+        }
+        Update: {
+          careers_notification_email?: string | null
+          id?: string
+          inquiries_notification_email?: string | null
+          singleton?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
