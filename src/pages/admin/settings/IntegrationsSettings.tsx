@@ -487,6 +487,7 @@ const IntegrationsSettings = () => {
         onOpenChange={setSetupOpen}
         def={setupDef}
         existing={setupDef ? integrations[setupDef.provider] : undefined}
+        ensureBannerEnabledForTracker={ensureBannerEnabledForTracker}
         onSaved={() => {
           loadIntegrations();
           setSetupOpen(false);
@@ -589,12 +590,14 @@ const SetupDialog = ({
   onOpenChange,
   def,
   existing,
+  ensureBannerEnabledForTracker,
   onSaved,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   def: IntegrationDefinition | null;
   existing?: IntegrationRow;
+  ensureBannerEnabledForTracker: () => Promise<void>;
   onSaved: () => void;
 }) => {
   const [config, setConfig] = useState<Record<string, string>>({});
