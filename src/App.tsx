@@ -25,7 +25,7 @@ import EditProduct from "./pages/admin/EditProduct";
 import Customers from "./pages/admin/Customers";
 import CreateCustomer from "./pages/admin/CreateCustomer";
 import EditCustomer from "./pages/admin/EditCustomer";
-import Analytics from "./pages/admin/Analytics";
+import General from "./pages/admin/General";
 import Website from "./pages/admin/Website";
 import UsersSettings from "./pages/admin/settings/UsersSettings";
 import BillingSettings from "./pages/admin/settings/BillingSettings";
@@ -106,7 +106,7 @@ const router = createBrowserRouter([
         element: <AdminLayout />,
         children: [
           { index: true, element: <Navigate to="/admin/home" replace /> },
-          { path: "home", element: <Analytics /> },
+          { path: "home", element: <General /> },
           { path: "orders", element: <Orders /> },
           { path: "orders/create", element: <CreateOrder /> },
           { path: "orders/:id", element: <OrderDetail /> },
