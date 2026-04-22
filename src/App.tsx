@@ -49,6 +49,7 @@ import Redirects from "./pages/admin/optimization/Redirects";
 import Brand from "./pages/admin/Brand";
 import AccessibilityWidget from "./components/AccessibilityWidget";
 import CookieConsentProvider from "@/components/cookies/CookieConsentProvider";
+import { startSiteInjector } from "@/lib/site-injector";
 
 const queryClient = new QueryClient();
 
@@ -70,14 +71,21 @@ const ScrollToTop = () => {
   return null;
 };
 
-const RootLayout = () => (
-  <CartProvider>
-    <ScrollToTop />
-    <Outlet />
-    <AccessibilityWidget />
-    <CookieConsentProvider />
-  </CartProvider>
-);
+const RootLayout = () => {
+  const { pathname } = useLocation();
+  const isAdmin = pathname.startsWith("/admin");
+  useEffect(() => {
+    if (!isAdmin) startSiteInjector();
+  }, [isAdmin]);
+  return (
+    <CartProvider>
+      <ScrollToTop />
+      <Outlet />
+      <AccessibilityWidget />
+      <CookieConsentProvider />
+    </CartProvider>
+  );
+};
 
 const router = createBrowserRouter([
   {
