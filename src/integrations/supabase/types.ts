@@ -1062,6 +1062,7 @@ export type Database = {
           base_url: string
           contact_email: string | null
           contact_phone: string | null
+          cookie_banner_enabled: boolean
           created_at: string
           default_og_image: string | null
           favicon_url: string | null
@@ -1088,6 +1089,7 @@ export type Database = {
           base_url?: string
           contact_email?: string | null
           contact_phone?: string | null
+          cookie_banner_enabled?: boolean
           created_at?: string
           default_og_image?: string | null
           favicon_url?: string | null
@@ -1114,6 +1116,7 @@ export type Database = {
           base_url?: string
           contact_email?: string | null
           contact_phone?: string | null
+          cookie_banner_enabled?: boolean
           created_at?: string
           default_og_image?: string | null
           favicon_url?: string | null

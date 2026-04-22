@@ -85,7 +85,7 @@ type SnippetRow = {
 // ============================================================================
 
 const IntegrationsSettings = () => {
-  const [tab, setTab] = useState("catalog");
+  const [tab, setTab] = useState("infra");
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] =
     useState<IntegrationCategory | "All">("All");
@@ -99,6 +99,11 @@ const IntegrationsSettings = () => {
   // Snippets
   const [snippets, setSnippets] = useState<SnippetRow[]>([]);
   const [loadingSnippets, setLoadingSnippets] = useState(true);
+
+  // Cookie banner global toggle
+  const [bannerEnabled, setBannerEnabled] = useState(true);
+  const [bannerLoading, setBannerLoading] = useState(true);
+  const [bannerSaving, setBannerSaving] = useState(false);
 
   const loadIntegrations = async () => {
     setLoadingIntegrations(true);
@@ -138,9 +143,20 @@ const IntegrationsSettings = () => {
     setLoadingSnippets(false);
   };
 
+  const loadBannerSetting = async () => {
+    setBannerLoading(true);
+    const { data } = await supabase
+      .from("site_seo_settings")
+      .select("id,cookie_banner_enabled")
+      .maybeSingle();
+    setBannerEnabled(data?.cookie_banner_enabled !== false);
+    setBannerLoading(false);
+  };
+
   useEffect(() => {
     loadIntegrations();
     loadSnippets();
+    loadBannerSetting();
   }, []);
 
   // Filter
@@ -177,6 +193,33 @@ const IntegrationsSettings = () => {
     toast.info("Cookie Preferences opened (only visible on public pages).");
   };
 
+  const handleToggleBanner = async (next: boolean) => {
+    setBannerSaving(true);
+    // site_seo_settings is a singleton — fetch the existing row id, then update.
+    const { data: existing } = await supabase
+      .from("site_seo_settings")
+      .select("id")
+      .maybeSingle();
+    const payload = { cookie_banner_enabled: next };
+    const { error } = existing?.id
+      ? await supabase
+          .from("site_seo_settings")
+          .update(payload)
+          .eq("id", existing.id)
+      : await supabase.from("site_seo_settings").insert(payload);
+    setBannerSaving(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setBannerEnabled(next);
+    toast.success(
+      next
+        ? "Cookie banner enabled. Visitors will be prompted for consent."
+        : "Cookie banner disabled. All scripts will run without prompting visitors.",
+    );
+  };
+
   // ============================================================================
   // Render
   // ============================================================================
@@ -203,30 +246,78 @@ const IntegrationsSettings = () => {
       </div>
 
       {/* Consent gating banner */}
-      <Card className="p-4 mb-6 border-primary/20 bg-primary/5">
+      <Card
+        className={`p-4 mb-6 border-primary/20 ${
+          bannerEnabled ? "bg-primary/5" : "bg-muted/40"
+        }`}
+      >
         <div className="flex items-start gap-3 flex-wrap">
-          <Cookie className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+          <Cookie
+            className={`h-5 w-5 shrink-0 mt-0.5 ${
+              bannerEnabled ? "text-primary" : "text-muted-foreground"
+            }`}
+          />
           <div className="flex-1 min-w-[260px]">
-            <div className="text-sm font-semibold text-foreground">
-              Consent gating is active
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="text-sm font-semibold text-foreground">
+                {bannerEnabled
+                  ? "Consent gating is active"
+                  : "Consent gating is disabled"}
+              </div>
+              <Badge
+                variant={bannerEnabled ? "default" : "secondary"}
+                className="gap-1"
+              >
+                {bannerEnabled ? "On" : "Off"}
+              </Badge>
             </div>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Scripts respect your visitors' cookie banner choices. Items tagged{" "}
-              <span className="font-medium">Analytics</span> or{" "}
-              <span className="font-medium">Marketing</span> only run after consent
-              is given. <span className="font-medium">Necessary</span> always runs.
+            <p className="text-xs text-muted-foreground mt-1">
+              {bannerEnabled ? (
+                <>
+                  Scripts respect your visitors' cookie banner choices. Items tagged{" "}
+                  <span className="font-medium">Analytics</span> or{" "}
+                  <span className="font-medium">Marketing</span> only run after consent
+                  is given. <span className="font-medium">Necessary</span> always runs.
+                </>
+              ) : (
+                <>
+                  The cookie banner is hidden from visitors and{" "}
+                  <span className="font-medium">all scripts run immediately</span>,
+                  regardless of category. Make sure this complies with your local
+                  privacy laws (GDPR, CCPA, etc.).
+                </>
+              )}
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={handleOpenPreferences}>
-              Preview banner
-            </Button>
-            <Button size="sm" variant="outline" onClick={handleResetConsent}>
-              Reset visitor consent
-            </Button>
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Label
+                htmlFor="cookie-banner-toggle"
+                className="text-xs font-medium text-foreground cursor-pointer"
+              >
+                Cookie banner
+              </Label>
+              <Switch
+                id="cookie-banner-toggle"
+                checked={bannerEnabled}
+                disabled={bannerLoading || bannerSaving}
+                onCheckedChange={handleToggleBanner}
+              />
+            </div>
+            {bannerEnabled && (
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={handleOpenPreferences}>
+                  Preview banner
+                </Button>
+                <Button size="sm" variant="outline" onClick={handleResetConsent}>
+                  Reset visitor consent
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </Card>
+
 
       {/* Tabs */}
       <Tabs value={tab} onValueChange={setTab}>
