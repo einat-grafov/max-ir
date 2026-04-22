@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Loader2, Smartphone, Monitor, ExternalLink, AlertCircle } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Loader2, Smartphone, Monitor, ExternalLink, AlertCircle, KeyRound, Check, Trash2, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 type Strategy = "mobile" | "desktop";
 
