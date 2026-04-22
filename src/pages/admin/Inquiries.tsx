@@ -95,6 +95,12 @@ const Inquiries = () => {
         </div>
       </div>
 
+      <NotificationEmailCard
+        column="inquiries_notification_email"
+        title="Inquiry notification email"
+        description="A copy of every contact form and product inquiry submission will also be sent to this address."
+      />
+
       <div className="bg-card border border-border rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
