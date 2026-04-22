@@ -1078,6 +1078,39 @@ export type Database = {
         }
         Relationships: []
       }
+      url_redirects: {
+        Row: {
+          created_at: string
+          destination_path: string
+          enabled: boolean
+          id: string
+          notes: string | null
+          source_path: string
+          status_code: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          destination_path: string
+          enabled?: boolean
+          id?: string
+          notes?: string | null
+          source_path: string
+          status_code?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          destination_path?: string
+          enabled?: boolean
+          id?: string
+          notes?: string | null
+          source_path?: string
+          status_code?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
