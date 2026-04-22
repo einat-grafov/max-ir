@@ -202,6 +202,32 @@ const ProductInquiryForm = ({ open, onOpenChange, productName, productId, select
         },
       });
 
+      // Notify admin (if a notification email is configured)
+      const { data: settings } = await supabase
+        .from("notification_settings")
+        .select("inquiries_notification_email")
+        .eq("singleton", true)
+        .maybeSingle();
+      const notifyEmail = settings?.inquiries_notification_email?.trim();
+      if (notifyEmail) {
+        await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "inquiry-admin-notification",
+            recipientEmail: notifyEmail,
+            idempotencyKey: `inquiry-admin-${inquiryId}`,
+            templateData: {
+              inquirerName: displayName,
+              inquirerEmail: result.data!.email,
+              inquirerPhone: result.data!.phone || undefined,
+              inquirerCompany: result.data!.companyName,
+              inquirerCountry: result.data!.country,
+              product: productNameForDb,
+              message: result.data!.message,
+            },
+          },
+        });
+      }
+
       setSubmitted(true);
     } catch {
       toast({ title: "Error", description: "Failed to send inquiry. Please try again.", variant: "destructive" });

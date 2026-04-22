@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import { Mail, MailOpen, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import NotificationEmailCard from "@/components/admin/NotificationEmailCard";
 
 type Inquiry = {
   id: string;
@@ -93,6 +94,12 @@ const Inquiries = () => {
           </p>
         </div>
       </div>
+
+      <NotificationEmailCard
+        column="inquiries_notification_email"
+        title="Inquiry notification email"
+        description="A copy of every contact form and product inquiry submission will also be sent to this address."
+      />
 
       <div className="bg-card border border-border rounded-lg overflow-hidden">
         <Table>

@@ -21,9 +21,10 @@ const ContactForm = () => {
     setLoading(true);
     try {
       const id = crypto.randomUUID();
+      const subjectForDb = formData.subject || "General Inquiry";
       await supabase.from("inquiries").insert({
         id,
-        product_name: formData.subject || "General Inquiry",
+        product_name: subjectForDb,
         name: formData.name,
         email: formData.email,
         message: formData.message,
@@ -31,6 +32,7 @@ const ContactForm = () => {
         last_name: formData.name.split(" ").slice(1).join(" ") || null,
       } as any);
 
+      // Confirmation to the visitor
       await supabase.functions.invoke("send-transactional-email", {
         body: {
           templateName: "contact-confirmation",
@@ -42,6 +44,29 @@ const ContactForm = () => {
           },
         },
       });
+
+      // Notify admin (if a notification email is configured)
+      const { data: settings } = await supabase
+        .from("notification_settings")
+        .select("inquiries_notification_email")
+        .eq("singleton", true)
+        .maybeSingle();
+      const notifyEmail = settings?.inquiries_notification_email?.trim();
+      if (notifyEmail) {
+        await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "inquiry-admin-notification",
+            recipientEmail: notifyEmail,
+            idempotencyKey: `inquiry-admin-${id}`,
+            templateData: {
+              inquirerName: formData.name,
+              inquirerEmail: formData.email,
+              product: subjectForDb,
+              message: formData.message,
+            },
+          },
+        });
+      }
 
       setSubmitted(true);
     } catch {

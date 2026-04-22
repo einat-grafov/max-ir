@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import NotificationEmailCard from "@/components/admin/NotificationEmailCard";
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   new: { label: "New", className: "bg-blue-100 text-blue-800 border-blue-200" },
@@ -73,6 +74,12 @@ const CareerApplications = () => {
           </div>
         </div>
       </div>
+
+      <NotificationEmailCard
+        column="careers_notification_email"
+        title="Career application notification email"
+        description="A copy of every job application submitted on the public careers page will also be sent to this address."
+      />
 
       <div className="flex items-center gap-3 mb-4">
         <Filter className="h-4 w-4 text-muted-foreground" />
