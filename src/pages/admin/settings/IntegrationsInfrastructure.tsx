@@ -242,7 +242,7 @@ const IntegrationsInfrastructure = () => {
         </Button>
       </div>
 
-      <div className="max-w-2xl space-y-10">
+      <div className="space-y-10">
         {/* Payments */}
         <section>
           <div className="flex items-center gap-2 mb-3">
