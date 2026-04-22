@@ -223,8 +223,112 @@ const Performance = () => {
 
       <Card>
         <CardHeader>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <KeyRound className="h-5 w-5" />
+                Google PageSpeed Insights API key
+              </CardTitle>
+              <CardDescription>
+                Required to run audits. Free, takes ~2 minutes to create — no billing needed (25,000 requests/day).
+              </CardDescription>
+            </div>
+            {!keyLoading && (
+              <Badge variant={hasKey ? "default" : "secondary"} className="shrink-0">
+                {hasKey ? (
+                  <><Check className="h-3 w-3 mr-1" /> Connected</>
+                ) : (
+                  "Not configured"
+                )}
+              </Badge>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {keyLoading ? (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" /> Checking…
+            </div>
+          ) : hasKey ? (
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="font-mono text-sm rounded-md border bg-muted/50 px-3 py-2">{maskedKey}</div>
+              <Button variant="outline" size="sm" onClick={() => { setHasKey(false); setKeyInput(""); }}>
+                Replace
+              </Button>
+              <Button variant="ghost" size="sm" onClick={removeKey} className="text-destructive hover:text-destructive">
+                <Trash2 className="h-4 w-4 mr-1" /> Remove
+              </Button>
+            </div>
+          ) : (
+            <>
+              <ol className="text-sm text-muted-foreground space-y-1 list-decimal pl-5">
+                <li>
+                  Open the{" "}
+                  <a
+                    href="https://console.cloud.google.com/apis/library/pagespeedonline.googleapis.com"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline text-foreground"
+                  >
+                    PageSpeed Insights API
+                  </a>{" "}
+                  in Google Cloud Console and click <strong>Enable</strong>.
+                </li>
+                <li>
+                  Go to{" "}
+                  <a
+                    href="https://console.cloud.google.com/apis/credentials"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline text-foreground"
+                  >
+                    Credentials
+                  </a>{" "}
+                  → <strong>+ Create Credentials</strong> → <strong>API key</strong>.
+                </li>
+                <li>Copy the key and paste it below.</li>
+              </ol>
+              <div className="grid gap-2">
+                <Label htmlFor="psi-key">API key</Label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Input
+                      id="psi-key"
+                      type={showKey ? "text" : "password"}
+                      value={keyInput}
+                      onChange={(e) => setKeyInput(e.target.value)}
+                      placeholder="AIza…"
+                      disabled={savingKey}
+                      className="pr-10 font-mono"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowKey((s) => !s)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      aria-label={showKey ? "Hide key" : "Show key"}
+                    >
+                      {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  <Button onClick={saveKey} disabled={savingKey || !keyInput.trim()}>
+                    {savingKey && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Save key
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle className="text-lg">Run an audit</CardTitle>
-          <CardDescription>Defaults to your published site. Edit the URL to test any page.</CardDescription>
+          <CardDescription>
+            {hasKey
+              ? "Defaults to your published site. Edit the URL to test any page."
+              : "Add your API key above to enable audits."}
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-2">
@@ -234,11 +338,11 @@ const Performance = () => {
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://example.com/page"
-              disabled={loading}
+              disabled={loading || !hasKey}
             />
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button onClick={() => runAudit("mobile")} disabled={loading}>
+            <Button onClick={() => runAudit("mobile")} disabled={loading || !hasKey}>
               {loading && strategy === "mobile" ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
@@ -246,7 +350,7 @@ const Performance = () => {
               )}
               Run Mobile
             </Button>
-            <Button variant="secondary" onClick={() => runAudit("desktop")} disabled={loading}>
+            <Button variant="secondary" onClick={() => runAudit("desktop")} disabled={loading || !hasKey}>
               {loading && strategy === "desktop" ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
