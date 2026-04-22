@@ -962,11 +962,13 @@ export type Database = {
       site_seo_settings: {
         Row: {
           ai_bot_controls: Json
+          apple_touch_icon_url: string | null
           base_url: string
           contact_email: string | null
           contact_phone: string | null
           created_at: string
           default_og_image: string | null
+          favicon_url: string | null
           google_site_verification: string | null
           id: string
           llms_txt_auto: boolean
@@ -976,17 +978,23 @@ export type Database = {
           robots_default: string
           robots_txt: string
           singleton: boolean
+          site_name: string | null
+          site_tagline: string | null
           sitemap_enabled: boolean
           social_profiles: Json
+          theme_color: string | null
+          twitter_handle: string | null
           updated_at: string
         }
         Insert: {
           ai_bot_controls?: Json
+          apple_touch_icon_url?: string | null
           base_url?: string
           contact_email?: string | null
           contact_phone?: string | null
           created_at?: string
           default_og_image?: string | null
+          favicon_url?: string | null
           google_site_verification?: string | null
           id?: string
           llms_txt_auto?: boolean
@@ -996,17 +1004,23 @@ export type Database = {
           robots_default?: string
           robots_txt?: string
           singleton?: boolean
+          site_name?: string | null
+          site_tagline?: string | null
           sitemap_enabled?: boolean
           social_profiles?: Json
+          theme_color?: string | null
+          twitter_handle?: string | null
           updated_at?: string
         }
         Update: {
           ai_bot_controls?: Json
+          apple_touch_icon_url?: string | null
           base_url?: string
           contact_email?: string | null
           contact_phone?: string | null
           created_at?: string
           default_og_image?: string | null
+          favicon_url?: string | null
           google_site_verification?: string | null
           id?: string
           llms_txt_auto?: boolean
@@ -1016,8 +1030,12 @@ export type Database = {
           robots_default?: string
           robots_txt?: string
           singleton?: boolean
+          site_name?: string | null
+          site_tagline?: string | null
           sitemap_enabled?: boolean
           social_profiles?: Json
+          theme_color?: string | null
+          twitter_handle?: string | null
           updated_at?: string
         }
         Relationships: []
