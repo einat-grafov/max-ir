@@ -192,12 +192,24 @@ const Brand = () => {
 
       {/* ─── Typography ─── */}
       <section className="rounded-2xl border bg-card p-6 md:p-8">
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-foreground">Typography</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Max-IR uses <span className="font-semibold text-foreground">Montserrat</span> across all surfaces — clear,
-            modern, and engineered for readability.
-          </p>
+        <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">Typography</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Max-IR uses <span className="font-semibold text-foreground">Montserrat</span> across all surfaces — clear,
+              modern, and engineered for readability.
+            </p>
+          </div>
+          <Button variant="outline" size="sm" asChild>
+            <a
+              href="https://fonts.google.com/download?family=Montserrat"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Download className="w-3.5 h-3.5 mr-1.5" />
+              Download Montserrat
+            </a>
+          </Button>
         </div>
 
         <div className="space-y-4">
