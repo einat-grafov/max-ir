@@ -761,10 +761,12 @@ const CustomCodePanel = ({
   snippets,
   loading,
   onChanged,
+  ensureBannerEnabledForTracker,
 }: {
   snippets: SnippetRow[];
   loading: boolean;
   onChanged: () => void;
+  ensureBannerEnabledForTracker: () => Promise<void>;
 }) => {
   const [editor, setEditor] = useState<SnippetRow | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
@@ -777,7 +779,8 @@ const CustomCodePanel = ({
       name: "",
       code: "",
       location,
-      consent_category: "necessary",
+      // Safer default — admins must deliberately downgrade to "necessary".
+      consent_category: "analytics",
       enabled: false,
       sort_order: 0,
     });
@@ -815,6 +818,7 @@ const CustomCodePanel = ({
           setEditorOpen(true);
         }}
         onChanged={onChanged}
+        ensureBannerEnabledForTracker={ensureBannerEnabledForTracker}
       />
 
       {/* Body snippets */}
@@ -830,12 +834,14 @@ const CustomCodePanel = ({
           setEditorOpen(true);
         }}
         onChanged={onChanged}
+        ensureBannerEnabledForTracker={ensureBannerEnabledForTracker}
       />
 
       <SnippetEditor
         open={editorOpen}
         onOpenChange={setEditorOpen}
         snippet={editor}
+        ensureBannerEnabledForTracker={ensureBannerEnabledForTracker}
         onSaved={() => {
           setEditorOpen(false);
           onChanged();
