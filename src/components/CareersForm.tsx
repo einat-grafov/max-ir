@@ -31,6 +31,7 @@ const CareersForm = () => {
         about: formData.about || null,
       } as any);
 
+      // Confirmation to the applicant
       await supabase.functions.invoke("send-transactional-email", {
         body: {
           templateName: "careers-confirmation",
@@ -39,6 +40,30 @@ const CareersForm = () => {
           templateData: { name: formData.fullName },
         },
       });
+
+      // Notify admin (if a notification email is configured)
+      const { data: settings } = await supabase
+        .from("notification_settings")
+        .select("careers_notification_email")
+        .eq("singleton", true)
+        .maybeSingle();
+      const notifyEmail = settings?.careers_notification_email?.trim();
+      if (notifyEmail) {
+        await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "careers-admin-notification",
+            recipientEmail: notifyEmail,
+            idempotencyKey: `careers-admin-${id}`,
+            templateData: {
+              applicantName: formData.fullName,
+              applicantEmail: formData.email,
+              country: formData.country || undefined,
+              education: formData.education || undefined,
+              about: formData.about || undefined,
+            },
+          },
+        });
+      }
 
       setSubmitted(true);
     } catch {
