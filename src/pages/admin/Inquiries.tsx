@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import { Mail, MailOpen, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import NotificationEmailCard from "@/components/admin/NotificationEmailCard";
 
 type Inquiry = {
   id: string;
