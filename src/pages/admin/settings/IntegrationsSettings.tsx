@@ -986,11 +986,13 @@ const SnippetEditor = ({
   open,
   onOpenChange,
   snippet,
+  ensureBannerEnabledForTracker,
   onSaved,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   snippet: SnippetRow | null;
+  ensureBannerEnabledForTracker: () => Promise<void>;
   onSaved: () => void;
 }) => {
   const [draft, setDraft] = useState<SnippetRow | null>(snippet);
@@ -1033,6 +1035,10 @@ const SnippetEditor = ({
     if (error) {
       toast.error(error.message);
       return;
+    }
+    // Compliance lock: saving an enabled non-necessary snippet auto-enables the banner.
+    if (draft.enabled && draft.consent_category !== "necessary") {
+      await ensureBannerEnabledForTracker();
     }
     toast.success("Snippet saved");
     onSaved();
