@@ -337,19 +337,31 @@ const IntegrationsSettings = () => {
             </p>
           </div>
           <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex items-center gap-2">
-              <Label
-                htmlFor="cookie-banner-toggle"
-                className="text-xs font-medium text-foreground cursor-pointer"
-              >
-                Cookie banner
-              </Label>
-              <Switch
-                id="cookie-banner-toggle"
-                checked={bannerEnabled}
-                disabled={bannerLoading || bannerSaving}
-                onCheckedChange={handleToggleBanner}
-              />
+            <div className="flex flex-col items-end gap-1">
+              <div className="flex items-center gap-2">
+                <Label
+                  htmlFor="cookie-banner-toggle"
+                  className="text-xs font-medium text-foreground cursor-pointer"
+                >
+                  Cookie banner
+                </Label>
+                <Switch
+                  id="cookie-banner-toggle"
+                  checked={bannerEnabled}
+                  disabled={
+                    bannerLoading ||
+                    bannerSaving ||
+                    (hasActiveTrackers && bannerEnabled)
+                  }
+                  onCheckedChange={handleToggleBanner}
+                />
+              </div>
+              {hasActiveTrackers && bannerEnabled && (
+                <p className="text-[11px] text-muted-foreground max-w-[220px] text-right leading-tight">
+                  Locked on — trackers are active. Disable all trackers to allow
+                  turning the banner off.
+                </p>
+              )}
             </div>
             {bannerEnabled && (
               <div className="flex gap-2">
