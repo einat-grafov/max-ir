@@ -342,6 +342,7 @@ const Analytics = () => {
 
   return (
     <div>
+      <ComplianceStatusCard />
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
