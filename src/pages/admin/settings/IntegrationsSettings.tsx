@@ -1,18 +1,18 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Plug,
-  Truck,
-  CreditCard,
+  Search,
+  AlertTriangle,
   CheckCircle2,
   XCircle,
-  RefreshCw,
-  Package,
+  Settings as SettingsIcon,
   Plus,
-  ExternalLink,
-  Loader2,
-  AlertTriangle,
-  Mail,
-  BarChart3,
+  Trash2,
+  Code2,
+  Cookie,
+  Info,
+  ChevronRight,
+  Wrench,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -20,6 +20,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -28,793 +43,979 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { toast } from "sonner";
+import {
+  INTEGRATION_CATALOG,
+  INTEGRATION_CATEGORIES,
+  CONSENT_CATEGORY_OPTIONS,
+  type IntegrationCategory,
+  type IntegrationDefinition,
+  type ConsentCategory,
+} from "@/lib/integrations-catalog";
+import LegacyInfrastructure from "./IntegrationsInfrastructure";
 
-interface ProviderOption {
-  id: string;
+// ============================================================================
+// Types
+// ============================================================================
+
+type IntegrationRow = {
+  provider: string;
+  enabled: boolean;
+  config: Record<string, string>;
+  consent_category: ConsentCategory;
+};
+
+type SnippetRow = {
+  id?: string;
   name: string;
-  icon: string;
-  description: string;
-  secretsRequired: string[];
-  docsUrl: string;
-}
+  code: string;
+  location: "head" | "body";
+  consent_category: ConsentCategory;
+  enabled: boolean;
+  sort_order: number;
+};
 
-const AVAILABLE_PROVIDERS: ProviderOption[] = [
-  {
-    id: "fedex",
-    name: "FedEx",
-    icon: "FX",
-    description: "Live rates from FedEx Web Services.",
-    secretsRequired: ["FEDEX_API_KEY", "FEDEX_SECRET_KEY", "FEDEX_ACCOUNT_NUMBER"],
-    docsUrl: "https://developer.fedex.com/",
-  },
-  {
-    id: "ups",
-    name: "UPS",
-    icon: "UP",
-    description: "Live rates and tracking from UPS Developer Kit.",
-    secretsRequired: ["UPS_CLIENT_ID", "UPS_CLIENT_SECRET", "UPS_ACCOUNT_NUMBER"],
-    docsUrl: "https://developer.ups.com/",
-  },
-  {
-    id: "dhl",
-    name: "DHL Express",
-    icon: "DH",
-    description: "Worldwide express shipping with strong international coverage.",
-    secretsRequired: ["DHL_API_KEY", "DHL_API_SECRET", "DHL_ACCOUNT_NUMBER"],
-    docsUrl: "https://developer.dhl.com/api-reference/dhl-express-mydhl-api",
-  },
-  {
-    id: "usps",
-    name: "USPS",
-    icon: "US",
-    description: "United States Postal Service — domestic and international rates.",
-    secretsRequired: ["USPS_CLIENT_ID", "USPS_CLIENT_SECRET"],
-    docsUrl: "https://developer.usps.com/",
-  },
-  {
-    id: "aramex",
-    name: "Aramex",
-    icon: "AR",
-    description: "Middle East and global express logistics provider.",
-    secretsRequired: ["ARAMEX_USERNAME", "ARAMEX_PASSWORD", "ARAMEX_ACCOUNT_NUMBER", "ARAMEX_ACCOUNT_PIN"],
-    docsUrl: "https://www.aramex.com/developers",
-  },
-  {
-    id: "israel-post",
-    name: "Israel Post",
-    icon: "IL",
-    description: "Domestic Israeli postal service.",
-    secretsRequired: ["ISRAEL_POST_API_KEY"],
-    docsUrl: "https://www.israelpost.co.il/",
-  },
-];
-
-interface CarrierStatus {
-  configured: boolean;
-}
-
-interface StripeStatus {
-  connected: boolean;
-  mode: "test" | "live" | "unknown" | null;
-  publishableKey: string | null;
-  secretKeyMasked: string | null;
-  account: {
-    id: string;
-    name: string | null;
-    email: string | null;
-    country: string | null;
-    defaultCurrency: string | null;
-  } | null;
-  error?: string;
-}
+// ============================================================================
+// Page
+// ============================================================================
 
 const IntegrationsSettings = () => {
-  // Shipping state
-  const [shippingStatus, setShippingStatus] = useState<{ fedex: CarrierStatus; ups: CarrierStatus } | null>(null);
-  const [shippingLoading, setShippingLoading] = useState(true);
-  const [testLoading, setTestLoading] = useState(false);
-  const [testResults, setTestResults] = useState<any[] | null>(null);
-  const [addProviderOpen, setAddProviderOpen] = useState(false);
-  const [selectedProvider, setSelectedProvider] = useState<ProviderOption | null>(null);
-  const [addIntegrationOpen, setAddIntegrationOpen] = useState(false);
+  const [tab, setTab] = useState("catalog");
+  const [search, setSearch] = useState("");
+  const [activeCategory, setActiveCategory] =
+    useState<IntegrationCategory | "All">("All");
 
-  const [originZip, setOriginZip] = useState("10001");
-  const [originCountry, setOriginCountry] = useState("US");
-  const [destZip, setDestZip] = useState("90210");
-  const [destCountry, setDestCountry] = useState("US");
-  const [weight, setWeight] = useState("1");
+  // Catalog state
+  const [integrations, setIntegrations] = useState<Record<string, IntegrationRow>>({});
+  const [loadingIntegrations, setLoadingIntegrations] = useState(true);
+  const [setupOpen, setSetupOpen] = useState(false);
+  const [setupDef, setSetupDef] = useState<IntegrationDefinition | null>(null);
 
-  // Stripe state
-  const [stripeStatus, setStripeStatus] = useState<StripeStatus | null>(null);
-  const [stripeLoading, setStripeLoading] = useState(true);
+  // Snippets
+  const [snippets, setSnippets] = useState<SnippetRow[]>([]);
+  const [loadingSnippets, setLoadingSnippets] = useState(true);
 
-  const fetchShippingStatus = async () => {
-    setShippingLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("shipping-rates", {
-        body: { action: "status" },
-      });
-      if (error) throw error;
-      setShippingStatus(data);
-    } catch {
-      toast.error("Failed to check carrier status");
-    } finally {
-      setShippingLoading(false);
+  const loadIntegrations = async () => {
+    setLoadingIntegrations(true);
+    const { data } = await supabase
+      .from("site_integrations")
+      .select("provider,enabled,config,consent_category");
+    const map: Record<string, IntegrationRow> = {};
+    for (const r of data ?? []) {
+      map[r.provider] = {
+        provider: r.provider,
+        enabled: r.enabled,
+        config: (r.config as Record<string, string>) ?? {},
+        consent_category: r.consent_category as ConsentCategory,
+      };
     }
+    setIntegrations(map);
+    setLoadingIntegrations(false);
   };
 
-  const fetchStripeStatus = async () => {
-    setStripeLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("stripe-status");
-      if (error) throw error;
-      if (data?.error && !("connected" in data)) throw new Error(data.error);
-      setStripeStatus(data as StripeStatus);
-    } catch (e: any) {
-      toast.error(e?.message || "Failed to load Stripe status");
-      setStripeStatus(null);
-    } finally {
-      setStripeLoading(false);
-    }
+  const loadSnippets = async () => {
+    setLoadingSnippets(true);
+    const { data } = await supabase
+      .from("custom_code_snippets")
+      .select("*")
+      .order("sort_order", { ascending: true });
+    setSnippets(
+      (data ?? []).map((r) => ({
+        id: r.id,
+        name: r.name,
+        code: r.code,
+        location: r.location as "head" | "body",
+        consent_category: r.consent_category as ConsentCategory,
+        enabled: r.enabled,
+        sort_order: r.sort_order,
+      })),
+    );
+    setLoadingSnippets(false);
   };
 
   useEffect(() => {
-    fetchShippingStatus();
-    fetchStripeStatus();
+    loadIntegrations();
+    loadSnippets();
   }, []);
 
-  const handleTestRates = async () => {
-    setTestLoading(true);
-    setTestResults(null);
+  // Filter
+  const filteredCatalog = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return INTEGRATION_CATALOG.filter((d) => {
+      if (activeCategory !== "All" && d.category !== activeCategory) return false;
+      if (!q) return true;
+      return (
+        d.name.toLowerCase().includes(q) ||
+        d.description.toLowerCase().includes(q) ||
+        d.provider.toLowerCase().includes(q)
+      );
+    });
+  }, [search, activeCategory]);
+
+  const connectedCount = Object.values(integrations).filter((i) => i.enabled).length;
+
+  // ---------------- Cookie banner controls ----------------
+  const handleResetConsent = () => {
     try {
-      const { data, error } = await supabase.functions.invoke("shipping-rates", {
-        body: {
-          action: "rates",
-          origin: { postalCode: originZip, country: originCountry },
-          destination: { postalCode: destZip, country: destCountry },
-          packages: [{ weight: parseFloat(weight) || 1 }],
-        },
-      });
-      if (error) throw error;
-      setTestResults(data.rates || []);
-      toast.success(`Got ${data.rates?.length || 0} rate(s)`);
-    } catch (e: any) {
-      toast.error(e.message || "Failed to fetch rates");
-    } finally {
-      setTestLoading(false);
+      window.localStorage.removeItem("maxir_consent_state");
+      window.dispatchEvent(
+        new CustomEvent("maxir:consent-changed", { detail: null }),
+      );
+      toast.success("Cookie consent cleared. The banner will show on next public-page visit.");
+    } catch {
+      toast.error("Failed to clear consent");
     }
   };
 
-  const refreshAll = () => {
-    fetchShippingStatus();
-    fetchStripeStatus();
+  const handleOpenPreferences = () => {
+    window.dispatchEvent(new Event("maxir:open-cookie-preferences"));
+    toast.info("Cookie Preferences opened (only visible on public pages).");
   };
 
-  const dashboardUrl =
-    stripeStatus?.mode === "test"
-      ? "https://dashboard.stripe.com/test/dashboard"
-      : "https://dashboard.stripe.com/dashboard";
-
-  const CarrierCard = ({ name, icon, configured }: { name: string; icon: string; configured: boolean }) => (
-    <Card className="p-5">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center text-lg font-bold text-foreground">
-            {icon}
-          </div>
-          <div>
-            <h3 className="text-sm font-semibold text-foreground">{name}</h3>
-            <p className="text-xs text-muted-foreground">
-              {configured ? "API credentials configured" : "Not configured"}
-            </p>
-          </div>
-        </div>
-        <Badge variant={configured ? "default" : "secondary"} className="flex items-center gap-1">
-          {configured ? (
-            <>
-              <CheckCircle2 className="h-3 w-3" />
-              Connected
-            </>
-          ) : (
-            <>
-              <XCircle className="h-3 w-3" />
-              Not connected
-            </>
-          )}
-        </Badge>
-      </div>
-    </Card>
-  );
+  // ============================================================================
+  // Render
+  // ============================================================================
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <Plug className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold text-foreground">Integrations</h1>
+      {/* Header */}
+      <div className="flex items-start justify-between mb-6 gap-4 flex-wrap">
+        <div className="flex items-start gap-3">
+          <Plug className="h-6 w-6 text-primary mt-1" />
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Integrations</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Extend your site with analytics, marketing tools, and custom scripts.
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={refreshAll} disabled={shippingLoading || stripeLoading}>
-            <RefreshCw className={`h-4 w-4 mr-1 ${shippingLoading || stripeLoading ? "animate-spin" : ""}`} />
-            Refresh
-          </Button>
-          <Button size="sm" onClick={() => setAddIntegrationOpen(true)}>
-            <Plus className="h-4 w-4 mr-1" />
-            Add integration
-          </Button>
+          <Badge variant="secondary" className="gap-1.5">
+            <CheckCircle2 className="h-3 w-3" />
+            {connectedCount} connected
+          </Badge>
         </div>
       </div>
 
-      <div className="max-w-2xl space-y-10">
-        {/* ============ PAYMENTS ============ */}
-        <section>
-          <div className="flex items-center gap-2 mb-3">
-            <CreditCard className="h-5 w-5 text-primary" />
-            <h2 className="text-base font-semibold text-foreground">Payments</h2>
+      {/* Consent gating banner */}
+      <Card className="p-4 mb-6 border-primary/20 bg-primary/5">
+        <div className="flex items-start gap-3 flex-wrap">
+          <Cookie className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+          <div className="flex-1 min-w-[260px]">
+            <div className="text-sm font-semibold text-foreground">
+              Consent gating is active
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Scripts respect your visitors' cookie banner choices. Items tagged{" "}
+              <span className="font-medium">Analytics</span> or{" "}
+              <span className="font-medium">Marketing</span> only run after consent
+              is given. <span className="font-medium">Necessary</span> always runs.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={handleOpenPreferences}>
+              Preview banner
+            </Button>
+            <Button size="sm" variant="outline" onClick={handleResetConsent}>
+              Reset visitor consent
+            </Button>
+          </div>
+        </div>
+      </Card>
+
+      {/* Tabs */}
+      <Tabs value={tab} onValueChange={setTab}>
+        <TabsList>
+          <TabsTrigger value="catalog">
+            <Plug className="h-4 w-4 mr-1.5" />
+            Catalog
+          </TabsTrigger>
+          <TabsTrigger value="custom">
+            <Code2 className="h-4 w-4 mr-1.5" />
+            Custom code
+            <AlertTriangle className="h-3.5 w-3.5 ml-1.5 text-amber-500" />
+          </TabsTrigger>
+          <TabsTrigger value="infra">
+            <Wrench className="h-4 w-4 mr-1.5" />
+            Infrastructure
+          </TabsTrigger>
+        </TabsList>
+
+        {/* ============================================================ */}
+        {/* CATALOG TAB                                                    */}
+        {/* ============================================================ */}
+        <TabsContent value="catalog" className="mt-6">
+          {/* Search + filters */}
+          <div className="flex items-center gap-3 mb-4 flex-wrap">
+            <div className="relative flex-1 min-w-[240px] max-w-md">
+              <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Search integrations..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <CategoryChip
+                label="All"
+                active={activeCategory === "All"}
+                onClick={() => setActiveCategory("All")}
+              />
+              {INTEGRATION_CATEGORIES.map((c) => (
+                <CategoryChip
+                  key={c}
+                  label={c}
+                  active={activeCategory === c}
+                  onClick={() => setActiveCategory(c)}
+                />
+              ))}
+            </div>
           </div>
 
-          <Card className="p-6">
-            <div className="flex items-start justify-between gap-4 mb-5 flex-wrap">
-              <div>
-                <h3 className="text-foreground font-semibold mb-1">Stripe</h3>
-                <p className="text-sm text-muted-foreground">
-                  Payment processor used for customer checkout.
+          {loadingIntegrations ? (
+            <p className="text-sm text-muted-foreground">Loading…</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredCatalog.map((def) => {
+                const row = integrations[def.provider];
+                const status: "connected" | "needs-attention" | "not-connected" =
+                  row?.enabled
+                    ? "connected"
+                    : row && Object.keys(row.config).length > 0
+                      ? "needs-attention"
+                      : "not-connected";
+                return (
+                  <IntegrationCard
+                    key={def.provider}
+                    def={def}
+                    status={status}
+                    onClick={() => {
+                      setSetupDef(def);
+                      setSetupOpen(true);
+                    }}
+                  />
+                );
+              })}
+              {filteredCatalog.length === 0 && (
+                <p className="text-sm text-muted-foreground col-span-full py-8 text-center">
+                  No integrations match your filter.
                 </p>
-              </div>
-              {!stripeLoading && stripeStatus && (
-                <div className="flex items-center gap-2">
-                  {stripeStatus.connected ? (
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-secondary/10 text-secondary border border-secondary/20">
-                      <CheckCircle2 className="h-3.5 w-3.5" />
-                      Connected
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-destructive/10 text-destructive border border-destructive/20">
-                      <XCircle className="h-3.5 w-3.5" />
-                      Not connected
-                    </span>
-                  )}
-                  {stripeStatus.mode && (
-                    <span
-                      className={`inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full border ${
-                        stripeStatus.mode === "live"
-                          ? "bg-primary/10 text-primary border-primary/20"
-                          : "bg-muted text-muted-foreground border-border"
-                      }`}
-                    >
-                      {stripeStatus.mode === "live"
-                        ? "Live mode"
-                        : stripeStatus.mode === "test"
-                          ? "Test mode"
-                          : "Unknown mode"}
-                    </span>
-                  )}
-                </div>
               )}
             </div>
-
-            {stripeLoading ? (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Checking Stripe connection…
-              </div>
-            ) : stripeStatus?.error ? (
-              <div className="flex items-start gap-2 p-3 rounded-md bg-destructive/10 border border-destructive/20 text-sm text-destructive mb-4">
-                <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
-                <span>{stripeStatus.error}</span>
-              </div>
-            ) : null}
-
-            {!stripeLoading && stripeStatus && (
-              <>
-                {stripeStatus.account && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm mb-5 pb-5 border-b border-border">
-                    <div>
-                      <div className="text-xs text-muted-foreground mb-0.5">Account</div>
-                      <div className="text-foreground font-medium">
-                        {stripeStatus.account.name || stripeStatus.account.email || stripeStatus.account.id}
-                      </div>
-                    </div>
-                    {stripeStatus.account.email && (
-                      <div>
-                        <div className="text-xs text-muted-foreground mb-0.5">Email</div>
-                        <div className="text-foreground">{stripeStatus.account.email}</div>
-                      </div>
-                    )}
-                    {stripeStatus.account.country && (
-                      <div>
-                        <div className="text-xs text-muted-foreground mb-0.5">Country</div>
-                        <div className="text-foreground">{stripeStatus.account.country}</div>
-                      </div>
-                    )}
-                    {stripeStatus.account.defaultCurrency && (
-                      <div>
-                        <div className="text-xs text-muted-foreground mb-0.5">Default currency</div>
-                        <div className="text-foreground uppercase">{stripeStatus.account.defaultCurrency}</div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <div className="space-y-3 mb-5">
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-1">Publishable key</div>
-                    <div className="font-mono text-sm text-foreground bg-muted/50 px-3 py-2 rounded-md border border-border">
-                      {stripeStatus.publishableKey || (
-                        <span className="text-muted-foreground italic">Not set</span>
-                      )}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-1">Secret key</div>
-                    <div className="font-mono text-sm text-foreground bg-muted/50 px-3 py-2 rounded-md border border-border">
-                      {stripeStatus.secretKeyMasked || (
-                        <span className="text-muted-foreground italic">Not set</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  <a
-                    href={dashboardUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 text-sm font-medium rounded-md transition-colors"
-                  >
-                    Open Stripe Dashboard
-                    <ExternalLink className="h-3.5 w-3.5" />
-                  </a>
-                  <a
-                    href="https://dashboard.stripe.com/apikeys"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-muted hover:bg-muted/80 text-foreground px-4 py-2 text-sm font-medium rounded-md transition-colors border border-border"
-                  >
-                    View API keys
-                    <ExternalLink className="h-3.5 w-3.5" />
-                  </a>
-                  <button
-                    onClick={() =>
-                      toast.info(
-                        "To update your Stripe keys, open Lovable Cloud → Secrets and edit STRIPE_SECRET_KEY or STRIPE_PUBLISHABLE_KEY.",
-                      )
-                    }
-                    className="inline-flex items-center gap-2 bg-background hover:bg-muted text-foreground px-4 py-2 text-sm font-medium rounded-md transition-colors border border-border"
-                  >
-                    Update keys
-                  </button>
-                </div>
-              </>
-            )}
-          </Card>
-        </section>
-
-        {/* ============ SHIPPING ============ */}
-        <section>
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <Truck className="h-5 w-5 text-primary" />
-              <h2 className="text-base font-semibold text-foreground">Shipping carriers</h2>
-            </div>
-            <Button variant="outline" size="sm" onClick={() => setAddProviderOpen(true)}>
-              <Plus className="h-4 w-4 mr-1" />
-              Add provider
-            </Button>
-          </div>
-
-          <div className="space-y-3">
-            {shippingLoading ? (
-              <Card className="p-5">
-                <p className="text-sm text-muted-foreground">Checking carrier status...</p>
-              </Card>
-            ) : (
-              <>
-                <CarrierCard name="FedEx" icon="FX" configured={shippingStatus?.fedex?.configured ?? false} />
-                <CarrierCard name="UPS" icon="UP" configured={shippingStatus?.ups?.configured ?? false} />
-              </>
-            )}
-          </div>
-
-          <Card className="p-5 border-dashed mt-4">
-            <div className="flex items-start gap-3">
-              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center text-sm font-bold text-primary shrink-0">
-                $0
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-semibold text-foreground mb-1">Free shipping test address</h3>
-                <p className="text-xs text-muted-foreground mb-2">
-                  Use this postal code at checkout to bypass live carrier rates and apply $0 shipping. Works in the
-                  Cart and the admin shipping calculator.
-                </p>
-                <div className="flex items-center gap-2">
-                  <code className="font-mono text-sm font-semibold px-3 py-1.5 rounded-md bg-muted border border-border text-foreground">
-                    00000
-                  </code>
-                  <Badge variant="secondary" className="text-xs">
-                    Any country
-                  </Badge>
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-5 mt-4">
-            <div className="flex items-center gap-2 mb-4">
-              <Package className="h-5 w-5 text-primary" />
-              <h3 className="text-base font-semibold text-foreground">Test shipping rates</h3>
-            </div>
-            <p className="text-sm text-muted-foreground mb-4">
-              Enter origin and destination to test live rate quotes from all connected carriers.
-            </p>
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <Label className="text-sm">Origin postal code</Label>
-                <Input value={originZip} onChange={(e) => setOriginZip(e.target.value)} className="mt-1" />
-              </div>
-              <div>
-                <Label className="text-sm">Origin country</Label>
-                <Input
-                  value={originCountry}
-                  onChange={(e) => setOriginCountry(e.target.value)}
-                  className="mt-1"
-                  placeholder="US"
-                />
-              </div>
-              <div>
-                <Label className="text-sm">Destination postal code</Label>
-                <Input value={destZip} onChange={(e) => setDestZip(e.target.value)} className="mt-1" />
-              </div>
-              <div>
-                <Label className="text-sm">Destination country</Label>
-                <Input
-                  value={destCountry}
-                  onChange={(e) => setDestCountry(e.target.value)}
-                  className="mt-1"
-                  placeholder="US"
-                />
-              </div>
-            </div>
-            <div className="mb-4">
-              <Label className="text-sm">Package weight (kg)</Label>
-              <Input
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
-                className="mt-1 w-32"
-                type="number"
-                min="0.1"
-                step="0.1"
-              />
-            </div>
-            <Button onClick={handleTestRates} disabled={testLoading}>
-              {testLoading ? "Fetching rates..." : "Get rates"}
-            </Button>
-
-            {testResults && (
-              <div className="mt-4 border border-border rounded-lg divide-y divide-border">
-                {testResults.length === 0 ? (
-                  <p className="p-4 text-sm text-muted-foreground">No rates returned.</p>
-                ) : (
-                  testResults.map((rate, i) => (
-                    <div key={i} className="p-3 flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-foreground">
-                          {rate.carrier} — {rate.service}
-                        </p>
-                        {rate.transitDays && (
-                          <p className="text-xs text-muted-foreground">{rate.transitDays} business days</p>
-                        )}
-                        {rate.error && <p className="text-xs text-destructive">{rate.error}</p>}
-                      </div>
-                      {!rate.error && (
-                        <span className="text-sm font-semibold text-foreground">
-                          ${rate.price.toFixed(2)} {rate.currency}
-                        </span>
-                      )}
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
-          </Card>
-        </section>
-      </div>
-
-      {/* Add Provider dialog */}
-      <Dialog
-        open={addProviderOpen}
-        onOpenChange={(open) => {
-          setAddProviderOpen(open);
-          if (!open) setSelectedProvider(null);
-        }}
-      >
-        <DialogContent className="max-w-lg max-h-[85vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle>
-              {selectedProvider ? `Connect ${selectedProvider.name}` : "Add a shipping provider"}
-            </DialogTitle>
-            <DialogDescription>
-              {selectedProvider
-                ? "Enter the API credentials below to enable this carrier."
-                : "Choose a carrier to connect. Each provider requires its own API credentials."}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="flex-1 overflow-y-auto pt-4">
-            {!selectedProvider ? (
-              <div className="space-y-2">
-                {AVAILABLE_PROVIDERS.map((p) => (
-                  <button
-                    key={p.id}
-                    onClick={() => setSelectedProvider(p)}
-                    className="w-full flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted transition-colors text-left"
-                  >
-                    <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center text-sm font-bold text-foreground shrink-0">
-                      {p.icon}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="text-sm font-semibold text-foreground">{p.name}</div>
-                      <div className="text-xs text-muted-foreground truncate">{p.description}</div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <ProviderCredentialsForm
-                provider={selectedProvider}
-                onCancel={() => setSelectedProvider(null)}
-                onSaved={() => {
-                  setAddProviderOpen(false);
-                  setSelectedProvider(null);
-                  toast.success(`${selectedProvider.name} credentials saved`);
-                  fetchShippingStatus();
-                }}
-              />
-            )}
-          </div>
-
-          {!selectedProvider && (
-            <DialogFooter className="gap-2">
-              <Button variant="outline" onClick={() => setAddProviderOpen(false)}>
-                Cancel
-              </Button>
-            </DialogFooter>
           )}
-        </DialogContent>
-      </Dialog>
+        </TabsContent>
 
-      {/* Add Integration dialog */}
-      <Dialog open={addIntegrationOpen} onOpenChange={setAddIntegrationOpen}>
-        <DialogContent className="max-w-lg max-h-[85vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle>Add an integration</DialogTitle>
-            <DialogDescription>
-              Choose a category to connect a new service to your store.
-            </DialogDescription>
-          </DialogHeader>
+        {/* ============================================================ */}
+        {/* CUSTOM CODE TAB                                                */}
+        {/* ============================================================ */}
+        <TabsContent value="custom" className="mt-6">
+          <CustomCodePanel
+            snippets={snippets}
+            loading={loadingSnippets}
+            onChanged={loadSnippets}
+          />
+        </TabsContent>
 
-          <div className="flex-1 overflow-y-auto pt-4 space-y-2">
-            {[
-              {
-                id: "shipping",
-                name: "Shipping carrier",
-                icon: Truck,
-                description: "Connect FedEx, UPS, DHL, USPS, Aramex, Israel Post and more.",
-                action: () => {
-                  setAddIntegrationOpen(false);
-                  setAddProviderOpen(true);
-                },
-              },
-              {
-                id: "payments",
-                name: "Payment processor",
-                icon: CreditCard,
-                description: "Stripe is currently connected. More processors coming soon.",
-                action: () => {
-                  toast.info("Stripe is the only payment processor available right now.");
-                },
-              },
-              {
-                id: "email",
-                name: "Email & marketing",
-                icon: Mail,
-                description: "Manage transactional email at Settings → Emails.",
-                action: () => {
-                  setAddIntegrationOpen(false);
-                  window.location.href = "/admin/settings/emails";
-                },
-              },
-              {
-                id: "analytics",
-                name: "Analytics & tracking",
-                icon: BarChart3,
-                description: "GA4 and Meta Pixel — request via support to enable.",
-                action: () => {
-                  toast.info("Analytics integration is configured in code. Ask the team to set it up.");
-                },
-              },
-              {
-                id: "other",
-                name: "Other / custom",
-                icon: Plug,
-                description: "Need something else? We can wire up custom integrations on request.",
-                action: () => {
-                  toast.info("Tell us which service you'd like to integrate and we'll add it.");
-                },
-              },
-            ].map((opt) => {
-              const Icon = opt.icon;
-              return (
-                <button
-                  key={opt.id}
-                  onClick={opt.action}
-                  className="w-full flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted transition-colors text-left"
-                >
-                  <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center text-foreground shrink-0">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-sm font-semibold text-foreground">{opt.name}</div>
-                    <div className="text-xs text-muted-foreground">{opt.description}</div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+        {/* ============================================================ */}
+        {/* INFRASTRUCTURE TAB (Stripe / FedEx / UPS — preserved)          */}
+        {/* ============================================================ */}
+        <TabsContent value="infra" className="mt-6">
+          <LegacyInfrastructure />
+        </TabsContent>
+      </Tabs>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setAddIntegrationOpen(false)}>
-              Close
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Setup dialog */}
+      <SetupDialog
+        open={setupOpen}
+        onOpenChange={setSetupOpen}
+        def={setupDef}
+        existing={setupDef ? integrations[setupDef.provider] : undefined}
+        onSaved={() => {
+          loadIntegrations();
+          setSetupOpen(false);
+        }}
+      />
     </div>
   );
 };
 
-interface ProviderCredentialsFormProps {
-  provider: ProviderOption;
-  onCancel: () => void;
-  onSaved: () => void;
-}
+// ============================================================================
+// Sub-components
+// ============================================================================
 
-const ProviderCredentialsForm = ({ provider, onCancel, onSaved }: ProviderCredentialsFormProps) => {
-  const [values, setValues] = useState<Record<string, string>>(() =>
-    Object.fromEntries(provider.secretsRequired.map((k) => [k, ""])),
+const CategoryChip = ({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) => (
+  <button
+    onClick={onClick}
+    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+      active
+        ? "bg-primary text-primary-foreground border-primary"
+        : "bg-background text-muted-foreground border-border hover:bg-muted"
+    }`}
+  >
+    {label}
+  </button>
+);
+
+const IntegrationCard = ({
+  def,
+  status,
+  onClick,
+}: {
+  def: IntegrationDefinition;
+  status: "connected" | "needs-attention" | "not-connected";
+  onClick: () => void;
+}) => {
+  const statusBadge = (() => {
+    if (status === "connected")
+      return (
+        <Badge variant="default" className="gap-1 bg-secondary text-secondary-foreground hover:bg-secondary/90">
+          <CheckCircle2 className="h-3 w-3" />
+          Connected
+        </Badge>
+      );
+    if (status === "needs-attention")
+      return (
+        <Badge variant="default" className="gap-1 bg-amber-500 text-white hover:bg-amber-500/90">
+          <AlertTriangle className="h-3 w-3" />
+          Needs attention
+        </Badge>
+      );
+    return (
+      <Badge variant="secondary" className="gap-1">
+        <XCircle className="h-3 w-3" />
+        Not connected
+      </Badge>
+    );
+  })();
+
+  return (
+    <button
+      onClick={onClick}
+      className="text-left group"
+    >
+      <Card className="p-4 h-full hover:border-primary/50 transition-colors">
+        <div className="flex items-start justify-between mb-3">
+          <div
+            className={`h-10 w-10 rounded-lg flex items-center justify-center text-sm font-bold ${def.brandColor}`}
+          >
+            {def.logo}
+          </div>
+          {statusBadge}
+        </div>
+        <h3 className="text-sm font-semibold text-foreground mb-1">{def.name}</h3>
+        <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
+          {def.description}
+        </p>
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span>{def.category}</span>
+          <ChevronRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+        </div>
+      </Card>
+    </button>
   );
+};
+
+// ============================================================================
+// Setup dialog (per integration)
+// ============================================================================
+
+const SetupDialog = ({
+  open,
+  onOpenChange,
+  def,
+  existing,
+  onSaved,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  def: IntegrationDefinition | null;
+  existing?: IntegrationRow;
+  onSaved: () => void;
+}) => {
+  const [config, setConfig] = useState<Record<string, string>>({});
+  const [consent, setConsent] = useState<ConsentCategory>("analytics");
+  const [enabled, setEnabled] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [hasExisting, setHasExisting] = useState(false);
 
   useEffect(() => {
-    let active = true;
-    (async () => {
-      setLoading(true);
-      const { data } = await supabase
-        .from("integration_credentials")
-        .select("credentials")
-        .eq("provider", provider.id)
-        .maybeSingle();
-      if (!active) return;
-      if (data?.credentials && typeof data.credentials === "object") {
-        const stored = data.credentials as Record<string, string>;
-        setValues((prev) => {
-          const next = { ...prev };
-          for (const k of provider.secretsRequired) {
-            if (typeof stored[k] === "string") next[k] = stored[k];
-          }
-          return next;
-        });
-        setHasExisting(true);
-      }
-      setLoading(false);
-    })();
-    return () => {
-      active = false;
-    };
-  }, [provider.id, provider.secretsRequired]);
+    if (open && def) {
+      setConfig(existing?.config ?? {});
+      setConsent(existing?.consent_category ?? def.defaultConsent);
+      setEnabled(existing?.enabled ?? false);
+    }
+  }, [open, def, existing]);
 
-  const allFilled = provider.secretsRequired.every((k) => (values[k] || "").trim().length > 0);
+  if (!def) return null;
+
+  const allFilled = def.fields.every((f) => (config[f.key] || "").trim().length > 0);
 
   const handleSave = async () => {
-    if (!allFilled) {
-      toast.error("Please fill in all credentials");
+    if (enabled && !allFilled) {
+      toast.error("Please fill in all required fields before enabling.");
       return;
     }
     setSaving(true);
     const trimmed = Object.fromEntries(
-      Object.entries(values).map(([k, v]) => [k, v.trim()]),
+      Object.entries(config).map(([k, v]) => [k, (v || "").trim()]),
     );
-    const { error } = await supabase.from("integration_credentials").upsert(
+    const { error } = await supabase.from("site_integrations").upsert(
       {
-        provider: provider.id,
-        display_name: provider.name,
-        category: "shipping",
-        credentials: trimmed,
-        enabled: true,
+        provider: def.provider,
+        display_name: def.name,
+        category: def.category,
+        enabled,
+        config: trimmed,
+        consent_category: consent,
       },
       { onConflict: "provider" },
     );
     setSaving(false);
     if (error) {
-      toast.error(error.message || "Failed to save credentials");
+      toast.error(error.message);
       return;
     }
+    toast.success(`${def.name} ${enabled ? "connected" : "saved"}`);
     onSaved();
   };
 
   const handleDisconnect = async () => {
     setSaving(true);
     const { error } = await supabase
-      .from("integration_credentials")
+      .from("site_integrations")
       .delete()
-      .eq("provider", provider.id);
+      .eq("provider", def.provider);
     setSaving(false);
     if (error) {
-      toast.error(error.message || "Failed to disconnect");
+      toast.error(error.message);
       return;
     }
-    toast.success(`${provider.name} disconnected`);
+    toast.success(`${def.name} disconnected`);
     onSaved();
   };
 
   return (
-    <div className="space-y-4">
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">{provider.description}</p>
-        <a
-          href={provider.docsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
-        >
-          View {provider.name} API docs
-          <ExternalLink className="h-3.5 w-3.5" />
-        </a>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg max-h-[85vh] flex flex-col">
+        <DialogHeader>
+          <div className="flex items-center gap-3">
+            <div
+              className={`h-10 w-10 rounded-lg flex items-center justify-center text-sm font-bold ${def.brandColor}`}
+            >
+              {def.logo}
+            </div>
+            <div>
+              <DialogTitle>{def.name}</DialogTitle>
+              <DialogDescription>{def.description}</DialogDescription>
+            </div>
+          </div>
+        </DialogHeader>
+
+        <div className="flex-1 overflow-y-auto pt-4 space-y-4">
+          {def.fields.map((f) => (
+            <div key={f.key}>
+              <Label className="text-xs">{f.label}</Label>
+              <Input
+                value={config[f.key] || ""}
+                onChange={(e) =>
+                  setConfig((p) => ({ ...p, [f.key]: e.target.value }))
+                }
+                placeholder={f.placeholder}
+                className="mt-1 font-mono text-sm"
+              />
+              {f.helpText && (
+                <p className="text-xs text-muted-foreground mt-1">{f.helpText}</p>
+              )}
+            </div>
+          ))}
+
+          <ConsentCategorySelect value={consent} onChange={setConsent} />
+
+          <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border">
+            <div>
+              <Label className="text-sm font-semibold">Enable on live site</Label>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                When on, the script is loaded on every public page (subject to
+                consent).
+              </p>
+            </div>
+            <Switch checked={enabled} onCheckedChange={setEnabled} />
+          </div>
+
+          {def.docsUrl && (
+            <a
+              href={def.docsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+            >
+              View setup docs →
+            </a>
+          )}
+        </div>
+
+        <DialogFooter className="gap-2 flex-row justify-between sm:justify-between">
+          {existing ? (
+            <Button
+              variant="ghost"
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+              onClick={handleDisconnect}
+              disabled={saving}
+            >
+              <Trash2 className="h-4 w-4 mr-1" />
+              Disconnect
+            </Button>
+          ) : (
+            <span />
+          )}
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
+              Cancel
+            </Button>
+            <Button onClick={handleSave} disabled={saving}>
+              {saving ? "Saving…" : enabled ? "Save & enable" : "Save"}
+            </Button>
+          </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// ============================================================================
+// Custom Code panel
+// ============================================================================
+
+const CustomCodePanel = ({
+  snippets,
+  loading,
+  onChanged,
+}: {
+  snippets: SnippetRow[];
+  loading: boolean;
+  onChanged: () => void;
+}) => {
+  const [editor, setEditor] = useState<SnippetRow | null>(null);
+  const [editorOpen, setEditorOpen] = useState(false);
+
+  const headSnippets = snippets.filter((s) => s.location === "head");
+  const bodySnippets = snippets.filter((s) => s.location === "body");
+
+  const openNew = (location: "head" | "body") => {
+    setEditor({
+      name: "",
+      code: "",
+      location,
+      consent_category: "necessary",
+      enabled: false,
+      sort_order: 0,
+    });
+    setEditorOpen(true);
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Warning */}
+      <Card className="p-4 border-amber-500/30 bg-amber-500/5">
+        <div className="flex items-start gap-3">
+          <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+          <div>
+            <div className="text-sm font-semibold text-foreground">
+              Custom code is not validated
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Broken scripts can break your live site. Snippets execute on every
+              public page — test carefully before enabling.
+            </p>
+          </div>
+        </div>
+      </Card>
+
+      {/* Head snippets */}
+      <SnippetSection
+        title="Head code"
+        description="Injected at the top of the page. Use for verification codes, analytics snippets that must load early, and meta tags."
+        location="head"
+        snippets={headSnippets}
+        loading={loading}
+        onAdd={() => openNew("head")}
+        onEdit={(s) => {
+          setEditor(s);
+          setEditorOpen(true);
+        }}
+        onChanged={onChanged}
+      />
+
+      {/* Body snippets */}
+      <SnippetSection
+        title="Body code"
+        description="Injected after page content. Use for chat widgets, late-loading scripts and custom behaviors."
+        location="body"
+        snippets={bodySnippets}
+        loading={loading}
+        onAdd={() => openNew("body")}
+        onEdit={(s) => {
+          setEditor(s);
+          setEditorOpen(true);
+        }}
+        onChanged={onChanged}
+      />
+
+      <SnippetEditor
+        open={editorOpen}
+        onOpenChange={setEditorOpen}
+        snippet={editor}
+        onSaved={() => {
+          setEditorOpen(false);
+          onChanged();
+        }}
+      />
+    </div>
+  );
+};
+
+const SnippetSection = ({
+  title,
+  description,
+  location,
+  snippets,
+  loading,
+  onAdd,
+  onEdit,
+  onChanged,
+}: {
+  title: string;
+  description: string;
+  location: "head" | "body";
+  snippets: SnippetRow[];
+  loading: boolean;
+  onAdd: () => void;
+  onEdit: (s: SnippetRow) => void;
+  onChanged: () => void;
+}) => {
+  const handleToggle = async (s: SnippetRow, enabled: boolean) => {
+    if (!s.id) return;
+    const { error } = await supabase
+      .from("custom_code_snippets")
+      .update({ enabled })
+      .eq("id", s.id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success(`Snippet ${enabled ? "enabled" : "disabled"}`);
+    onChanged();
+  };
+
+  const handleDelete = async (s: SnippetRow) => {
+    if (!s.id) return;
+    if (!confirm(`Delete "${s.name}"?`)) return;
+    const { error } = await supabase
+      .from("custom_code_snippets")
+      .delete()
+      .eq("id", s.id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Snippet deleted");
+    onChanged();
+  };
+
+  return (
+    <Card className="p-5">
+      <div className="flex items-start justify-between mb-4 gap-3 flex-wrap">
+        <div>
+          <h3 className="text-base font-semibold text-foreground">{title}</h3>
+          <p className="text-xs text-muted-foreground mt-0.5 max-w-lg">
+            {description}
+          </p>
+        </div>
+        <Button size="sm" variant="outline" onClick={onAdd}>
+          <Plus className="h-4 w-4 mr-1" />
+          Add snippet
+        </Button>
       </div>
 
       {loading ? (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          Loading saved credentials…
+        <p className="text-sm text-muted-foreground">Loading…</p>
+      ) : snippets.length === 0 ? (
+        <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+          <Code2 className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+          <p className="text-sm text-muted-foreground mb-3">
+            No {location} snippets yet.
+          </p>
+          <Button size="sm" variant="outline" onClick={onAdd}>
+            <Plus className="h-4 w-4 mr-1" />
+            Add snippet
+          </Button>
         </div>
       ) : (
-        <div className="space-y-3">
-          {provider.secretsRequired.map((key) => (
-            <div key={key}>
-              <Label className="text-xs font-mono text-muted-foreground">{key}</Label>
-              <Input
-                type="password"
-                autoComplete="off"
-                value={values[key] || ""}
-                onChange={(e) => setValues((p) => ({ ...p, [key]: e.target.value }))}
-                placeholder={hasExisting ? "•••••••• (saved)" : `Enter ${key}`}
-                className="mt-1 font-mono text-sm"
-              />
+        <div className="divide-y divide-border border border-border rounded-lg overflow-hidden">
+          {snippets.map((s) => (
+            <div
+              key={s.id}
+              className="flex items-center justify-between p-3 hover:bg-muted/50 transition-colors"
+            >
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-sm font-semibold text-foreground truncate">
+                    {s.name || "(untitled)"}
+                  </span>
+                  <Badge variant="outline" className="text-xs">
+                    {consentLabel(s.consent_category)}
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground mt-0.5 font-mono truncate">
+                  {s.code.split("\n")[0]?.slice(0, 80) || "(empty)"}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 ml-3">
+                <Switch
+                  checked={s.enabled}
+                  onCheckedChange={(v) => handleToggle(s, v)}
+                />
+                <Button size="sm" variant="ghost" onClick={() => onEdit(s)}>
+                  <SettingsIcon className="h-4 w-4" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                  onClick={() => handleDelete(s)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           ))}
         </div>
       )}
-
-      <div className="flex items-center justify-between gap-2 pt-2 border-t border-border">
-        <Button variant="ghost" onClick={onCancel} disabled={saving}>
-          Back
-        </Button>
-        <div className="flex items-center gap-2">
-          {hasExisting && (
-            <Button variant="outline" onClick={handleDisconnect} disabled={saving}>
-              Disconnect
-            </Button>
-          )}
-          <Button onClick={handleSave} disabled={saving || !allFilled}>
-            {saving ? "Saving…" : hasExisting ? "Update" : "Connect"}
-          </Button>
-        </div>
-      </div>
-    </div>
+    </Card>
   );
 };
+
+// ============================================================================
+// Snippet editor dialog
+// ============================================================================
+
+const SnippetEditor = ({
+  open,
+  onOpenChange,
+  snippet,
+  onSaved,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  snippet: SnippetRow | null;
+  onSaved: () => void;
+}) => {
+  const [draft, setDraft] = useState<SnippetRow | null>(snippet);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (open) setDraft(snippet);
+  }, [open, snippet]);
+
+  if (!draft) return null;
+
+  const handleSave = async () => {
+    if (!draft.name.trim()) {
+      toast.error("Please give the snippet a name.");
+      return;
+    }
+    setSaving(true);
+    let error;
+    if (draft.id) {
+      ({ error } = await supabase
+        .from("custom_code_snippets")
+        .update({
+          name: draft.name.trim(),
+          code: draft.code,
+          location: draft.location,
+          consent_category: draft.consent_category,
+          enabled: draft.enabled,
+        })
+        .eq("id", draft.id));
+    } else {
+      ({ error } = await supabase.from("custom_code_snippets").insert({
+        name: draft.name.trim(),
+        code: draft.code,
+        location: draft.location,
+        consent_category: draft.consent_category,
+        enabled: draft.enabled,
+      }));
+    }
+    setSaving(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Snippet saved");
+    onSaved();
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
+        <DialogHeader>
+          <DialogTitle>{draft.id ? "Edit snippet" : "New snippet"}</DialogTitle>
+          <DialogDescription>
+            Code is injected on every public page when enabled.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex-1 overflow-y-auto pt-4 space-y-4">
+          <div>
+            <Label className="text-xs">Snippet name</Label>
+            <Input
+              value={draft.name}
+              onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+              placeholder="e.g. Schema.org markup"
+              className="mt-1"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="text-xs">Location</Label>
+              <Select
+                value={draft.location}
+                onValueChange={(v) =>
+                  setDraft({ ...draft, location: v as "head" | "body" })
+                }
+              >
+                <SelectTrigger className="mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="head">Head (loads early)</SelectItem>
+                  <SelectItem value="body">Body (loads late)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <ConsentCategorySelect
+              value={draft.consent_category}
+              onChange={(v) => setDraft({ ...draft, consent_category: v })}
+              compact
+            />
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <Label className="text-xs">Code</Label>
+              <span className="text-xs text-muted-foreground font-mono">
+                {draft.code.length} chars
+              </span>
+            </div>
+            <Textarea
+              value={draft.code}
+              onChange={(e) => setDraft({ ...draft, code: e.target.value })}
+              placeholder={
+                draft.location === "head"
+                  ? "<script>console.log('hello')</script>"
+                  : "<script>document.body.classList.add('ready')</script>"
+              }
+              className="font-mono text-xs min-h-[280px]"
+              spellCheck={false}
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              You can paste a full <code className="font-mono">&lt;script&gt;…&lt;/script&gt;</code>{" "}
+              block — outer tags will be unwrapped before execution.
+            </p>
+          </div>
+
+          <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border">
+            <div>
+              <Label className="text-sm font-semibold">Enable on live site</Label>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Will run on every public page subject to consent gating.
+              </p>
+            </div>
+            <Switch
+              checked={draft.enabled}
+              onCheckedChange={(v) => setDraft({ ...draft, enabled: v })}
+            />
+          </div>
+        </div>
+
+        <DialogFooter className="gap-2">
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
+            Cancel
+          </Button>
+          <Button onClick={handleSave} disabled={saving}>
+            {saving ? "Saving…" : "Save snippet"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// ============================================================================
+// Helpers
+// ============================================================================
+
+const ConsentCategorySelect = ({
+  value,
+  onChange,
+  compact,
+}: {
+  value: ConsentCategory;
+  onChange: (v: ConsentCategory) => void;
+  compact?: boolean;
+}) => (
+  <div>
+    <div className="flex items-center gap-1 mb-1">
+      <Label className="text-xs">Consent category</Label>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button type="button" className="text-muted-foreground hover:text-foreground">
+            <Info className="h-3 w-3" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent className="max-w-xs">
+          <p className="text-xs">
+            Scripts tagged Analytics or Marketing only run after the visitor accepts
+            the matching cookie banner category. Necessary always runs.
+          </p>
+        </TooltipContent>
+      </Tooltip>
+    </div>
+    <Select value={value} onValueChange={(v) => onChange(v as ConsentCategory)}>
+      <SelectTrigger className={compact ? "" : "mt-0"}>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {CONSENT_CATEGORY_OPTIONS.map((opt) => (
+          <SelectItem key={opt.value} value={opt.value}>
+            <div>
+              <div className="text-sm">{opt.label}</div>
+              {!compact && (
+                <div className="text-xs text-muted-foreground">{opt.description}</div>
+              )}
+            </div>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  </div>
+);
+
+const consentLabel = (c: ConsentCategory): string =>
+  CONSENT_CATEGORY_OPTIONS.find((o) => o.value === c)?.label ?? c;
 
 export default IntegrationsSettings;
