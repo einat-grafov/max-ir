@@ -46,6 +46,7 @@ import AccessibilitySettings from "./pages/admin/optimization/Accessibility";
 import Seo from "./pages/admin/optimization/Seo";
 import AiSearch from "./pages/admin/optimization/AiSearch";
 import Redirects from "./pages/admin/optimization/Redirects";
+import Performance from "./pages/admin/optimization/Performance";
 import Brand from "./pages/admin/Brand";
 import AccessibilityWidget from "./components/AccessibilityWidget";
 import CookieConsentProvider from "@/components/cookies/CookieConsentProvider";
@@ -139,6 +140,7 @@ const router = createBrowserRouter([
           { path: "optimization/ai-search", element: <AiSearch /> },
           { path: "optimization/redirects", element: <Redirects /> },
           { path: "optimization/accessibility", element: <AccessibilitySettings /> },
+          { path: "optimization/performance", element: <Performance /> },
         ],
       },
       { path: "*", element: <NotFound /> },
