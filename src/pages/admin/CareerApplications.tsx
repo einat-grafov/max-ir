@@ -75,6 +75,12 @@ const CareerApplications = () => {
         </div>
       </div>
 
+      <NotificationEmailCard
+        column="careers_notification_email"
+        title="Career application notification email"
+        description="A copy of every job application submitted on the public careers page will also be sent to this address."
+      />
+
       <div className="flex items-center gap-3 mb-4">
         <Filter className="h-4 w-4 text-muted-foreground" />
         <Select value={filter} onValueChange={setFilter}>
