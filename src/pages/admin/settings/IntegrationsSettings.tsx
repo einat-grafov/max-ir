@@ -85,7 +85,7 @@ type SnippetRow = {
 // ============================================================================
 
 const IntegrationsSettings = () => {
-  const [tab, setTab] = useState("catalog");
+  const [tab, setTab] = useState("infra");
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] =
     useState<IntegrationCategory | "All">("All");
@@ -99,6 +99,11 @@ const IntegrationsSettings = () => {
   // Snippets
   const [snippets, setSnippets] = useState<SnippetRow[]>([]);
   const [loadingSnippets, setLoadingSnippets] = useState(true);
+
+  // Cookie banner global toggle
+  const [bannerEnabled, setBannerEnabled] = useState(true);
+  const [bannerLoading, setBannerLoading] = useState(true);
+  const [bannerSaving, setBannerSaving] = useState(false);
 
   const loadIntegrations = async () => {
     setLoadingIntegrations(true);
