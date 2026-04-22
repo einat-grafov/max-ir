@@ -43,7 +43,7 @@ const ImagePickerDialog = ({ open, onOpenChange, onSelect }: ImagePickerDialogPr
     queryFn: async () => {
       const { data, error } = await supabase.storage.from("website-assets").list("", { limit: 500, sortBy: { column: "created_at", order: "desc" } });
       if (error) throw error;
-      return (data || []).filter((f) => f.name !== ".emptyFolderPlaceholder");
+      return (data || []).filter((f) => f.name !== ".emptyFolderPlaceholder" && f.id !== null && f.metadata);
     },
     enabled: open,
   });

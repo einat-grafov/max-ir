@@ -165,7 +165,8 @@ const LibraryPanel = () => {
     queryFn: async () => {
       const { data, error } = await supabase.storage.from("website-assets").list("", { limit: 500, sortBy: { column: "created_at", order: "desc" } });
       if (error) throw error;
-      return (data || []).filter((f) => f.name !== ".emptyFolderPlaceholder");
+      // Filter out placeholder entries and folder entries (folders have no id/metadata)
+      return (data || []).filter((f) => f.name !== ".emptyFolderPlaceholder" && f.id !== null && f.metadata);
     },
   });
 
