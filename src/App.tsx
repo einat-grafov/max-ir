@@ -45,6 +45,7 @@ import TermsAndConditions from "./pages/TermsAndConditions";
 import AccessibilitySettings from "./pages/admin/optimization/Accessibility";
 import Seo from "./pages/admin/optimization/Seo";
 import AiSearch from "./pages/admin/optimization/AiSearch";
+import Redirects from "./pages/admin/optimization/Redirects";
 import AccessibilityWidget from "./components/AccessibilityWidget";
 import CookieConsentProvider from "@/components/cookies/CookieConsentProvider";
 
@@ -126,6 +127,7 @@ const router = createBrowserRouter([
           { path: "settings/emails/:templateKey", element: <EmailTemplateEditor /> },
           { path: "optimization/seo", element: <Seo /> },
           { path: "optimization/ai-search", element: <AiSearch /> },
+          { path: "optimization/redirects", element: <Redirects /> },
           { path: "optimization/accessibility", element: <AccessibilitySettings /> },
         ],
       },
