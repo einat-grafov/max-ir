@@ -53,6 +53,7 @@ import {
   INTEGRATION_CATALOG,
   INTEGRATION_CATEGORIES,
   CONSENT_CATEGORY_OPTIONS,
+  getDefinition,
   type IntegrationCategory,
   type IntegrationDefinition,
   type ConsentCategory,
