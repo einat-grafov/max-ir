@@ -49,7 +49,32 @@ Deno.serve(async (req) => {
     for (const cat of ["performance", "accessibility", "best-practices", "seo"]) {
       psiUrl.searchParams.append("category", cat);
     }
-    const apiKey = Deno.env.get("PAGESPEED_API_KEY");
+    // Prefer the per-project key stored in integration_credentials; fall back to env.
+    let apiKey = Deno.env.get("PAGESPEED_API_KEY") ?? "";
+    try {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL");
+      const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+      if (supabaseUrl && serviceKey) {
+        const credRes = await fetch(
+          `${supabaseUrl}/rest/v1/integration_credentials?provider=eq.pagespeed_insights&select=credentials,enabled&limit=1`,
+          {
+            headers: {
+              apikey: serviceKey,
+              Authorization: `Bearer ${serviceKey}`,
+            },
+          },
+        );
+        if (credRes.ok) {
+          const rows = await credRes.json();
+          const row = Array.isArray(rows) ? rows[0] : null;
+          if (row?.enabled !== false && row?.credentials?.api_key) {
+            apiKey = String(row.credentials.api_key);
+          }
+        }
+      }
+    } catch (_) {
+      // ignore lookup errors and fall back to env (or keyless)
+    }
     if (apiKey) psiUrl.searchParams.set("key", apiKey);
 
     const psiRes = await fetch(psiUrl.toString());

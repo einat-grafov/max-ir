@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Loader2, Smartphone, Monitor, ExternalLink, AlertCircle } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Loader2, Smartphone, Monitor, ExternalLink, AlertCircle, KeyRound, Check, Trash2, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 type Strategy = "mobile" | "desktop";
 
@@ -76,9 +77,99 @@ const Performance = () => {
   const [result, setResult] = useState<PSIResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // API key management
+  const [keyLoading, setKeyLoading] = useState(true);
+  const [hasKey, setHasKey] = useState(false);
+  const [maskedKey, setMaskedKey] = useState<string>("");
+  const [keyInput, setKeyInput] = useState("");
+  const [showKey, setShowKey] = useState(false);
+  const [savingKey, setSavingKey] = useState(false);
+
   const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID as string;
 
+  useEffect(() => {
+    const loadKey = async () => {
+      setKeyLoading(true);
+      const { data, error: err } = await supabase
+        .from("integration_credentials")
+        .select("credentials, enabled")
+        .eq("provider", "pagespeed_insights")
+        .maybeSingle();
+      if (!err && data) {
+        const apiKey = (data.credentials as { api_key?: string } | null)?.api_key ?? "";
+        if (apiKey && data.enabled !== false) {
+          setHasKey(true);
+          setMaskedKey(`${apiKey.slice(0, 6)}••••••••${apiKey.slice(-4)}`);
+        } else {
+          setHasKey(false);
+        }
+      }
+      setKeyLoading(false);
+    };
+    loadKey();
+  }, []);
+
+  const saveKey = async () => {
+    const trimmed = keyInput.trim();
+    if (trimmed.length < 20) {
+      toast.error("That doesn't look like a valid Google API key.");
+      return;
+    }
+    setSavingKey(true);
+    const { data: existing } = await supabase
+      .from("integration_credentials")
+      .select("id")
+      .eq("provider", "pagespeed_insights")
+      .maybeSingle();
+
+    let err;
+    if (existing?.id) {
+      ({ error: err } = await supabase
+        .from("integration_credentials")
+        .update({ credentials: { api_key: trimmed }, enabled: true })
+        .eq("id", existing.id));
+    } else {
+      ({ error: err } = await supabase.from("integration_credentials").insert({
+        provider: "pagespeed_insights",
+        display_name: "Google PageSpeed Insights",
+        category: "performance",
+        credentials: { api_key: trimmed },
+        enabled: true,
+      }));
+    }
+    setSavingKey(false);
+    if (err) {
+      toast.error(err.message || "Failed to save key");
+      return;
+    }
+    setHasKey(true);
+    setMaskedKey(`${trimmed.slice(0, 6)}••••••••${trimmed.slice(-4)}`);
+    setKeyInput("");
+    setShowKey(false);
+    toast.success("API key saved");
+  };
+
+  const removeKey = async () => {
+    if (!confirm("Remove the saved PageSpeed API key?")) return;
+    const { error: err } = await supabase
+      .from("integration_credentials")
+      .delete()
+      .eq("provider", "pagespeed_insights");
+    if (err) {
+      toast.error(err.message || "Failed to remove key");
+      return;
+    }
+    setHasKey(false);
+    setMaskedKey("");
+    setResult(null);
+    toast.success("API key removed");
+  };
+
   const runAudit = async (s: Strategy) => {
+    if (!hasKey) {
+      toast.error("Add a PageSpeed Insights API key first.");
+      return;
+    }
     if (!url || !/^https?:\/\//i.test(url)) {
       toast.error("Enter a valid URL starting with http(s)://");
       return;
@@ -132,8 +223,112 @@ const Performance = () => {
 
       <Card>
         <CardHeader>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <KeyRound className="h-5 w-5" />
+                Google PageSpeed Insights API key
+              </CardTitle>
+              <CardDescription>
+                Required to run audits. Free, takes ~2 minutes to create — no billing needed (25,000 requests/day).
+              </CardDescription>
+            </div>
+            {!keyLoading && (
+              <Badge variant={hasKey ? "default" : "secondary"} className="shrink-0">
+                {hasKey ? (
+                  <><Check className="h-3 w-3 mr-1" /> Connected</>
+                ) : (
+                  "Not configured"
+                )}
+              </Badge>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {keyLoading ? (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" /> Checking…
+            </div>
+          ) : hasKey ? (
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="font-mono text-sm rounded-md border bg-muted/50 px-3 py-2">{maskedKey}</div>
+              <Button variant="outline" size="sm" onClick={() => { setHasKey(false); setKeyInput(""); }}>
+                Replace
+              </Button>
+              <Button variant="ghost" size="sm" onClick={removeKey} className="text-destructive hover:text-destructive">
+                <Trash2 className="h-4 w-4 mr-1" /> Remove
+              </Button>
+            </div>
+          ) : (
+            <>
+              <ol className="text-sm text-muted-foreground space-y-1 list-decimal pl-5">
+                <li>
+                  Open the{" "}
+                  <a
+                    href="https://console.cloud.google.com/apis/library/pagespeedonline.googleapis.com"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline text-foreground"
+                  >
+                    PageSpeed Insights API
+                  </a>{" "}
+                  in Google Cloud Console and click <strong>Enable</strong>.
+                </li>
+                <li>
+                  Go to{" "}
+                  <a
+                    href="https://console.cloud.google.com/apis/credentials"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline text-foreground"
+                  >
+                    Credentials
+                  </a>{" "}
+                  → <strong>+ Create Credentials</strong> → <strong>API key</strong>.
+                </li>
+                <li>Copy the key and paste it below.</li>
+              </ol>
+              <div className="grid gap-2">
+                <Label htmlFor="psi-key">API key</Label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Input
+                      id="psi-key"
+                      type={showKey ? "text" : "password"}
+                      value={keyInput}
+                      onChange={(e) => setKeyInput(e.target.value)}
+                      placeholder="AIza…"
+                      disabled={savingKey}
+                      className="pr-10 font-mono"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowKey((s) => !s)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      aria-label={showKey ? "Hide key" : "Show key"}
+                    >
+                      {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  <Button onClick={saveKey} disabled={savingKey || !keyInput.trim()}>
+                    {savingKey && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Save key
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle className="text-lg">Run an audit</CardTitle>
-          <CardDescription>Defaults to your published site. Edit the URL to test any page.</CardDescription>
+          <CardDescription>
+            {hasKey
+              ? "Defaults to your published site. Edit the URL to test any page."
+              : "Add your API key above to enable audits."}
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-2">
@@ -143,11 +338,11 @@ const Performance = () => {
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://example.com/page"
-              disabled={loading}
+              disabled={loading || !hasKey}
             />
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button onClick={() => runAudit("mobile")} disabled={loading}>
+            <Button onClick={() => runAudit("mobile")} disabled={loading || !hasKey}>
               {loading && strategy === "mobile" ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
@@ -155,7 +350,7 @@ const Performance = () => {
               )}
               Run Mobile
             </Button>
-            <Button variant="secondary" onClick={() => runAudit("desktop")} disabled={loading}>
+            <Button variant="secondary" onClick={() => runAudit("desktop")} disabled={loading || !hasKey}>
               {loading && strategy === "desktop" ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
