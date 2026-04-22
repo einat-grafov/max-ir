@@ -53,6 +53,7 @@ import {
   INTEGRATION_CATALOG,
   INTEGRATION_CATEGORIES,
   CONSENT_CATEGORY_OPTIONS,
+  getDefinition,
   type IntegrationCategory,
   type IntegrationDefinition,
   type ConsentCategory,
@@ -159,6 +160,44 @@ const IntegrationsSettings = () => {
     loadBannerSetting();
   }, []);
 
+  // True if any tracker (non-necessary) is currently enabled.
+  const hasActiveTrackers = useMemo(() => {
+    const integrationTrackers = Object.values(integrations).some((row) => {
+      if (!row.enabled) return false;
+      const def = getDefinition(row.provider);
+      const category = row.consent_category || def?.defaultConsent || "analytics";
+      return category !== "necessary";
+    });
+    const snippetTrackers = snippets.some(
+      (s) => s.enabled && s.consent_category !== "necessary",
+    );
+    return integrationTrackers || snippetTrackers;
+  }, [integrations, snippets]);
+
+  // Compliance lock helper: ensure the banner is enabled in DB + state.
+  // Used after enabling a tracker (integration or snippet) with a non-necessary
+  // consent category, so the impossible state "trackers on, banner off" cannot exist.
+  const ensureBannerEnabledForTracker = async () => {
+    if (bannerEnabled) return;
+    const { data: existing } = await supabase
+      .from("site_seo_settings")
+      .select("id")
+      .maybeSingle();
+    const payload = { cookie_banner_enabled: true };
+    if (existing?.id) {
+      await supabase
+        .from("site_seo_settings")
+        .update(payload)
+        .eq("id", existing.id);
+    } else {
+      await supabase.from("site_seo_settings").insert(payload);
+    }
+    setBannerEnabled(true);
+    toast.info(
+      "Cookie banner was automatically enabled because a tracker is now active.",
+    );
+  };
+
   // Filter
   const filteredCatalog = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -194,6 +233,14 @@ const IntegrationsSettings = () => {
   };
 
   const handleToggleBanner = async (next: boolean) => {
+    // Block disabling if any tracker is active — compliance lock.
+    if (!next && hasActiveTrackers) {
+      toast.error(
+        "Cannot disable the cookie banner while trackers are enabled. Disable all trackers first, then you can turn the banner off.",
+      );
+      return;
+    }
+
     setBannerSaving(true);
     // site_seo_settings is a singleton — fetch the existing row id, then update.
     const { data: existing } = await supabase
@@ -216,7 +263,7 @@ const IntegrationsSettings = () => {
     toast.success(
       next
         ? "Cookie banner enabled. Visitors will be prompted for consent."
-        : "Cookie banner disabled. All scripts will run without prompting visitors.",
+        : "Cookie banner disabled. No trackers are active, so no consent is required.",
     );
   };
 
@@ -290,19 +337,31 @@ const IntegrationsSettings = () => {
             </p>
           </div>
           <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex items-center gap-2">
-              <Label
-                htmlFor="cookie-banner-toggle"
-                className="text-xs font-medium text-foreground cursor-pointer"
-              >
-                Cookie banner
-              </Label>
-              <Switch
-                id="cookie-banner-toggle"
-                checked={bannerEnabled}
-                disabled={bannerLoading || bannerSaving}
-                onCheckedChange={handleToggleBanner}
-              />
+            <div className="flex flex-col items-end gap-1">
+              <div className="flex items-center gap-2">
+                <Label
+                  htmlFor="cookie-banner-toggle"
+                  className="text-xs font-medium text-foreground cursor-pointer"
+                >
+                  Cookie banner
+                </Label>
+                <Switch
+                  id="cookie-banner-toggle"
+                  checked={bannerEnabled}
+                  disabled={
+                    bannerLoading ||
+                    bannerSaving ||
+                    (hasActiveTrackers && bannerEnabled)
+                  }
+                  onCheckedChange={handleToggleBanner}
+                />
+              </div>
+              {hasActiveTrackers && bannerEnabled && (
+                <p className="text-[11px] text-muted-foreground max-w-[220px] text-right leading-tight">
+                  Locked on — trackers are active. Disable all trackers to allow
+                  turning the banner off.
+                </p>
+              )}
             </div>
             {bannerEnabled && (
               <div className="flex gap-2">
@@ -410,6 +469,7 @@ const IntegrationsSettings = () => {
             snippets={snippets}
             loading={loadingSnippets}
             onChanged={loadSnippets}
+            ensureBannerEnabledForTracker={ensureBannerEnabledForTracker}
           />
         </TabsContent>
 
@@ -427,6 +487,7 @@ const IntegrationsSettings = () => {
         onOpenChange={setSetupOpen}
         def={setupDef}
         existing={setupDef ? integrations[setupDef.provider] : undefined}
+        ensureBannerEnabledForTracker={ensureBannerEnabledForTracker}
         onSaved={() => {
           loadIntegrations();
           setSetupOpen(false);
@@ -529,12 +590,14 @@ const SetupDialog = ({
   onOpenChange,
   def,
   existing,
+  ensureBannerEnabledForTracker,
   onSaved,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   def: IntegrationDefinition | null;
   existing?: IntegrationRow;
+  ensureBannerEnabledForTracker: () => Promise<void>;
   onSaved: () => void;
 }) => {
   const [config, setConfig] = useState<Record<string, string>>({});
@@ -578,6 +641,10 @@ const SetupDialog = ({
     if (error) {
       toast.error(error.message);
       return;
+    }
+    // Compliance lock: enabling a tracker auto-enables the banner.
+    if (enabled && consent !== "necessary") {
+      await ensureBannerEnabledForTracker();
     }
     toast.success(`${def.name} ${enabled ? "connected" : "saved"}`);
     onSaved();
@@ -694,10 +761,12 @@ const CustomCodePanel = ({
   snippets,
   loading,
   onChanged,
+  ensureBannerEnabledForTracker,
 }: {
   snippets: SnippetRow[];
   loading: boolean;
   onChanged: () => void;
+  ensureBannerEnabledForTracker: () => Promise<void>;
 }) => {
   const [editor, setEditor] = useState<SnippetRow | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
@@ -710,7 +779,8 @@ const CustomCodePanel = ({
       name: "",
       code: "",
       location,
-      consent_category: "necessary",
+      // Safer default — admins must deliberately downgrade to "necessary".
+      consent_category: "analytics",
       enabled: false,
       sort_order: 0,
     });
@@ -748,6 +818,7 @@ const CustomCodePanel = ({
           setEditorOpen(true);
         }}
         onChanged={onChanged}
+        ensureBannerEnabledForTracker={ensureBannerEnabledForTracker}
       />
 
       {/* Body snippets */}
@@ -763,12 +834,14 @@ const CustomCodePanel = ({
           setEditorOpen(true);
         }}
         onChanged={onChanged}
+        ensureBannerEnabledForTracker={ensureBannerEnabledForTracker}
       />
 
       <SnippetEditor
         open={editorOpen}
         onOpenChange={setEditorOpen}
         snippet={editor}
+        ensureBannerEnabledForTracker={ensureBannerEnabledForTracker}
         onSaved={() => {
           setEditorOpen(false);
           onChanged();
@@ -787,6 +860,7 @@ const SnippetSection = ({
   onAdd,
   onEdit,
   onChanged,
+  ensureBannerEnabledForTracker,
 }: {
   title: string;
   description: string;
@@ -796,6 +870,7 @@ const SnippetSection = ({
   onAdd: () => void;
   onEdit: (s: SnippetRow) => void;
   onChanged: () => void;
+  ensureBannerEnabledForTracker: () => Promise<void>;
 }) => {
   const handleToggle = async (s: SnippetRow, enabled: boolean) => {
     if (!s.id) return;
@@ -806,6 +881,10 @@ const SnippetSection = ({
     if (error) {
       toast.error(error.message);
       return;
+    }
+    // Compliance lock: enabling a non-necessary snippet auto-enables the banner.
+    if (enabled && s.consent_category !== "necessary") {
+      await ensureBannerEnabledForTracker();
     }
     toast.success(`Snippet ${enabled ? "enabled" : "disabled"}`);
     onChanged();
@@ -907,11 +986,13 @@ const SnippetEditor = ({
   open,
   onOpenChange,
   snippet,
+  ensureBannerEnabledForTracker,
   onSaved,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   snippet: SnippetRow | null;
+  ensureBannerEnabledForTracker: () => Promise<void>;
   onSaved: () => void;
 }) => {
   const [draft, setDraft] = useState<SnippetRow | null>(snippet);
@@ -954,6 +1035,10 @@ const SnippetEditor = ({
     if (error) {
       toast.error(error.message);
       return;
+    }
+    // Compliance lock: saving an enabled non-necessary snippet auto-enables the banner.
+    if (draft.enabled && draft.consent_category !== "necessary") {
+      await ensureBannerEnabledForTracker();
     }
     toast.success("Snippet saved");
     onSaved();
