@@ -642,6 +642,10 @@ const SetupDialog = ({
       toast.error(error.message);
       return;
     }
+    // Compliance lock: enabling a tracker auto-enables the banner.
+    if (enabled && consent !== "necessary") {
+      await ensureBannerEnabledForTracker();
+    }
     toast.success(`${def.name} ${enabled ? "connected" : "saved"}`);
     onSaved();
   };
