@@ -77,9 +77,99 @@ const Performance = () => {
   const [result, setResult] = useState<PSIResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // API key management
+  const [keyLoading, setKeyLoading] = useState(true);
+  const [hasKey, setHasKey] = useState(false);
+  const [maskedKey, setMaskedKey] = useState<string>("");
+  const [keyInput, setKeyInput] = useState("");
+  const [showKey, setShowKey] = useState(false);
+  const [savingKey, setSavingKey] = useState(false);
+
   const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID as string;
 
+  useEffect(() => {
+    const loadKey = async () => {
+      setKeyLoading(true);
+      const { data, error: err } = await supabase
+        .from("integration_credentials")
+        .select("credentials, enabled")
+        .eq("provider", "pagespeed_insights")
+        .maybeSingle();
+      if (!err && data) {
+        const apiKey = (data.credentials as { api_key?: string } | null)?.api_key ?? "";
+        if (apiKey && data.enabled !== false) {
+          setHasKey(true);
+          setMaskedKey(`${apiKey.slice(0, 6)}••••••••${apiKey.slice(-4)}`);
+        } else {
+          setHasKey(false);
+        }
+      }
+      setKeyLoading(false);
+    };
+    loadKey();
+  }, []);
+
+  const saveKey = async () => {
+    const trimmed = keyInput.trim();
+    if (trimmed.length < 20) {
+      toast.error("That doesn't look like a valid Google API key.");
+      return;
+    }
+    setSavingKey(true);
+    const { data: existing } = await supabase
+      .from("integration_credentials")
+      .select("id")
+      .eq("provider", "pagespeed_insights")
+      .maybeSingle();
+
+    let err;
+    if (existing?.id) {
+      ({ error: err } = await supabase
+        .from("integration_credentials")
+        .update({ credentials: { api_key: trimmed }, enabled: true })
+        .eq("id", existing.id));
+    } else {
+      ({ error: err } = await supabase.from("integration_credentials").insert({
+        provider: "pagespeed_insights",
+        display_name: "Google PageSpeed Insights",
+        category: "performance",
+        credentials: { api_key: trimmed },
+        enabled: true,
+      }));
+    }
+    setSavingKey(false);
+    if (err) {
+      toast.error(err.message || "Failed to save key");
+      return;
+    }
+    setHasKey(true);
+    setMaskedKey(`${trimmed.slice(0, 6)}••••••••${trimmed.slice(-4)}`);
+    setKeyInput("");
+    setShowKey(false);
+    toast.success("API key saved");
+  };
+
+  const removeKey = async () => {
+    if (!confirm("Remove the saved PageSpeed API key?")) return;
+    const { error: err } = await supabase
+      .from("integration_credentials")
+      .delete()
+      .eq("provider", "pagespeed_insights");
+    if (err) {
+      toast.error(err.message || "Failed to remove key");
+      return;
+    }
+    setHasKey(false);
+    setMaskedKey("");
+    setResult(null);
+    toast.success("API key removed");
+  };
+
   const runAudit = async (s: Strategy) => {
+    if (!hasKey) {
+      toast.error("Add a PageSpeed Insights API key first.");
+      return;
+    }
     if (!url || !/^https?:\/\//i.test(url)) {
       toast.error("Enter a valid URL starting with http(s)://");
       return;
