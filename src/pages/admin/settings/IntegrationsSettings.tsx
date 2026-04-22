@@ -233,6 +233,14 @@ const IntegrationsSettings = () => {
   };
 
   const handleToggleBanner = async (next: boolean) => {
+    // Block disabling if any tracker is active — compliance lock.
+    if (!next && hasActiveTrackers) {
+      toast.error(
+        "Cannot disable the cookie banner while trackers are enabled. Disable all trackers first, then you can turn the banner off.",
+      );
+      return;
+    }
+
     setBannerSaving(true);
     // site_seo_settings is a singleton — fetch the existing row id, then update.
     const { data: existing } = await supabase
@@ -255,7 +263,7 @@ const IntegrationsSettings = () => {
     toast.success(
       next
         ? "Cookie banner enabled. Visitors will be prompted for consent."
-        : "Cookie banner disabled. All scripts will run without prompting visitors.",
+        : "Cookie banner disabled. No trackers are active, so no consent is required.",
     );
   };
 
