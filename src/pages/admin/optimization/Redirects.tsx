@@ -32,7 +32,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, ArrowRight } from "lucide-react";
-import { IconTooltipButton } from "@/components/admin/IconTooltipButton";
+import IconTooltipButton from "@/components/admin/IconTooltipButton";
 
 interface Redirect {
   id: string;
@@ -288,10 +288,10 @@ const Redirects = () => {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
-                      <IconTooltipButton tooltip="Edit" onClick={() => openEdit(r)}>
+                      <IconTooltipButton label="Edit" onClick={() => openEdit(r)}>
                         <Pencil className="w-4 h-4" />
                       </IconTooltipButton>
-                      <IconTooltipButton tooltip="Delete" onClick={() => handleDelete(r.id)}>
+                      <IconTooltipButton label="Delete" onClick={() => handleDelete(r.id)}>
                         <Trash2 className="w-4 h-4" />
                       </IconTooltipButton>
                     </div>
