@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import NotificationEmailCard from "@/components/admin/NotificationEmailCard";
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   new: { label: "New", className: "bg-blue-100 text-blue-800 border-blue-200" },
