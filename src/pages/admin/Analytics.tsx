@@ -1,10 +1,99 @@
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format, subDays, startOfDay, endOfDay, eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval, isWithinInterval, startOfWeek, startOfMonth, endOfWeek, endOfMonth } from "date-fns";
-import { BarChart3, DollarSign, ShoppingCart, Users, TrendingUp, CalendarIcon, Download, ArrowUpDown, ExternalLink } from "lucide-react";
+import { BarChart3, DollarSign, ShoppingCart, Users, TrendingUp, CalendarIcon, Download, ArrowUpDown, ExternalLink, AlertTriangle, CheckCircle2, Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getLastComplianceReport, type ComplianceReport } from "@/lib/compliance-scanner";
+
+function ComplianceStatusCard() {
+  const [report, setReport] = useState<ComplianceReport | null>(null);
+
+  useEffect(() => {
+    setReport(getLastComplianceReport());
+  }, []);
+
+  if (!report) {
+    return (
+      <Card className="mb-6">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Info className="h-4 w-4 text-muted-foreground" />
+            Cookie Compliance Status
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">
+            No recent scan. Visit a public page of the site to run the
+            compliance scanner, then return here.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const unregistered = report.findings.filter((f) => !f.registered);
+  const registered = report.findings.filter((f) => f.registered);
+  const ok = unregistered.length === 0;
+
+  return (
+    <Card className="mb-6">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-base">
+          {ok ? (
+            <CheckCircle2 className="h-4 w-4 text-green-600" />
+          ) : (
+            <AlertTriangle className="h-4 w-4 text-yellow-600" />
+          )}
+          Cookie Compliance Status
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <p className="text-xs text-muted-foreground">
+          Last scan:{" "}
+          <span className="font-mono">
+            {new Date(report.timestamp).toLocaleString()}
+          </span>
+        </p>
+        {ok ? (
+          <p className="text-sm text-foreground">
+            ✓ All third-party scripts on the site are properly gated by the
+            cookie consent system.{" "}
+            {registered.length > 0 && (
+              <span className="text-muted-foreground">
+                ({registered.length} registered third-party script
+                {registered.length === 1 ? "" : "s"} found.)
+              </span>
+            )}
+          </p>
+        ) : (
+          <>
+            <p className="text-sm text-foreground">
+              ⚠ <strong>{unregistered.length} third-party script
+              {unregistered.length === 1 ? "" : "s"}</strong> detected that
+              {unregistered.length === 1 ? " is" : " are"} NOT gated by the
+              consent banner. These may fire before visitors consent, which
+              can violate GDPR.
+            </p>
+            <ul className="space-y-1 rounded-md border border-yellow-500/40 bg-yellow-500/10 px-3 py-2">
+              {unregistered.map((f, i) => (
+                <li key={i} className="font-mono text-xs break-all text-yellow-900 dark:text-yellow-200">
+                  {f.src}
+                </li>
+              ))}
+            </ul>
+            <p className="text-xs text-muted-foreground">
+              If you recognize these, re-add them through Settings →
+              Integrations so they're properly gated by consent. If you
+              don't recognize them, investigate immediately.
+            </p>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
@@ -253,6 +342,7 @@ const Analytics = () => {
 
   return (
     <div>
+      <ComplianceStatusCard />
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">

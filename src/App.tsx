@@ -76,7 +76,17 @@ const RootLayout = () => {
   const { pathname } = useLocation();
   const isAdmin = pathname.startsWith("/admin");
   useEffect(() => {
-    if (!isAdmin) startSiteInjector();
+    if (!isAdmin) {
+      startSiteInjector();
+      // Run compliance scan 2 seconds later — after site-injector and any
+      // consent-gated scripts have had time to load.
+      const t = setTimeout(() => {
+        import("@/lib/compliance-scanner").then(({ runComplianceScan }) => {
+          runComplianceScan();
+        });
+      }, 2000);
+      return () => clearTimeout(t);
+    }
   }, [isAdmin]);
   return (
     <CartProvider>
