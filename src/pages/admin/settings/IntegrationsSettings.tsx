@@ -469,6 +469,7 @@ const IntegrationsSettings = () => {
             snippets={snippets}
             loading={loadingSnippets}
             onChanged={loadSnippets}
+            ensureBannerEnabledForTracker={ensureBannerEnabledForTracker}
           />
         </TabsContent>
 
