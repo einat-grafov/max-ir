@@ -280,6 +280,37 @@ const DashboardTab = () => {
     },
   });
 
+  const { data: dailySeries = [] } = useQuery({
+    queryKey: ["general-dashboard-daily-series"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("orders")
+        .select("total, created_at")
+        .gte("created_at", start30.toISOString())
+        .order("created_at", { ascending: true });
+
+      const buckets = new Map<string, { revenue: number; orders: number }>();
+      for (let i = 29; i >= 0; i--) {
+        const d = format(subDays(now, i), "yyyy-MM-dd");
+        buckets.set(d, { revenue: 0, orders: 0 });
+      }
+      (data || []).forEach((o: any) => {
+        const k = format(new Date(o.created_at), "yyyy-MM-dd");
+        const b = buckets.get(k);
+        if (b) {
+          b.revenue += Number(o.total || 0);
+          b.orders += 1;
+        }
+      });
+      return Array.from(buckets.entries()).map(([date, v]) => ({
+        date,
+        label: format(new Date(date), "MMM d"),
+        revenue: Math.round(v.revenue * 100) / 100,
+        orders: v.orders,
+      }));
+    },
+  });
+
   const { data: recentInquiries = [] } = useQuery({
     queryKey: ["general-dashboard-inquiries"],
     queryFn: async () => {
