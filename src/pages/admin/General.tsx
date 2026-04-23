@@ -6,6 +6,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+} from "recharts";
 import {
   DollarSign,
   ShoppingCart,
@@ -270,6 +280,37 @@ const DashboardTab = () => {
     },
   });
 
+  const { data: dailySeries = [] } = useQuery({
+    queryKey: ["general-dashboard-daily-series"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("orders")
+        .select("total, created_at")
+        .gte("created_at", start30.toISOString())
+        .order("created_at", { ascending: true });
+
+      const buckets = new Map<string, { revenue: number; orders: number }>();
+      for (let i = 29; i >= 0; i--) {
+        const d = format(subDays(now, i), "yyyy-MM-dd");
+        buckets.set(d, { revenue: 0, orders: 0 });
+      }
+      (data || []).forEach((o: any) => {
+        const k = format(new Date(o.created_at), "yyyy-MM-dd");
+        const b = buckets.get(k);
+        if (b) {
+          b.revenue += Number(o.total || 0);
+          b.orders += 1;
+        }
+      });
+      return Array.from(buckets.entries()).map(([date, v]) => ({
+        date,
+        label: format(new Date(date), "MMM d"),
+        revenue: Math.round(v.revenue * 100) / 100,
+        orders: v.orders,
+      }));
+    },
+  });
+
   const { data: recentInquiries = [] } = useQuery({
     queryKey: ["general-dashboard-inquiries"],
     queryFn: async () => {
@@ -349,6 +390,95 @@ const DashboardTab = () => {
             ))}
           </div>
         )}
+      </section>
+
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card className="p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-base font-semibold text-foreground">Revenue</h3>
+              <p className="text-xs text-muted-foreground">Daily revenue, last 30 days</p>
+            </div>
+            <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
+              <DollarSign className="h-4 w-4 text-primary" />
+            </div>
+          </div>
+          <ChartContainer
+            config={{ revenue: { label: "Revenue", color: "hsl(var(--primary))" } }}
+            className="h-[240px] w-full aspect-auto"
+          >
+            <AreaChart data={dailySeries} margin={{ left: 4, right: 8, top: 4, bottom: 0 }}>
+              <defs>
+                <linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.35} />
+                  <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+              <XAxis
+                dataKey="label"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                interval={Math.ceil(dailySeries.length / 6)}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                width={48}
+                tickFormatter={(v) => (v >= 1000 ? `${(v / 1000).toFixed(1)}k` : `${v}`)}
+              />
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    formatter={(value) => (
+                      <span className="font-mono font-medium tabular-nums text-foreground">
+                        {formatCurrency(Number(value))}
+                      </span>
+                    )}
+                  />
+                }
+              />
+              <Area
+                type="monotone"
+                dataKey="revenue"
+                stroke="hsl(var(--primary))"
+                strokeWidth={2}
+                fill="url(#revenueFill)"
+              />
+            </AreaChart>
+          </ChartContainer>
+        </Card>
+
+        <Card className="p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-base font-semibold text-foreground">Orders</h3>
+              <p className="text-xs text-muted-foreground">Daily orders, last 30 days</p>
+            </div>
+            <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
+              <ShoppingCart className="h-4 w-4 text-primary" />
+            </div>
+          </div>
+          <ChartContainer
+            config={{ orders: { label: "Orders", color: "hsl(var(--primary))" } }}
+            className="h-[240px] w-full aspect-auto"
+          >
+            <BarChart data={dailySeries} margin={{ left: 4, right: 8, top: 4, bottom: 0 }}>
+              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+              <XAxis
+                dataKey="label"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                interval={Math.ceil(dailySeries.length / 6)}
+              />
+              <YAxis tickLine={false} axisLine={false} width={32} allowDecimals={false} />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Bar dataKey="orders" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ChartContainer>
+        </Card>
       </section>
 
       <section>
