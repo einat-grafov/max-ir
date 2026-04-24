@@ -17,6 +17,7 @@ const Cart = () => {
   const [checkBundled, setCheckBundled] = useState(false);
   const [checkTerms, setCheckTerms] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
+  const [customerEmail, setCustomerEmail] = useState("");
 
   // Shipping address state
   const [shipCountry, setShipCountry] = useState("US");
@@ -62,14 +63,20 @@ const Cart = () => {
   const shippingCost = selectedRate?.price ?? 0;
   const orderTotal = totalPrice + shippingCost;
 
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail);
+
   const allChecked = useMemo(
-    () => checkFinal && checkBundled && checkTerms && selectedRate !== null,
-    [checkFinal, checkBundled, checkTerms, selectedRate]
+    () => checkFinal && checkBundled && checkTerms && selectedRate !== null && isValidEmail,
+    [checkFinal, checkBundled, checkTerms, selectedRate, isValidEmail]
   );
 
   const handleCheckout = () => {
     if (!selectedRate) {
       toast.error("Please select a shipping option");
+      return;
+    }
+    if (!isValidEmail) {
+      toast.error("Please enter a valid email address");
       return;
     }
     const missing = items.find((i) => !priceMap?.[i.productId]);
@@ -263,7 +270,7 @@ const Cart = () => {
                     <span className="text-xl font-bold text-foreground">{formatPrice(orderTotal)}</span>
                   </div>
                   <p className="text-xs text-muted-foreground mb-6">
-                    <span className="font-semibold text-foreground">Sales tax:</span> Calculated at checkout for U.S. shipping addresses. Not charged for non-U.S. shipping
+                    <span className="font-semibold text-foreground">Sales tax:</span> Calculated automatically at checkout based on your billing address.
                   </p>
 
                   {/* Shipping address */}
