@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
@@ -8,13 +9,43 @@ import { toast } from "sonner";
 import { COUNTRIES } from "@/lib/countries";
 import { useShippingRates, type ShippingRate } from "@/hooks/useShippingRates";
 import { supabase } from "@/integrations/supabase/client";
+import { StripeEmbeddedCheckoutInline } from "@/components/StripeEmbeddedCheckout";
 
 const Cart = () => {
   const { items, updateQuantity, removeItem, clearCart, totalItems, totalPrice } = useCart();
   const [checkFinal, setCheckFinal] = useState(false);
   const [checkBundled, setCheckBundled] = useState(false);
   const [checkTerms, setCheckTerms] = useState(false);
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
+
+  // Shipping address state
+  const [shipCountry, setShipCountry] = useState("US");
+  const [shipPostal, setShipPostal] = useState("");
+  const [shipCity, setShipCity] = useState("");
+  const [shipState, setShipState] = useState("");
+  const [selectedRate, setSelectedRate] = useState<ShippingRate | null>(null);
+
+  const { rates, loading: ratesLoading, error: ratesError, fetchRates } = useShippingRates();
+
+  // Look up Stripe price IDs for the products in the cart
+  const productIds = useMemo(() => Array.from(new Set(items.map((i) => i.productId))), [items]);
+  const { data: priceMap } = useQuery({
+    queryKey: ["cart-stripe-prices", productIds],
+    enabled: productIds.length > 0,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, stripe_price_id")
+        .in("id", productIds);
+      if (error) throw error;
+      const map: Record<string, string | null> = {};
+      for (const row of data ?? []) {
+        map[row.id as string] = (row as { stripe_price_id: string | null }).stripe_price_id;
+      }
+      return map;
+    },
+  });
+
 
   // Shipping address state
   const [shipCountry, setShipCountry] = useState("US");
@@ -45,36 +76,27 @@ const Cart = () => {
     [checkFinal, checkBundled, checkTerms, selectedRate]
   );
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
     if (!selectedRate) {
       toast.error("Please select a shipping option");
       return;
     }
-    setCheckoutLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-checkout-session", {
-        body: {
-          items,
-          shippingRate: selectedRate,
-          shippingAddress: {
-            postalCode: shipPostal,
-            country: shipCountry,
-            city: shipCity || undefined,
-            state: shipState || undefined,
-          },
-          successUrl: `${window.location.origin}/checkout/success`,
-          cancelUrl: `${window.location.origin}/checkout/cancel`,
-        },
-      });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      if (!data?.url) throw new Error("No checkout URL returned");
-      window.location.href = data.url;
-    } catch (e: any) {
-      toast.error(e?.message || "Failed to start checkout");
-      setCheckoutLoading(false);
+    const missing = items.find((i) => !priceMap?.[i.productId]);
+    if (missing) {
+      toast.error(`"${missing.productName}" is not available for online checkout. Please contact us for a quote.`);
+      return;
     }
+    setShowCheckout(true);
   };
+
+  const checkoutItems = useMemo(
+    () =>
+      items.map((i) => ({
+        ...i,
+        stripePriceId: priceMap?.[i.productId] ?? "",
+      })),
+    [items, priceMap],
+  );
 
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("en-US", {
