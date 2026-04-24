@@ -375,6 +375,19 @@ const Cart = () => {
                     </div>
                   </div>
 
+                  {/* Email capture */}
+                  <div className="mb-5">
+                    <label className="text-xs font-medium text-muted-foreground mb-1 block">Email *</label>
+                    <input
+                      type="email"
+                      value={customerEmail}
+                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      placeholder="you@company.com"
+                      className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">We'll send your order confirmation here.</p>
+                  </div>
+
                   {/* Disclaimer checkboxes */}
                   <div className="mb-5 space-y-3 text-xs text-foreground">
                     <p className="font-semibold text-sm">I acknowledge and agree to the following:</p>
