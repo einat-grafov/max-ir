@@ -725,6 +725,7 @@ export type Database = {
           shipping_cost: number
           shipping_method: string | null
           status: string
+          stripe_session_id: string | null
           subtotal: number
           tax: number
           total: number
@@ -745,6 +746,7 @@ export type Database = {
           shipping_cost?: number
           shipping_method?: string | null
           status?: string
+          stripe_session_id?: string | null
           subtotal?: number
           tax?: number
           total?: number
@@ -765,6 +767,7 @@ export type Database = {
           shipping_cost?: number
           shipping_method?: string | null
           status?: string
+          stripe_session_id?: string | null
           subtotal?: number
           tax?: number
           total?: number
