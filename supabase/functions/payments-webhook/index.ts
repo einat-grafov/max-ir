@@ -1,5 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { type StripeEnv, verifyWebhook } from "../_shared/stripe.ts";
+import { type StripeEnv, createStripeClient, verifyWebhook } from "../_shared/stripe.ts";
 
 let _supabase: ReturnType<typeof createClient> | null = null;
 function getSupabase() {
@@ -25,6 +25,18 @@ async function handleCheckoutCompleted(session: any) {
   const supabase = getSupabase();
   const md = session.metadata || {};
 
+  // ---------------- IDEMPOTENCY ----------------
+  // If we've already inserted an order for this session, do nothing.
+  const { data: existing } = await supabase
+    .from("orders")
+    .select("id")
+    .eq("stripe_session_id", session.id)
+    .maybeSingle();
+  if (existing) {
+    console.log(`Order already exists for session ${session.id}, skipping.`);
+    return;
+  }
+
   let cartItems: CartLineMeta[] = [];
   try {
     cartItems = md.cart_items ? JSON.parse(md.cart_items) : [];
@@ -48,21 +60,23 @@ async function handleCheckoutCompleted(session: any) {
   // Try to link to an existing customer by email
   let customerId: string | null = null;
   if (customerEmail) {
-    const { data: existing } = await supabase
+    const { data: existingCustomer } = await supabase
       .from("customers")
       .select("id")
       .eq("email", customerEmail)
       .maybeSingle();
-    customerId = (existing?.id as string) ?? null;
+    customerId = (existingCustomer?.id as string) ?? null;
   }
 
-  // Insert order
+  // Insert order — UNIQUE index on stripe_session_id is the safety net for
+  // any race condition where two webhook deliveries arrive in parallel.
   const { data: order, error: orderError } = await supabase
     .from("orders")
     .insert({
       customer_id: customerId,
       customer_name: customerName,
       customer_email: customerEmail,
+      stripe_session_id: session.id,
       payment_status: "paid",
       fulfillment_status: "unfulfilled",
       status: "unfulfilled",
@@ -79,6 +93,11 @@ async function handleCheckoutCompleted(session: any) {
     .single();
 
   if (orderError || !order) {
+    // 23505 = unique violation → another delivery already inserted this order
+    if ((orderError as any)?.code === "23505") {
+      console.log(`Race-protected duplicate for session ${session.id}, skipping.`);
+      return;
+    }
     console.error("Failed to insert order", orderError);
     return;
   }
@@ -169,6 +188,50 @@ async function handleCheckoutCompleted(session: any) {
   }
 }
 
+async function handleAsyncPaymentFailed(session: any) {
+  const supabase = getSupabase();
+  await supabase
+    .from("orders")
+    .update({ payment_status: "failed", status: "cancelled" })
+    .eq("stripe_session_id", session.id);
+}
+
+async function handleChargeRefunded(env: StripeEnv, charge: any) {
+  const supabase = getSupabase();
+  // Resolve the checkout session for this PaymentIntent so we can find the order.
+  const stripe = createStripeClient(env);
+  const piId: string | undefined = charge.payment_intent;
+  if (!piId) return;
+  const sessions = await stripe.checkout.sessions.list({ payment_intent: piId, limit: 1 });
+  const sessionId = sessions.data[0]?.id;
+  if (!sessionId) return;
+
+  const fullyRefunded = charge.refunded === true || charge.amount_refunded >= charge.amount;
+  await supabase
+    .from("orders")
+    .update({
+      payment_status: fullyRefunded ? "refunded" : "partially_refunded",
+    })
+    .eq("stripe_session_id", sessionId);
+}
+
+async function handleDisputeCreated(env: StripeEnv, dispute: any) {
+  const supabase = getSupabase();
+  const stripe = createStripeClient(env);
+  const chargeId: string | undefined = dispute.charge;
+  if (!chargeId) return;
+  const charge = await stripe.charges.retrieve(chargeId);
+  const piId = charge.payment_intent as string | undefined;
+  if (!piId) return;
+  const sessions = await stripe.checkout.sessions.list({ payment_intent: piId, limit: 1 });
+  const sessionId = sessions.data[0]?.id;
+  if (!sessionId) return;
+  await supabase
+    .from("orders")
+    .update({ payment_status: "disputed" })
+    .eq("stripe_session_id", sessionId);
+}
+
 Deno.serve(async (req) => {
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
 
@@ -187,6 +250,15 @@ Deno.serve(async (req) => {
     switch (event.type) {
       case "checkout.session.completed":
         await handleCheckoutCompleted(event.data.object);
+        break;
+      case "checkout.session.async_payment_failed":
+        await handleAsyncPaymentFailed(event.data.object);
+        break;
+      case "charge.refunded":
+        await handleChargeRefunded(env, event.data.object);
+        break;
+      case "charge.dispute.created":
+        await handleDisputeCreated(env, event.data.object);
         break;
       default:
         console.log("Unhandled event:", event.type);
