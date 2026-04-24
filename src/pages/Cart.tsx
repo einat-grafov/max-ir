@@ -403,20 +403,38 @@ const Cart = () => {
                     </label>
                   </div>
 
-                  <button
-                    onClick={handleCheckout}
-                    disabled={!allChecked || checkoutLoading}
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 text-sm font-semibold rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    {checkoutLoading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Redirecting…
-                      </>
-                    ) : (
-                      "Check out"
-                    )}
-                  </button>
+                  {showCheckout ? (
+                    <div className="border-t border-border pt-5 -mx-6 px-6 -mb-6 pb-6">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-sm font-semibold text-foreground">Payment</h3>
+                        <button
+                          onClick={() => setShowCheckout(false)}
+                          className="text-xs text-muted-foreground hover:text-foreground"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                      <StripeEmbeddedCheckoutInline
+                        items={checkoutItems}
+                        shippingRate={selectedRate!}
+                        shippingAddress={{
+                          postalCode: shipPostal,
+                          country: shipCountry,
+                          city: shipCity || undefined,
+                          state: shipState || undefined,
+                        }}
+                        returnUrl={`${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`}
+                      />
+                    </div>
+                  ) : (
+                    <button
+                      onClick={handleCheckout}
+                      disabled={!allChecked}
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 text-sm font-semibold rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      Check out
+                    </button>
+                  )}
 
                   <p className="text-xs text-muted-foreground text-center mt-3">
                     Our team will contact you with a final quote including applicable taxes.
