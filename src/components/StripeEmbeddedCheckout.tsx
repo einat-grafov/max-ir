@@ -14,10 +14,11 @@ interface Props {
     city?: string;
     state?: string;
   };
+  customerEmail?: string;
   returnUrl: string;
 }
 
-export function StripeEmbeddedCheckoutInline({ items, shippingRate, shippingAddress, returnUrl }: Props) {
+export function StripeEmbeddedCheckoutInline({ items, shippingRate, shippingAddress, customerEmail, returnUrl }: Props) {
   const options = useMemo(
     () => ({
       fetchClientSecret: async (): Promise<string> => {
@@ -26,6 +27,7 @@ export function StripeEmbeddedCheckoutInline({ items, shippingRate, shippingAddr
             items,
             shippingRate,
             shippingAddress,
+            customerEmail,
             returnUrl,
             environment: getStripeEnvironment(),
           },
@@ -38,7 +40,7 @@ export function StripeEmbeddedCheckoutInline({ items, shippingRate, shippingAddr
     }),
     // Re-create only when checkout inputs actually change
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(items), JSON.stringify(shippingRate), JSON.stringify(shippingAddress), returnUrl],
+    [JSON.stringify(items), JSON.stringify(shippingRate), JSON.stringify(shippingAddress), customerEmail, returnUrl],
   );
 
   return (

@@ -17,6 +17,7 @@ const Cart = () => {
   const [checkBundled, setCheckBundled] = useState(false);
   const [checkTerms, setCheckTerms] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
+  const [customerEmail, setCustomerEmail] = useState("");
 
   // Shipping address state
   const [shipCountry, setShipCountry] = useState("US");
@@ -62,14 +63,20 @@ const Cart = () => {
   const shippingCost = selectedRate?.price ?? 0;
   const orderTotal = totalPrice + shippingCost;
 
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail);
+
   const allChecked = useMemo(
-    () => checkFinal && checkBundled && checkTerms && selectedRate !== null,
-    [checkFinal, checkBundled, checkTerms, selectedRate]
+    () => checkFinal && checkBundled && checkTerms && selectedRate !== null && isValidEmail,
+    [checkFinal, checkBundled, checkTerms, selectedRate, isValidEmail]
   );
 
   const handleCheckout = () => {
     if (!selectedRate) {
       toast.error("Please select a shipping option");
+      return;
+    }
+    if (!isValidEmail) {
+      toast.error("Please enter a valid email address");
       return;
     }
     const missing = items.find((i) => !priceMap?.[i.productId]);
@@ -263,7 +270,7 @@ const Cart = () => {
                     <span className="text-xl font-bold text-foreground">{formatPrice(orderTotal)}</span>
                   </div>
                   <p className="text-xs text-muted-foreground mb-6">
-                    <span className="font-semibold text-foreground">Sales tax:</span> Calculated at checkout for U.S. shipping addresses. Not charged for non-U.S. shipping
+                    <span className="font-semibold text-foreground">Sales tax:</span> Calculated automatically at checkout based on your billing address.
                   </p>
 
                   {/* Shipping address */}
@@ -368,6 +375,19 @@ const Cart = () => {
                     </div>
                   </div>
 
+                  {/* Email capture */}
+                  <div className="mb-5">
+                    <label className="text-xs font-medium text-muted-foreground mb-1 block">Email *</label>
+                    <input
+                      type="email"
+                      value={customerEmail}
+                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      placeholder="you@company.com"
+                      className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">We'll send your order confirmation here.</p>
+                  </div>
+
                   {/* Disclaimer checkboxes */}
                   <div className="mb-5 space-y-3 text-xs text-foreground">
                     <p className="font-semibold text-sm">I acknowledge and agree to the following:</p>
@@ -423,6 +443,7 @@ const Cart = () => {
                           city: shipCity || undefined,
                           state: shipState || undefined,
                         }}
+                        customerEmail={customerEmail}
                         returnUrl={`${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`}
                       />
                     </div>

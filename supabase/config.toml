@@ -27,3 +27,6 @@ project_id = "xfgxbrvqjbapmoijeshq"
 
   [functions.payments-webhook]
     verify_jwt = false
+
+  [functions.verify-checkout-session]
+    verify_jwt = false

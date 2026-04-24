@@ -1,3 +1,4 @@
+import { createClient } from "npm:@supabase/supabase-js@2";
 import { type StripeEnv, createStripeClient } from "../_shared/stripe.ts";
 
 const corsHeaders = {
@@ -35,6 +36,7 @@ interface RequestBody {
   items: CartItem[];
   shippingRate: ShippingRate;
   shippingAddress: ShippingAddress;
+  customerEmail?: string;
   returnUrl: string;
   environment: StripeEnv;
 }
@@ -44,6 +46,8 @@ const json = (status: number, body: unknown) =>
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
+
+const isEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -61,6 +65,45 @@ Deno.serve(async (req) => {
     if (!body.returnUrl) return json(400, { error: "returnUrl is required" });
     if (body.environment !== "sandbox" && body.environment !== "live") {
       return json(400, { error: "Invalid environment" });
+    }
+    if (body.customerEmail && !isEmail(body.customerEmail)) {
+      return json(400, { error: "Invalid customerEmail" });
+    }
+
+    // --- Pre-checkout stock validation ---------------------------------
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
+    const productIds = Array.from(new Set(body.items.map((i) => i.productId)));
+    const { data: stockRows, error: stockErr } = await supabase
+      .from("products")
+      .select("id, name, stock")
+      .in("id", productIds);
+    if (stockErr) {
+      console.error("stock lookup failed", stockErr);
+      return json(500, { error: "Could not verify stock" });
+    }
+    const stockMap = new Map<string, { name: string; stock: number }>();
+    for (const r of stockRows ?? []) {
+      stockMap.set(r.id as string, {
+        name: r.name as string,
+        stock: (r.stock as number) ?? 0,
+      });
+    }
+    // Sum requested quantity per product across line items
+    const requested = new Map<string, number>();
+    for (const i of body.items) {
+      requested.set(i.productId, (requested.get(i.productId) ?? 0) + i.quantity);
+    }
+    for (const [pid, qty] of requested.entries()) {
+      const row = stockMap.get(pid);
+      if (!row) return json(400, { error: `Product ${pid} not found` });
+      if (row.stock < qty) {
+        return json(409, {
+          error: `Only ${row.stock} unit${row.stock === 1 ? "" : "s"} of "${row.name}" available`,
+        });
+      }
     }
 
     const stripe = createStripeClient(body.environment);
@@ -92,11 +135,17 @@ Deno.serve(async (req) => {
       mode: "payment",
       return_url: body.returnUrl,
       line_items: lineItems,
+      // Tax: calculate & collect only — seller handles filing.
+      automatic_tax: { enabled: true },
+      // Required for tax calculation in the embedded form.
+      billing_address_collection: "required",
+      ...(body.customerEmail && { customer_email: body.customerEmail }),
       shipping_options: [
         {
           shipping_rate_data: {
             type: "fixed_amount",
             display_name: `${body.shippingRate.carrier} — ${body.shippingRate.service}`,
+            tax_behavior: "exclusive",
             fixed_amount: {
               amount: Math.round(body.shippingRate.price * 100),
               currency,
