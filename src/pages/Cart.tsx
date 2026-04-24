@@ -46,18 +46,6 @@ const Cart = () => {
       return map;
     },
   });
-                  {/* Email capture */}
-                  <div className="mb-5">
-                    <label className="text-xs font-medium text-muted-foreground mb-1 block">Email *</label>
-                    <input
-                      type="email"
-                      value={customerEmail}
-                      onChange={(e) => setCustomerEmail(e.target.value)}
-                      placeholder="you@company.com"
-                      className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground"
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">We'll send your order confirmation here.</p>
-                  </div>
 
 
   const handleFetchRates = () => {
