@@ -65,6 +65,7 @@ export interface ProductFormData {
   existingImageUrl: string | null;
   existingImages: string[];
   existingPdfUrl: string | null;
+  stripePriceId: string;
   specifications: ProductSpecification[];
   variants: ProductVariant[];
 }
@@ -111,6 +112,7 @@ const ProductForm = ({
   const [status, setStatus] = useState(initialData?.status ?? "active");
   const [ctaAddToCart, setCtaAddToCart] = useState(initialData?.ctaAddToCart ?? true);
   const [ctaRequestQuote, setCtaRequestQuote] = useState(initialData?.ctaRequestQuote ?? true);
+  const [stripePriceId, setStripePriceId] = useState(initialData?.stripePriceId ?? "");
   const [specifications, setSpecifications] = useState<ProductSpecification[]>(
     initialData?.specifications ?? [{ label: "", value: "" }]
   );
@@ -209,7 +211,7 @@ const ProductForm = ({
       const primaryImageUrl = allImageUrls.length > 0 ? allImageUrls[0] : null;
 
       await onSubmit(
-        { title, overview, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, ctaAddToCart, ctaRequestQuote, existingImageUrl: null, existingImages: [], existingPdfUrl: null, specifications: specifications.filter(s => s.label.trim() && s.value.trim()), variants: variants.filter(v => v.name.trim()) },
+        { title, overview, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, ctaAddToCart, ctaRequestQuote, existingImageUrl: null, existingImages: [], existingPdfUrl: null, stripePriceId: stripePriceId.trim(), specifications: specifications.filter(s => s.label.trim() && s.value.trim()), variants: variants.filter(v => v.name.trim()) },
         primaryImageUrl,
         allImageUrls,
         finalPdfUrl
@@ -654,6 +656,19 @@ const ProductForm = ({
                 <SelectItem value="archived">Archived</SelectItem>
               </SelectContent>
             </Select>
+          </Card>
+
+          <Card className="p-5 space-y-3">
+            <Label htmlFor="stripe-price-id">Stripe Price ID</Label>
+            <Input
+              id="stripe-price-id"
+              placeholder="price_..."
+              value={stripePriceId}
+              onChange={(e) => setStripePriceId(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              Required for "Add to Cart" checkout. Paste the Price ID from your Stripe dashboard (starts with <code>price_</code>).
+            </p>
           </Card>
 
           <Card className="p-5 space-y-4">
