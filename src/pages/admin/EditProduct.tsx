@@ -45,6 +45,7 @@ const EditProduct = () => {
         specifications: (data.specifications.length > 0 ? data.specifications : []) as unknown as Json,
         variants: (data.variants.length > 0 ? data.variants : []) as unknown as Json,
         pdf_url: pdfUrl,
+        stripe_price_id: data.stripePriceId || null,
       })
       .eq("id", id!);
     if (error) throw error;
@@ -98,6 +99,7 @@ const EditProduct = () => {
         existingImageUrl: product.image_url,
         existingImages: Array.isArray((product as any).images) ? (product as any).images as string[] : [],
         existingPdfUrl: (product as any).pdf_url ?? null,
+        stripePriceId: (product as any).stripe_price_id ?? "",
         specifications: Array.isArray(product.specifications) && (product.specifications as any[]).length > 0 ? (product.specifications as any[]).map((s: any) => ({ label: s.label ?? "", value: s.value ?? "" })) : [{ label: "", value: "" }],
         variants: Array.isArray((product as any).variants) && ((product as any).variants as any[]).length > 0
           ? ((product as any).variants as any[]).map((v: any) =>
