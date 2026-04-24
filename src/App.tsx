@@ -11,7 +11,7 @@ import Team from "./pages/Team";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
-import CheckoutCancel from "./pages/CheckoutCancel";
+import { PaymentTestModeBanner } from "./components/PaymentTestModeBanner";
 import AdminLogin from "./pages/AdminLogin";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
@@ -90,6 +90,7 @@ const RootLayout = () => {
   }, [isAdmin]);
   return (
     <CartProvider>
+      {!isAdmin && <PaymentTestModeBanner />}
       <ScrollToTop />
       <Outlet />
       <AccessibilityWidget />
@@ -110,7 +111,7 @@ const router = createBrowserRouter([
       { path: "/store/:id", element: <ProductDetail /> },
       { path: "/cart", element: <Cart /> },
       { path: "/checkout/success", element: <CheckoutSuccess /> },
-      { path: "/checkout/cancel", element: <CheckoutCancel /> },
+      { path: "/checkout/return", element: <CheckoutSuccess /> },
       { path: "/design-system", element: <DesignSystem /> },
       { path: "/unsubscribe", element: <Unsubscribe /> },
       { path: "/privacy-policy", element: <PrivacyPolicy /> },
