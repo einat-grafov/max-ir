@@ -47,15 +47,6 @@ const Cart = () => {
   });
 
 
-  // Shipping address state
-  const [shipCountry, setShipCountry] = useState("US");
-  const [shipPostal, setShipPostal] = useState("");
-  const [shipCity, setShipCity] = useState("");
-  const [shipState, setShipState] = useState("");
-  const [selectedRate, setSelectedRate] = useState<ShippingRate | null>(null);
-
-  const { rates, loading: ratesLoading, error: ratesError, fetchRates } = useShippingRates();
-
   const handleFetchRates = () => {
     if (!shipPostal) {
       toast.error("Please enter a postal code");
