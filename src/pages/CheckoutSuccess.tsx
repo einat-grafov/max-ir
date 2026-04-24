@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -7,6 +7,8 @@ import { useCart } from "@/contexts/CartContext";
 
 const CheckoutSuccess = () => {
   const { clearCart } = useCart();
+  const [searchParams] = useSearchParams();
+  const sessionId = searchParams.get("session_id");
 
   useEffect(() => {
     clearCart();
@@ -22,8 +24,14 @@ const CheckoutSuccess = () => {
             Thank you for your order!
           </h1>
           <p className="text-base text-muted-foreground mb-8 max-w-md mx-auto">
-            Your payment was successful. Our team will be in touch shortly with confirmation details and any next steps.
+            Your payment was successful. You'll receive a confirmation email shortly, and our team
+            will be in touch with any next steps.
           </p>
+          {sessionId && (
+            <p className="text-xs text-muted-foreground mb-8 font-mono break-all">
+              Reference: {sessionId}
+            </p>
+          )}
           <Link
             to="/#Products"
             className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 text-sm font-semibold transition-colors rounded-md"
