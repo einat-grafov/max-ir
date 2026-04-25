@@ -678,20 +678,6 @@ const ProductForm = ({
             </Select>
           </Card>
 
-          <Card className="p-5 space-y-3">
-            <Label htmlFor="stripe-price-id">Stripe Price ID</Label>
-            <Input
-              id="stripe-price-id"
-              placeholder="price_..."
-              value={stripePriceId}
-              onChange={(e) => setStripePriceId(e.target.value)}
-              className={stripePriceId.trim() && !/^price_[A-Za-z0-9]+$/.test(stripePriceId.trim()) ? "border-destructive" : ""}
-            />
-            <p className="text-xs text-muted-foreground">
-              Required for "Add to Cart" checkout. In Stripe dashboard go to <strong>Products → select product → Pricing section → click the price → copy the API ID</strong>. It must start with <code>price_</code> (not <code>prod_</code>).
-            </p>
-          </Card>
-
           <Card className="p-5 space-y-4">
             <h2 className="text-base font-semibold text-foreground">Product organization</h2>
             <div className="space-y-2">

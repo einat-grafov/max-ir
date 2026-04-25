@@ -26,7 +26,6 @@ const CreateProduct = () => {
       specifications: (data.specifications.length > 0 ? data.specifications : []) as unknown as Json,
       variants: (data.variants.length > 0 ? data.variants : []) as unknown as Json,
       pdf_url: pdfUrl,
-      stripe_price_id: data.stripePriceId || null,
     });
     if (error) throw error;
     toast.success("Product created successfully");

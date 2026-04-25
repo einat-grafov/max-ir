@@ -45,7 +45,6 @@ const EditProduct = () => {
         specifications: (data.specifications.length > 0 ? data.specifications : []) as unknown as Json,
         variants: (data.variants.length > 0 ? data.variants : []) as unknown as Json,
         pdf_url: pdfUrl,
-        stripe_price_id: data.stripePriceId || null,
       })
       .eq("id", id!);
     if (error) throw error;
