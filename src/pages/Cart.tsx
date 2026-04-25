@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
@@ -8,7 +7,6 @@ import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft, Loader2, Truck } from "lu
 import { toast } from "sonner";
 import { COUNTRIES } from "@/lib/countries";
 import { useShippingRates, type ShippingRate } from "@/hooks/useShippingRates";
-import { supabase } from "@/integrations/supabase/client";
 import { StripeEmbeddedCheckoutInline } from "@/components/StripeEmbeddedCheckout";
 
 const Cart = () => {
@@ -27,26 +25,6 @@ const Cart = () => {
   const [selectedRate, setSelectedRate] = useState<ShippingRate | null>(null);
 
   const { rates, loading: ratesLoading, error: ratesError, fetchRates } = useShippingRates();
-
-  // Look up Stripe price IDs for the products in the cart
-  const productIds = useMemo(() => Array.from(new Set(items.map((i) => i.productId))), [items]);
-  const { data: priceMap } = useQuery({
-    queryKey: ["cart-stripe-prices", productIds],
-    enabled: productIds.length > 0,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("products")
-        .select("id, stripe_price_id")
-        .in("id", productIds);
-      if (error) throw error;
-      const map: Record<string, string | null> = {};
-      for (const row of data ?? []) {
-        map[row.id as string] = (row as { stripe_price_id: string | null }).stripe_price_id;
-      }
-      return map;
-    },
-  });
-
 
   const handleFetchRates = () => {
     if (!shipPostal) {
@@ -77,11 +55,6 @@ const Cart = () => {
     }
     if (!isValidEmail) {
       toast.error("Please enter a valid email address");
-      return;
-    }
-    const missing = items.find((i) => !priceMap?.[i.productId]);
-    if (missing) {
-      toast.error(`"${missing.productName}" is not available for online checkout. Please contact us for a quote.`);
       return;
     }
     setShowCheckout(true);
