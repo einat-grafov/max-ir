@@ -7,13 +7,7 @@ const getEnv = (key: string): string => {
   return value;
 };
 
-export type StripeEnv = "sandbox" | "live";
-
-export function getConnectionApiKey(_env: StripeEnv): string {
-  return getEnv("STRIPE_SECRET_KEY");
-}
-
-export function createStripeClient(_env: StripeEnv): Stripe {
+export function createStripeClient(): Stripe {
   return new Stripe(getEnv("STRIPE_SECRET_KEY"), {
     apiVersion: "2025-03-31.basil",
     httpClient: Stripe.createFetchHttpClient(),
@@ -22,13 +16,10 @@ export function createStripeClient(_env: StripeEnv): Stripe {
 
 export async function verifyWebhook(
   req: Request,
-  env: StripeEnv,
 ): Promise<{ type: string; data: { object: any } }> {
   const signature = req.headers.get("stripe-signature");
   const body = await req.text();
-  const secret = env === "sandbox"
-    ? getEnv("PAYMENTS_SANDBOX_WEBHOOK_SECRET")
-    : getEnv("PAYMENTS_LIVE_WEBHOOK_SECRET");
+  const secret = getEnv("STRIPE_WEBHOOK_SECRET");
 
   if (!signature || !body) throw new Error("Missing signature or body");
 

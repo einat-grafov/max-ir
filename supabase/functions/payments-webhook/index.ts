@@ -1,5 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { type StripeEnv, createStripeClient, verifyWebhook } from "../_shared/stripe.ts";
+import { createStripeClient, verifyWebhook } from "../_shared/stripe.ts";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let _supabase: any = null;
@@ -14,20 +14,19 @@ function getSupabase() {
 }
 
 interface CartLineMeta {
-  id: string; // productId
-  n: string;  // productName
-  v?: string; // variantName
-  s?: string; // sku
-  p: number;  // unit price
-  q: number;  // quantity
+  id: string;  // productId
+  n: string;   // productName
+  v?: string;  // variantName
+  s?: string;  // sku
+  q: number;   // quantity (for stock decrement only)
 }
 
 async function handleCheckoutCompleted(session: any) {
   const supabase = getSupabase();
   const md = session.metadata || {};
+  const stripe = createStripeClient();
 
-  // ---------------- IDEMPOTENCY ----------------
-  // If we've already inserted an order for this session, do nothing.
+  // Idempotency: skip if order already exists for this session
   const { data: existing } = await supabase
     .from("orders")
     .select("id")
@@ -45,6 +44,12 @@ async function handleCheckoutCompleted(session: any) {
     console.error("Failed to parse cart_items metadata", e);
   }
 
+  // Authoritative line items from Stripe
+  const stripeLineItems = await stripe.checkout.sessions.listLineItems(session.id, {
+    limit: 100,
+    expand: ["data.price.product"],
+  });
+
   const customerEmail =
     session.customer_details?.email || session.customer_email || null;
   const customerName =
@@ -58,7 +63,6 @@ async function handleCheckoutCompleted(session: any) {
     ? `${md.shipping_carrier} — ${md.shipping_service}`
     : null;
 
-  // Try to link to an existing customer by email
   let customerId: string | null = null;
   if (customerEmail) {
     const { data: existingCustomer } = await supabase
@@ -69,8 +73,6 @@ async function handleCheckoutCompleted(session: any) {
     customerId = (existingCustomer?.id as string) ?? null;
   }
 
-  // Insert order — UNIQUE index on stripe_session_id is the safety net for
-  // any race condition where two webhook deliveries arrive in parallel.
   const { data: order, error: orderError } = await supabase
     .from("orders")
     .insert({
@@ -94,7 +96,6 @@ async function handleCheckoutCompleted(session: any) {
     .single();
 
   if (orderError || !order) {
-    // 23505 = unique violation → another delivery already inserted this order
     if ((orderError as any)?.code === "23505") {
       console.log(`Race-protected duplicate for session ${session.id}, skipping.`);
       return;
@@ -103,46 +104,59 @@ async function handleCheckoutCompleted(session: any) {
     return;
   }
 
-  // Insert order items + decrement stock
-  if (cartItems.length > 0) {
-    const orderItemsPayload = cartItems.map((c) => ({
+  // Build order_items from Stripe (authoritative prices) + cart metadata for product mapping
+  const cartByPriceId = new Map<string, CartLineMeta>();
+  // Best-effort mapping: pair each Stripe line by index with cart metadata
+  // (Stripe preserves line_item order from session creation).
+  const orderItemsPayload = stripeLineItems.data.map((li: any, idx: number) => {
+    const cartMeta = cartItems[idx];
+    const unitPrice = (li.amount_subtotal ?? 0) / 100 / Math.max(1, li.quantity ?? 1);
+    const total = (li.amount_subtotal ?? 0) / 100;
+    const productName = cartMeta
+      ? (cartMeta.v && cartMeta.v !== cartMeta.n ? `${cartMeta.n} — ${cartMeta.v}` : cartMeta.n)
+      : (li.description || "Product");
+    if (cartMeta && li.price?.id) cartByPriceId.set(li.price.id, cartMeta);
+    return {
       order_id: order.id,
-      product_id: c.id,
-      product_name: c.v && c.v !== c.n ? `${c.n} — ${c.v}` : c.n,
-      price: c.p,
-      quantity: c.q,
-      total: c.p * c.q,
-    }));
+      product_id: cartMeta?.id ?? null,
+      product_name: productName,
+      price: unitPrice,
+      quantity: li.quantity ?? 1,
+      total,
+    };
+  });
+
+  if (orderItemsPayload.length > 0) {
     const { error: itemsError } = await supabase.from("order_items").insert(orderItemsPayload);
     if (itemsError) console.error("Failed to insert order items", itemsError);
+  }
 
-    // Decrement stock per product (sum quantities by product)
-    const stockDeltas = new Map<string, number>();
-    for (const c of cartItems) {
-      stockDeltas.set(c.id, (stockDeltas.get(c.id) ?? 0) + c.q);
-    }
-    for (const [productId, qty] of stockDeltas.entries()) {
-      const { data: product } = await supabase
-        .from("products")
-        .select("stock")
-        .eq("id", productId)
-        .maybeSingle();
-      if (product) {
-        const newStock = Math.max(0, ((product.stock as number) ?? 0) - qty);
-        await supabase.from("products").update({ stock: newStock }).eq("id", productId);
-      }
+  // Decrement stock per product (sum quantities)
+  const stockDeltas = new Map<string, number>();
+  for (const c of cartItems) {
+    if (!c.id) continue;
+    stockDeltas.set(c.id, (stockDeltas.get(c.id) ?? 0) + c.q);
+  }
+  for (const [productId, qty] of stockDeltas.entries()) {
+    const { data: product } = await supabase
+      .from("products")
+      .select("stock")
+      .eq("id", productId)
+      .maybeSingle();
+    if (product) {
+      const newStock = Math.max(0, ((product.stock as number) ?? 0) - qty);
+      await supabase.from("products").update({ stock: newStock }).eq("id", productId);
     }
   }
 
-  const itemsSummary = cartItems
-    .map((c) => `${c.v && c.v !== c.n ? `${c.n} — ${c.v}` : c.n} × ${c.q}`)
+  const itemsSummary = orderItemsPayload
+    .map((c: any) => `${c.product_name} × ${c.quantity}`)
     .join("\n");
   const totalFmt = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: (session.currency || "usd").toUpperCase(),
   }).format(totalAmount);
 
-  // Send customer confirmation email
   if (customerEmail) {
     try {
       await supabase.functions.invoke("send-transactional-email", {
@@ -162,7 +176,6 @@ async function handleCheckoutCompleted(session: any) {
     }
   }
 
-  // Notify admin
   try {
     const { data: notifSettings } = await supabase
       .from("notification_settings")
@@ -197,10 +210,9 @@ async function handleAsyncPaymentFailed(session: any) {
     .eq("stripe_session_id", session.id);
 }
 
-async function handleChargeRefunded(env: StripeEnv, charge: any) {
+async function handleChargeRefunded(charge: any) {
   const supabase = getSupabase();
-  // Resolve the checkout session for this PaymentIntent so we can find the order.
-  const stripe = createStripeClient(env);
+  const stripe = createStripeClient();
   const piId: string | undefined = charge.payment_intent;
   if (!piId) return;
   const sessions = await stripe.checkout.sessions.list({ payment_intent: piId, limit: 1 });
@@ -216,9 +228,9 @@ async function handleChargeRefunded(env: StripeEnv, charge: any) {
     .eq("stripe_session_id", sessionId);
 }
 
-async function handleDisputeCreated(env: StripeEnv, dispute: any) {
+async function handleDisputeCreated(dispute: any) {
   const supabase = getSupabase();
-  const stripe = createStripeClient(env);
+  const stripe = createStripeClient();
   const chargeId: string | undefined = dispute.charge;
   if (!chargeId) return;
   const charge = await stripe.charges.retrieve(chargeId);
@@ -236,18 +248,8 @@ async function handleDisputeCreated(env: StripeEnv, dispute: any) {
 Deno.serve(async (req) => {
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
 
-  const rawEnv = new URL(req.url).searchParams.get("env");
-  if (rawEnv !== "sandbox" && rawEnv !== "live") {
-    console.error("Webhook received with invalid env:", rawEnv);
-    return new Response(JSON.stringify({ received: true, ignored: "invalid env" }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-  const env: StripeEnv = rawEnv;
-
   try {
-    const event = await verifyWebhook(req, env);
+    const event = await verifyWebhook(req);
     switch (event.type) {
       case "checkout.session.completed":
         await handleCheckoutCompleted(event.data.object);
@@ -256,10 +258,10 @@ Deno.serve(async (req) => {
         await handleAsyncPaymentFailed(event.data.object);
         break;
       case "charge.refunded":
-        await handleChargeRefunded(env, event.data.object);
+        await handleChargeRefunded(event.data.object);
         break;
       case "charge.dispute.created":
-        await handleDisputeCreated(env, event.data.object);
+        await handleDisputeCreated(event.data.object);
         break;
       default:
         console.log("Unhandled event:", event.type);

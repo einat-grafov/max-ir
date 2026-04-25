@@ -1,4 +1,4 @@
-import { type StripeEnv, createStripeClient } from "../_shared/stripe.ts";
+import { createStripeClient } from "../_shared/stripe.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,24 +17,18 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return json(405, { error: "Method not allowed" });
 
   try {
-    const { sessionId, environment } = (await req.json()) as {
-      sessionId?: string;
-      environment?: StripeEnv;
-    };
+    const { sessionId } = (await req.json()) as { sessionId?: string };
 
     if (!sessionId || !/^cs_(test|live)_[A-Za-z0-9]+$/.test(sessionId)) {
       return json(400, { error: "Invalid sessionId" });
     }
-    if (environment !== "sandbox" && environment !== "live") {
-      return json(400, { error: "Invalid environment" });
-    }
 
-    const stripe = createStripeClient(environment);
+    const stripe = createStripeClient();
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
     return json(200, {
-      paymentStatus: session.payment_status, // "paid" | "unpaid" | "no_payment_required"
-      status: session.status, // "open" | "complete" | "expired"
+      paymentStatus: session.payment_status,
+      status: session.status,
       amountTotal: session.amount_total,
       currency: session.currency,
       customerEmail: session.customer_details?.email || session.customer_email || null,

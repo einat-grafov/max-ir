@@ -1,12 +1,12 @@
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
-import { getStripe, getStripeEnvironment } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { supabase } from "@/integrations/supabase/client";
 import type { CartItem } from "@/contexts/CartContext";
 import type { ShippingRate } from "@/hooks/useShippingRates";
 import { useMemo } from "react";
 
 interface Props {
-  items: (CartItem & { stripePriceId: string })[];
+  items: CartItem[];
   shippingRate: ShippingRate;
   shippingAddress: {
     postalCode: string;
@@ -29,7 +29,6 @@ export function StripeEmbeddedCheckoutInline({ items, shippingRate, shippingAddr
             shippingAddress,
             customerEmail,
             returnUrl,
-            environment: getStripeEnvironment(),
           },
         });
         if (error || !data?.clientSecret) {
@@ -38,7 +37,6 @@ export function StripeEmbeddedCheckoutInline({ items, shippingRate, shippingAddr
         return data.clientSecret;
       },
     }),
-    // Re-create only when checkout inputs actually change
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(items), JSON.stringify(shippingRate), JSON.stringify(shippingAddress), customerEmail, returnUrl],
   );

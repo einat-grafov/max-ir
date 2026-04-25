@@ -1,5 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { type StripeEnv, createStripeClient } from "../_shared/stripe.ts";
+import { createStripeClient } from "../_shared/stripe.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,7 +12,6 @@ interface CartItem {
   productName: string;
   variantName?: string;
   sku?: string;
-  stripePriceId: string;
   price: number;
   quantity: number;
 }
@@ -38,7 +37,6 @@ interface RequestBody {
   shippingAddress: ShippingAddress;
   customerEmail?: string;
   returnUrl: string;
-  environment: StripeEnv;
 }
 
 const json = (status: number, body: unknown) =>
@@ -48,6 +46,7 @@ const json = (status: number, body: unknown) =>
   });
 
 const isEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+const PRICE_ID_RE = /^price_[A-Za-z0-9]+$/;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -63,36 +62,34 @@ Deno.serve(async (req) => {
       return json(400, { error: "A shipping rate is required" });
     }
     if (!body.returnUrl) return json(400, { error: "returnUrl is required" });
-    if (body.environment !== "sandbox" && body.environment !== "live") {
-      return json(400, { error: "Invalid environment" });
-    }
     if (body.customerEmail && !isEmail(body.customerEmail)) {
       return json(400, { error: "Invalid customerEmail" });
     }
 
-    // --- Pre-checkout stock validation ---------------------------------
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
     const productIds = Array.from(new Set(body.items.map((i) => i.productId)));
-    const { data: stockRows, error: stockErr } = await supabase
+    const { data: rows, error: lookupErr } = await supabase
       .from("products")
-      .select("id, name, stock, variants")
+      .select("id, name, stock, variants, stripe_price_id")
       .in("id", productIds);
-    if (stockErr) {
-      console.error("stock lookup failed", stockErr);
-      return json(500, { error: "Could not verify stock" });
+    if (lookupErr) {
+      console.error("product lookup failed", lookupErr);
+      return json(500, { error: "Could not load products" });
     }
-    const productMap = new Map<string, { name: string; stock: number; variants: any[] }>();
-    for (const r of stockRows ?? []) {
+    const productMap = new Map<string, { name: string; stock: number; variants: any[]; stripePriceId: string | null }>();
+    for (const r of rows ?? []) {
       productMap.set(r.id as string, {
         name: r.name as string,
         stock: (r.stock as number) ?? 0,
         variants: Array.isArray(r.variants) ? (r.variants as any[]) : [],
+        stripePriceId: (r.stripe_price_id as string | null) ?? null,
       });
     }
-    // Sum requested quantity per product+variant across line items
+
+    // Validate stock per product+variant
     const requested = new Map<string, number>();
     for (const i of body.items) {
       const key = `${i.productId}::${i.variantName ?? ""}`;
@@ -106,9 +103,7 @@ Deno.serve(async (req) => {
       let availableStock = row.stock;
       let displayName = row.name;
       if (variantName) {
-        const variant = row.variants.find(
-          (v: any) => (v?.name ?? "") === variantName,
-        );
+        const variant = row.variants.find((v: any) => (v?.name ?? "") === variantName);
         if (variant) {
           availableStock = Number(variant.stock ?? 0);
           displayName = `${row.name} – ${variantName}`;
@@ -122,26 +117,24 @@ Deno.serve(async (req) => {
       }
     }
 
-    const stripe = createStripeClient(body.environment);
-    const currency = (body.shippingRate.currency || "usd").toLowerCase();
-
-    // Resolve human-readable price IDs (lookup_keys) to Stripe price IDs
-    const lookupKeys = Array.from(new Set(body.items.map((i) => i.stripePriceId).filter(Boolean)));
-    if (lookupKeys.length === 0) return json(400, { error: "Items missing stripePriceId" });
-
-    const prices = await stripe.prices.list({ lookup_keys: lookupKeys, limit: 100 });
-    const priceMap = new Map<string, string>();
-    for (const p of prices.data) {
-      if (p.lookup_key) priceMap.set(p.lookup_key, p.id);
+    // Validate Stripe price IDs from DB (not client)
+    for (const pid of productIds) {
+      const row = productMap.get(pid);
+      if (!row) return json(400, { error: `Product ${pid} not found` });
+      if (!row.stripePriceId || !PRICE_ID_RE.test(row.stripePriceId)) {
+        return json(400, {
+          error: `Product "${row.name}" is missing a valid Stripe Price ID. Set it in admin → product → Stripe Price ID (must start with "price_").`,
+        });
+      }
     }
 
+    const stripe = createStripeClient();
+    const currency = (body.shippingRate.currency || "usd").toLowerCase();
+
     const lineItems = body.items.map((item) => {
-      const stripePriceId = priceMap.get(item.stripePriceId);
-      if (!stripePriceId) {
-        throw new Error(`Price not found for ${item.stripePriceId}`);
-      }
+      const row = productMap.get(item.productId)!;
       return {
-        price: stripePriceId,
+        price: row.stripePriceId!,
         quantity: Math.max(1, Math.floor(item.quantity)),
       };
     });
@@ -151,9 +144,7 @@ Deno.serve(async (req) => {
       mode: "payment",
       return_url: body.returnUrl,
       line_items: lineItems,
-      // Tax: calculate & collect only — seller handles filing.
       automatic_tax: { enabled: true },
-      // Required for tax calculation in the embedded form.
       billing_address_collection: "required",
       ...(body.customerEmail && { customer_email: body.customerEmail }),
       shipping_options: [
@@ -182,14 +173,13 @@ Deno.serve(async (req) => {
         shipping_country: body.shippingAddress.country,
         ...(body.shippingAddress.city && { shipping_city: body.shippingAddress.city }),
         ...(body.shippingAddress.state && { shipping_state: body.shippingAddress.state }),
-        // Store cart line metadata so the webhook can build order_items + decrement stock
+        // Map back to internal product/variant identity in webhook (no prices trusted from here).
         cart_items: JSON.stringify(
           body.items.map((i) => ({
             id: i.productId,
             n: i.productName,
             v: i.variantName,
             s: i.sku,
-            p: i.price,
             q: i.quantity,
           })),
         ),
