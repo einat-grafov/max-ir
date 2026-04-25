@@ -1,61 +1,73 @@
-# Fix Stripe Integration (Self-Managed) - Full Plan
+# תכנית: אינטגרציית Stripe מחדש — Price ID per Variant
 
-## 1. Simplify environment model
-- `supabase/functions/_shared/stripe.ts`: remove `StripeEnv` type and per-env switching. Single client using `STRIPE_SECRET_KEY`. Single `STRIPE_WEBHOOK_SECRET` for `verifyWebhook`.
-- `supabase/functions/payments-webhook/index.ts`: remove `?env=...` URL parsing.
-- `supabase/functions/create-checkout/index.ts`: drop `environment` from request body.
-- `src/components/StripeEmbeddedCheckout.tsx`: stop sending `environment`.
-- `src/lib/stripe.ts`: keep `getStripe()`, drop `getStripeEnvironment` exports usage.
+## עקרונות
+- **תמחור**: Stripe Price ID לכל variant (לא ברמת מוצר, לא price_data דינמי)
+- **מס**: Stripe Tax אוטומטי (כבר מוגדר בדשבורד), `tax_behavior: "exclusive"`
+- **Webhooks**: אין. הזמנות מנוהלות בדשבורד Stripe בלבד
+- **מקור אמת למחיר**: Stripe (ה-Price ID נשמר ב-DB, המחיר עצמו מגיע מ-Stripe)
 
-## 2. Fix create-checkout (server-trusted prices)
-- Read `stripe_price_id` directly from `products` table by `productId` (already querying for stock).
-- Validate format `^price_[A-Za-z0-9]+$`. Return 400 with clear message if missing/invalid.
-- Build `line_items` with the DB price IDs - remove `stripe.prices.list({ lookup_keys })`.
-- Keep stock validation. Keep `automatic_tax: { enabled: true }` and `billing_address_collection: 'required'`.
+---
 
-## 3. DB migration - unique index
-```sql
-CREATE UNIQUE INDEX IF NOT EXISTS idx_orders_stripe_session_id
-  ON public.orders(stripe_session_id)
-  WHERE stripe_session_id IS NOT NULL;
-```
+## 1. `src/components/admin/ProductForm.tsx`
+- **להסיר** את שדה `Stripe Price ID` ברמת המוצר.
+- **להוסיף** עמודת `Stripe Price ID` בתוך כל שורת variant (ליד name/price/stock/sku).
+- ולידציה per variant: ריק או `^price_[A-Za-z0-9]+$`. שגיאה ברורה אם פורמט לא תקין.
+- Helper text: "Stripe Price ID (price_xxx). Stripe Dashboard → Products → בחרי מוצר → Pricing → Price ID."
 
-## 4. Fix payments-webhook (trusted line_items)
-- Use single `STRIPE_WEBHOOK_SECRET`.
-- After `checkout.session.completed`, call `stripe.checkout.sessions.listLineItems(session.id, { expand: ['data.price.product'] })` to get authoritative prices/quantities.
-- Build `order_items` from real line_items. Use metadata only to map back to internal `product_id`/variant.
-- Keep idempotency via `stripe_session_id` lookup + unique index race protection.
+## 2. `src/pages/admin/CreateProduct.tsx` + `EditProduct.tsx`
+- להסיר `stripe_price_id: data.stripePriceId` מה-insert/update (חלק מ-`variants` JSON).
+- להסיר `stripePriceId` מה-`initialData` ב-EditProduct.
+- ב-`variants`: לכלול `stripe_price_id` בכל אובייקט variant.
 
-## 5. ProductForm validation
-- `src/components/admin/ProductForm.tsx`: validate `stripePriceId` matches `/^price_[A-Za-z0-9]+$/` on save (allow empty).
-- Add helper text under the field: "Stripe Price ID (price_xxx). Find it in Stripe Dashboard -> Products -> select product -> Price ID. Do not paste the Product ID (prod_xxx)."
-- Data cleanup via insert tool: `UPDATE products SET stripe_price_id = NULL WHERE stripe_price_id NOT LIKE 'price_%';`
+## 3. מיגרציית DB
+- `ALTER TABLE products DROP COLUMN stripe_price_id;` — לא בשימוש יותר.
+- למחוק את המיגרציה הריקה הקיימת של `idx_orders_stripe_session_id` (לא רלוונטי בלי webhook). לחילופין: לתת לה להישאר אם כבר רצה — אבל לא להוסיף את ה-index.
 
-## 6. Secret management
-- After deploying webhook, give user the URL: `https://xfgxbrvqjbapmoijeshq.supabase.co/functions/v1/payments-webhook`.
-- User registers endpoint in Stripe Dashboard with events: `checkout.session.completed`, `checkout.session.async_payment_failed`, `charge.refunded`, `charge.dispute.created`.
-- Use `add_secret` tool to request `STRIPE_WEBHOOK_SECRET` (signing secret from Stripe).
+## 4. `supabase/functions/create-checkout/index.ts` — שכתוב
+- לקרוא `variants` מ-`products` (במקום `stripe_price_id` ברמת מוצר).
+- לכל פריט בעגלה: למצוא את ה-variant המתאים לפי `variantName` ולקחת את ה-`stripe_price_id` שלו.
+- ולידציה:
+  - אם variant חסר Price ID → 400: "Variant 'X' is missing Stripe Price ID. Add it in admin → product → variants."
+  - פורמט: `^price_[A-Za-z0-9]+$`.
+- לבנות `line_items` עם `price: variant.stripe_price_id` + `quantity`.
+- להשאיר: `automatic_tax: { enabled: true }`, `billing_address_collection: 'required'`, shipping options, metadata, stock validation.
 
-## 7. Stripe Tax (user actions in Dashboard)
-- Enable Stripe Tax.
-- Set Tax origin address.
-- Default tax code already implicit; optional: add `tax_code` field per product later.
-- Code already sets `automatic_tax: { enabled: true }` so this will activate once Dashboard is configured.
+## 5. ניקוי קוד מיותר
+- **למחוק**: `supabase/functions/payments-webhook/index.ts` + קריאה ל-`delete_edge_functions` להסרה מ-Stripe deploys.
+- **לערוך** `supabase/functions/_shared/stripe.ts`: למחוק את `verifyWebhook` ואת ייבוא `encode`. להשאיר רק `createStripeClient`.
+- **לא** למחוק `verify-checkout-session` (דף ההצלחה משתמש בו).
 
-## 8. Frontend cleanup
-- `src/contexts/CartContext.tsx` / `StripeEmbeddedCheckout.tsx`: items can stop including `stripePriceId` (server reads from DB). Keep types but ignore on backend.
+## 6. ניקוי frontend
+- `CartContext.tsx`: בלי שינוי (לא מכיל `stripePriceId`).
+- `StripeEmbeddedCheckout.tsx`: בלי שינוי.
+- `Cart.tsx`: לוודא שאין ולידציה ישנה של Price ID ברמת מוצר; אם יש — להסיר.
 
-## Files changed
-- supabase/functions/_shared/stripe.ts
-- supabase/functions/create-checkout/index.ts
-- supabase/functions/payments-webhook/index.ts
-- src/lib/stripe.ts
-- src/components/StripeEmbeddedCheckout.tsx
-- src/components/admin/ProductForm.tsx
-- new migration for unique index
-- data cleanup UPDATE on products
+## 7. הוראות חד-פעמיות בדשבורד Stripe (אחרי הפריסה)
+1. **Products** → Create product (למשל "ISMIR Waveguide Sensor")
+2. תחת המוצר: ליצור 3 Prices, אחד לכל וריאנט (עם המחיר המתאים)
+3. על המוצר: **Tax code = General - Tangible Goods** (`txcd_99999999`)
+4. על כל Price: **Tax behavior = Exclusive**
+5. להעתיק 3 Price IDs → להדביק באדמין שלך, כל אחד בוריאנט המתאים
 
-## Required from user
-- Switching `STRIPE_SECRET_KEY` between test/live as desired (already managed).
-- After deploy: register webhook in Stripe + provide signing secret.
-- Configure Stripe Tax origin in Dashboard.
+## 8. בדיקה (Test Mode)
+- מוצר עם 3 Price IDs באדמין → הוספה לעגלה → checkout
+- לוודא: מחיר נכון, מס מתווסף ללקוחות בארה״ב (לפי nexus), תשלום מצליח
+- בדשבורד Stripe: עסקה מופיעה עם שם המוצר/וריאנט נכון
+
+---
+
+## קבצים שישתנו
+- `src/components/admin/ProductForm.tsx`
+- `src/pages/admin/CreateProduct.tsx`
+- `src/pages/admin/EditProduct.tsx`
+- `supabase/functions/create-checkout/index.ts`
+- `supabase/functions/_shared/stripe.ts`
+- מיגרציה: `DROP COLUMN products.stripe_price_id`
+
+## קבצים/פונקציות שיימחקו
+- `supabase/functions/payments-webhook/` (כולל `delete_edge_functions(["payments-webhook"])`)
+
+## מה צריך ממך אחרי היישום
+1. ליצור מוצר + 3 Prices ב-Stripe Dashboard
+2. להדביק 3 Price IDs בכל variant באדמין
+3. לבדוק checkout ב-Test Mode

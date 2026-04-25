@@ -73,41 +73,50 @@ Deno.serve(async (req) => {
     const productIds = Array.from(new Set(body.items.map((i) => i.productId)));
     const { data: rows, error: lookupErr } = await supabase
       .from("products")
-      .select("id, name, stock, variants, stripe_price_id")
+      .select("id, name, stock, variants")
       .in("id", productIds);
     if (lookupErr) {
       console.error("product lookup failed", lookupErr);
       return json(500, { error: "Could not load products" });
     }
-    const productMap = new Map<string, { name: string; stock: number; variants: any[]; stripePriceId: string | null }>();
+    const productMap = new Map<string, { name: string; stock: number; variants: any[] }>();
     for (const r of rows ?? []) {
       productMap.set(r.id as string, {
         name: r.name as string,
         stock: (r.stock as number) ?? 0,
         variants: Array.isArray(r.variants) ? (r.variants as any[]) : [],
-        stripePriceId: (r.stripe_price_id as string | null) ?? null,
       });
     }
 
-    // Validate stock per product+variant
-    const requested = new Map<string, number>();
+    // Build line items with stock + price-id validation per (product, variant)
+    const lineItems: { price: string; quantity: number }[] = [];
+    const aggregated = new Map<string, number>();
     for (const i of body.items) {
       const key = `${i.productId}::${i.variantName ?? ""}`;
-      requested.set(key, (requested.get(key) ?? 0) + i.quantity);
+      aggregated.set(key, (aggregated.get(key) ?? 0) + i.quantity);
     }
-    for (const [key, qty] of requested.entries()) {
+
+    for (const [key, qty] of aggregated.entries()) {
       const [pid, variantName] = key.split("::");
       const row = productMap.get(pid);
       if (!row) return json(400, { error: `Product ${pid} not found` });
 
       let availableStock = row.stock;
       let displayName = row.name;
+      let priceId: string | null = null;
+
       if (variantName) {
         const variant = row.variants.find((v: any) => (v?.name ?? "") === variantName);
-        if (variant) {
-          availableStock = Number(variant.stock ?? 0);
-          displayName = `${row.name} – ${variantName}`;
+        if (!variant) {
+          return json(400, { error: `Variant "${variantName}" not found on "${row.name}"` });
         }
+        availableStock = Number(variant.stock ?? 0);
+        displayName = `${row.name} – ${variantName}`;
+        priceId = (variant.stripe_price_id as string | null) ?? null;
+      } else {
+        // No variant in cart → take first variant's price id (single-variant products)
+        const v = row.variants[0];
+        priceId = (v?.stripe_price_id as string | null) ?? null;
       }
 
       if (availableStock < qty) {
@@ -115,29 +124,18 @@ Deno.serve(async (req) => {
           error: `Only ${availableStock} unit${availableStock === 1 ? "" : "s"} of "${displayName}" available`,
         });
       }
-    }
 
-    // Validate Stripe price IDs from DB (not client)
-    for (const pid of productIds) {
-      const row = productMap.get(pid);
-      if (!row) return json(400, { error: `Product ${pid} not found` });
-      if (!row.stripePriceId || !PRICE_ID_RE.test(row.stripePriceId)) {
+      if (!priceId || !PRICE_ID_RE.test(priceId)) {
         return json(400, {
-          error: `Product "${row.name}" is missing a valid Stripe Price ID. Set it in admin → product → Stripe Price ID (must start with "price_").`,
+          error: `"${displayName}" is missing a valid Stripe Price ID. Set it in admin → product → variants (must start with "price_").`,
         });
       }
+
+      lineItems.push({ price: priceId, quantity: Math.max(1, Math.floor(qty)) });
     }
 
     const stripe = createStripeClient();
     const currency = (body.shippingRate.currency || "usd").toLowerCase();
-
-    const lineItems = body.items.map((item) => {
-      const row = productMap.get(item.productId)!;
-      return {
-        price: row.stripePriceId!,
-        quantity: Math.max(1, Math.floor(item.quantity)),
-      };
-    });
 
     const session = await stripe.checkout.sessions.create({
       ui_mode: "embedded",
@@ -173,7 +171,6 @@ Deno.serve(async (req) => {
         shipping_country: body.shippingAddress.country,
         ...(body.shippingAddress.city && { shipping_city: body.shippingAddress.city }),
         ...(body.shippingAddress.state && { shipping_state: body.shippingAddress.state }),
-        // Map back to internal product/variant identity in webhook (no prices trusted from here).
         cart_items: JSON.stringify(
           body.items.map((i) => ({
             id: i.productId,
