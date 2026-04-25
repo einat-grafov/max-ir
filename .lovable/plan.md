@@ -1,67 +1,61 @@
+# Fix Stripe Integration (Self-Managed) - Full Plan
 
+## 1. Simplify environment model
+- `supabase/functions/_shared/stripe.ts`: remove `StripeEnv` type and per-env switching. Single client using `STRIPE_SECRET_KEY`. Single `STRIPE_WEBHOOK_SECRET` for `verifyWebhook`.
+- `supabase/functions/payments-webhook/index.ts`: remove `?env=...` URL parsing.
+- `supabase/functions/create-checkout/index.ts`: drop `environment` from request body.
+- `src/components/StripeEmbeddedCheckout.tsx`: stop sending `environment`.
+- `src/lib/stripe.ts`: keep `getStripe()`, drop `getStripeEnvironment` exports usage.
 
-## Plan: Add Shipping Rates to Both Purchase Flows
+## 2. Fix create-checkout (server-trusted prices)
+- Read `stripe_price_id` directly from `products` table by `productId` (already querying for stock).
+- Validate format `^price_[A-Za-z0-9]+$`. Return 400 with clear message if missing/invalid.
+- Build `line_items` with the DB price IDs - remove `stripe.prices.list({ lookup_keys })`.
+- Keep stock validation. Keep `automatic_tax: { enabled: true }` and `billing_address_collection: 'required'`.
 
-### Overview
-Integrate the existing `shipping-rates` edge function into two flows:
-1. **Customer checkout** (Cart page) — add a shipping address form and rate selection step before the "Check out" button
-2. **Admin manual order** (CreateOrder page) — add a shipping calculator to the Payment card so admins can fetch and apply a shipping rate
-
----
-
-### Flow 1: Customer Checkout (Cart page)
-
-**What changes:**
-- Add a collapsible "Shipping Address" form above the Order Summary disclaimers, with fields: Country (dropdown), Postal Code, City, State
-- Add a "Calculate Shipping" button that calls the `shipping-rates` edge function
-- Display returned rates as selectable radio options (carrier, service, price, transit days)
-- Update the Order Summary to show the selected shipping cost instead of "Calculated later"
-- Update the total to include shipping
-- The "Check out" button remains disabled until a shipping rate is selected (in addition to existing checkbox requirements)
-
-**Origin address:** Hardcoded as the company's warehouse address (will use a sensible default like Israel origin or configurable)
-
-**Files modified:**
-- `src/pages/Cart.tsx` — add address state, shipping rates fetch, rate selection UI, updated totals
-
----
-
-### Flow 2: Admin Order Creation (CreateOrder page)
-
-**What changes:**
-- Make the existing "Add shipping or delivery" text in the Payment card clickable to open a shipping modal/dialog
-- The modal contains: destination address fields (pre-filled from selected customer if available), package weight, a "Fetch Rates" button
-- Display returned rates as selectable options
-- On selection, the shipping cost is added to the order totals (subtotal + shipping + discount + tax = total)
-- Add `shipping_cost` and `shipping_method` to the order insert payload (stored in the existing `notes` field or as new columns)
-
-**Database change:**
-- Add `shipping_cost` (numeric, default 0) and `shipping_method` (text, nullable) columns to the `orders` table via migration
-
-**Files modified:**
-- `src/pages/admin/CreateOrder.tsx` — add shipping modal, state, rate fetching, totals update
-- New component `src/components/admin/ShippingRateModal.tsx` — reusable modal for fetching and selecting rates
-
----
-
-### Technical Details
-
-**Shared shipping rate fetcher:**
-- Create a shared hook `src/hooks/useShippingRates.ts` that wraps the `supabase.functions.invoke("shipping-rates", ...)` call with loading/error/results state
-- Used by both Cart page and admin ShippingRateModal
-
-**Database migration:**
+## 3. DB migration - unique index
 ```sql
-ALTER TABLE public.orders ADD COLUMN shipping_cost numeric NOT NULL DEFAULT 0;
-ALTER TABLE public.orders ADD COLUMN shipping_method text;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_orders_stripe_session_id
+  ON public.orders(stripe_session_id)
+  WHERE stripe_session_id IS NOT NULL;
 ```
 
-**Origin address:** Default to a configured origin (e.g., company HQ). For the admin flow, allow overriding origin. For customer flow, use hardcoded company origin.
+## 4. Fix payments-webhook (trusted line_items)
+- Use single `STRIPE_WEBHOOK_SECRET`.
+- After `checkout.session.completed`, call `stripe.checkout.sessions.listLineItems(session.id, { expand: ['data.price.product'] })` to get authoritative prices/quantities.
+- Build `order_items` from real line_items. Use metadata only to map back to internal `product_id`/variant.
+- Keep idempotency via `stripe_session_id` lookup + unique index race protection.
 
-**Order of implementation:**
-1. Database migration (add shipping columns)
-2. Create `useShippingRates` hook
-3. Create `ShippingRateModal` component
-4. Update `CreateOrder.tsx` (admin flow)
-5. Update `Cart.tsx` (customer checkout flow)
+## 5. ProductForm validation
+- `src/components/admin/ProductForm.tsx`: validate `stripePriceId` matches `/^price_[A-Za-z0-9]+$/` on save (allow empty).
+- Add helper text under the field: "Stripe Price ID (price_xxx). Find it in Stripe Dashboard -> Products -> select product -> Price ID. Do not paste the Product ID (prod_xxx)."
+- Data cleanup via insert tool: `UPDATE products SET stripe_price_id = NULL WHERE stripe_price_id NOT LIKE 'price_%';`
 
+## 6. Secret management
+- After deploying webhook, give user the URL: `https://xfgxbrvqjbapmoijeshq.supabase.co/functions/v1/payments-webhook`.
+- User registers endpoint in Stripe Dashboard with events: `checkout.session.completed`, `checkout.session.async_payment_failed`, `charge.refunded`, `charge.dispute.created`.
+- Use `add_secret` tool to request `STRIPE_WEBHOOK_SECRET` (signing secret from Stripe).
+
+## 7. Stripe Tax (user actions in Dashboard)
+- Enable Stripe Tax.
+- Set Tax origin address.
+- Default tax code already implicit; optional: add `tax_code` field per product later.
+- Code already sets `automatic_tax: { enabled: true }` so this will activate once Dashboard is configured.
+
+## 8. Frontend cleanup
+- `src/contexts/CartContext.tsx` / `StripeEmbeddedCheckout.tsx`: items can stop including `stripePriceId` (server reads from DB). Keep types but ignore on backend.
+
+## Files changed
+- supabase/functions/_shared/stripe.ts
+- supabase/functions/create-checkout/index.ts
+- supabase/functions/payments-webhook/index.ts
+- src/lib/stripe.ts
+- src/components/StripeEmbeddedCheckout.tsx
+- src/components/admin/ProductForm.tsx
+- new migration for unique index
+- data cleanup UPDATE on products
+
+## Required from user
+- Switching `STRIPE_SECRET_KEY` between test/live as desired (already managed).
+- After deploy: register webhook in Stripe + provide signing secret.
+- Configure Stripe Tax origin in Dashboard.
