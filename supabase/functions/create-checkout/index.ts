@@ -136,25 +136,6 @@ Deno.serve(async (req) => {
 
     const stripe = createStripeClient();
     const currency = (body.shippingRate.currency || "usd").toLowerCase();
-    const checkoutReference = crypto.randomUUID();
-    const metadata = {
-      checkout_reference: checkoutReference,
-      shipping_carrier: body.shippingRate.carrier,
-      shipping_service: body.shippingRate.service,
-      shipping_postal: body.shippingAddress.postalCode,
-      shipping_country: body.shippingAddress.country,
-      ...(body.shippingAddress.city && { shipping_city: body.shippingAddress.city }),
-      ...(body.shippingAddress.state && { shipping_state: body.shippingAddress.state }),
-      cart_items: JSON.stringify(
-        body.items.map((i) => ({
-          id: i.productId,
-          n: i.productName,
-          v: i.variantName,
-          s: i.sku,
-          q: i.quantity,
-        })),
-      ).slice(0, 500),
-    };
 
     const session = await stripe.checkout.sessions.create({
       ui_mode: "embedded",
@@ -163,8 +144,6 @@ Deno.serve(async (req) => {
       line_items: lineItems,
       automatic_tax: { enabled: true },
       billing_address_collection: "required",
-      client_reference_id: checkoutReference,
-      payment_intent_data: { metadata },
       ...(body.customerEmail && { customer_email: body.customerEmail }),
       shipping_options: [
         {
@@ -185,7 +164,23 @@ Deno.serve(async (req) => {
           },
         },
       ],
-      metadata,
+      metadata: {
+        shipping_carrier: body.shippingRate.carrier,
+        shipping_service: body.shippingRate.service,
+        shipping_postal: body.shippingAddress.postalCode,
+        shipping_country: body.shippingAddress.country,
+        ...(body.shippingAddress.city && { shipping_city: body.shippingAddress.city }),
+        ...(body.shippingAddress.state && { shipping_state: body.shippingAddress.state }),
+        cart_items: JSON.stringify(
+          body.items.map((i) => ({
+            id: i.productId,
+            n: i.productName,
+            v: i.variantName,
+            s: i.sku,
+            q: i.quantity,
+          })),
+        ),
+      },
     });
 
     return json(200, { clientSecret: session.client_secret });
