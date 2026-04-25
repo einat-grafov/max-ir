@@ -5,7 +5,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
-import { getStripeEnvironment } from "@/lib/stripe";
 
 type Status = "loading" | "paid" | "pending" | "failed" | "missing";
 
@@ -21,7 +20,7 @@ const CheckoutSuccess = () => {
     (async () => {
       try {
         const { data, error } = await supabase.functions.invoke("verify-checkout-session", {
-          body: { sessionId, environment: getStripeEnvironment() },
+          body: { sessionId },
         });
         if (cancelled) return;
         if (error || data?.error) {
