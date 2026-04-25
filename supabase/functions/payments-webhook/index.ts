@@ -1,7 +1,8 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { type StripeEnv, createStripeClient, verifyWebhook } from "../_shared/stripe.ts";
 
-let _supabase: ReturnType<typeof createClient> | null = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let _supabase: any = null;
 function getSupabase() {
   if (!_supabase) {
     _supabase = createClient(
