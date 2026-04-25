@@ -65,7 +65,6 @@ export interface ProductFormData {
   existingImageUrl: string | null;
   existingImages: string[];
   existingPdfUrl: string | null;
-  stripePriceId: string;
   specifications: ProductSpecification[];
   variants: ProductVariant[];
 }
@@ -75,6 +74,7 @@ export interface ProductVariant {
   price: string;
   stock: string;
   sku: string;
+  stripePriceId: string;
 }
 
 interface ProductFormProps {
@@ -112,12 +112,11 @@ const ProductForm = ({
   const [status, setStatus] = useState(initialData?.status ?? "active");
   const [ctaAddToCart, setCtaAddToCart] = useState(initialData?.ctaAddToCart ?? true);
   const [ctaRequestQuote, setCtaRequestQuote] = useState(initialData?.ctaRequestQuote ?? true);
-  const [stripePriceId, setStripePriceId] = useState(initialData?.stripePriceId ?? "");
   const [specifications, setSpecifications] = useState<ProductSpecification[]>(
     initialData?.specifications ?? [{ label: "", value: "" }]
   );
   const [variants, setVariants] = useState<ProductVariant[]>(
-    initialData?.variants ?? [{ name: "", price: "", stock: "", sku: "" }]
+    initialData?.variants ?? [{ name: "", price: "", stock: "", sku: "", stripePriceId: "" }]
   );
 
   // Multiple images support
@@ -173,9 +172,12 @@ const ProductForm = ({
 
   const handleSave = async () => {
     if (!canSubmit) return;
-    const trimmedPriceId = stripePriceId.trim();
-    if (trimmedPriceId && !/^price_[A-Za-z0-9]+$/.test(trimmedPriceId)) {
-      toast.error('Stripe Price ID must start with "price_" (not "prod_"). Copy the Price ID from Stripe → Products → your product → Pricing.');
+    // Validate per-variant Stripe Price IDs (allow empty, but if present must be valid)
+    const invalidVariant = variants.find(
+      (v) => v.name.trim() && v.stripePriceId?.trim() && !/^price_[A-Za-z0-9]+$/.test(v.stripePriceId.trim()),
+    );
+    if (invalidVariant) {
+      toast.error(`Variant "${invalidVariant.name}" has an invalid Stripe Price ID. It must start with "price_" (not "prod_").`);
       return;
     }
     setSaving(true);
@@ -216,7 +218,7 @@ const ProductForm = ({
       const primaryImageUrl = allImageUrls.length > 0 ? allImageUrls[0] : null;
 
       await onSubmit(
-        { title, overview, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, ctaAddToCart, ctaRequestQuote, existingImageUrl: null, existingImages: [], existingPdfUrl: null, stripePriceId: stripePriceId.trim(), specifications: specifications.filter(s => s.label.trim() && s.value.trim()), variants: variants.filter(v => v.name.trim()) },
+        { title, overview, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, ctaAddToCart, ctaRequestQuote, existingImageUrl: null, existingImages: [], existingPdfUrl: null, specifications: specifications.filter(s => s.label.trim() && s.value.trim()), variants: variants.filter(v => v.name.trim()) },
         primaryImageUrl,
         allImageUrls,
         finalPdfUrl
