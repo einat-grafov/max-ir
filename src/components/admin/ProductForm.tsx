@@ -451,82 +451,95 @@ const ProductForm = ({
             )}
           </Card>
 
-          <Card className="p-5 space-y-2">
+          <Card className="p-5 space-y-3">
             <Label>Variants</Label>
-            <p className="text-xs text-muted-foreground mb-1">Add product variants with individual pricing and inventory.</p>
-            {variants.length > 1 && (
-              <div className="grid grid-cols-[1fr_100px_100px_80px_32px] gap-3 px-0 text-xs font-medium text-muted-foreground">
-                <span>Name</span>
-                <span>SKU</span>
-                <span>Price</span>
-                <span>Quantity</span>
-                <span />
-              </div>
-            )}
-            {variants.map((variant, index) => (
-              <div key={index} className="grid grid-cols-[1fr_100px_100px_80px_32px] gap-3 items-center">
-                <Input
-                  placeholder="e.g. 10 mL, Red"
-                  value={variant.name}
-                  onChange={(e) => {
-                    const updated = [...variants];
-                    updated[index] = { ...updated[index], name: e.target.value };
-                    setVariants(updated);
-                  }}
-                />
-                <Input
-                  placeholder="SKU"
-                  value={variant.sku || ""}
-                  onChange={(e) => {
-                    const updated = [...variants];
-                    updated[index] = { ...updated[index], sku: e.target.value };
-                    setVariants(updated);
-                  }}
-                />
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">$</span>
-                  <Input
-                    type="number"
-                    placeholder="0.00"
-                    value={variant.price}
-                    onChange={(e) => {
-                      const updated = [...variants];
-                      updated[index] = { ...updated[index], price: e.target.value };
-                      setVariants(updated);
-                    }}
-                    className="pl-6"
-                    min="0"
-                    step="0.01"
-                  />
+            <p className="text-xs text-muted-foreground mb-1">
+              Add product variants with individual pricing, inventory, and Stripe Price ID.
+            </p>
+            {variants.map((variant, index) => {
+              const priceIdInvalid = variant.stripePriceId?.trim() && !/^price_[A-Za-z0-9]+$/.test(variant.stripePriceId.trim());
+              return (
+                <div key={index} className="border border-border rounded-lg p-3 space-y-2 bg-muted/20">
+                  <div className="grid grid-cols-[1fr_100px_100px_80px_32px] gap-3 items-center">
+                    <Input
+                      placeholder="Variant name (e.g. 10 mL, Red)"
+                      value={variant.name}
+                      onChange={(e) => {
+                        const updated = [...variants];
+                        updated[index] = { ...updated[index], name: e.target.value };
+                        setVariants(updated);
+                      }}
+                    />
+                    <Input
+                      placeholder="SKU"
+                      value={variant.sku || ""}
+                      onChange={(e) => {
+                        const updated = [...variants];
+                        updated[index] = { ...updated[index], sku: e.target.value };
+                        setVariants(updated);
+                      }}
+                    />
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">$</span>
+                      <Input
+                        type="number"
+                        placeholder="0.00"
+                        value={variant.price}
+                        onChange={(e) => {
+                          const updated = [...variants];
+                          updated[index] = { ...updated[index], price: e.target.value };
+                          setVariants(updated);
+                        }}
+                        className="pl-6"
+                        min="0"
+                        step="0.01"
+                      />
+                    </div>
+                    <Input
+                      type="number"
+                      placeholder="Qty"
+                      value={variant.stock}
+                      onChange={(e) => {
+                        const updated = [...variants];
+                        updated[index] = { ...updated[index], stock: e.target.value };
+                        setVariants(updated);
+                      }}
+                      min="0"
+                    />
+                    {variants.length > 1 ? (
+                      <button
+                        onClick={() => setVariants(variants.filter((_, i) => i !== index))}
+                        className="text-muted-foreground hover:text-destructive transition-colors justify-self-center"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    ) : <span />}
+                  </div>
+                  <div>
+                    <Input
+                      placeholder="Stripe Price ID (price_...)"
+                      value={variant.stripePriceId || ""}
+                      onChange={(e) => {
+                        const updated = [...variants];
+                        updated[index] = { ...updated[index], stripePriceId: e.target.value };
+                        setVariants(updated);
+                      }}
+                      className={priceIdInvalid ? "border-destructive" : ""}
+                    />
+                    <p className="text-[11px] text-muted-foreground mt-1">
+                      Required for "Add to Cart". In Stripe: Products → select product → Pricing → click the price → copy the API ID. Must start with <code>price_</code>.
+                    </p>
+                  </div>
                 </div>
-                <Input
-                  type="number"
-                  placeholder="0"
-                  value={variant.stock}
-                  onChange={(e) => {
-                    const updated = [...variants];
-                    updated[index] = { ...updated[index], stock: e.target.value };
-                    setVariants(updated);
-                  }}
-                  min="0"
-                />
-                {variants.length > 1 ? (
-                  <button
-                    onClick={() => setVariants(variants.filter((_, i) => i !== index))}
-                    className="text-muted-foreground hover:text-destructive transition-colors justify-self-center"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                ) : <span />}
-              </div>
-            ))}
+              );
+            })}
             <div className="flex justify-end">
               <Button
                 type="button"
                 variant="secondary"
                 size="sm"
                 disabled={!variants[variants.length - 1]?.name.trim()}
-                onClick={() => setVariants([...variants, { name: "", price: "", stock: "", sku: "" }])}
+                onClick={() => setVariants([...variants, { name: "", price: "", stock: "", sku: "", stripePriceId: "" }])}
               >
                 Add another
               </Button>
