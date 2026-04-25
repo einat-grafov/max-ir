@@ -78,30 +78,46 @@ Deno.serve(async (req) => {
     const productIds = Array.from(new Set(body.items.map((i) => i.productId)));
     const { data: stockRows, error: stockErr } = await supabase
       .from("products")
-      .select("id, name, stock")
+      .select("id, name, stock, variants")
       .in("id", productIds);
     if (stockErr) {
       console.error("stock lookup failed", stockErr);
       return json(500, { error: "Could not verify stock" });
     }
-    const stockMap = new Map<string, { name: string; stock: number }>();
+    const productMap = new Map<string, { name: string; stock: number; variants: any[] }>();
     for (const r of stockRows ?? []) {
-      stockMap.set(r.id as string, {
+      productMap.set(r.id as string, {
         name: r.name as string,
         stock: (r.stock as number) ?? 0,
+        variants: Array.isArray(r.variants) ? (r.variants as any[]) : [],
       });
     }
-    // Sum requested quantity per product across line items
+    // Sum requested quantity per product+variant across line items
     const requested = new Map<string, number>();
     for (const i of body.items) {
-      requested.set(i.productId, (requested.get(i.productId) ?? 0) + i.quantity);
+      const key = `${i.productId}::${i.variantName ?? ""}`;
+      requested.set(key, (requested.get(key) ?? 0) + i.quantity);
     }
-    for (const [pid, qty] of requested.entries()) {
-      const row = stockMap.get(pid);
+    for (const [key, qty] of requested.entries()) {
+      const [pid, variantName] = key.split("::");
+      const row = productMap.get(pid);
       if (!row) return json(400, { error: `Product ${pid} not found` });
-      if (row.stock < qty) {
+
+      let availableStock = row.stock;
+      let displayName = row.name;
+      if (variantName) {
+        const variant = row.variants.find(
+          (v: any) => (v?.name ?? "") === variantName,
+        );
+        if (variant) {
+          availableStock = Number(variant.stock ?? 0);
+          displayName = `${row.name} – ${variantName}`;
+        }
+      }
+
+      if (availableStock < qty) {
         return json(409, {
-          error: `Only ${row.stock} unit${row.stock === 1 ? "" : "s"} of "${row.name}" available`,
+          error: `Only ${availableStock} unit${availableStock === 1 ? "" : "s"} of "${displayName}" available`,
         });
       }
     }
