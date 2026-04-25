@@ -19,7 +19,7 @@ interface Props {
 const OrderConfirmationEmail = ({ customerName, orderNumber, total, items }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Order #{orderNumber ?? ''} confirmed — {SITE_NAME}</Preview>
+    <Preview>{`Order #${orderNumber ?? ''} confirmed — ${SITE_NAME}`}</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img src={LOGO_URL} alt={SITE_NAME} width="150" height="26" style={logo} />
