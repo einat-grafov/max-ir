@@ -891,7 +891,6 @@ export type Database = {
           specifications: Json | null
           status: string
           stock: number
-          stripe_price_id: string | null
           tax_exempt: boolean
           updated_at: string
           variants: Json | null
@@ -914,7 +913,6 @@ export type Database = {
           specifications?: Json | null
           status?: string
           stock?: number
-          stripe_price_id?: string | null
           tax_exempt?: boolean
           updated_at?: string
           variants?: Json | null
@@ -937,7 +935,6 @@ export type Database = {
           specifications?: Json | null
           status?: string
           stock?: number
-          stripe_price_id?: string | null
           tax_exempt?: boolean
           updated_at?: string
           variants?: Json | null
