@@ -87,14 +87,7 @@ const Cart = () => {
     setShowCheckout(true);
   };
 
-  const checkoutItems = useMemo(
-    () =>
-      items.map((i) => ({
-        ...i,
-        stripePriceId: priceMap?.[i.productId] ?? "",
-      })),
-    [items, priceMap],
-  );
+  const checkoutItems = useMemo(() => items.map((i) => ({ ...i })), [items]);
 
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("en-US", {

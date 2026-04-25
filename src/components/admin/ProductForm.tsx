@@ -173,6 +173,11 @@ const ProductForm = ({
 
   const handleSave = async () => {
     if (!canSubmit) return;
+    const trimmedPriceId = stripePriceId.trim();
+    if (trimmedPriceId && !/^price_[A-Za-z0-9]+$/.test(trimmedPriceId)) {
+      toast.error('Stripe Price ID must start with "price_" (not "prod_"). Copy the Price ID from Stripe → Products → your product → Pricing.');
+      return;
+    }
     setSaving(true);
     try {
       // Upload any new image files
@@ -665,9 +670,10 @@ const ProductForm = ({
               placeholder="price_..."
               value={stripePriceId}
               onChange={(e) => setStripePriceId(e.target.value)}
+              className={stripePriceId.trim() && !/^price_[A-Za-z0-9]+$/.test(stripePriceId.trim()) ? "border-destructive" : ""}
             />
             <p className="text-xs text-muted-foreground">
-              Required for "Add to Cart" checkout. Paste the Price ID from your Stripe dashboard (starts with <code>price_</code>).
+              Required for "Add to Cart" checkout. In Stripe dashboard go to <strong>Products → select product → Pricing section → click the price → copy the API ID</strong>. It must start with <code>price_</code> (not <code>prod_</code>).
             </p>
           </Card>
 
