@@ -32,6 +32,7 @@ import CreateCustomerModal from "@/components/admin/CreateCustomerModal";
 import CustomerSearchModal from "@/components/admin/CustomerSearchModal";
 import SendInvoiceModal from "@/components/admin/SendInvoiceModal";
 import OrderTimeline from "@/components/admin/OrderTimeline";
+import { COUNTRIES, US_STATES } from "@/lib/countries";
 
 interface OrderProduct {
   id: string;
@@ -41,6 +42,14 @@ interface OrderProduct {
   quantity: number;
   taxExempt?: boolean;
   outOfStock?: boolean;
+}
+
+interface TaxAddress {
+  line1?: string;
+  city?: string;
+  state?: string;
+  postal_code?: string;
+  country: string; // ISO-2
 }
 
 const CreateOrder = () => {
@@ -66,6 +75,14 @@ const CreateOrder = () => {
   const [timelineEvents, setTimelineEvents] = useState<Array<{ id: string; message: string; timestamp: string; attachment?: { name: string; url: string } | null }>>([
     { id: "1", message: "You created this draft order.", timestamp: "Just now" },
   ]);
+
+  const [taxAddress, setTaxAddress] = useState<TaxAddress | null>(null);
+  const [tax, setTaxAmount] = useState(0);
+  const [taxLoading, setTaxLoading] = useState(false);
+  const [taxError, setTaxError] = useState<string | null>(null);
+  const [taxJurisdiction, setTaxJurisdiction] = useState<string | null>(null);
+  const [taxAddressModalOpen, setTaxAddressModalOpen] = useState(false);
+  const [tempTaxAddress, setTempTaxAddress] = useState<TaxAddress>({ country: "US" });
 
   const isSavingRef = useRef(false);
   const hasUnsavedChanges = products.length > 0 || selectedCustomer !== null || notes !== "" || discount !== null;
@@ -100,6 +117,116 @@ const CreateOrder = () => {
       setSelectedCustomer(state.preselectedCustomer);
     }
   }, []);
+
+  // Fetch customer address whenever customer changes
+  useEffect(() => {
+    if (!selectedCustomer) {
+      setTaxAddress(null);
+      setTaxAmount(0);
+      setTaxJurisdiction(null);
+      setTaxError(null);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("customers")
+        .select("address, city, state, postal_code, country")
+        .eq("id", selectedCustomer.id)
+        .maybeSingle();
+      if (cancelled) return;
+      if (data && data.country) {
+        const code =
+          COUNTRIES.find((c) => c.name === data.country)?.code ||
+          (data.country.length === 2 ? data.country.toUpperCase() : "");
+        if (code) {
+          setTaxAddress({
+            line1: data.address || undefined,
+            city: data.city || undefined,
+            state: data.state || undefined,
+            postal_code: data.postal_code || undefined,
+            country: code,
+          });
+          return;
+        }
+      }
+      setTaxAddress(null);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedCustomer?.id]);
+
+  // Debounced tax calculation
+  useEffect(() => {
+    if (!taxAddress || products.length === 0) {
+      setTaxAmount(0);
+      setTaxJurisdiction(null);
+      setTaxError(null);
+      return;
+    }
+
+    const subtotalLocal = products.reduce((s, p) => s + p.price * p.quantity, 0);
+    const discountLocal = discount
+      ? discount.type === "amount"
+        ? discount.value
+        : Math.round(subtotalLocal * (discount.value / 100) * 100) / 100
+      : 0;
+    const factor = subtotalLocal > 0 ? (subtotalLocal - discountLocal) / subtotalLocal : 1;
+
+    const lineItems = products
+      .filter((p) => !p.taxExempt)
+      .map((p) => ({
+        amount: Math.round(p.price * p.quantity * factor * 100) / 100,
+        reference: p.id,
+      }));
+
+    if (lineItems.length === 0) {
+      setTaxAmount(0);
+      setTaxJurisdiction("Tax exempt");
+      setTaxError(null);
+      return;
+    }
+
+    const handle = setTimeout(async () => {
+      setTaxLoading(true);
+      setTaxError(null);
+      try {
+        const { data, error } = await supabase.functions.invoke("calculate-tax", {
+          body: {
+            currency: "usd",
+            customer_address: taxAddress,
+            line_items: lineItems,
+            shipping_cost: shippingRate?.price ?? 0,
+          },
+        });
+        if (error) throw error;
+        if (data?.error) throw new Error(data.error);
+        setTaxAmount(Number(data?.tax_amount ?? 0));
+        const breakdown = (data?.breakdown ?? []) as Array<{
+          tax_rate_details?: { display_name?: string; percentage_decimal?: string; jurisdiction?: { display_name?: string } };
+        }>;
+        const first = breakdown[0]?.tax_rate_details;
+        const jurisdiction = first
+          ? `${first.jurisdiction?.display_name ?? first.display_name ?? "Tax"}${
+              first.percentage_decimal ? ` ${first.percentage_decimal}%` : ""
+            }`
+          : data?.tax_amount > 0
+          ? "Calculated"
+          : "No tax";
+        setTaxJurisdiction(jurisdiction);
+      } catch (err: any) {
+        setTaxAmount(0);
+        setTaxJurisdiction(null);
+        setTaxError(err?.message || "Failed to calculate tax");
+      } finally {
+        setTaxLoading(false);
+      }
+    }, 600);
+
+    return () => clearTimeout(handle);
+  }, [products, discount, shippingRate, taxAddress]);
+
 
   const handleCreateOrder = async () => {
     if (!canSubmit || !selectedCustomer) return;
@@ -233,7 +360,6 @@ const CreateOrder = () => {
     : 0;
   const taxableSubtotal = subtotal - discountAmount;
   const shippingCost = shippingRate?.price ?? 0;
-  const tax = Math.round(taxableSubtotal * 0.18 * 100) / 100;
   const total = taxableSubtotal + shippingCost + tax;
 
   const fmt = (n: number) => "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -473,10 +599,25 @@ const CreateOrder = () => {
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-4 px-4 py-3 text-sm">
-                <span className="text-primary cursor-pointer hover:underline flex items-center gap-1">
-                  Estimated tax <Info className="h-3.5 w-3.5 text-muted-foreground" />
+                <span
+                  className="text-primary cursor-pointer hover:underline flex items-center gap-1"
+                  onClick={() => {
+                    setTempTaxAddress(taxAddress ?? { country: "US" });
+                    setTaxAddressModalOpen(true);
+                  }}
+                >
+                  {taxAddress ? "Edit tax address" : "Add tax address"}{" "}
+                  <Info className="h-3.5 w-3.5 text-muted-foreground" />
                 </span>
-                <span className="text-muted-foreground">VAT 18%</span>
+                <span className="text-muted-foreground">
+                  {taxLoading
+                    ? "Calculating…"
+                    : taxError
+                    ? <span className="text-destructive">{taxError}</span>
+                    : !taxAddress
+                    ? (selectedCustomer ? "Add address" : "Select customer")
+                    : (taxJurisdiction ?? "—")}
+                </span>
                 <span className="text-right text-foreground">{fmt(tax)}</span>
               </div>
               <div className="grid grid-cols-3 gap-4 px-4 py-3 text-sm font-semibold">
@@ -652,6 +793,96 @@ const CreateOrder = () => {
         defaultCountry={selectedCustomer ? undefined : undefined}
         defaultPostalCode=""
       />
+
+      {/* Tax address modal */}
+      <Dialog open={taxAddressModalOpen} onOpenChange={setTaxAddressModalOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Tax address</DialogTitle>
+            <DialogDescription>
+              Used to calculate sales tax / VAT for this order via Stripe Tax.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 pt-2">
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">Country</label>
+              <Select
+                value={tempTaxAddress.country}
+                onValueChange={(v) => setTempTaxAddress((a) => ({ ...a, country: v, state: "" }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {COUNTRIES.map((c) => (
+                    <SelectItem key={c.code} value={c.code}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">Address (optional)</label>
+              <Input
+                value={tempTaxAddress.line1 ?? ""}
+                onChange={(e) => setTempTaxAddress((a) => ({ ...a, line1: e.target.value }))}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">City</label>
+                <Input
+                  value={tempTaxAddress.city ?? ""}
+                  onChange={(e) => setTempTaxAddress((a) => ({ ...a, city: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">
+                  {tempTaxAddress.country === "US" ? "State" : "State / Region"}
+                </label>
+                {tempTaxAddress.country === "US" ? (
+                  <Select
+                    value={tempTaxAddress.state ?? ""}
+                    onValueChange={(v) => setTempTaxAddress((a) => ({ ...a, state: v }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select state" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {US_STATES.map((s) => (
+                        <SelectItem key={s} value={s}>{s}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input
+                    value={tempTaxAddress.state ?? ""}
+                    onChange={(e) => setTempTaxAddress((a) => ({ ...a, state: e.target.value }))}
+                  />
+                )}
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">Postal code</label>
+              <Input
+                value={tempTaxAddress.postal_code ?? ""}
+                onChange={(e) => setTempTaxAddress((a) => ({ ...a, postal_code: e.target.value }))}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setTaxAddressModalOpen(false)}>Cancel</Button>
+            <Button
+              disabled={!tempTaxAddress.country}
+              onClick={() => {
+                setTaxAddress({ ...tempTaxAddress });
+                setTaxAddressModalOpen(false);
+              }}
+            >
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Leave confirmation */}
       <Dialog open={blocker.state === "blocked"} onOpenChange={(open) => { if (!open) blocker.reset?.(); }}>
