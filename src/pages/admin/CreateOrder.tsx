@@ -279,6 +279,33 @@ const CreateOrder = () => {
       const { error: itemsError } = await supabase.from("order_items").insert(items);
       if (itemsError) throw itemsError;
 
+      // Decrement stock for each ordered product/variant
+      for (const p of products) {
+        try {
+          const { data: prod } = await supabase
+            .from("products")
+            .select("stock, variants")
+            .eq("id", p.productId)
+            .single();
+          if (!prod) continue;
+          if (p.variantName && Array.isArray(prod.variants)) {
+            const variants = (prod.variants as any[]).map((v: any) =>
+              v?.name === p.variantName
+                ? { ...v, stock: Math.max(0, Number(v.stock ?? 0) - p.quantity) }
+                : v,
+            );
+            await supabase.from("products").update({ variants }).eq("id", p.productId);
+          } else {
+            await supabase
+              .from("products")
+              .update({ stock: Math.max(0, Number(prod.stock ?? 0) - p.quantity) })
+              .eq("id", p.productId);
+          }
+        } catch (e) {
+          console.error("Stock decrement failed for", p.productId, e);
+        }
+      }
+
       // Sync to Stripe as an invoice (so it shows in the Stripe dashboard
       // and tax is officially recorded in Stripe Tax).
       try {
