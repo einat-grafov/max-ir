@@ -76,6 +76,14 @@ const CreateOrder = () => {
     { id: "1", message: "You created this draft order.", timestamp: "Just now" },
   ]);
 
+  const [taxAddress, setTaxAddress] = useState<TaxAddress | null>(null);
+  const [tax, setTaxAmount] = useState(0);
+  const [taxLoading, setTaxLoading] = useState(false);
+  const [taxError, setTaxError] = useState<string | null>(null);
+  const [taxJurisdiction, setTaxJurisdiction] = useState<string | null>(null);
+  const [taxAddressModalOpen, setTaxAddressModalOpen] = useState(false);
+  const [tempTaxAddress, setTempTaxAddress] = useState<TaxAddress>({ country: "US" });
+
   const isSavingRef = useRef(false);
   const hasUnsavedChanges = products.length > 0 || selectedCustomer !== null || notes !== "" || discount !== null;
 
