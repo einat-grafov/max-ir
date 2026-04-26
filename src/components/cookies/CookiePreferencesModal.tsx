@@ -102,7 +102,7 @@ export default function CookiePreferencesModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto pt-4 space-y-4">
+        <div className="flex-1 overflow-y-auto pt-4 space-y-4 px-1 -mx-1 pb-1">
           {CATEGORY_ORDER.map((category) => {
             const meta = CATEGORY_LABELS[category];
             const cookies = COOKIE_INVENTORY.filter(

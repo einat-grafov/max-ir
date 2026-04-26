@@ -142,7 +142,7 @@ const ProductSearchModal = ({ open, onOpenChange, onAddProducts }: ProductSearch
           <DialogTitle>Select products</DialogTitle>
         </DialogHeader>
 
-        <div className="overflow-y-auto flex-1 pt-4 space-y-3">
+        <div className="overflow-y-auto flex-1 pt-4 space-y-3 px-1 -mx-1 pb-1">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input

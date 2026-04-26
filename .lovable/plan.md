@@ -1,73 +1,57 @@
-## הבעיות שזוהו
+## Problem
 
-### 1. מס לא מחושב ב-Create Order
-בצילום המסך רואים **"Tax exempt — $0.00"**. זה לא באג בכתובת — זה כי המוצר שבחרת מסומן בדאטהבייס כ-`tax_exempt = true`.
+In the screenshot you shared, the focused input's red ring is clipped on the left edge. Root cause: across all admin modals we use the standard pattern:
 
-בדקתי את כל המוצרים:
-| מוצר | tax_exempt |
-|---|---|
-| ISMIR module for FTIR | false ✅ |
-| ISMIR-SENSE cartridge | false ✅ |
-| **ISMIR™ Stand-alone** | **true ❌** |
-| ISMIR™-FLOW | false ✅ |
-| ISMIR™-Waveguide | false ✅ |
+```
+<DialogContent class="... p-6 ... flex-col overflow-hidden">
+  <DialogHeader class="... -mx-6 -mt-6 px-6 ..." />
+  <div class="overflow-y-auto flex-1 pt-4"> ← inner scroll container
+    ...inputs...
+  </div>
+  <div class="... border-t pt-4">…footer…</div>
+</DialogContent>
+```
 
-הקוד ב-`CreateOrder.tsx` מסנן החוצה כל מוצר עם `tax_exempt=true` לפני שהוא שולח ל-Stripe Tax → ולכן `lineItems.length === 0` → מציג "Tax exempt".
+Inputs use `focus-visible:ring-2 ring-offset-2` (~4px outside the field). Because the inner scroll container has `overflow-y-auto` and sits flush to the modal's left/right edge, anything that paints outside the input's box (the focus ring) gets clipped horizontally.
 
-**הערה חשובה:** השדה `tax_exempt` בפרויקט הזה משמש לשתי מטרות שונות שמתנגשות:
-- **הצגת מחיר בעמוד הציבורי** (לפי memory `product-price-visibility`: כש-toggle "Show price" כבוי → tax_exempt=true)
-- **פטור ממס בחישוב Stripe Tax**
+## Fix
 
-זה מה שגורם ל-"ISMIR™ Stand-alone" להיות פטור ממס — כי כנראה כיבית לו את הצגת המחיר.
+Add a small horizontal inset on the inner scroll container so the focus ring has room to render, without changing the modal's overall content width feel. Concretely, change the inner scroll wrapper from:
 
-### 2. הזמנות ידניות לא עוברות ל-Stripe
-היום `handleCreateOrder` שומר רק לטבלת `orders` המקומית. אין שום קריאה ל-Stripe → ההזמנה לא מופיעה ב-Stripe Dashboard, והמס לא נרשם רשמית ב-Stripe Tax (חשוב לדיווח לרשויות).
+```
+className="space-y-4 overflow-y-auto flex-1 pt-4"
+```
 
----
+to:
 
-## התוכנית
+```
+className="space-y-4 overflow-y-auto flex-1 pt-4 px-1 -mx-1"
+```
 
-### A. תיקון חישוב המס (מיידי)
-**אופציה מומלצת:** להפריד בין שתי המשמעויות של `tax_exempt`:
-- בעמוד הציבורי / Cart → להמשיך להשתמש ב-`tax_exempt` כדי להחליט אם להציג מחיר.
-- ב-Create Order (אדמין) → **להתעלם** מ-`tax_exempt` ולשלוח את כל המוצרים ל-Stripe Tax. אדמין שיוצר הזמנה ידנית תמיד רואה את המחיר ורוצה לחשב מס אמיתי.
+The `-mx-1` keeps the visible content edge aligned with the header/footer (which sit at `p-6` on the parent), while `px-1` gives the focus ring 4px of breathing room on each side. Vertical clipping is also avoided by the existing `pt-4` plus `pb-` on the footer area; we'll add `pb-1` where needed so the bottom field's ring isn't clipped either.
 
-שינוי: ב-`CreateOrder.tsx` שורה 181, להסיר את `.filter((p) => !p.taxExempt)`.
+## Files to update (same one-line change pattern)
 
-(אם בעתיד תרצי באמת מוצרים פטורים ממס — נוסיף שדה DB נפרד `is_tax_exempt` שלא קשור להצגת מחיר.)
+All of these use the same scroll-container className:
 
-### B. דחיפת הזמנות ידניות ל-Stripe כ-Invoices
-זה ה-flow המתאים להזמנות ידניות (לא checkout מיידי, מאפשר "due later", ומופיע ב-Stripe Dashboard + נרשם ב-Stripe Tax):
+1. `src/components/admin/CreateCustomerModal.tsx` (line 103)
+2. `src/components/admin/RecordInteractionModal.tsx` (line 214)
+3. `src/components/admin/RecordInquiryInteractionModal.tsx` (line 147)
+4. `src/components/admin/RecordCareerInteractionModal.tsx` (line 145)
+5. `src/components/admin/ShippingRateModal.tsx` (line 85)
+6. `src/components/admin/NoteDetailModal.tsx` (line 112)
+7. `src/components/admin/CustomerSearchModal.tsx` (line 75)
+8. `src/components/admin/ProductSearchModal.tsx` (line 145)
+9. `src/components/admin/website/WebsiteSectionEditor.tsx` (line 235)
+10. `src/components/admin/website/TestPageBuilder.tsx` (lines 149, 307)
+11. `src/pages/admin/Website.tsx` (line 70)
+12. `src/pages/admin/settings/IntegrationsInfrastructure.tsx` (line 499)
+13. `src/pages/admin/settings/IntegrationsSettings.tsx` (lines 685, 1057)
+14. `src/components/cookies/CookiePreferencesModal.tsx` (line 105)
+15. `src/components/AccessibilityWidget.tsx` (line 192) — already has `p-4`, will leave alone
 
-1. **Edge function חדש: `create-stripe-invoice`**
-   - מקבל: `orderId`
-   - שולף את ההזמנה + items + customer מה-DB
-   - מוצא או יוצר Stripe Customer לפי email (+ שומר address מה-customer לצורך מס)
-   - יוצר `Invoice` עם `automatic_tax: { enabled: true }` ו-`collection_method: 'send_invoice'` (אם payment_due_later) או `'charge_automatically'`
-   - מוסיף `InvoiceItem` לכל מוצר (משתמש ב-`stripe_price_id` כשקיים, אחרת `price_data` עם שם המוצר)
-   - מוסיף שורה נפרדת ל-shipping אם יש
-   - מוסיף discount כ-coupon חד-פעמי או `discount_amount`
-   - `finalizeInvoice` → מקבל `invoice.id`, `hosted_invoice_url`, `tax` הסופי
-   - שומר ב-DB: `stripe_invoice_id`, `stripe_invoice_url` בטבלת `orders`
+For each file, append `px-1 -mx-1` (and `pb-1` where the last field sits flush with the footer) to the inner scroll container's className. No other markup or behavior changes.
 
-2. **DB migration:**
-   - `ALTER TABLE orders ADD COLUMN stripe_invoice_id text, stripe_invoice_url text, stripe_invoice_status text;`
+## QA after change
 
-3. **שינוי ב-`CreateOrder.handleCreateOrder`:**
-   - אחרי `INSERT` ל-`orders` + `order_items` → קריאה ל-`create-stripe-invoice` עם ה-`order.id`
-   - אם הצליח → toast "Order created and synced to Stripe" + ניווט ל-OrderDetail
-   - אם נכשל → ההזמנה נשמרת מקומית, toast warning עם כפתור "Retry sync to Stripe"
-
-4. **OrderDetail.tsx — תוספת קטנה:**
-   - אם יש `stripe_invoice_url` → להציג badge "Synced to Stripe" + לינק לחשבונית ב-Stripe
-   - כפתור "Sync to Stripe" אם עדיין לא סונכרן
-
-### תוצאה
-- כל הזמנה ידנית תופיע ב-Stripe Dashboard כ-Invoice
-- המס מחושב ע"י Stripe Tax **ונרשם רשמית** (לא רק תצוגה)
-- אם `payment_due_later` → Stripe ישלח חשבונית ללקוח
-- אחרת → החשבונית מסומנת `paid out_of_band` (כי שילם offline)
-
----
-
-**שאלה אחת לפני שאני מתחיל:** ב-flow של הזמנה ידנית עם `payment_due_later=false` (כלומר "כבר שולם") — את רוצה שהחשבונית ב-Stripe תיווצר כ-`paid out_of_band` (תיעוד בלבד, בלי לחייב את הלקוח), נכון? או שאת רוצה שStripe ינסה לחייב כרטיס שמור?
+Re-open `Create order → Create customer` modal, focus the First name input, and confirm the red ring is fully visible on left, right, top, and bottom. Spot-check Record Interaction and Shipping Rate modals as well.

@@ -100,7 +100,7 @@ const CreateCustomerModal = ({ open, onOpenChange, onCustomerCreated }: CreateCu
           <DialogTitle>Create a new customer</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 overflow-y-auto flex-1 pt-4">
+        <div className="space-y-4 overflow-y-auto flex-1 pt-4 px-1 -mx-1 pb-1">
           {/* Name */}
           <div className="grid grid-cols-2 gap-4">
             <div>

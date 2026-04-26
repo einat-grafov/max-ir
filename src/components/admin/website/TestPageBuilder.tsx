@@ -146,7 +146,7 @@ const TestPageBuilder = () => {
           <DialogHeader className="shrink-0 border-b border-border pb-4">
             <DialogTitle>Choose a Layout</DialogTitle>
           </DialogHeader>
-          <div className="overflow-y-auto flex-1 pt-4">
+          <div className="overflow-y-auto flex-1 pt-4 px-1 -mx-1 pb-1">
             <LayoutPicker onSelect={(t) => addSection.mutate(t)} />
           </div>
         </DialogContent>
@@ -304,7 +304,7 @@ const SectionEditor = ({
           <DialogHeader className="shrink-0 border-b border-border pb-4">
             <DialogTitle>Switch Layout</DialogTitle>
           </DialogHeader>
-          <div className="overflow-y-auto flex-1 pt-4">
+          <div className="overflow-y-auto flex-1 pt-4 px-1 -mx-1 pb-1">
             <p className="text-sm text-muted-foreground mb-2">Matching fields (title, description, etc.) will be preserved.</p>
             <LayoutPicker onSelect={handleLayoutSwitch} currentLayoutId={content?.layout} />
           </div>

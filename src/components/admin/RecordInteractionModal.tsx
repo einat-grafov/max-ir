@@ -211,7 +211,7 @@ const RecordInteractionModal = ({
           <DialogTitle>{isEditing ? "Edit Interaction" : "Record Customer Interaction"}</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-5 overflow-y-auto flex-1 pt-4">
+        <div className="space-y-5 overflow-y-auto flex-1 pt-4 px-1 -mx-1 pb-1">
           {/* Row 1: Date + Contact Person */}
           <div className="grid grid-cols-2 gap-4">
             <div>

@@ -682,7 +682,7 @@ const SetupDialog = ({
           </div>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto pt-4 space-y-4">
+        <div className="flex-1 overflow-y-auto pt-4 space-y-4 px-1 -mx-1 pb-1">
           {def.fields.map((f) => (
             <div key={f.key}>
               <Label className="text-xs">{f.label}</Label>
@@ -1054,7 +1054,7 @@ const SnippetEditor = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto pt-4 space-y-4">
+        <div className="flex-1 overflow-y-auto pt-4 space-y-4 px-1 -mx-1 pb-1">
           <div>
             <Label className="text-xs">Snippet name</Label>
             <Input
