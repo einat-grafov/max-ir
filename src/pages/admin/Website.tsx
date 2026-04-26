@@ -180,7 +180,7 @@ const Website = () => {
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
-        <Globe className="h-6 w-6 text-muted-foreground" />
+        <Globe className="h-6 w-6 text-primary" />
         <div>
           <h1 className="text-2xl font-bold text-foreground">Website</h1>
           <p className="text-sm text-muted-foreground">Manage the content of your public-facing website pages.</p>
