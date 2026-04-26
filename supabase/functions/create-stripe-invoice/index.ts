@@ -143,7 +143,7 @@ Deno.serve(async (req) => {
         currency: "usd",
         description: item.product_name,
         quantity: item.quantity,
-        unit_amount: Math.round(Number(item.price) * 100),
+        unit_amount_decimal: String(Math.round(Number(item.price) * 100)),
       });
     }
 
@@ -157,7 +157,7 @@ Deno.serve(async (req) => {
           ? `Shipping — ${order.shipping_method}`
           : "Shipping",
         quantity: 1,
-        unit_amount: Math.round(Number(order.shipping_cost) * 100),
+        unit_amount_decimal: String(Math.round(Number(order.shipping_cost) * 100)),
       });
     }
 
@@ -169,7 +169,7 @@ Deno.serve(async (req) => {
         currency: "usd",
         description: "Discount",
         quantity: 1,
-        unit_amount: -Math.round(Number(order.discount_amount) * 100),
+        unit_amount_decimal: String(-Math.round(Number(order.discount_amount) * 100)),
       });
     }
 
