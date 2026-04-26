@@ -26,7 +26,7 @@ export const useLegalPageContent = (page: string) => {
         .maybeSingle();
       if (error) throw error;
       if (!data || !data.is_visible) return null;
-      return data.content as LegalDocumentContent;
+      return data.content as unknown as LegalDocumentContent;
     },
     staleTime: 5 * 60 * 1000,
   });
