@@ -374,7 +374,7 @@ const InquiryDetail = () => {
               </Tooltip>
             );
           })()}
-
+          {hasUnsavedChanges && (
             <span className="text-sm text-amber-600 font-medium animate-in fade-in">Unsaved changes</span>
           )}
           <Button
