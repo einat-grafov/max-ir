@@ -725,6 +725,9 @@ export type Database = {
           shipping_cost: number
           shipping_method: string | null
           status: string
+          stripe_invoice_id: string | null
+          stripe_invoice_status: string | null
+          stripe_invoice_url: string | null
           stripe_session_id: string | null
           subtotal: number
           tax: number
@@ -746,6 +749,9 @@ export type Database = {
           shipping_cost?: number
           shipping_method?: string | null
           status?: string
+          stripe_invoice_id?: string | null
+          stripe_invoice_status?: string | null
+          stripe_invoice_url?: string | null
           stripe_session_id?: string | null
           subtotal?: number
           tax?: number
@@ -767,6 +773,9 @@ export type Database = {
           shipping_cost?: number
           shipping_method?: string | null
           status?: string
+          stripe_invoice_id?: string | null
+          stripe_invoice_status?: string | null
+          stripe_invoice_url?: string | null
           stripe_session_id?: string | null
           subtotal?: number
           tax?: number
