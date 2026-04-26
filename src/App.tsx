@@ -35,6 +35,7 @@ import EmailTemplateEditor from "./pages/admin/settings/EmailTemplateEditor";
 import CareerApplications from "./pages/admin/CareerApplications";
 import CareerApplicationDetail from "./pages/admin/CareerApplicationDetail";
 import Inquiries from "./pages/admin/Inquiries";
+import InquiryDetail from "./pages/admin/InquiryDetail";
 import NotFound from "./pages/NotFound";
 import DesignSystem from "./pages/DesignSystem";
 import Unsubscribe from "./pages/Unsubscribe";
@@ -139,6 +140,7 @@ const router = createBrowserRouter([
           { path: "website", element: <Website /> },
           { path: "brand", element: <Brand /> },
           { path: "inquiries", element: <Inquiries /> },
+          { path: "inquiries/:id", element: <InquiryDetail /> },
           { path: "careers", element: <CareerApplications /> },
           { path: "careers/:id", element: <CareerApplicationDetail /> },
           { path: "settings/users", element: <UsersSettings /> },
