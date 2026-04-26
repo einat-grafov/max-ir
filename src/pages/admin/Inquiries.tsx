@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import { Mail, MailOpen } from "lucide-react";
+import { Mail, MailOpen, Inbox } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import NotificationEmailCard from "@/components/admin/NotificationEmailCard";
 
@@ -40,13 +40,16 @@ const Inquiries = () => {
   const unreadCount = inquiries?.filter((i) => !i.read).length ?? 0;
 
   return (
-    <div className="p-6 lg:p-8 max-w-[1400px]">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Leads</h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
-          </p>
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <Inbox className="h-6 w-6 text-foreground" />
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Leads</h1>
+            <p className="text-muted-foreground text-sm mt-1">
+              {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
+            </p>
+          </div>
         </div>
       </div>
 
