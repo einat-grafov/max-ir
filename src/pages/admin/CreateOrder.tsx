@@ -326,11 +326,14 @@ const CreateOrder = () => {
     }
   };
 
-  const handleAddProducts = (newProducts: { id: string; name: string; price: number; stock: number; requires_shipping: boolean; tax_exempt: boolean }[]) => {
+  const handleAddProducts = (newProducts: { id: string; productId: string; name: string; variantName?: string; sku: string | null; price: number; stock: number; requires_shipping: boolean; tax_exempt: boolean }[]) => {
     setProducts((prev) => {
       const existing = new Set(prev.map((p) => p.id));
-      const toAdd = newProducts.filter((p) => !existing.has(p.id)).map((p) => ({
+      const toAdd: OrderProduct[] = newProducts.filter((p) => !existing.has(p.id)).map((p) => ({
         id: p.id,
+        productId: p.productId,
+        variantName: p.variantName,
+        sku: p.sku,
         name: p.name,
         subtitle: [p.tax_exempt ? "Tax exempt" : "", p.requires_shipping ? "Requires shipping" : ""].filter(Boolean).join("\n"),
         price: p.price,
