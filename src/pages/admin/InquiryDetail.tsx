@@ -279,7 +279,7 @@ const InquiryDetail = () => {
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link to="/admin/inquiries">Inquiries</Link>
+                  <Link to="/admin/inquiries">Leads</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
