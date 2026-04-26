@@ -321,7 +321,9 @@ const OrderDetail = () => {
                 <span className="text-foreground flex items-center gap-1">
                   Tax <Info className="h-3.5 w-3.5 text-muted-foreground" />
                 </span>
-                <span className="text-muted-foreground">VAT 18%</span>
+                <span className="text-muted-foreground">
+                  {Number(order.tax) > 0 ? "Calculated by Stripe Tax" : "No tax"}
+                </span>
                 <span className="text-right text-foreground">{fmt(Number(order.tax))}</span>
               </div>
               <div className="grid grid-cols-3 gap-4 px-4 py-3 text-sm font-semibold">
