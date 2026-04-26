@@ -26,7 +26,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Trash2, MailX } from "lucide-react";
+import { Trash2, MailX, Plus } from "lucide-react";
 import { format } from "date-fns";
 import InquiryTimeline from "@/components/admin/InquiryTimeline";
 import { COUNTRIES, US_STATES, getCountryCode } from "@/lib/countries";
