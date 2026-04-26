@@ -516,30 +516,44 @@ const DashboardTab = () => {
 /* ─────────────────────────── Page ─────────────────────────── */
 
 const General = () => {
+  const { data: lastUpdated } = useLastUpdated();
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-start justify-between mb-6 gap-6 flex-wrap">
         <div className="flex items-center gap-3">
           <Home className="h-6 w-6 text-primary" />
           <div>
-            <h1 className="text-2xl font-bold text-foreground">General</h1>
+            <h1 className="text-2xl font-bold text-foreground">Overview</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              A high-level snapshot of your project — content, activity, and recent events.
+              A high-level snapshot of your project.
             </p>
+          </div>
+        </div>
+        <div className="text-sm text-muted-foreground space-y-1">
+          <div>
+            <span className="font-medium text-foreground">Project ID:</span>{" "}
+            <span className="font-mono text-xs">{PROJECT_ID}</span>
+          </div>
+          <div>
+            <span className="font-medium text-foreground">Last updated:</span>{" "}
+            {lastUpdated
+              ? `${formatDistanceToNow(lastUpdated, { addSuffix: true })}, on ${format(lastUpdated, "MMMM do yyyy, h:mm:ss a")}`
+              : "—"}
           </div>
         </div>
       </div>
 
-      <Tabs defaultValue="overview" className="w-full">
+      <Tabs defaultValue="dashboard" className="w-full">
         <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+          <TabsTrigger value="activity">Site activity</TabsTrigger>
         </TabsList>
-        <TabsContent value="overview" className="mt-6">
-          <OverviewTab />
-        </TabsContent>
         <TabsContent value="dashboard" className="mt-6">
           <DashboardTab />
+        </TabsContent>
+        <TabsContent value="activity" className="mt-6">
+          <SiteActivityTab />
         </TabsContent>
       </Tabs>
     </div>
