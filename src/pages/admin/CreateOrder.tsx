@@ -279,6 +279,23 @@ const CreateOrder = () => {
       const { error: itemsError } = await supabase.from("order_items").insert(items);
       if (itemsError) throw itemsError;
 
+      // Sync to Stripe as an invoice (so it shows in the Stripe dashboard
+      // and tax is officially recorded in Stripe Tax).
+      try {
+        const { data: syncData, error: syncError } = await supabase.functions.invoke(
+          "create-stripe-invoice",
+          { body: { orderId: order.id } },
+        );
+        if (syncError || syncData?.error) {
+          throw new Error(syncError?.message || syncData?.error || "Stripe sync failed");
+        }
+      } catch (syncErr: any) {
+        // Order is saved locally; surface a non-blocking warning.
+        toast.warning(
+          `Order created, but Stripe sync failed: ${syncErr?.message || "unknown error"}. You can retry from the order page.`,
+        );
+      }
+
       // Send order confirmation email
       if (sendConfirmationEmail && selectedCustomer.email) {
         const itemsSummary = products.map(p => `${p.name} × ${p.quantity}`).join(", ");
