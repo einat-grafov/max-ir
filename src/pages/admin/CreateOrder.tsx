@@ -177,12 +177,14 @@ const CreateOrder = () => {
       : 0;
     const factor = subtotalLocal > 0 ? (subtotalLocal - discountLocal) / subtotalLocal : 1;
 
-    const lineItems = products
-      .filter((p) => !p.taxExempt)
-      .map((p) => ({
-        amount: Math.round(p.price * p.quantity * factor * 100) / 100,
-        reference: p.id,
-      }));
+    // Note: we intentionally do NOT filter by `taxExempt` here.
+    // In this project the product `tax_exempt` flag is reused for "hide price on
+    // public page". For manual admin orders we always want Stripe Tax to compute
+    // the real tax across all line items.
+    const lineItems = products.map((p) => ({
+      amount: Math.round(p.price * p.quantity * factor * 100) / 100,
+      reference: p.id,
+    }));
 
     if (lineItems.length === 0) {
       setTaxAmount(0);
