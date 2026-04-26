@@ -250,7 +250,6 @@ const CreateOrder = () => {
     : 0;
   const taxableSubtotal = subtotal - discountAmount;
   const shippingCost = shippingRate?.price ?? 0;
-  const tax = Math.round(taxableSubtotal * 0.18 * 100) / 100;
   const total = taxableSubtotal + shippingCost + tax;
 
   const fmt = (n: number) => "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
