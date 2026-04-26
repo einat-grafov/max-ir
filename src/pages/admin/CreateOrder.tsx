@@ -35,7 +35,10 @@ import OrderTimeline from "@/components/admin/OrderTimeline";
 import { COUNTRIES, US_STATES } from "@/lib/countries";
 
 interface OrderProduct {
-  id: string;
+  id: string;          // unique row id (productId or productId::variantName)
+  productId: string;   // underlying product id for DB FK
+  variantName?: string;
+  sku?: string | null;
   name: string;
   subtitle: string;
   price: number;
