@@ -39,12 +39,12 @@ import {
 
 const mainItems = [
   { title: "General", url: "/admin/home", icon: Home },
+  { title: "Leads", url: "/admin/inquiries", icon: MessageSquare },
   { title: "Orders", url: "/admin/orders", icon: ShoppingCart },
   { title: "Products", url: "/admin/products", icon: Package },
   { title: "Customers", url: "/admin/customers", icon: Users },
   { title: "Website", url: "/admin/website", icon: Globe },
   { title: "Brand", url: "/admin/brand", icon: Palette },
-  { title: "Leads", url: "/admin/inquiries", icon: MessageSquare },
   { title: "Careers", url: "/admin/careers", icon: Briefcase },
 ];
 
