@@ -32,33 +32,10 @@ const PROJECT_ID = "0b82eace-8a14-48d4-a50c-315652155103";
 
 type ActivityRow = { date: Date; event: React.ReactNode; user: string };
 
-/* ─────────────────────────── Overview Tab ─────────────────────────── */
+/* ─────────────────────────── Header data hook ─────────────────────────── */
 
-const OverviewTab = () => {
-  const { data: counts } = useQuery({
-    queryKey: ["general-overview-counts"],
-    queryFn: async () => {
-      const [products, customers, orders, inquiries, careers, sections] = await Promise.all([
-        supabase.from("products").select("id", { count: "exact", head: true }),
-        supabase.from("customers").select("id", { count: "exact", head: true }),
-        supabase.from("orders").select("id", { count: "exact", head: true }),
-        supabase.from("inquiries").select("id", { count: "exact", head: true }),
-        supabase.from("career_applications").select("id", { count: "exact", head: true }),
-        supabase.from("website_content").select("page", { count: "exact" }),
-      ]);
-      const uniquePages = new Set((sections.data || []).map((s: any) => s.page)).size;
-      return {
-        products: products.count ?? 0,
-        customers: customers.count ?? 0,
-        orders: orders.count ?? 0,
-        inquiries: inquiries.count ?? 0,
-        careers: careers.count ?? 0,
-        pages: uniquePages,
-      };
-    },
-  });
-
-  const { data: lastUpdated } = useQuery({
+const useLastUpdated = () =>
+  useQuery({
     queryKey: ["general-last-updated"],
     queryFn: async () => {
       const tables = ["website_content", "products", "seo_settings"] as const;
@@ -73,6 +50,9 @@ const OverviewTab = () => {
     },
   });
 
+/* ─────────────────────────── Site Activity Tab ─────────────────────────── */
+
+const SiteActivityTab = () => {
   const { data: activity = [] } = useQuery<ActivityRow[]>({
     queryKey: ["general-activity"],
     queryFn: async () => {
@@ -99,76 +79,39 @@ const OverviewTab = () => {
     },
   });
 
-  const overviewRows: { label: string; value: React.ReactNode }[] = [
-    { label: "Project ID", value: <span className="font-mono text-xs">{PROJECT_ID}</span> },
-    { label: "Pages", value: counts?.pages ?? "—" },
-    { label: "Products", value: counts?.products ?? "—" },
-    { label: "Customers", value: counts?.customers ?? "—" },
-    { label: "Orders", value: counts?.orders ?? "—" },
-    { label: "Inquiries", value: counts?.inquiries ?? "—" },
-    { label: "Career applications", value: counts?.careers ?? "—" },
-    {
-      label: "Last updated",
-      value: lastUpdated
-        ? `${formatDistanceToNow(lastUpdated, { addSuffix: true })}, on ${format(lastUpdated, "MMMM do yyyy, h:mm:ss a")}`
-        : "—",
-    },
-  ];
-
   return (
-    <div className="space-y-10">
-      <section>
-        <h2 className="text-base font-semibold text-foreground mb-3">Overview</h2>
-        <div className="rounded-xl border bg-card overflow-hidden">
-          <table className="w-full text-sm">
-            <tbody>
-              {overviewRows.map((row, i) => (
-                <tr key={row.label} className={i !== overviewRows.length - 1 ? "border-b" : ""}>
-                  <td className="bg-muted/50 px-4 py-3 font-medium text-foreground w-1/3 align-top">
-                    {row.label}
-                  </td>
-                  <td className="px-4 py-3 text-foreground break-all">{row.value}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section>
-        <h2 className="text-base font-semibold text-foreground mb-3">Site activity</h2>
-        <div className="rounded-xl border bg-card overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b">
-                <th className="bg-muted/50 px-4 py-3 text-left font-medium text-foreground w-44">Date</th>
-                <th className="bg-muted/50 px-4 py-3 text-left font-medium text-foreground">Event</th>
-                <th className="bg-muted/50 px-4 py-3 text-left font-medium text-foreground w-1/3">User</th>
+    <section>
+      <div className="rounded-xl border bg-card overflow-hidden">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b">
+              <th className="bg-muted/50 px-4 py-3 text-left font-medium text-foreground w-44">Date</th>
+              <th className="bg-muted/50 px-4 py-3 text-left font-medium text-foreground">Event</th>
+              <th className="bg-muted/50 px-4 py-3 text-left font-medium text-foreground w-1/3">User</th>
+            </tr>
+          </thead>
+          <tbody>
+            {activity.length === 0 ? (
+              <tr>
+                <td colSpan={3} className="px-4 py-8 text-center text-muted-foreground">
+                  No recent activity yet.
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {activity.length === 0 ? (
-                <tr>
-                  <td colSpan={3} className="px-4 py-8 text-center text-muted-foreground">
-                    No recent activity yet.
+            ) : (
+              activity.map((row, i) => (
+                <tr key={i} className={i !== activity.length - 1 ? "border-b" : ""}>
+                  <td className="px-4 py-3 text-muted-foreground whitespace-nowrap align-top">
+                    {formatDistanceToNow(row.date, { addSuffix: true })}
                   </td>
+                  <td className="px-4 py-3 text-foreground">{row.event}</td>
+                  <td className="px-4 py-3 text-foreground">{row.user}</td>
                 </tr>
-              ) : (
-                activity.map((row, i) => (
-                  <tr key={i} className={i !== activity.length - 1 ? "border-b" : ""}>
-                    <td className="px-4 py-3 text-muted-foreground whitespace-nowrap align-top">
-                      {formatDistanceToNow(row.date, { addSuffix: true })}
-                    </td>
-                    <td className="px-4 py-3 text-foreground">{row.event}</td>
-                    <td className="px-4 py-3 text-foreground">{row.user}</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </div>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </section>
   );
 };
 
