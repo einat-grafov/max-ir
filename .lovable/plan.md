@@ -1,50 +1,28 @@
-## Goal
-Add a **Create order** button to the Inquiry Detail page header so admins can convert a lead into an order in one click — using the customer that was auto-created from the inquiry, prefilled in the existing CreateOrder flow.
+## Move Brand page to Settings
 
-## Placement
-Position in the top-right header, right after the Delete icon and before the unsaved-changes indicator:
+Reorganize the Brand page so it lives under Settings — both in the sidebar grouping and in its URL — to match its purpose as a one-time configuration area rather than day-to-day operational work.
 
-`[Delete icon]  [+ Create order]   [Unsaved changes]  [Discard]  [Save changes]`
+### 1. Update sidebar (`src/components/admin/AdminSidebar.tsx`)
+- **Remove** `Brand` entry from `mainItems` (Management group).
+- **Add** `Brand` entry to `settingsItems`, placed at the top so it leads the Settings group:
+  ```ts
+  { title: "Brand", url: "/admin/settings/brand", icon: Palette },
+  ```
 
-Rationale:
-- Mirrors the "primary action in header" pattern already used on `EditCustomer`.
-- Keeps Save/Discard as the rightmost destructive-pair so muscle memory is preserved.
-- Visually distinct from Save (uses `variant="outline"` with a `Plus` icon) so it doesn't compete for attention.
+### 2. Update routing (`src/App.tsx`)
+- Change the route path from `brand` to `settings/brand`.
+- Add a redirect from the old URL so any bookmarked links still work:
+  ```tsx
+  { path: "settings/brand", element: <Brand /> },
+  { path: "brand", element: <Navigate to="/admin/settings/brand" replace /> },
+  ```
 
-## Behavior
+### 3. Verify no other internal links reference `/admin/brand`
+- Search the codebase for `/admin/brand` references and update any hardcoded links to point to `/admin/settings/brand`. (The redirect above is a safety net, but direct links should be updated for cleanliness.)
 
-1. **Style**: `variant="outline"` + `Plus` icon + label "Create order".
-2. **Guards** (button disabled with tooltip explaining why):
-   - **Unsaved changes present** → tooltip: *"Save changes before creating an order."*
-   - **Missing required shipping fields** (`address`, `city`, `postal_code`, `country`) → tooltip: *"Add a shipping address before creating an order."*
-   - **No linked customer_id** (edge case for legacy inquiries) → tooltip: *"This inquiry has no linked customer."*
-3. **On click**: navigate to `/admin/orders/create` and pass router state:
-   ```ts
-   navigate("/admin/orders/create", {
-     state: {
-       preselectedCustomer: {
-         id: inquiry.customer_id,
-         first_name: form.first_name,
-         last_name: form.last_name,
-         email: form.email,
-         company: form.company_name,
-       },
-       // optional: prefilled shipping address from the inquiry
-       prefilledShipping: {
-         address: form.address,
-         apartment: form.apartment,
-         city: form.city,
-         state: form.state,
-         postal_code: form.postal_code,
-         country: form.country,
-       },
-     },
-   });
-   ```
-   This reuses CreateOrder's existing `location.state.preselectedCustomer` mechanism (already supported), so no changes to CreateOrder are required for the customer prefill.
+### Resulting structure
+- **Management**: General, Leads, Orders, Products, Customers, Website, Careers
+- **Settings**: Brand, Users, Emails, Billing, Integrations
 
-## Files to edit
-- **`src/pages/admin/InquiryDetail.tsx`** — add button + handler + guard logic in the header.
-
-## Out of scope (for this step)
-- Wiring `prefilledShipping` into CreateOrder's address fields. The customer prefill works today; if you also want CreateOrder to auto-fill the shipping address inputs from the inquiry, that's a small follow-up edit to `CreateOrder.tsx` to read `location.state.prefilledShipping`. Let me know after this lands if you want that too.
+### Out of scope
+- No changes to the Brand page content/layout itself — only its location in navigation and its URL.
