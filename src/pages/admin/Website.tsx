@@ -24,6 +24,7 @@ const SECTION_LABELS: Record<string, string> = {
   publications: "Publications",
   fcoi: "FCOI Policy",
   careers: "Careers",
+  legal_document: "Legal Document",
   test_hero: "Hero Section",
   test_content: "Main Content",
   test_cta: "Call to Action",
