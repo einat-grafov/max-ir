@@ -44,7 +44,6 @@ const mainItems = [
   { title: "Products", url: "/admin/products", icon: Package },
   { title: "Customers", url: "/admin/customers", icon: Users },
   { title: "Website", url: "/admin/website", icon: Globe },
-  { title: "Brand", url: "/admin/brand", icon: Palette },
   { title: "Careers", url: "/admin/careers", icon: Briefcase },
 ];
 
@@ -57,6 +56,7 @@ const optimizationItems = [
 ];
 
 const settingsItems = [
+  { title: "Brand", url: "/admin/settings/brand", icon: Palette },
   { title: "Users", url: "/admin/settings/users", icon: UserCog },
   { title: "Emails", url: "/admin/settings/emails", icon: Mail },
   { title: "Billing", url: "/admin/settings/billing", icon: CreditCard },
