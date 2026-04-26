@@ -25,6 +25,7 @@ import {
   ArrowRight,
   TrendingDown,
   Minus,
+  Home,
 } from "lucide-react";
 
 const PROJECT_ID = "0b82eace-8a14-48d4-a50c-315652155103";
@@ -574,11 +575,16 @@ const DashboardTab = () => {
 const General = () => {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-foreground">General</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          A high-level snapshot of your project — content, activity, and recent events.
-        </p>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <Home className="h-6 w-6 text-primary" />
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">General</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              A high-level snapshot of your project — content, activity, and recent events.
+            </p>
+          </div>
+        </div>
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
