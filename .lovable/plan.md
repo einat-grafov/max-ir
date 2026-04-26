@@ -1,57 +1,50 @@
-## Problem
+## Goal
+Add a **Create order** button to the Inquiry Detail page header so admins can convert a lead into an order in one click — using the customer that was auto-created from the inquiry, prefilled in the existing CreateOrder flow.
 
-In the screenshot you shared, the focused input's red ring is clipped on the left edge. Root cause: across all admin modals we use the standard pattern:
+## Placement
+Position in the top-right header, right after the Delete icon and before the unsaved-changes indicator:
 
-```
-<DialogContent class="... p-6 ... flex-col overflow-hidden">
-  <DialogHeader class="... -mx-6 -mt-6 px-6 ..." />
-  <div class="overflow-y-auto flex-1 pt-4"> ← inner scroll container
-    ...inputs...
-  </div>
-  <div class="... border-t pt-4">…footer…</div>
-</DialogContent>
-```
+`[Delete icon]  [+ Create order]   [Unsaved changes]  [Discard]  [Save changes]`
 
-Inputs use `focus-visible:ring-2 ring-offset-2` (~4px outside the field). Because the inner scroll container has `overflow-y-auto` and sits flush to the modal's left/right edge, anything that paints outside the input's box (the focus ring) gets clipped horizontally.
+Rationale:
+- Mirrors the "primary action in header" pattern already used on `EditCustomer`.
+- Keeps Save/Discard as the rightmost destructive-pair so muscle memory is preserved.
+- Visually distinct from Save (uses `variant="outline"` with a `Plus` icon) so it doesn't compete for attention.
 
-## Fix
+## Behavior
 
-Add a small horizontal inset on the inner scroll container so the focus ring has room to render, without changing the modal's overall content width feel. Concretely, change the inner scroll wrapper from:
+1. **Style**: `variant="outline"` + `Plus` icon + label "Create order".
+2. **Guards** (button disabled with tooltip explaining why):
+   - **Unsaved changes present** → tooltip: *"Save changes before creating an order."*
+   - **Missing required shipping fields** (`address`, `city`, `postal_code`, `country`) → tooltip: *"Add a shipping address before creating an order."*
+   - **No linked customer_id** (edge case for legacy inquiries) → tooltip: *"This inquiry has no linked customer."*
+3. **On click**: navigate to `/admin/orders/create` and pass router state:
+   ```ts
+   navigate("/admin/orders/create", {
+     state: {
+       preselectedCustomer: {
+         id: inquiry.customer_id,
+         first_name: form.first_name,
+         last_name: form.last_name,
+         email: form.email,
+         company: form.company_name,
+       },
+       // optional: prefilled shipping address from the inquiry
+       prefilledShipping: {
+         address: form.address,
+         apartment: form.apartment,
+         city: form.city,
+         state: form.state,
+         postal_code: form.postal_code,
+         country: form.country,
+       },
+     },
+   });
+   ```
+   This reuses CreateOrder's existing `location.state.preselectedCustomer` mechanism (already supported), so no changes to CreateOrder are required for the customer prefill.
 
-```
-className="space-y-4 overflow-y-auto flex-1 pt-4"
-```
+## Files to edit
+- **`src/pages/admin/InquiryDetail.tsx`** — add button + handler + guard logic in the header.
 
-to:
-
-```
-className="space-y-4 overflow-y-auto flex-1 pt-4 px-1 -mx-1"
-```
-
-The `-mx-1` keeps the visible content edge aligned with the header/footer (which sit at `p-6` on the parent), while `px-1` gives the focus ring 4px of breathing room on each side. Vertical clipping is also avoided by the existing `pt-4` plus `pb-` on the footer area; we'll add `pb-1` where needed so the bottom field's ring isn't clipped either.
-
-## Files to update (same one-line change pattern)
-
-All of these use the same scroll-container className:
-
-1. `src/components/admin/CreateCustomerModal.tsx` (line 103)
-2. `src/components/admin/RecordInteractionModal.tsx` (line 214)
-3. `src/components/admin/RecordInquiryInteractionModal.tsx` (line 147)
-4. `src/components/admin/RecordCareerInteractionModal.tsx` (line 145)
-5. `src/components/admin/ShippingRateModal.tsx` (line 85)
-6. `src/components/admin/NoteDetailModal.tsx` (line 112)
-7. `src/components/admin/CustomerSearchModal.tsx` (line 75)
-8. `src/components/admin/ProductSearchModal.tsx` (line 145)
-9. `src/components/admin/website/WebsiteSectionEditor.tsx` (line 235)
-10. `src/components/admin/website/TestPageBuilder.tsx` (lines 149, 307)
-11. `src/pages/admin/Website.tsx` (line 70)
-12. `src/pages/admin/settings/IntegrationsInfrastructure.tsx` (line 499)
-13. `src/pages/admin/settings/IntegrationsSettings.tsx` (lines 685, 1057)
-14. `src/components/cookies/CookiePreferencesModal.tsx` (line 105)
-15. `src/components/AccessibilityWidget.tsx` (line 192) — already has `p-4`, will leave alone
-
-For each file, append `px-1 -mx-1` (and `pb-1` where the last field sits flush with the footer) to the inner scroll container's className. No other markup or behavior changes.
-
-## QA after change
-
-Re-open `Create order → Create customer` modal, focus the First name input, and confirm the red ring is fully visible on left, right, top, and bottom. Spot-check Record Interaction and Shipping Rate modals as well.
+## Out of scope (for this step)
+- Wiring `prefilledShipping` into CreateOrder's address fields. The customer prefill works today; if you also want CreateOrder to auto-fill the shipping address inputs from the inquiry, that's a small follow-up edit to `CreateOrder.tsx` to read `location.state.prefilledShipping`. Let me know after this lands if you want that too.

@@ -26,7 +26,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Trash2, MailX } from "lucide-react";
+import { Trash2, MailX, Plus } from "lucide-react";
 import { format } from "date-fns";
 import InquiryTimeline from "@/components/admin/InquiryTimeline";
 import { COUNTRIES, US_STATES, getCountryCode } from "@/lib/countries";
@@ -324,6 +324,56 @@ const InquiryDetail = () => {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+          {(() => {
+            const missingShipping = !form.address || !form.city || !form.postal_code || !form.country;
+            const noCustomer = !inquiry.customer_id;
+            const disabled = hasUnsavedChanges || missingShipping || noCustomer;
+            const tooltip = hasUnsavedChanges
+              ? "Save changes before creating an order."
+              : noCustomer
+              ? "This inquiry has no linked customer."
+              : missingShipping
+              ? "Add a shipping address before creating an order."
+              : "Create an order prefilled with this lead's details.";
+            const button = (
+              <Button
+                variant="outline"
+                disabled={disabled}
+                onClick={() => {
+                  navigate("/admin/orders/create", {
+                    state: {
+                      preselectedCustomer: {
+                        id: inquiry.customer_id,
+                        first_name: form.first_name,
+                        last_name: form.last_name,
+                        email: form.email,
+                        company: form.company_name,
+                      },
+                      prefilledShipping: {
+                        address: form.address,
+                        apartment: form.apartment,
+                        city: form.city,
+                        state: form.state,
+                        postal_code: form.postal_code,
+                        country: form.country,
+                      },
+                    },
+                  });
+                }}
+              >
+                <Plus className="h-4 w-4" />
+                Create order
+              </Button>
+            );
+            return (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span tabIndex={disabled ? 0 : -1}>{button}</span>
+                </TooltipTrigger>
+                <TooltipContent>{tooltip}</TooltipContent>
+              </Tooltip>
+            );
+          })()}
           {hasUnsavedChanges && (
             <span className="text-sm text-amber-600 font-medium animate-in fade-in">Unsaved changes</span>
           )}
