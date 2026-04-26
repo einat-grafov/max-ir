@@ -267,7 +267,7 @@ const CreateOrder = () => {
 
       const items = products.map((p) => ({
         order_id: order.id,
-        product_id: p.id,
+        product_id: p.productId,
         product_name: p.name,
         price: p.price,
         quantity: p.quantity,
