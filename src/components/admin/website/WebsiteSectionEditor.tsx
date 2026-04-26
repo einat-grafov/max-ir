@@ -232,7 +232,7 @@ const WebsiteSectionEditor = ({ section, label, onSaved, onDelete }: Props) => {
           <DialogHeader className="shrink-0 border-b border-border pb-4">
             <DialogTitle>Change Layout</DialogTitle>
           </DialogHeader>
-          <div className="overflow-y-auto flex-1 pt-4">
+          <div className="overflow-y-auto flex-1 pt-4 px-1 -mx-1 pb-1">
             <LayoutPicker onSelect={handleLayoutChange} currentLayoutId={currentLayoutId} />
           </div>
         </DialogContent>

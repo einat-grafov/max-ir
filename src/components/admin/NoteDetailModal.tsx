@@ -109,7 +109,7 @@ const NoteDetailModal = ({ open, onOpenChange, note, customerId, customerName, c
               </div>
             </DialogHeader>
 
-            <div className="space-y-4 overflow-y-auto flex-1 pt-4">
+            <div className="space-y-4 overflow-y-auto flex-1 pt-4 px-1 -mx-1 pb-1">
               <div className="grid grid-cols-2 gap-4">
                 <DetailRow icon={User} label="Customer" value={note.customer_name} />
                 <DetailRow icon={Building2} label="Company" value={note.company} />

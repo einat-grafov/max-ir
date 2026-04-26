@@ -82,7 +82,7 @@ const ShippingRateModal = ({
           <DialogTitle>Calculate shipping</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 overflow-y-auto flex-1 pt-4">
+        <div className="space-y-4 overflow-y-auto flex-1 pt-4 px-1 -mx-1 pb-1">
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-sm font-medium text-foreground mb-1.5 block">
