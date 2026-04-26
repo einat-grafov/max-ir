@@ -392,6 +392,35 @@ const InquiryDetail = () => {
                 />
               </div>
 
+              <div className="space-y-3 pt-4 border-t border-border">
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <Checkbox
+                    checked={form.accepts_info_emails}
+                    onCheckedChange={(v) => update("accepts_info_emails", v === true)}
+                    className="mt-0.5"
+                  />
+                  <div className="text-sm">
+                    <p className="font-medium text-foreground">Accepts product information emails</p>
+                    <p className="text-xs text-muted-foreground">
+                      Allow sending information about products, technical updates, and follow-ups.
+                    </p>
+                  </div>
+                </label>
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <Checkbox
+                    checked={form.accepts_marketing}
+                    onCheckedChange={(v) => update("accepts_marketing", v === true)}
+                    className="mt-0.5"
+                  />
+                  <div className="text-sm">
+                    <p className="font-medium text-foreground">Accepts marketing emails</p>
+                    <p className="text-xs text-muted-foreground">
+                      Allow sending newsletters, promotions, and announcements.
+                    </p>
+                  </div>
+                </label>
+              </div>
+
               <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted-foreground pt-2 border-t border-border">
                 <span>
                   Submitted {format(new Date(inquiry.created_at), "MMM d, yyyy 'at' h:mm a")}
@@ -499,34 +528,6 @@ const InquiryDetail = () => {
                 </div>
               </div>
 
-              <div className="space-y-3 pt-4 border-t border-border">
-                <label className="flex items-start gap-3 cursor-pointer">
-                  <Checkbox
-                    checked={form.accepts_info_emails}
-                    onCheckedChange={(v) => update("accepts_info_emails", v === true)}
-                    className="mt-0.5"
-                  />
-                  <div className="text-sm">
-                    <p className="font-medium text-foreground">Accepts product information emails</p>
-                    <p className="text-xs text-muted-foreground">
-                      Allow sending information about products, technical updates, and follow-ups.
-                    </p>
-                  </div>
-                </label>
-                <label className="flex items-start gap-3 cursor-pointer">
-                  <Checkbox
-                    checked={form.accepts_marketing}
-                    onCheckedChange={(v) => update("accepts_marketing", v === true)}
-                    className="mt-0.5"
-                  />
-                  <div className="text-sm">
-                    <p className="font-medium text-foreground">Accepts marketing emails</p>
-                    <p className="text-xs text-muted-foreground">
-                      Allow sending newsletters, promotions, and announcements.
-                    </p>
-                  </div>
-                </label>
-              </div>
             </div>
           </Card>
         </div>
