@@ -12,6 +12,7 @@ import {
   ExternalLink,
   Loader2,
   Image as ImageIcon,
+  Palette,
   Check,
   Copy,
 } from "lucide-react";
@@ -83,11 +84,16 @@ export default function Brand() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Brand</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Manage your visual identity — favicons, logos, fonts, and design tokens.
-        </p>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <Palette className="h-6 w-6 text-primary" />
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Brand</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Manage your visual identity — favicons, logos, fonts, and design tokens.
+            </p>
+          </div>
+        </div>
       </div>
 
       <Tabs defaultValue="assets">
