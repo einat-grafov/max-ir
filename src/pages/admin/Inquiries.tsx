@@ -86,7 +86,7 @@ const Inquiries = () => {
               inquiries.map((inq) => (
                 <TableRow
                   key={inq.id}
-                  className={`cursor-pointer hover:bg-muted/50 ${!inq.read ? "bg-primary/5" : ""}`}
+                  className="cursor-pointer hover:bg-muted/50"
                   onClick={() => navigate(`/admin/inquiries/${inq.id}`)}
                 >
                   <TableCell>
