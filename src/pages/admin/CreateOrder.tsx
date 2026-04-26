@@ -188,6 +188,13 @@ const CreateOrder = () => {
       return;
     }
 
+    if (taxAddress.country === "US" && !taxAddress.postal_code?.trim()) {
+      setTaxAmount(0);
+      setTaxJurisdiction(null);
+      setTaxError("ZIP code required for US tax calculation");
+      return;
+    }
+
     const handle = setTimeout(async () => {
       setTaxLoading(true);
       setTaxError(null);
@@ -872,7 +879,10 @@ const CreateOrder = () => {
           <DialogFooter>
             <Button variant="outline" onClick={() => setTaxAddressModalOpen(false)}>Cancel</Button>
             <Button
-              disabled={!tempTaxAddress.country}
+              disabled={
+                !tempTaxAddress.country ||
+                (tempTaxAddress.country === "US" && !tempTaxAddress.postal_code?.trim())
+              }
               onClick={() => {
                 setTaxAddress({ ...tempTaxAddress });
                 setTaxAddressModalOpen(false);
