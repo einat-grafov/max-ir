@@ -333,6 +333,25 @@ export const LAYOUT_TEMPLATES: LayoutTemplate[] = [
       },
     ],
   },
+  {
+    id: "legal_document",
+    name: "Legal Document",
+    category: "content",
+    fields: [
+      { key: "title", label: "Page Title", type: "text" },
+      { key: "effective_date", label: "Effective Date Line", type: "text" },
+      { key: "intro", label: "Intro Paragraph (optional)", type: "textarea" },
+      {
+        key: "sections",
+        label: "Sections",
+        type: "items",
+        itemFields: [
+          { key: "heading", label: "Heading", type: "text" },
+          { key: "body", label: "Body (HTML supported: <p>, <ul>, <li>, <a>, <strong>, <h3>, <code>, <address>)", type: "textarea" },
+        ],
+      },
+    ],
+  },
 ];
 
 export function getDefaultContent(templateId: string): Record<string, any> {

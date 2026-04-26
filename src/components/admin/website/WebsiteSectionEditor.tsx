@@ -507,9 +507,9 @@ const ListSectionFields = ({
               {itemFields.map((field) => {
                 const isImg = isImageField(field);
                 return (
-                  <div key={field} className={field === "description" || field === "bio" || field === "content" ? "col-span-2" : ""}>
+                  <div key={field} className={field === "description" || field === "bio" || field === "content" || field === "body" ? "col-span-2" : ""}>
                     <Label className="text-xs text-muted-foreground capitalize">{field.replace(/_/g, " ")}</Label>
-                    {field === "description" || field === "bio" || field === "content" ? (
+                    {field === "description" || field === "bio" || field === "content" || field === "body" ? (
                       <Textarea
                         value={item[field] || ""}
                         onChange={(e) =>
@@ -519,8 +519,8 @@ const ListSectionFields = ({
                             return updated;
                           })
                         }
-                        rows={2}
-                        className="mt-1"
+                        rows={field === "body" ? 8 : 2}
+                        className="mt-1 font-mono text-xs"
                       />
                     ) : (
                       <ListItemInput
