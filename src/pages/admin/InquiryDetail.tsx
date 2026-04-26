@@ -455,8 +455,8 @@ const InquiryDetail = () => {
                     </SelectTrigger>
                     <SelectContent>
                       {US_STATES.map((s) => (
-                        <SelectItem key={s.code} value={s.name}>
-                          {s.name}
+                        <SelectItem key={s} value={s}>
+                          {s}
                         </SelectItem>
                       ))}
                     </SelectContent>
