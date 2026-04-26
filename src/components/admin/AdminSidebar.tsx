@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const mainItems = [
-  { title: "General", url: "/admin/home", icon: Home },
+  { title: "Overview", url: "/admin/home", icon: Home },
   { title: "Leads", url: "/admin/inquiries", icon: MessageSquare },
   { title: "Orders", url: "/admin/orders", icon: ShoppingCart },
   { title: "Products", url: "/admin/products", icon: Package },
