@@ -43,7 +43,7 @@ const Inquiries = () => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <Inbox className="h-6 w-6 text-foreground" />
+          <Inbox className="h-6 w-6 text-primary" />
           <div>
             <h1 className="text-2xl font-bold text-foreground">Leads</h1>
             <p className="text-muted-foreground text-sm mt-1">
