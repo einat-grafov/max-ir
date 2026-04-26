@@ -794,6 +794,96 @@ const CreateOrder = () => {
         defaultPostalCode=""
       />
 
+      {/* Tax address modal */}
+      <Dialog open={taxAddressModalOpen} onOpenChange={setTaxAddressModalOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Tax address</DialogTitle>
+            <DialogDescription>
+              Used to calculate sales tax / VAT for this order via Stripe Tax.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 pt-2">
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">Country</label>
+              <Select
+                value={tempTaxAddress.country}
+                onValueChange={(v) => setTempTaxAddress((a) => ({ ...a, country: v, state: "" }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {COUNTRIES.map((c) => (
+                    <SelectItem key={c.code} value={c.code}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">Address (optional)</label>
+              <Input
+                value={tempTaxAddress.line1 ?? ""}
+                onChange={(e) => setTempTaxAddress((a) => ({ ...a, line1: e.target.value }))}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">City</label>
+                <Input
+                  value={tempTaxAddress.city ?? ""}
+                  onChange={(e) => setTempTaxAddress((a) => ({ ...a, city: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">
+                  {tempTaxAddress.country === "US" ? "State" : "State / Region"}
+                </label>
+                {tempTaxAddress.country === "US" ? (
+                  <Select
+                    value={tempTaxAddress.state ?? ""}
+                    onValueChange={(v) => setTempTaxAddress((a) => ({ ...a, state: v }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select state" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {US_STATES.map((s) => (
+                        <SelectItem key={s.code} value={s.code}>{s.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input
+                    value={tempTaxAddress.state ?? ""}
+                    onChange={(e) => setTempTaxAddress((a) => ({ ...a, state: e.target.value }))}
+                  />
+                )}
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">Postal code</label>
+              <Input
+                value={tempTaxAddress.postal_code ?? ""}
+                onChange={(e) => setTempTaxAddress((a) => ({ ...a, postal_code: e.target.value }))}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setTaxAddressModalOpen(false)}>Cancel</Button>
+            <Button
+              disabled={!tempTaxAddress.country}
+              onClick={() => {
+                setTaxAddress({ ...tempTaxAddress });
+                setTaxAddressModalOpen(false);
+              }}
+            >
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Leave confirmation */}
       <Dialog open={blocker.state === "blocked"} onOpenChange={(open) => { if (!open) blocker.reset?.(); }}>
         <DialogContent className="max-w-md">
