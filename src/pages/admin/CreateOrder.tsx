@@ -32,6 +32,7 @@ import CreateCustomerModal from "@/components/admin/CreateCustomerModal";
 import CustomerSearchModal from "@/components/admin/CustomerSearchModal";
 import SendInvoiceModal from "@/components/admin/SendInvoiceModal";
 import OrderTimeline from "@/components/admin/OrderTimeline";
+import { COUNTRIES, US_STATES } from "@/lib/countries";
 
 interface OrderProduct {
   id: string;
@@ -41,6 +42,14 @@ interface OrderProduct {
   quantity: number;
   taxExempt?: boolean;
   outOfStock?: boolean;
+}
+
+interface TaxAddress {
+  line1?: string;
+  city?: string;
+  state?: string;
+  postal_code?: string;
+  country: string; // ISO-2
 }
 
 const CreateOrder = () => {
