@@ -599,10 +599,25 @@ const CreateOrder = () => {
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-4 px-4 py-3 text-sm">
-                <span className="text-primary cursor-pointer hover:underline flex items-center gap-1">
-                  Estimated tax <Info className="h-3.5 w-3.5 text-muted-foreground" />
+                <span
+                  className="text-primary cursor-pointer hover:underline flex items-center gap-1"
+                  onClick={() => {
+                    setTempTaxAddress(taxAddress ?? { country: "US" });
+                    setTaxAddressModalOpen(true);
+                  }}
+                >
+                  {taxAddress ? "Edit tax address" : "Add tax address"}{" "}
+                  <Info className="h-3.5 w-3.5 text-muted-foreground" />
                 </span>
-                <span className="text-muted-foreground">VAT 18%</span>
+                <span className="text-muted-foreground">
+                  {taxLoading
+                    ? "Calculating…"
+                    : taxError
+                    ? <span className="text-destructive">{taxError}</span>
+                    : !taxAddress
+                    ? (selectedCustomer ? "Add address" : "Select customer")
+                    : (taxJurisdiction ?? "—")}
+                </span>
                 <span className="text-right text-foreground">{fmt(tax)}</span>
               </div>
               <div className="grid grid-cols-3 gap-4 px-4 py-3 text-sm font-semibold">
