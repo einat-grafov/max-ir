@@ -345,6 +345,52 @@ const OrderDetail = () => {
             </Card>
           )}
 
+          {/* Stripe sync */}
+          <Card className="p-5">
+            <h2 className="text-base font-semibold text-foreground mb-3">Stripe</h2>
+            {order.stripe_invoice_id ? (
+              <div className="space-y-2">
+                <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-200">
+                  Synced — {order.stripe_invoice_status || "draft"}
+                </Badge>
+                {order.stripe_invoice_url && (
+                  <a
+                    href={order.stripe_invoice_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block text-sm text-primary hover:underline"
+                  >
+                    View invoice in Stripe →
+                  </a>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Not synced to Stripe yet.</p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={async () => {
+                    const t = toast.loading("Syncing to Stripe…");
+                    const { data, error } = await supabase.functions.invoke(
+                      "create-stripe-invoice",
+                      { body: { orderId: id! } },
+                    );
+                    toast.dismiss(t);
+                    if (error || data?.error) {
+                      toast.error(error?.message || data?.error || "Sync failed");
+                      return;
+                    }
+                    toast.success("Synced to Stripe");
+                    queryClient.invalidateQueries({ queryKey: ["order-detail", id] });
+                  }}
+                >
+                  Sync to Stripe
+                </Button>
+              </div>
+            )}
+          </Card>
+
           {/* Customer */}
           <Card className="p-5">
             <h2 className="text-base font-semibold text-foreground mb-3">Customer</h2>
