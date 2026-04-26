@@ -118,6 +118,116 @@ const CreateOrder = () => {
     }
   }, []);
 
+  // Fetch customer address whenever customer changes
+  useEffect(() => {
+    if (!selectedCustomer) {
+      setTaxAddress(null);
+      setTaxAmount(0);
+      setTaxJurisdiction(null);
+      setTaxError(null);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("customers")
+        .select("address, city, state, postal_code, country")
+        .eq("id", selectedCustomer.id)
+        .maybeSingle();
+      if (cancelled) return;
+      if (data && data.country) {
+        const code =
+          COUNTRIES.find((c) => c.name === data.country)?.code ||
+          (data.country.length === 2 ? data.country.toUpperCase() : "");
+        if (code) {
+          setTaxAddress({
+            line1: data.address || undefined,
+            city: data.city || undefined,
+            state: data.state || undefined,
+            postal_code: data.postal_code || undefined,
+            country: code,
+          });
+          return;
+        }
+      }
+      setTaxAddress(null);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedCustomer?.id]);
+
+  // Debounced tax calculation
+  useEffect(() => {
+    if (!taxAddress || products.length === 0) {
+      setTaxAmount(0);
+      setTaxJurisdiction(null);
+      setTaxError(null);
+      return;
+    }
+
+    const subtotalLocal = products.reduce((s, p) => s + p.price * p.quantity, 0);
+    const discountLocal = discount
+      ? discount.type === "amount"
+        ? discount.value
+        : Math.round(subtotalLocal * (discount.value / 100) * 100) / 100
+      : 0;
+    const factor = subtotalLocal > 0 ? (subtotalLocal - discountLocal) / subtotalLocal : 1;
+
+    const lineItems = products
+      .filter((p) => !p.taxExempt)
+      .map((p) => ({
+        amount: Math.round(p.price * p.quantity * factor * 100) / 100,
+        reference: p.id,
+      }));
+
+    if (lineItems.length === 0) {
+      setTaxAmount(0);
+      setTaxJurisdiction("Tax exempt");
+      setTaxError(null);
+      return;
+    }
+
+    const handle = setTimeout(async () => {
+      setTaxLoading(true);
+      setTaxError(null);
+      try {
+        const { data, error } = await supabase.functions.invoke("calculate-tax", {
+          body: {
+            currency: "usd",
+            customer_address: taxAddress,
+            line_items: lineItems,
+            shipping_cost: shippingRate?.price ?? 0,
+          },
+        });
+        if (error) throw error;
+        if (data?.error) throw new Error(data.error);
+        setTaxAmount(Number(data?.tax_amount ?? 0));
+        const breakdown = (data?.breakdown ?? []) as Array<{
+          tax_rate_details?: { display_name?: string; percentage_decimal?: string; jurisdiction?: { display_name?: string } };
+        }>;
+        const first = breakdown[0]?.tax_rate_details;
+        const jurisdiction = first
+          ? `${first.jurisdiction?.display_name ?? first.display_name ?? "Tax"}${
+              first.percentage_decimal ? ` ${first.percentage_decimal}%` : ""
+            }`
+          : data?.tax_amount > 0
+          ? "Calculated"
+          : "No tax";
+        setTaxJurisdiction(jurisdiction);
+      } catch (err: any) {
+        setTaxAmount(0);
+        setTaxJurisdiction(null);
+        setTaxError(err?.message || "Failed to calculate tax");
+      } finally {
+        setTaxLoading(false);
+      }
+    }, 600);
+
+    return () => clearTimeout(handle);
+  }, [products, discount, shippingRate, taxAddress]);
+
+
   const handleCreateOrder = async () => {
     if (!canSubmit || !selectedCustomer) return;
     setSaving(true);
