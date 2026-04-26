@@ -348,10 +348,21 @@ const CreateOrder = () => {
   };
 
   const setQuantity = (id: string, val: string) => {
-    const num = parseInt(val);
+    // Allow empty input while typing; treat as 1 only on blur
+    if (val === "") {
+      setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, quantity: 0 } : p)));
+      return;
+    }
+    const num = parseInt(val, 10);
     if (!isNaN(num) && num >= 1) {
       setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, quantity: num } : p)));
     }
+  };
+
+  const commitQuantity = (id: string) => {
+    setProducts((prev) =>
+      prev.map((p) => (p.id === id && (!p.quantity || p.quantity < 1) ? { ...p, quantity: 1 } : p))
+    );
   };
 
   const removeProduct = (id: string) => {
