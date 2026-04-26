@@ -177,12 +177,14 @@ const CreateOrder = () => {
       : 0;
     const factor = subtotalLocal > 0 ? (subtotalLocal - discountLocal) / subtotalLocal : 1;
 
-    const lineItems = products
-      .filter((p) => !p.taxExempt)
-      .map((p) => ({
-        amount: Math.round(p.price * p.quantity * factor * 100) / 100,
-        reference: p.id,
-      }));
+    // Note: we intentionally do NOT filter by `taxExempt` here.
+    // In this project the product `tax_exempt` flag is reused for "hide price on
+    // public page". For manual admin orders we always want Stripe Tax to compute
+    // the real tax across all line items.
+    const lineItems = products.map((p) => ({
+      amount: Math.round(p.price * p.quantity * factor * 100) / 100,
+      reference: p.id,
+    }));
 
     if (lineItems.length === 0) {
       setTaxAmount(0);
@@ -276,6 +278,23 @@ const CreateOrder = () => {
 
       const { error: itemsError } = await supabase.from("order_items").insert(items);
       if (itemsError) throw itemsError;
+
+      // Sync to Stripe as an invoice (so it shows in the Stripe dashboard
+      // and tax is officially recorded in Stripe Tax).
+      try {
+        const { data: syncData, error: syncError } = await supabase.functions.invoke(
+          "create-stripe-invoice",
+          { body: { orderId: order.id } },
+        );
+        if (syncError || syncData?.error) {
+          throw new Error(syncError?.message || syncData?.error || "Stripe sync failed");
+        }
+      } catch (syncErr: any) {
+        // Order is saved locally; surface a non-blocking warning.
+        toast.warning(
+          `Order created, but Stripe sync failed: ${syncErr?.message || "unknown error"}. You can retry from the order page.`,
+        );
+      }
 
       // Send order confirmation email
       if (sendConfirmationEmail && selectedCustomer.email) {
