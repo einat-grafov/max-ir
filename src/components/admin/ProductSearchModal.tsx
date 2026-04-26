@@ -12,9 +12,25 @@ import { Search, Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-interface Product {
+interface ProductRow {
   id: string;
   name: string;
+  price: number;
+  stock: number;
+  sku: string | null;
+  image_url: string | null;
+  requires_shipping: boolean;
+  tax_exempt: boolean;
+  variants: any;
+}
+
+// Flat row representing either a base product or a single variant
+export interface SelectableProduct {
+  id: string;          // unique row id (productId or productId::variantName)
+  productId: string;   // underlying product id
+  name: string;        // display name (with variant suffix if any)
+  variantName?: string;
+  sku: string | null;
   price: number;
   stock: number;
   image_url: string | null;
@@ -25,12 +41,52 @@ interface Product {
 interface ProductSearchModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAddProducts: (products: Product[]) => void;
+  onAddProducts: (products: SelectableProduct[]) => void;
 }
+
+const expandRows = (rows: ProductRow[]): SelectableProduct[] => {
+  const out: SelectableProduct[] = [];
+  for (const r of rows) {
+    const variants = Array.isArray(r.variants) ? r.variants : [];
+    if (variants.length > 0) {
+      for (const v of variants) {
+        const vName = (v?.name ?? "").toString();
+        const vPrice = Number(v?.price ?? r.price) || 0;
+        const vStock = Number(v?.stock ?? 0) || 0;
+        const vSku = (v?.sku ?? null) as string | null;
+        out.push({
+          id: `${r.id}::${vName}`,
+          productId: r.id,
+          name: vName ? `${r.name} – ${vName}` : r.name,
+          variantName: vName || undefined,
+          sku: vSku,
+          price: vPrice,
+          stock: vStock,
+          image_url: r.image_url,
+          requires_shipping: r.requires_shipping,
+          tax_exempt: r.tax_exempt,
+        });
+      }
+    } else {
+      out.push({
+        id: r.id,
+        productId: r.id,
+        name: r.name,
+        sku: r.sku,
+        price: r.price,
+        stock: r.stock,
+        image_url: r.image_url,
+        requires_shipping: r.requires_shipping,
+        tax_exempt: r.tax_exempt,
+      });
+    }
+  }
+  return out;
+};
 
 const ProductSearchModal = ({ open, onOpenChange, onAddProducts }: ProductSearchModalProps) => {
   const [search, setSearch] = useState("");
-  const [products, setProducts] = useState<Product[]>([]);
+  const [items, setItems] = useState<SelectableProduct[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
 
@@ -50,12 +106,14 @@ const ProductSearchModal = ({ open, onOpenChange, onAddProducts }: ProductSearch
 
   const fetchProducts = async () => {
     setLoading(true);
-    let query = supabase.from("products").select("id, name, price, stock, image_url, requires_shipping, tax_exempt");
+    let query = supabase
+      .from("products")
+      .select("id, name, price, stock, sku, image_url, requires_shipping, tax_exempt, variants");
     if (search.trim()) {
       query = query.ilike("name", `%${search.trim()}%`);
     }
     const { data } = await query.order("name").limit(50);
-    setProducts((data as Product[]) || []);
+    setItems(expandRows((data as ProductRow[]) || []));
     setLoading(false);
   };
 
@@ -69,8 +127,8 @@ const ProductSearchModal = ({ open, onOpenChange, onAddProducts }: ProductSearch
   };
 
   const handleAdd = () => {
-    const selectedProducts = products.filter((p) => selected.has(p.id));
-    onAddProducts(selectedProducts);
+    const selectedItems = items.filter((p) => selected.has(p.id));
+    onAddProducts(selectedItems);
     onOpenChange(false);
   };
 
@@ -111,10 +169,10 @@ const ProductSearchModal = ({ open, onOpenChange, onAddProducts }: ProductSearch
             {loading && (
               <p className="text-sm text-muted-foreground py-8 text-center">Loading...</p>
             )}
-            {!loading && products.length === 0 && (
+            {!loading && items.length === 0 && (
               <p className="text-sm text-muted-foreground py-8 text-center">No products found.</p>
             )}
-            {products.map((product) => (
+            {items.map((product) => (
               <div key={product.id}>
                 <div
                   className="grid grid-cols-[auto_1fr_auto_auto] gap-4 items-center py-3 border-b border-border cursor-pointer hover:bg-muted/50 transition-colors"
@@ -125,7 +183,7 @@ const ProductSearchModal = ({ open, onOpenChange, onAddProducts }: ProductSearch
                     onCheckedChange={() => toggleSelect(product.id)}
                     className="w-5 h-5"
                   />
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
                     <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
                       {product.image_url ? (
                         <img src={product.image_url} alt={product.name} className="h-10 w-10 rounded-lg object-cover" />
@@ -133,7 +191,12 @@ const ProductSearchModal = ({ open, onOpenChange, onAddProducts }: ProductSearch
                         <Package className="h-5 w-5 text-muted-foreground" />
                       )}
                     </div>
-                    <span className="text-sm font-medium text-foreground">{product.name}</span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{product.name}</p>
+                      {product.sku && (
+                        <p className="text-xs text-muted-foreground truncate">SKU: {product.sku}</p>
+                      )}
+                    </div>
                   </div>
                   <span className="w-20 text-center text-sm text-foreground">{product.stock}</span>
                   <span className="w-32 text-right text-sm text-foreground">{fmt(product.price)}</span>
@@ -153,7 +216,7 @@ const ProductSearchModal = ({ open, onOpenChange, onAddProducts }: ProductSearch
         {/* Footer */}
         <div className="flex items-center justify-between pt-4 border-t border-border shrink-0">
           <span className="text-sm text-muted-foreground">
-            {selected.size}/{products.length} variants selected
+            {selected.size}/{items.length} variants selected
           </span>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)}>
