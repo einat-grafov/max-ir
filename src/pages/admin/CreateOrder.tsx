@@ -188,6 +188,13 @@ const CreateOrder = () => {
       return;
     }
 
+    if (taxAddress.country === "US" && !taxAddress.postal_code?.trim()) {
+      setTaxAmount(0);
+      setTaxJurisdiction(null);
+      setTaxError("ZIP code required for US tax calculation");
+      return;
+    }
+
     const handle = setTimeout(async () => {
       setTaxLoading(true);
       setTaxError(null);
