@@ -879,7 +879,10 @@ const CreateOrder = () => {
           <DialogFooter>
             <Button variant="outline" onClick={() => setTaxAddressModalOpen(false)}>Cancel</Button>
             <Button
-              disabled={!tempTaxAddress.country}
+              disabled={
+                !tempTaxAddress.country ||
+                (tempTaxAddress.country === "US" && !tempTaxAddress.postal_code?.trim())
+              }
               onClick={() => {
                 setTaxAddress({ ...tempTaxAddress });
                 setTaxAddressModalOpen(false);
