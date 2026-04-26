@@ -43,7 +43,7 @@ const Inquiries = () => {
     <div className="p-6 lg:p-8 max-w-[1400px]">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Inquiries</h1>
+          <h1 className="text-2xl font-bold text-foreground">Leads</h1>
           <p className="text-muted-foreground text-sm mt-1">
             {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
           </p>
@@ -79,7 +79,7 @@ const Inquiries = () => {
             ) : !inquiries?.length ? (
               <TableRow>
                 <TableCell colSpan={7} className="text-center text-muted-foreground py-12">
-                  No inquiries yet
+                  No leads yet
                 </TableCell>
               </TableRow>
             ) : (

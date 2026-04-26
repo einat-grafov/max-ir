@@ -44,7 +44,7 @@ const mainItems = [
   { title: "Customers", url: "/admin/customers", icon: Users },
   { title: "Website", url: "/admin/website", icon: Globe },
   { title: "Brand", url: "/admin/brand", icon: Palette },
-  { title: "Inquiries", url: "/admin/inquiries", icon: MessageSquare },
+  { title: "Leads", url: "/admin/inquiries", icon: MessageSquare },
   { title: "Careers", url: "/admin/careers", icon: Briefcase },
 ];
 
