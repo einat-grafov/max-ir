@@ -447,7 +447,10 @@ const InquiryDetail = () => {
 
           {/* Shipping address */}
           <Card className="p-6">
-            <h2 className="text-base font-semibold text-foreground mb-4">Shipping address</h2>
+            <h2 className="text-base font-semibold text-foreground mb-1">Shipping address</h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              These fields are required to create an order for this lead.
+            </p>
             <div className="space-y-4">
               <div>
                 <Label className="text-sm font-medium text-foreground">Country / region</Label>
