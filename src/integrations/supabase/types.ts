@@ -537,6 +537,11 @@ export type Database = {
       }
       inquiries: {
         Row: {
+          accepts_info_emails: boolean
+          accepts_marketing: boolean
+          address: string | null
+          apartment: string | null
+          city: string | null
           company_name: string | null
           country: string | null
           created_at: string
@@ -548,12 +553,18 @@ export type Database = {
           message: string
           name: string
           phone: string | null
+          postal_code: string | null
           product_id: string | null
           product_name: string
           read: boolean
           state: string | null
         }
         Insert: {
+          accepts_info_emails?: boolean
+          accepts_marketing?: boolean
+          address?: string | null
+          apartment?: string | null
+          city?: string | null
           company_name?: string | null
           country?: string | null
           created_at?: string
@@ -565,12 +576,18 @@ export type Database = {
           message: string
           name: string
           phone?: string | null
+          postal_code?: string | null
           product_id?: string | null
           product_name: string
           read?: boolean
           state?: string | null
         }
         Update: {
+          accepts_info_emails?: boolean
+          accepts_marketing?: boolean
+          address?: string | null
+          apartment?: string | null
+          city?: string | null
           company_name?: string | null
           country?: string | null
           created_at?: string
@@ -582,6 +599,7 @@ export type Database = {
           message?: string
           name?: string
           phone?: string | null
+          postal_code?: string | null
           product_id?: string | null
           product_name?: string
           read?: boolean
