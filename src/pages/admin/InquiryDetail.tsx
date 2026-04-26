@@ -377,13 +377,6 @@ const InquiryDetail = () => {
           {hasUnsavedChanges && (
             <span className="text-sm text-amber-600 font-medium animate-in fade-in">Unsaved changes</span>
           )}
-          <Button
-            variant="outline"
-            disabled={!hasUnsavedChanges}
-            onClick={handleDiscard}
-          >
-            Discard
-          </Button>
           <Button onClick={handleSave} disabled={saving || !hasUnsavedChanges}>
             {saving ? "Saving..." : "Save changes"}
           </Button>
