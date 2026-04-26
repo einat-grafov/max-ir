@@ -348,10 +348,21 @@ const CreateOrder = () => {
   };
 
   const setQuantity = (id: string, val: string) => {
-    const num = parseInt(val);
+    // Allow empty input while typing; treat as 1 only on blur
+    if (val === "") {
+      setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, quantity: 0 } : p)));
+      return;
+    }
+    const num = parseInt(val, 10);
     if (!isNaN(num) && num >= 1) {
       setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, quantity: num } : p)));
     }
+  };
+
+  const commitQuantity = (id: string) => {
+    setProducts((prev) =>
+      prev.map((p) => (p.id === id && (!p.quantity || p.quantity < 1) ? { ...p, quantity: 1 } : p))
+    );
   };
 
   const removeProduct = (id: string) => {
@@ -509,8 +520,9 @@ const CreateOrder = () => {
                       </div>
                       <div className="w-24 flex items-center border border-input rounded-md">
                         <Input
-                          value={product.quantity}
+                          value={product.quantity === 0 ? "" : product.quantity}
                           onChange={(e) => setQuantity(product.id, e.target.value)}
+                          onBlur={() => commitQuantity(product.id)}
                           className="border-0 text-center h-8 p-0 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           type="number"
                           min={1}
