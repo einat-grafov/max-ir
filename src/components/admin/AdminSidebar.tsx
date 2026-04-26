@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 import {
@@ -67,9 +68,34 @@ export function AdminSidebar() {
   const collapsed = state === "collapsed";
   const location = useLocation();
   const navigate = useNavigate();
+  const [unreadInquiries, setUnreadInquiries] = useState(0);
   // Sidebar groups are always expanded — no collapse state.
 
   const isActive = (path: string) => location.pathname === path;
+
+  useEffect(() => {
+    let active = true;
+    const fetchUnread = async () => {
+      const { count } = await supabase
+        .from("inquiries")
+        .select("id", { count: "exact", head: true })
+        .eq("read", false);
+      if (active) setUnreadInquiries(count ?? 0);
+    };
+    fetchUnread();
+    const channel = supabase
+      .channel("admin-sidebar-inquiries")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "inquiries" },
+        () => fetchUnread(),
+      )
+      .subscribe();
+    return () => {
+      active = false;
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -95,52 +121,44 @@ export function AdminSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.url}
-                      className={`flex items-center gap-3 px-4 py-2.5 text-sm rounded-md transition-colors mx-2 ${
-                        isActive(item.url)
-                          ? "bg-primary/10 text-primary"
-                          : "text-maxir-gray hover:text-maxir-white hover:bg-white/5"
-                      }`}
-                      activeClassName=""
-                    >
-                      <item.icon className="h-4 w-4 shrink-0" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-maxir-gray text-xs uppercase tracking-wider px-4 mb-1">
-            Optimization
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {optimizationItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.url}
-                      className={`flex items-center gap-3 px-4 py-2.5 text-sm rounded-md transition-colors mx-2 ${
-                        isActive(item.url)
-                          ? "bg-primary/10 text-primary"
-                          : "text-maxir-gray hover:text-maxir-white hover:bg-white/5"
-                      }`}
-                      activeClassName=""
-                    >
-                      <item.icon className="h-4 w-4 shrink-0" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {mainItems.map((item) => {
+                const badge =
+                  item.url === "/admin/inquiries" && unreadInquiries > 0
+                    ? unreadInquiries
+                    : 0;
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <NavLink
+                        to={item.url}
+                        className={`flex items-center gap-3 px-4 py-2.5 text-sm rounded-md transition-colors mx-2 ${
+                          isActive(item.url)
+                            ? "bg-primary/10 text-primary"
+                            : "text-maxir-gray hover:text-maxir-white hover:bg-white/5"
+                        }`}
+                        activeClassName=""
+                      >
+                        <span className="relative shrink-0">
+                          <item.icon className="h-4 w-4" />
+                          {badge > 0 && collapsed && (
+                            <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-primary" />
+                          )}
+                        </span>
+                        {!collapsed && (
+                          <>
+                            <span className="flex-1">{item.title}</span>
+                            {badge > 0 && (
+                              <span className="ml-auto inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
+                                {badge > 99 ? "99+" : badge}
+                              </span>
+                            )}
+                          </>
+                        )}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
