@@ -485,13 +485,17 @@ const ProductDetail = () => {
                             }));
                           addItems(cartItems);
                         } else {
+                          const fallbackVariant = (Array.isArray(product.variants) ? (product.variants as ProductVariant[])[0] : null);
+                          const stripePriceId = fallbackVariant?.stripe_price_id ?? null;
+                          const livePrice = stripePriceId && stripePrices?.[stripePriceId]?.unitAmount;
                           addItems([{
                             productId: product.id,
                             productName: product.name,
                             variantName: product.name,
                             sku: product.sku || undefined,
-                            price: product.price,
+                            price: typeof livePrice === "number" ? livePrice : product.price,
                             quantity: 1,
+                            stripePriceId,
                           }]);
                         }
                         toast({ title: "Added to cart", description: `${product.name} has been added to your cart.` });
