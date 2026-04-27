@@ -8,9 +8,21 @@ import { toast } from "sonner";
 import { COUNTRIES } from "@/lib/countries";
 import { useShippingRates, type ShippingRate } from "@/hooks/useShippingRates";
 import { StripeEmbeddedCheckoutInline } from "@/components/StripeEmbeddedCheckout";
+import { useStripePrices } from "@/hooks/useStripePrices";
 
 const Cart = () => {
-  const { items, updateQuantity, removeItem, clearCart, totalItems, totalPrice } = useCart();
+  const { items: rawItems, updateQuantity, removeItem, clearCart } = useCart();
+
+  // Refresh prices from Stripe (source of truth) for any item with a stripePriceId
+  const priceIds = rawItems.map((i) => i.stripePriceId).filter((s): s is string => !!s);
+  const { data: stripePrices } = useStripePrices(priceIds);
+
+  const items = rawItems.map((i) => {
+    const sp = i.stripePriceId ? stripePrices?.[i.stripePriceId] : undefined;
+    return sp && typeof sp.unitAmount === "number" ? { ...i, price: sp.unitAmount } : i;
+  });
+  const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
+  const totalPrice = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
   const [checkFinal, setCheckFinal] = useState(false);
   const [checkBundled, setCheckBundled] = useState(false);
   const [checkTerms, setCheckTerms] = useState(false);
