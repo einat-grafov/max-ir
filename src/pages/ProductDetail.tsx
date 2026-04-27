@@ -611,7 +611,7 @@ const ProductDetail = () => {
               return variants.map((v, i) => ({
                 name: v.name,
                 sku: v.sku,
-                price: v.price,
+                price: String(getVariantPrice(v)),
                 quantity: selectedVariants[i] ?? 1,
               } as SelectedVariantItem));
             })()}
