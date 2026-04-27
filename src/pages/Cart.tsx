@@ -70,6 +70,9 @@ const Cart = () => {
       return;
     }
     setShowCheckout(true);
+    setTimeout(() => {
+      document.getElementById("payment-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
   };
 
   const checkoutItems = useMemo(() => items.map((i) => ({ ...i })), [items]);
