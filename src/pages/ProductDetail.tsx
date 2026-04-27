@@ -384,8 +384,8 @@ const ProductDetail = () => {
                                       )}
                                     </div>
                                     <div className="flex items-center gap-4 shrink-0">
-                                      {!product.tax_exempt && parseFloat(v.price) > 0 && (
-                                        <span className="text-sm font-bold text-foreground">{formatPrice(parseFloat(v.price))}</span>
+                                      {!product.tax_exempt && getVariantPrice(v) > 0 && (
+                                        <span className="text-sm font-bold text-foreground">{formatPrice(getVariantPrice(v))}</span>
                                       )}
                                       {outOfStock ? (
                                         <button
@@ -423,7 +423,7 @@ const ProductDetail = () => {
                             const inStockVariants = variants.map((v, i) => ({ v, i })).filter(({ v }) => !isOutOfStock(v));
                             const totalItems = inStockVariants.reduce((sum, { i }) => sum + (selectedVariants[i] ?? 0), 0);
                              const totalPrice = inStockVariants.reduce((sum, { v, i }) => {
-                               const price = parseFloat(v.price || "0");
+                               const price = getVariantPrice(v);
                                const qty = selectedVariants[i] ?? 0;
                               return sum + price * qty;
                             }, 0);
@@ -479,7 +479,7 @@ const ProductDetail = () => {
                               productName: product.name,
                               variantName: v.name,
                               sku: v.sku || undefined,
-                              price: parseFloat(v.price) || 0,
+                              price: getVariantPrice(v),
                               quantity: selectedVariants[i] ?? 0,
                             }));
                           addItems(cartItems);
