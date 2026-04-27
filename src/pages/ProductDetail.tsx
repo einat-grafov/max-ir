@@ -135,6 +135,16 @@ const ProductDetail = () => {
     return (product.variants as ProductVariant[]).filter(v => v.name?.trim());
   };
 
+  const variantPriceIds = product ? getVariants(product).map((v) => v.stripe_price_id).filter((s): s is string => !!s) : [];
+  const { data: stripePrices } = useStripePrices(variantPriceIds);
+
+  /** Stripe price (source of truth) → DB price fallback */
+  const getVariantPrice = (v: ProductVariant): number => {
+    const sp = v.stripe_price_id ? stripePrices?.[v.stripe_price_id] : undefined;
+    if (sp && typeof sp.unitAmount === "number") return sp.unitAmount;
+    return parseFloat(v.price) || 0;
+  };
+
   const getSpecs = (product: Product): { label: string; value: string }[] => {
     if (!product.specifications || !Array.isArray(product.specifications)) return [];
     return (product.specifications as { label: string; value: string }[]).filter(
