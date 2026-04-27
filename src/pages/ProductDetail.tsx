@@ -481,6 +481,7 @@ const ProductDetail = () => {
                               sku: v.sku || undefined,
                               price: getVariantPrice(v),
                               quantity: selectedVariants[i] ?? 0,
+                              stripePriceId: v.stripe_price_id ?? null,
                             }));
                           addItems(cartItems);
                         } else {
