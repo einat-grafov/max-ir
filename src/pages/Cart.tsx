@@ -428,6 +428,34 @@ const Cart = () => {
               </div>
             </div>
           )}
+
+          {showCheckout && items.length > 0 && (
+            <div id="payment-section" className="pb-20 -mt-4">
+              <div className="border border-border rounded-2xl p-6 md:p-8 bg-background">
+                <div className="flex items-center justify-between mb-5">
+                  <h2 className="text-lg font-bold text-foreground font-montserrat">Payment</h2>
+                  <button
+                    onClick={() => setShowCheckout(false)}
+                    className="text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    Cancel
+                  </button>
+                </div>
+                <StripeEmbeddedCheckoutInline
+                  items={checkoutItems}
+                  shippingRate={selectedRate!}
+                  shippingAddress={{
+                    postalCode: shipPostal,
+                    country: shipCountry,
+                    city: shipCity || undefined,
+                    state: shipState || undefined,
+                  }}
+                  customerEmail={customerEmail}
+                  returnUrl={`${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </main>
       <Footer />
