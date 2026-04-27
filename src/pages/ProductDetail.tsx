@@ -11,6 +11,7 @@ import { z } from "zod";
 import ProductInquiryForm, { type SelectedVariantItem } from "@/components/ProductInquiryForm";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
+import { useStripePrices } from "@/hooks/useStripePrices";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ interface ProductVariant {
   price: string;
   stock: string;
   sku: string;
+  stripe_price_id?: string | null;
 }
 
 interface Product {
@@ -131,6 +133,16 @@ const ProductDetail = () => {
   const getVariants = (product: Product): ProductVariant[] => {
     if (!product.variants || !Array.isArray(product.variants)) return [];
     return (product.variants as ProductVariant[]).filter(v => v.name?.trim());
+  };
+
+  const variantPriceIds = product ? getVariants(product).map((v) => v.stripe_price_id).filter((s): s is string => !!s) : [];
+  const { data: stripePrices } = useStripePrices(variantPriceIds);
+
+  /** Stripe price (source of truth) → DB price fallback */
+  const getVariantPrice = (v: ProductVariant): number => {
+    const sp = v.stripe_price_id ? stripePrices?.[v.stripe_price_id] : undefined;
+    if (sp && typeof sp.unitAmount === "number") return sp.unitAmount;
+    return parseFloat(v.price) || 0;
   };
 
   const getSpecs = (product: Product): { label: string; value: string }[] => {
@@ -372,8 +384,8 @@ const ProductDetail = () => {
                                       )}
                                     </div>
                                     <div className="flex items-center gap-4 shrink-0">
-                                      {!product.tax_exempt && parseFloat(v.price) > 0 && (
-                                        <span className="text-sm font-bold text-foreground">{formatPrice(parseFloat(v.price))}</span>
+                                      {!product.tax_exempt && getVariantPrice(v) > 0 && (
+                                        <span className="text-sm font-bold text-foreground">{formatPrice(getVariantPrice(v))}</span>
                                       )}
                                       {outOfStock ? (
                                         <button
@@ -411,7 +423,7 @@ const ProductDetail = () => {
                             const inStockVariants = variants.map((v, i) => ({ v, i })).filter(({ v }) => !isOutOfStock(v));
                             const totalItems = inStockVariants.reduce((sum, { i }) => sum + (selectedVariants[i] ?? 0), 0);
                              const totalPrice = inStockVariants.reduce((sum, { v, i }) => {
-                               const price = parseFloat(v.price || "0");
+                               const price = getVariantPrice(v);
                                const qty = selectedVariants[i] ?? 0;
                               return sum + price * qty;
                             }, 0);
@@ -467,18 +479,23 @@ const ProductDetail = () => {
                               productName: product.name,
                               variantName: v.name,
                               sku: v.sku || undefined,
-                              price: parseFloat(v.price) || 0,
+                              price: getVariantPrice(v),
                               quantity: selectedVariants[i] ?? 0,
+                              stripePriceId: v.stripe_price_id ?? null,
                             }));
                           addItems(cartItems);
                         } else {
+                          const fallbackVariant = (Array.isArray(product.variants) ? (product.variants as ProductVariant[])[0] : null);
+                          const stripePriceId = fallbackVariant?.stripe_price_id ?? null;
+                          const livePrice = stripePriceId && stripePrices?.[stripePriceId]?.unitAmount;
                           addItems([{
                             productId: product.id,
                             productName: product.name,
                             variantName: product.name,
                             sku: product.sku || undefined,
-                            price: product.price,
+                            price: typeof livePrice === "number" ? livePrice : product.price,
                             quantity: 1,
+                            stripePriceId,
                           }]);
                         }
                         toast({ title: "Added to cart", description: `${product.name} has been added to your cart.` });
@@ -599,7 +616,7 @@ const ProductDetail = () => {
               return variants.map((v, i) => ({
                 name: v.name,
                 sku: v.sku,
-                price: v.price,
+                price: String(getVariantPrice(v)),
                 quantity: selectedVariants[i] ?? 1,
               } as SelectedVariantItem));
             })()}
