@@ -11,6 +11,7 @@ import { z } from "zod";
 import ProductInquiryForm, { type SelectedVariantItem } from "@/components/ProductInquiryForm";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
+import { useStripePrices } from "@/hooks/useStripePrices";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ interface ProductVariant {
   price: string;
   stock: string;
   sku: string;
+  stripe_price_id?: string | null;
 }
 
 interface Product {
