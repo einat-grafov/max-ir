@@ -111,15 +111,80 @@ const UsersSettings = () => {
                   <th className="text-left text-muted-foreground font-medium px-6 py-3">Email</th>
                   <th className="text-left text-muted-foreground font-medium px-6 py-3">Role</th>
                   <th className="text-left text-muted-foreground font-medium px-6 py-3">Status</th>
-                  <th className="text-right text-muted-foreground font-medium px-6 py-3">Actions</th>
+                  <th className="text-left text-muted-foreground font-medium px-6 py-3">Last sign in</th>
                 </tr>
               </thead>
               <tbody>
-                <tr className="border-b border-border/50">
-                  <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
-                    No additional users. Invite team members to collaborate.
-                  </td>
-                </tr>
+                {loading ? (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
+                      <Loader2 className="h-5 w-5 animate-spin inline-block" />
+                    </td>
+                  </tr>
+                ) : users.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
+                      No users yet. Invite team members to collaborate.
+                    </td>
+                  </tr>
+                ) : (
+                  users.map((u) => {
+                    const fullName = [u.first_name, u.last_name].filter(Boolean).join(" ") || "—";
+                    const initials =
+                      (u.first_name?.[0] ?? u.email?.[0] ?? "?").toUpperCase() +
+                      (u.last_name?.[0] ?? "").toUpperCase();
+                    const isPending = !u.email_confirmed_at && !u.last_sign_in_at;
+                    return (
+                      <tr key={u.id} className="border-b border-border/50 last:border-0">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-semibold text-foreground">
+                              {initials}
+                            </div>
+                            <span className="font-medium text-foreground">{fullName}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-muted-foreground">{u.email ?? "—"}</td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-wrap gap-1">
+                            {u.roles.length === 0 ? (
+                              <span className="text-muted-foreground">—</span>
+                            ) : (
+                              u.roles.map((r) => (
+                                <span
+                                  key={r}
+                                  className={cn(
+                                    "px-2 py-0.5 rounded-full text-xs font-medium capitalize",
+                                    roleBadgeClass(r)
+                                  )}
+                                >
+                                  {r}
+                                </span>
+                              ))
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={cn(
+                              "px-2 py-0.5 rounded-full text-xs font-medium",
+                              isPending
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-green-100 text-green-800"
+                            )}
+                          >
+                            {isPending ? "Pending" : "Active"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-muted-foreground">
+                          {u.last_sign_in_at
+                            ? new Date(u.last_sign_in_at).toLocaleString()
+                            : "Never"}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
@@ -130,7 +195,7 @@ const UsersSettings = () => {
         </TabsContent>
       </Tabs>
 
-      <InviteUserModal open={inviteOpen} onOpenChange={setInviteOpen} />
+      <InviteUserModal open={inviteOpen} onOpenChange={handleInviteClose} />
     </div>
   );
 };
