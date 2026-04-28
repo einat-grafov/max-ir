@@ -43,6 +43,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import RefundAndReturn from "./pages/RefundAndReturn";
 import ShippingPolicy from "./pages/ShippingPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
+import CustomerService from "./pages/CustomerService";
 import AccessibilitySettings from "./pages/admin/optimization/Accessibility";
 import Seo from "./pages/admin/optimization/Seo";
 import AiSearch from "./pages/admin/optimization/AiSearch";
