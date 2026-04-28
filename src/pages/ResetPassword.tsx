@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 const ResetPassword = () => {
@@ -10,11 +10,19 @@ const ResetPassword = () => {
   const [success, setSuccess] = useState(false);
   const [ready, setReady] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Detect invite flow either from query (?invite=1) or hash (#type=invite)
+  const hash = typeof window !== "undefined" ? window.location.hash : "";
+  const isInvite =
+    searchParams.get("invite") === "1" ||
+    hash.includes("type=invite") ||
+    hash.includes("type=signup");
 
   useEffect(() => {
-    // Listen for the PASSWORD_RECOVERY event
+    // Listen for auth events (invite signs user in via SIGNED_IN; reset uses PASSWORD_RECOVERY)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") {
+      if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN" || event === "USER_UPDATED") {
         setReady(true);
       }
     });
@@ -47,7 +55,9 @@ const ResetPassword = () => {
       setError(error.message);
     } else {
       setSuccess(true);
-      setTimeout(() => navigate("/admin/login"), 3000);
+      // Sign out so the user lands on a clean login screen and signs in fresh
+      await supabase.auth.signOut();
+      setTimeout(() => navigate("/admin/login"), 2000);
     }
     setLoading(false);
   };
@@ -62,7 +72,9 @@ const ResetPassword = () => {
         <div className="bg-maxir-dark-surface border border-white/10 rounded-lg p-8">
           {success ? (
             <div className="text-center">
-              <h1 className="text-maxir-white text-2xl font-bold mb-2">Password Updated</h1>
+              <h1 className="text-maxir-white text-2xl font-bold mb-2">
+                {isInvite ? "Password Set" : "Password Updated"}
+              </h1>
               <p className="text-maxir-gray text-sm">
                 Redirecting to login...
               </p>
@@ -71,16 +83,18 @@ const ResetPassword = () => {
             <div className="text-center">
               <h1 className="text-maxir-white text-2xl font-bold mb-2">Verifying...</h1>
               <p className="text-maxir-gray text-sm">
-                Please wait while we verify your reset link.
+                Please wait while we verify your link.
               </p>
             </div>
           ) : (
             <>
               <h1 className="text-maxir-white text-2xl font-bold mb-2 text-center">
-                Set New Password
+                {isInvite ? "Welcome — Set Your Password" : "Set New Password"}
               </h1>
               <p className="text-maxir-gray text-sm text-center mb-8">
-                Enter your new password below
+                {isInvite
+                  ? "Choose a password to activate your account."
+                  : "Enter your new password below"}
               </p>
 
               <form onSubmit={handleSubmit} className="flex flex-col gap-5">
