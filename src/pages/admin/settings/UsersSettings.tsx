@@ -10,18 +10,9 @@ const UsersSettings = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <UserCog className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold text-foreground">User Management</h1>
-        </div>
-        <button
-          onClick={() => setInviteOpen(true)}
-          className="flex items-center gap-2 bg-primary hover:bg-maxir-red-hover text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          Invite User
-        </button>
+      <div className="flex items-center gap-3 mb-6">
+        <UserCog className="h-6 w-6 text-primary" />
+        <h1 className="text-2xl font-bold text-foreground">User Management</h1>
       </div>
 
       <Tabs defaultValue="users" className="w-full">
@@ -48,6 +39,15 @@ const UsersSettings = () => {
         </div>
 
         <TabsContent value="users">
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={() => setInviteOpen(true)}
+              className="flex items-center gap-2 bg-primary hover:bg-maxir-red-hover text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+              Invite User
+            </button>
+          </div>
           <div className="bg-background border border-border rounded-lg overflow-hidden shadow-sm">
             <table className="w-full text-sm">
               <thead>
