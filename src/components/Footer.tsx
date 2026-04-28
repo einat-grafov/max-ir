@@ -1,8 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import ContactForm from "./ContactForm";
 import CookieFooterLinks from "@/components/cookies/CookieFooterLinks";
 
 const Footer = () => {
+  const location = useLocation();
+  const hideContactForm = location.pathname === "/customer-service";
 
   return (
     <footer id="Contact" className="section-dark relative mt-[120px] md:mt-[180px]" style={{ backgroundImage: 'url(/images/footer-bg.png)', backgroundSize: 'cover', backgroundPosition: 'center bottom' }}>
@@ -21,7 +23,7 @@ const Footer = () => {
         </svg>
       </div>
       <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16 lg:py-24">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+        <div className={`grid grid-cols-1 ${hideContactForm ? "" : "lg:grid-cols-2"} gap-16`}>
           {/* Left - Links & Address */}
           <div>
             <div className="grid grid-cols-2 gap-8 mb-12">
@@ -56,10 +58,12 @@ const Footer = () => {
           </div>
 
           {/* Right - Contact Form */}
-          <div>
-            <p className="text-maxir-white text-sm mb-6">For more information, please fill out the form and we will reply promptly:</p>
-            <ContactForm />
-          </div>
+          {!hideContactForm && (
+            <div>
+              <p className="text-maxir-white text-sm mb-6">For more information, please fill out the form and we will reply promptly:</p>
+              <ContactForm />
+            </div>
+          )}
         </div>
       </div>
     </footer>
