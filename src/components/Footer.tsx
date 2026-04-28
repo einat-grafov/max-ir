@@ -23,7 +23,7 @@ const Footer = () => {
         </svg>
       </div>
       <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16 lg:py-24">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+        <div className={`grid grid-cols-1 ${hideContactForm ? "" : "lg:grid-cols-2"} gap-16`}>
           {/* Left - Links & Address */}
           <div>
             <div className="grid grid-cols-2 gap-8 mb-12">
