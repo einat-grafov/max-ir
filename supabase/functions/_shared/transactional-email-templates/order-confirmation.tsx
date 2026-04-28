@@ -2,21 +2,25 @@
 
 import * as React from 'npm:react@18.3.1'
 import {
-  Body, Container, Head, Heading, Html, Img, Preview, Text, Hr,
+  Body, Container, Head, Heading, Html, Img, Preview, Text, Hr, Link,
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 
 const SITE_NAME = 'MAX-IR'
 const LOGO_URL = 'https://xfgxbrvqjbapmoijeshq.supabase.co/storage/v1/object/public/email-assets/maxir-logo.svg'
+const DEFAULT_SITE_URL = 'https://max-ir.lovable.app'
 
 interface Props {
   customerName?: string
   orderNumber?: number
   total?: string
   items?: string
+  siteUrl?: string
 }
 
-const OrderConfirmationEmail = ({ customerName, orderNumber, total, items }: Props) => (
+const OrderConfirmationEmail = ({ customerName, orderNumber, total, items, siteUrl }: Props) => {
+  const base = (siteUrl ?? DEFAULT_SITE_URL).replace(/\/$/, '')
+  return (
   <Html lang="en" dir="ltr">
     <Head />
     <Preview>{`Order #${orderNumber ?? ''} confirmed — ${SITE_NAME}`}</Preview>
@@ -39,13 +43,15 @@ const OrderConfirmationEmail = ({ customerName, orderNumber, total, items }: Pro
         )}
         <Hr style={hr} />
         <Text style={text}>
-          We'll be in touch with updates on your order. If you have any questions, feel free to reply to this email.
+          We'll be in touch with updates on your order. Need help? Visit our{' '}
+          <Link href={`${base}/customer-service`} style={link}>Customer service</Link> page to send us a request.
         </Text>
         <Text style={footer}>Best regards, The {SITE_NAME} Team</Text>
       </Container>
     </Body>
   </Html>
-)
+  )
+}
 
 export const template = {
   component: OrderConfirmationEmail,
