@@ -108,30 +108,7 @@ const UsersSettings = () => {
         </TabsContent>
 
         <TabsContent value="roles">
-          <div className="grid gap-4 md:grid-cols-3">
-            {ROLES.map(({ key, name, icon: Icon, description, permissions }) => (
-              <div
-                key={key}
-                className="bg-background border border-border rounded-2xl p-5 shadow-sm flex flex-col"
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="h-9 w-9 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                    <Icon className="h-4 w-4" />
-                  </div>
-                  <h3 className="text-base font-bold text-foreground">{name}</h3>
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">{description}</p>
-                <ul className="space-y-2 text-sm text-foreground">
-                  {permissions.map((p) => (
-                    <li key={p} className="flex items-start gap-2">
-                      <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
-                      <span>{p}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
+          <RolePermissionsMatrix />
         </TabsContent>
       </Tabs>
 
