@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 const ResetPassword = () => {
@@ -10,11 +10,19 @@ const ResetPassword = () => {
   const [success, setSuccess] = useState(false);
   const [ready, setReady] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Detect invite flow either from query (?invite=1) or hash (#type=invite)
+  const hash = typeof window !== "undefined" ? window.location.hash : "";
+  const isInvite =
+    searchParams.get("invite") === "1" ||
+    hash.includes("type=invite") ||
+    hash.includes("type=signup");
 
   useEffect(() => {
-    // Listen for the PASSWORD_RECOVERY event
+    // Listen for auth events (invite signs user in via SIGNED_IN; reset uses PASSWORD_RECOVERY)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") {
+      if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN" || event === "USER_UPDATED") {
         setReady(true);
       }
     });
