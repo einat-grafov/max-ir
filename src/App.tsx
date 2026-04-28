@@ -43,6 +43,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import RefundAndReturn from "./pages/RefundAndReturn";
 import ShippingPolicy from "./pages/ShippingPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
+import CustomerService from "./pages/CustomerService";
 import AccessibilitySettings from "./pages/admin/optimization/Accessibility";
 import Seo from "./pages/admin/optimization/Seo";
 import AiSearch from "./pages/admin/optimization/AiSearch";
@@ -118,7 +119,8 @@ const router = createBrowserRouter([
       { path: "/privacy-policy", element: <PrivacyPolicy /> },
       { path: "/refund-and-return", element: <RefundAndReturn /> },
       { path: "/shipping-policy", element: <ShippingPolicy /> },
-      { path: "/terms-and-conditions", element: <TermsAndConditions /> },
+     { path: "/terms-and-conditions", element: <TermsAndConditions /> },
+     { path: "/customer-service", element: <CustomerService /> },
       { path: "/admin/login", element: <AdminLogin /> },
       { path: "/forgot-password", element: <ForgotPassword /> },
       { path: "/reset-password", element: <ResetPassword /> },
