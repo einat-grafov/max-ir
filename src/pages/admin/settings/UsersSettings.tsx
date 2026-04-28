@@ -62,10 +62,27 @@ const UsersSettings = () => {
       </div>
 
       <Tabs defaultValue="users" className="w-full">
-        <TabsList className="mb-6">
-          <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="roles">Roles & Permissions</TabsTrigger>
-        </TabsList>
+        <div className="border-b border-border mb-6">
+          <TabsList className="bg-transparent p-0 h-auto gap-6 rounded-none">
+            {[
+              { value: "users", label: "Users", icon: Users },
+              { value: "roles", label: "Roles & Permissions", icon: KeyRound },
+            ].map((tab) => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className={cn(
+                  "flex items-center gap-2 pb-3 px-0 text-sm font-semibold transition-colors border-b-2 -mb-px rounded-none bg-transparent",
+                  "border-transparent text-muted-foreground hover:text-foreground",
+                  "data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                )}
+              >
+                <tab.icon className="h-4 w-4" />
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
 
         <TabsContent value="users">
           <div className="bg-background border border-border rounded-lg overflow-hidden shadow-sm">
