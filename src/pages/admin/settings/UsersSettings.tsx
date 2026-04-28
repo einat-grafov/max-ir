@@ -1,47 +1,9 @@
 import { useState } from "react";
-import { UserCog, Plus, Shield, Eye, Pencil, Users, KeyRound } from "lucide-react";
+import { UserCog, Plus, Users, KeyRound } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import InviteUserModal from "@/components/admin/InviteUserModal";
 import RolePermissionsMatrix from "@/components/admin/RolePermissionsMatrix";
-
-const ROLES = [
-  {
-    key: "admin",
-    name: "Admin",
-    icon: Shield,
-    description: "Full access to all settings, users, content, orders, and integrations.",
-    permissions: [
-      "Manage users and roles",
-      "Manage products, orders, and customers",
-      "Edit website content and SEO",
-      "Configure integrations and billing",
-    ],
-  },
-  {
-    key: "editor",
-    name: "Editor",
-    icon: Pencil,
-    description: "Can create and edit content but cannot manage users or billing.",
-    permissions: [
-      "Edit website content and SEO",
-      "Manage products and inquiries",
-      "View orders and customers",
-      "Cannot manage users or integrations",
-    ],
-  },
-  {
-    key: "viewer",
-    name: "Viewer",
-    icon: Eye,
-    description: "Read-only access to the admin platform.",
-    permissions: [
-      "View dashboard and analytics",
-      "View orders, customers, and inquiries",
-      "Cannot create, edit, or delete data",
-    ],
-  },
-];
 
 const UsersSettings = () => {
   const [inviteOpen, setInviteOpen] = useState(false);
