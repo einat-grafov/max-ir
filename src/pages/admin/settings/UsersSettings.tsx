@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { UserCog, Plus, Shield, Eye, Pencil } from "lucide-react";
+import { UserCog, Plus, Shield, Eye, Pencil, Users, KeyRound } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import InviteUserModal from "@/components/admin/InviteUserModal";
 
 const ROLES = [
