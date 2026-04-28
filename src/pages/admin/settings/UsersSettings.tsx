@@ -1,12 +1,67 @@
-import { useState } from "react";
-import { UserCog, Plus, Users, KeyRound } from "lucide-react";
+import { useEffect, useState } from "react";
+import { UserCog, Plus, Users, KeyRound, Loader2 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import InviteUserModal from "@/components/admin/InviteUserModal";
 import RolePermissionsMatrix from "@/components/admin/RolePermissionsMatrix";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
+
+type AdminUser = {
+  id: string;
+  email: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  created_at: string;
+  last_sign_in_at: string | null;
+  invited_at: string | null;
+  email_confirmed_at: string | null;
+  roles: string[];
+};
+
+const roleBadgeClass = (role: string) => {
+  switch (role) {
+    case "admin":
+      return "bg-primary/10 text-primary";
+    case "editor":
+      return "bg-blue-100 text-blue-700";
+    case "viewer":
+      return "bg-muted text-muted-foreground";
+    default:
+      return "bg-muted text-muted-foreground";
+  }
+};
 
 const UsersSettings = () => {
   const [inviteOpen, setInviteOpen] = useState(false);
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("list-users");
+      if (error) throw error;
+      setUsers((data as any)?.users ?? []);
+    } catch (e: any) {
+      toast({
+        title: "Failed to load users",
+        description: e.message ?? String(e),
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const handleInviteClose = (open: boolean) => {
+    setInviteOpen(open);
+    if (!open) fetchUsers();
+  };
 
   return (
     <div>
