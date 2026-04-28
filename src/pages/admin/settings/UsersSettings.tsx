@@ -1,6 +1,10 @@
+import { useState } from "react";
 import { UserCog, Plus } from "lucide-react";
+import InviteUserModal from "@/components/admin/InviteUserModal";
 
 const UsersSettings = () => {
+  const [inviteOpen, setInviteOpen] = useState(false);
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -8,7 +12,10 @@ const UsersSettings = () => {
           <UserCog className="h-6 w-6 text-primary" />
           <h1 className="text-2xl font-bold text-foreground">User Management</h1>
         </div>
-        <button className="flex items-center gap-2 bg-primary hover:bg-maxir-red-hover text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold transition-colors">
+        <button
+          onClick={() => setInviteOpen(true)}
+          className="flex items-center gap-2 bg-primary hover:bg-maxir-red-hover text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold transition-colors"
+        >
           <Plus className="h-4 w-4" />
           Invite User
         </button>
@@ -34,6 +41,8 @@ const UsersSettings = () => {
           </tbody>
         </table>
       </div>
+
+      <InviteUserModal open={inviteOpen} onOpenChange={setInviteOpen} />
     </div>
   );
 };
