@@ -69,7 +69,7 @@ Deno.serve(async (req) => {
 
     const { data: invited, error: inviteErr } = await admin.auth.admin.inviteUserByEmail(email, {
       data: { first_name: firstName, last_name: lastName ?? "" },
-      redirectTo: `${siteRedirect}/admin/login`,
+      redirectTo: `${siteRedirect}/reset-password?invite=1`,
     });
 
     if (inviteErr || !invited?.user) {
