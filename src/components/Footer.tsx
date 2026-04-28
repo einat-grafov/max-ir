@@ -58,10 +58,12 @@ const Footer = () => {
           </div>
 
           {/* Right - Contact Form */}
-          <div>
-            <p className="text-maxir-white text-sm mb-6">For more information, please fill out the form and we will reply promptly:</p>
-            <ContactForm />
-          </div>
+          {!hideContactForm && (
+            <div>
+              <p className="text-maxir-white text-sm mb-6">For more information, please fill out the form and we will reply promptly:</p>
+              <ContactForm />
+            </div>
+          )}
         </div>
       </div>
     </footer>
