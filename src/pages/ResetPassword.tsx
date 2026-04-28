@@ -70,7 +70,9 @@ const ResetPassword = () => {
         <div className="bg-maxir-dark-surface border border-white/10 rounded-lg p-8">
           {success ? (
             <div className="text-center">
-              <h1 className="text-maxir-white text-2xl font-bold mb-2">Password Updated</h1>
+              <h1 className="text-maxir-white text-2xl font-bold mb-2">
+                {isInvite ? "Password Set" : "Password Updated"}
+              </h1>
               <p className="text-maxir-gray text-sm">
                 Redirecting to login...
               </p>
@@ -79,16 +81,18 @@ const ResetPassword = () => {
             <div className="text-center">
               <h1 className="text-maxir-white text-2xl font-bold mb-2">Verifying...</h1>
               <p className="text-maxir-gray text-sm">
-                Please wait while we verify your reset link.
+                Please wait while we verify your link.
               </p>
             </div>
           ) : (
             <>
               <h1 className="text-maxir-white text-2xl font-bold mb-2 text-center">
-                Set New Password
+                {isInvite ? "Welcome — Set Your Password" : "Set New Password"}
               </h1>
               <p className="text-maxir-gray text-sm text-center mb-8">
-                Enter your new password below
+                {isInvite
+                  ? "Choose a password to activate your account."
+                  : "Enter your new password below"}
               </p>
 
               <form onSubmit={handleSubmit} className="flex flex-col gap-5">
