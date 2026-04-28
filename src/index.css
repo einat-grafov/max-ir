@@ -148,3 +148,15 @@
   outline: 3px solid hsl(var(--primary)) !important;
   outline-offset: 2px;
 }
+
+/* Admin platform: black checkboxes (overrides primary/pink default) */
+.admin-scope [data-slot="checkbox"],
+.admin-scope button[role="checkbox"] {
+  border-color: hsl(0 0% 0%) !important;
+}
+.admin-scope [data-slot="checkbox"][data-state="checked"],
+.admin-scope button[role="checkbox"][data-state="checked"] {
+  background-color: hsl(0 0% 0%) !important;
+  border-color: hsl(0 0% 0%) !important;
+  color: hsl(0 0% 100%) !important;
+}
