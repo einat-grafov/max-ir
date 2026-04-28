@@ -55,7 +55,9 @@ const ResetPassword = () => {
       setError(error.message);
     } else {
       setSuccess(true);
-      setTimeout(() => navigate("/admin/login"), 3000);
+      // Sign out so the user lands on a clean login screen and signs in fresh
+      await supabase.auth.signOut();
+      setTimeout(() => navigate("/admin/login"), 2000);
     }
     setLoading(false);
   };
