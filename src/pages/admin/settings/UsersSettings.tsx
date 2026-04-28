@@ -3,6 +3,7 @@ import { UserCog, Plus, Shield, Eye, Pencil, Users, KeyRound } from "lucide-reac
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import InviteUserModal from "@/components/admin/InviteUserModal";
+import RolePermissionsMatrix from "@/components/admin/RolePermissionsMatrix";
 
 const ROLES = [
   {
