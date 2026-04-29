@@ -125,7 +125,7 @@ const CareerApplicationsTable = () => {
                 </tr>
               ) : (
                 filtered.map((app) => {
-                  const config = statusConfig[app.status || "new"] || statusConfig.new;
+                  const config = statusConfig[app.status || "applied"] || statusConfig.applied;
                   return (
                     <tr
                       key={app.id}
