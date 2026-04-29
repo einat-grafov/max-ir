@@ -373,7 +373,7 @@ const CreateOrder = () => {
     }
   };
 
-  const handleAddProducts = (newProducts: { id: string; productId: string; name: string; variantName?: string; sku: string | null; price: number; stock: number; requires_shipping: boolean; tax_exempt: boolean }[]) => {
+  const handleAddProducts = (newProducts: { id: string; productId: string; name: string; variantName?: string; sku: string | null; price: number; stock: number; requires_shipping: boolean; tax_exempt: boolean; weight_kg?: number }[]) => {
     setProducts((prev) => {
       const existing = new Set(prev.map((p) => p.id));
       const toAdd: OrderProduct[] = newProducts.filter((p) => !existing.has(p.id)).map((p) => ({
@@ -387,6 +387,7 @@ const CreateOrder = () => {
         quantity: 1,
         taxExempt: p.tax_exempt,
         outOfStock: p.stock === 0,
+        weightKg: Number(p.weight_kg ?? 0) || 0,
       }));
       return [...prev, ...toAdd];
     });
