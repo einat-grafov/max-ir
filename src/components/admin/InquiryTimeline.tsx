@@ -111,7 +111,7 @@ const InquiryTimeline = ({ inquiryId, inquiryCreatedAt, productName, defaultCont
     }
   }
 
-  // Latest lead status — most recent note with a lead_status set, defaults to "New"
+  // Latest status — most recent note with a lead_status set, defaults to "New"
   const latestStatus = (() => {
     const sorted = [...(notes || [])].sort(
       (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -121,6 +121,7 @@ const InquiryTimeline = ({ inquiryId, inquiryCreatedAt, productName, defaultCont
   })();
 
   const statusStyles: Record<string, string> = {
+    // Sales
     "New": "bg-slate-500 text-white border-transparent hover:bg-slate-500",
     "Outreach": "bg-blue-500 text-white border-transparent hover:bg-blue-500",
     "Connected": "bg-cyan-500 text-white border-transparent hover:bg-cyan-500",
@@ -129,6 +130,10 @@ const InquiryTimeline = ({ inquiryId, inquiryCreatedAt, productName, defaultCont
     "Active buying process": "bg-primary text-primary-foreground border-transparent hover:bg-primary",
     "Closed Won": "bg-green-600 text-white border-transparent hover:bg-green-600",
     "Closed Lost": "bg-destructive text-destructive-foreground border-transparent hover:bg-destructive",
+    // Support
+    "In Progress": "bg-amber-500 text-white border-transparent hover:bg-amber-500",
+    "Resolved": "bg-green-600 text-white border-transparent hover:bg-green-600",
+    "Closed": "bg-slate-600 text-white border-transparent hover:bg-slate-600",
   };
 
   return (
