@@ -31,6 +31,7 @@ interface Props {
   inquiryCreatedAt: string;
   productName: string;
   defaultContact?: string;
+  source?: string;
 }
 
 const groupLabel = (date: Date) => {
