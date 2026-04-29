@@ -52,8 +52,16 @@ const AdminLayout = () => {
     <SidebarProvider>
       <div className="admin-scope min-h-screen flex w-full bg-muted">
         <AdminSidebar />
-        <div className="flex-1 flex flex-col min-h-screen">
-          <main className="flex-1 p-6 overflow-auto">
+        <div className="flex-1 flex flex-col min-h-screen min-w-0">
+          {/* Mobile header */}
+          <header className="md:hidden sticky top-0 z-30 flex items-center justify-between gap-2 h-12 px-3 bg-maxir-dark border-b border-white/10">
+            <SidebarTrigger className="text-maxir-gray hover:text-maxir-white h-8 w-8" />
+            <Link to="/admin/home" className="flex items-center">
+              <img src="/images/maxir-logo.svg" alt="MAX-IR Labs" className="h-6 w-auto" />
+            </Link>
+            <span className="w-8" />
+          </header>
+          <main className="flex-1 p-3 sm:p-4 md:p-6 overflow-auto">
             <Outlet />
           </main>
         </div>
