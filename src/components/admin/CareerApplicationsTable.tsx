@@ -104,10 +104,10 @@ const CareerApplicationsTable = () => {
               <tr className="border-b border-border">
                 <th className="text-left text-muted-foreground font-medium px-6 py-3">Name</th>
                 <th className="text-left text-muted-foreground font-medium px-6 py-3">Status</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3">Email</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3">Country</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3">Education</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3">Date</th>
+                <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden md:table-cell">Email</th>
+                <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden lg:table-cell">Country</th>
+                <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden lg:table-cell">Education</th>
+                <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden md:table-cell">Date</th>
               </tr>
             </thead>
             <tbody>
