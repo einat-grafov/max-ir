@@ -3,12 +3,15 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
-import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft, Loader2, Truck } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft, Loader2, Truck, Check, ChevronsUpDown } from "lucide-react";
 import { toast } from "sonner";
 import { COUNTRIES, US_STATES } from "@/lib/countries";
 import { useShippingRates, type ShippingRate } from "@/hooks/useShippingRates";
 import { StripeEmbeddedCheckoutInline } from "@/components/StripeEmbeddedCheckout";
 import { useStripePrices } from "@/hooks/useStripePrices";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 
 const Cart = () => {
   const { items: rawItems, updateQuantity, removeItem, clearCart } = useCart();
@@ -35,6 +38,7 @@ const Cart = () => {
   const [shipCity, setShipCity] = useState("");
   const [shipState, setShipState] = useState("");
   const [selectedRate, setSelectedRate] = useState<ShippingRate | null>(null);
+  const [stateOpen, setStateOpen] = useState(false);
 
   const { rates, loading: ratesLoading, error: ratesError, fetchRates } = useShippingRates();
 
@@ -296,16 +300,45 @@ const Cart = () => {
                       <div>
                         <label className="text-xs font-medium text-muted-foreground mb-1 block">State / Province</label>
                         {shipCountry.toLowerCase() === "us" ? (
-                          <select
-                            value={shipState}
-                            onChange={(e) => { setShipState(e.target.value); setSelectedRate(null); }}
-                            className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground"
-                          >
-                            <option value="">Select state</option>
-                            {US_STATES.map((s) => (
-                              <option key={s} value={s}>{s}</option>
-                            ))}
-                          </select>
+                          <Popover open={stateOpen} onOpenChange={setStateOpen}>
+                            <PopoverTrigger asChild>
+                              <button
+                                type="button"
+                                role="combobox"
+                                aria-expanded={stateOpen}
+                                className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground flex items-center justify-between"
+                              >
+                                <span className={cn(!shipState && "text-muted-foreground")}>
+                                  {shipState || "Select state"}
+                                </span>
+                                <ChevronsUpDown className="h-4 w-4 opacity-50 shrink-0" />
+                              </button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                              <Command>
+                                <CommandInput placeholder="Search state…" />
+                                <CommandList>
+                                  <CommandEmpty>No state found.</CommandEmpty>
+                                  <CommandGroup>
+                                    {US_STATES.map((s) => (
+                                      <CommandItem
+                                        key={s}
+                                        value={s}
+                                        onSelect={(val) => {
+                                          setShipState(val === shipState.toLowerCase() ? "" : US_STATES.find((x) => x.toLowerCase() === val) || "");
+                                          setSelectedRate(null);
+                                          setStateOpen(false);
+                                        }}
+                                      >
+                                        <Check className={cn("mr-2 h-4 w-4", shipState === s ? "opacity-100" : "opacity-0")} />
+                                        {s}
+                                      </CommandItem>
+                                    ))}
+                                  </CommandGroup>
+                                </CommandList>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
                         ) : (
                           <input
                             value={shipState}
