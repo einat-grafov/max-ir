@@ -59,6 +59,7 @@ export interface ProductFormData {
   stock: string;
   trackInventory: boolean;
   requiresShipping: boolean;
+  weightKg: string;
   taxExempt: boolean;
   status: string;
   ctaAddToCart: boolean;
