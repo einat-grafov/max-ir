@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
 import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft, Loader2, Truck } from "lucide-react";
 import { toast } from "sonner";
-import { COUNTRIES } from "@/lib/countries";
+import { COUNTRIES, US_STATES } from "@/lib/countries";
 import { useShippingRates, type ShippingRate } from "@/hooks/useShippingRates";
 import { StripeEmbeddedCheckoutInline } from "@/components/StripeEmbeddedCheckout";
 import { useStripePrices } from "@/hooks/useStripePrices";
