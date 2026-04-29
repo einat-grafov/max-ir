@@ -167,7 +167,7 @@ const InquiriesTable = ({ source }: Props) => {
                     {inq.customers ? (
                       <Link
                         to={`/admin/customers/${inq.customers.id}`}
-                        className="text-primary hover:underline"
+                        className="text-blue-600 hover:underline"
                         onClick={(e) => e.stopPropagation()}
                       >
                         {inq.customers.company ||
