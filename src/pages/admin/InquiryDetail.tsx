@@ -584,6 +584,7 @@ const InquiryDetail = () => {
             inquiryCreatedAt={inquiry.created_at}
             productName={inquiry.product_name}
             defaultContact={headerName}
+            source={inquiry.source}
           />
         </div>
       </div>

@@ -27,7 +27,7 @@ const INTERACTION_TYPES = [
   "Other",
 ];
 
-const LEAD_STATUSES = [
+const SALES_LEAD_STATUSES = [
   "New",
   "Outreach",
   "Connected",
@@ -36,6 +36,13 @@ const LEAD_STATUSES = [
   "Active buying process",
   "Closed Won",
   "Closed Lost",
+];
+
+const SUPPORT_STATUSES = [
+  "New",
+  "In Progress",
+  "Resolved",
+  "Closed",
 ];
 
 const UNQUALIFIED_REASONS = [
@@ -61,6 +68,7 @@ interface Props {
   inquiryId: string;
   defaultContact?: string;
   editNote?: InquiryNote | null;
+  source?: string;
 }
 
 const RecordInquiryInteractionModal = ({
@@ -69,6 +77,7 @@ const RecordInquiryInteractionModal = ({
   inquiryId,
   defaultContact = "",
   editNote,
+  source = "sales",
 }: Props) => {
   const queryClient = useQueryClient();
   const isEditing = !!editNote;
@@ -239,7 +248,7 @@ const RecordInquiryInteractionModal = ({
           )}
 
           <div>
-            <Label className="text-sm font-medium">Lead Status</Label>
+            <Label className="text-sm font-medium">{source === "support" ? "Status" : "Lead Status"}</Label>
             <Select
               value={leadStatus}
               onValueChange={(v) => {
@@ -251,7 +260,7 @@ const RecordInquiryInteractionModal = ({
                 <SelectValue placeholder="Select status..." />
               </SelectTrigger>
               <SelectContent>
-                {LEAD_STATUSES.map((s) => (
+                {(source === "support" ? SUPPORT_STATUSES : SALES_LEAD_STATUSES).map((s) => (
                   <SelectItem key={s} value={s}>{s}</SelectItem>
                 ))}
               </SelectContent>
