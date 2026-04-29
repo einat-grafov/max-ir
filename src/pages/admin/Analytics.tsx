@@ -406,6 +406,8 @@ const Analytics = () => {
         ))}
       </div>
 
+      <DashboardOverviewCards />
+
       {/* Website Analytics */}
       <div className="mb-8">
         <WebsiteAnalytics />
