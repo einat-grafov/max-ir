@@ -61,11 +61,13 @@ const ShippingRateModal = ({
     }
   }, [open, defaultCountry, defaultPostalCode, defaultCity, defaultState, reset]);
 
+  const canFetch = !!country && !!postalCode.trim() && !!city.trim() && !!state.trim();
+
   const handleFetch = () => {
-    if (!postalCode || !country) return;
+    if (!canFetch) return;
     setSelectedIdx(null);
     fetchRates(
-      { postalCode, country, city: city || undefined, state: state || undefined },
+      { postalCode: postalCode.trim(), country, city: city.trim(), state: state.trim() },
       [{ weight: effectiveWeight }]
     );
   };
@@ -88,7 +90,7 @@ const ShippingRateModal = ({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-sm font-medium text-foreground mb-1.5 block">
-                Country
+                Country <span className="text-destructive">*</span>
               </label>
               <Select value={country} onValueChange={setCountry}>
                 <SelectTrigger>
@@ -105,34 +107,37 @@ const ShippingRateModal = ({
             </div>
             <div>
               <label className="text-sm font-medium text-foreground mb-1.5 block">
-                Postal code
+                Postal code <span className="text-destructive">*</span>
               </label>
               <Input
                 value={postalCode}
                 onChange={(e) => setPostalCode(e.target.value)}
                 placeholder="e.g. 10001"
+                required
               />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-sm font-medium text-foreground mb-1.5 block">
-                City
+                City <span className="text-destructive">*</span>
               </label>
               <Input
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                placeholder="Optional"
+                placeholder="e.g. Austin"
+                required
               />
             </div>
             <div>
               <label className="text-sm font-medium text-foreground mb-1.5 block">
-                State
+                State / Region <span className="text-destructive">*</span>
               </label>
               <Input
                 value={state}
                 onChange={(e) => setState(e.target.value)}
-                placeholder="Optional"
+                placeholder="e.g. Texas"
+                required
               />
             </div>
           </div>
@@ -144,7 +149,7 @@ const ShippingRateModal = ({
 
           <Button
             onClick={handleFetch}
-            disabled={loading || !postalCode}
+            disabled={loading || !canFetch}
             className="w-full"
           >
             {loading ? (
