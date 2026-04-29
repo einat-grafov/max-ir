@@ -488,7 +488,7 @@ const EditCustomer = () => {
             <div className="space-y-4">
               <div>
                 <Label className="text-sm font-medium text-foreground">Country / region</Label>
-                <Select value={country} onValueChange={setCountry}>
+                <Select value={country} onValueChange={(v) => { setCountry(v); if (v !== "United States") setStateValue(""); }}>
                   <SelectTrigger className="mt-1.5">
                     <SelectValue>
                       <span className="inline-flex items-center gap-2">
@@ -509,6 +509,50 @@ const EditCustomer = () => {
                   </SelectContent>
                 </Select>
               </div>
+              {country === "United States" && (
+                <div>
+                  <Label className="text-sm font-medium text-foreground">State</Label>
+                  <Popover open={stateOpen} onOpenChange={setStateOpen}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        role="combobox"
+                        aria-expanded={stateOpen}
+                        className="mt-1.5 w-full h-10 rounded-md border border-input bg-background px-3 text-sm text-foreground flex items-center justify-between"
+                      >
+                        <span className={cn(!stateValue && "text-muted-foreground")}>
+                          {stateValue || "Select state"}
+                        </span>
+                        <ChevronsUpDown className="h-4 w-4 opacity-50 shrink-0" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                      <Command>
+                        <CommandInput placeholder="Search state…" />
+                        <CommandList>
+                          <CommandEmpty>No state found.</CommandEmpty>
+                          <CommandGroup>
+                            {US_STATES.map((s) => (
+                              <CommandItem
+                                key={s}
+                                value={s}
+                                onSelect={(val) => {
+                                  const match = US_STATES.find((x) => x.toLowerCase() === val.toLowerCase()) || "";
+                                  setStateValue(match === stateValue ? "" : match);
+                                  setStateOpen(false);
+                                }}
+                              >
+                                <Check className={cn("mr-2 h-4 w-4", stateValue === s ? "opacity-100" : "opacity-0")} />
+                                {s}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              )}
               <div>
                 <Label className="text-sm font-medium text-foreground">Address</Label>
                 <Input value={address} onChange={(e) => setAddress(e.target.value)} className="mt-1.5" />
