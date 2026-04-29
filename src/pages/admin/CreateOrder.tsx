@@ -45,6 +45,7 @@ interface OrderProduct {
   quantity: number;
   taxExempt?: boolean;
   outOfStock?: boolean;
+  weightKg?: number;
 }
 
 interface TaxAddress {
