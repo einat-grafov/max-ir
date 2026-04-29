@@ -39,12 +39,11 @@ import {
 
 const mainItems = [
   { title: "Overview", url: "/admin/home", icon: Home },
-  { title: "Leads", url: "/admin/inquiries", icon: MessageSquare },
+  { title: "Contact", url: "/admin/inquiries", icon: MessageSquare },
   { title: "Orders", url: "/admin/orders", icon: ShoppingCart },
   { title: "Products", url: "/admin/products", icon: Package },
   { title: "Customers", url: "/admin/customers", icon: Users },
   { title: "Website", url: "/admin/website", icon: Globe },
-  { title: "Careers", url: "/admin/careers", icon: Briefcase },
 ];
 
 const optimizationItems = [
