@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
 import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft, Loader2, Truck } from "lucide-react";
 import { toast } from "sonner";
-import { COUNTRIES } from "@/lib/countries";
+import { COUNTRIES, US_STATES } from "@/lib/countries";
 import { useShippingRates, type ShippingRate } from "@/hooks/useShippingRates";
 import { StripeEmbeddedCheckoutInline } from "@/components/StripeEmbeddedCheckout";
 import { useStripePrices } from "@/hooks/useStripePrices";
@@ -265,7 +265,7 @@ const Cart = () => {
                         <label className="text-xs font-medium text-muted-foreground mb-1 block">Country</label>
                         <select
                           value={shipCountry}
-                          onChange={(e) => { setShipCountry(e.target.value); setSelectedRate(null); }}
+                          onChange={(e) => { setShipCountry(e.target.value); setShipState(""); setSelectedRate(null); }}
                           className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground"
                         >
                           {COUNTRIES.map((c) => (
@@ -295,12 +295,25 @@ const Cart = () => {
                       </div>
                       <div>
                         <label className="text-xs font-medium text-muted-foreground mb-1 block">State / Province</label>
-                        <input
-                          value={shipState}
-                          onChange={(e) => setShipState(e.target.value)}
-                          placeholder="Optional"
-                          className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground"
-                        />
+                        {shipCountry.toLowerCase() === "us" ? (
+                          <select
+                            value={shipState}
+                            onChange={(e) => { setShipState(e.target.value); setSelectedRate(null); }}
+                            className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground"
+                          >
+                            <option value="">Select state</option>
+                            {US_STATES.map((s) => (
+                              <option key={s} value={s}>{s}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            value={shipState}
+                            onChange={(e) => setShipState(e.target.value)}
+                            placeholder="Optional"
+                            className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground"
+                          />
+                        )}
                       </div>
                       <button
                         onClick={handleFetchRates}
