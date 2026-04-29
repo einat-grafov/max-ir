@@ -112,7 +112,7 @@ const ProductSearchModal = ({ open, onOpenChange, onAddProducts }: ProductSearch
     setLoading(true);
     let query = supabase
       .from("products")
-      .select("id, name, price, stock, sku, image_url, requires_shipping, tax_exempt, variants");
+      .select("id, name, price, stock, sku, image_url, requires_shipping, tax_exempt, weight_kg, variants");
     if (search.trim()) {
       query = query.ilike("name", `%${search.trim()}%`);
     }
