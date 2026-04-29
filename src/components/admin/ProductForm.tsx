@@ -487,22 +487,35 @@ const ProductForm = ({
                         setVariants(updated);
                       }}
                     />
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">$</span>
-                      <Input
-                        type="number"
-                        placeholder="0.00"
-                        value={variant.price}
-                        onChange={(e) => {
-                          const updated = [...variants];
-                          updated[index] = { ...updated[index], price: e.target.value };
-                          setVariants(updated);
-                        }}
-                        className="pl-6"
-                        min="0"
-                        step="0.01"
-                      />
-                    </div>
+                    {(() => {
+                      const pid = variant.stripePriceId?.trim();
+                      const validPid = pid && /^price_[A-Za-z0-9]+$/.test(pid);
+                      const sp = validPid ? stripePrices?.[pid] : undefined;
+                      const displayValue = sp ? sp.unitAmount.toFixed(2) : variant.price;
+                      const locked = !!validPid;
+                      return (
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">$</span>
+                          <Input
+                            type="number"
+                            placeholder={locked ? (sp ? "" : "—") : "0.00"}
+                            value={displayValue}
+                            readOnly={locked}
+                            disabled={locked}
+                            title={locked ? "Price is managed in Stripe and synced via the Stripe Price ID" : undefined}
+                            onChange={(e) => {
+                              if (locked) return;
+                              const updated = [...variants];
+                              updated[index] = { ...updated[index], price: e.target.value };
+                              setVariants(updated);
+                            }}
+                            className={`pl-6 ${locked ? "bg-muted/50 cursor-not-allowed" : ""}`}
+                            min="0"
+                            step="0.01"
+                          />
+                        </div>
+                      );
+                    })()}
                     <Input
                       type="number"
                       placeholder="Qty"
