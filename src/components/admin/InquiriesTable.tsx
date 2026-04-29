@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -6,6 +7,7 @@ import { format } from "date-fns";
 import { Mail, MailOpen } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { SortableHeader, SortState } from "./SortableHeader";
 
 type Inquiry = {
   id: string;
@@ -100,13 +102,38 @@ const InquiriesTable = ({ source }: Props) => {
   const SALES_ORDER = ["New", "Outreach", "Connected", "Qualified", "Active buying process", "Unqualified", "Closed Won", "Closed Lost"];
   const SUPPORT_ORDER = ["New", "In Progress", "Resolved", "Closed"];
   const statusOrder = source === "support" ? SUPPORT_ORDER : SALES_ORDER;
+
+  type SortKey = "name" | "status" | "customer" | "email" | "subject" | "date";
+  const [sort, setSort] = useState<SortState<SortKey>>({ key: "status", dir: "asc" });
+
+  const customerLabel = (inq: Inquiry) =>
+    inq.customers
+      ? (inq.customers.company || `${inq.customers.first_name} ${inq.customers.last_name || ""}`.trim())
+      : "";
+
   const sortedInquiries = [...(inquiries || [])].sort((a, b) => {
-    const sa = (statusMap as Record<string, string>)[a.id] || "New";
-    const sb = (statusMap as Record<string, string>)[b.id] || "New";
-    const ia = statusOrder.indexOf(sa); const ib = statusOrder.indexOf(sb);
-    const ra = ia === -1 ? 999 : ia; const rb = ib === -1 ? 999 : ib;
-    if (ra !== rb) return ra - rb;
-    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    const dir = sort.dir === "asc" ? 1 : -1;
+    switch (sort.key) {
+      case "name":
+        return a.name.localeCompare(b.name) * dir;
+      case "status": {
+        const sa = (statusMap as Record<string, string>)[a.id] || "New";
+        const sb = (statusMap as Record<string, string>)[b.id] || "New";
+        const ia = statusOrder.indexOf(sa); const ib = statusOrder.indexOf(sb);
+        const ra = ia === -1 ? 999 : ia; const rb = ib === -1 ? 999 : ib;
+        if (ra !== rb) return (ra - rb) * dir;
+        return (new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) * (sort.dir === "asc" ? 1 : -1);
+      }
+      case "customer":
+        return customerLabel(a).localeCompare(customerLabel(b)) * dir;
+      case "email":
+        return a.email.localeCompare(b.email) * dir;
+      case "subject":
+        return a.product_name.localeCompare(b.product_name) * dir;
+      case "date":
+      default:
+        return (new Date(a.created_at).getTime() - new Date(b.created_at).getTime()) * dir;
+    }
   });
 
   const subjectLabel = source === "support" ? "Subject" : "Product";
@@ -117,13 +144,13 @@ const InquiriesTable = ({ source }: Props) => {
         <TableHeader>
           <TableRow className="hover:bg-transparent">
             <TableHead className="w-10"></TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="hidden lg:table-cell">Customer</TableHead>
-            <TableHead className="hidden md:table-cell">Email</TableHead>
-            <TableHead className="hidden lg:table-cell">{subjectLabel}</TableHead>
+            <TableHead><SortableHeader label="Name" sortKey="name" state={sort} onChange={setSort} /></TableHead>
+            <TableHead><SortableHeader label="Status" sortKey="status" state={sort} onChange={setSort} /></TableHead>
+            <TableHead className="hidden lg:table-cell"><SortableHeader label="Customer" sortKey="customer" state={sort} onChange={setSort} /></TableHead>
+            <TableHead className="hidden md:table-cell"><SortableHeader label="Email" sortKey="email" state={sort} onChange={setSort} /></TableHead>
+            <TableHead className="hidden lg:table-cell"><SortableHeader label={subjectLabel} sortKey="subject" state={sort} onChange={setSort} /></TableHead>
             <TableHead className="hidden xl:table-cell">Message</TableHead>
-            <TableHead className="hidden md:table-cell">Date</TableHead>
+            <TableHead className="hidden md:table-cell"><SortableHeader label="Date" sortKey="date" state={sort} onChange={setSort} /></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
