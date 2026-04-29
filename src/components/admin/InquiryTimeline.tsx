@@ -122,18 +122,18 @@ const InquiryTimeline = ({ inquiryId, inquiryCreatedAt, productName, defaultCont
 
   const statusStyles: Record<string, string> = {
     // Sales
-    "New": "bg-slate-500 text-white border-transparent hover:bg-slate-500",
-    "Outreach": "bg-blue-500 text-white border-transparent hover:bg-blue-500",
-    "Connected": "bg-cyan-500 text-white border-transparent hover:bg-cyan-500",
-    "Qualified": "bg-emerald-500 text-white border-transparent hover:bg-emerald-500",
-    "Unqualified": "bg-orange-500 text-white border-transparent hover:bg-orange-500",
-    "Active buying process": "bg-primary text-primary-foreground border-transparent hover:bg-primary",
-    "Closed Won": "bg-green-600 text-white border-transparent hover:bg-green-600",
-    "Closed Lost": "bg-destructive text-destructive-foreground border-transparent hover:bg-destructive",
+    "New": "bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-100",
+    "Outreach": "bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-100",
+    "Connected": "bg-cyan-100 text-cyan-800 border-cyan-200 hover:bg-cyan-100",
+    "Qualified": "bg-teal-100 text-teal-800 border-teal-200 hover:bg-teal-100",
+    "Unqualified": "bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-100",
+    "Active buying process": "bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100",
+    "Closed Won": "bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-100",
+    "Closed Lost": "bg-red-100 text-red-700 border-red-200 hover:bg-red-100",
     // Support
-    "In Progress": "bg-amber-500 text-white border-transparent hover:bg-amber-500",
-    "Resolved": "bg-green-600 text-white border-transparent hover:bg-green-600",
-    "Closed": "bg-slate-600 text-white border-transparent hover:bg-slate-600",
+    "In Progress": "bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100",
+    "Resolved": "bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-100",
+    "Closed": "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-100",
   };
 
   return (
