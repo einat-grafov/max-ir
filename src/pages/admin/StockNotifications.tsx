@@ -82,14 +82,14 @@ const StockNotifications = () => {
               notifications.map((n) => (
                 <TableRow key={n.id} className="border-white/10">
                   <TableCell className="text-maxir-white">{n.email}</TableCell>
-                  <TableCell>
+                  <TableCell className="hidden md:table-cell">
                     <Badge variant="secondary" className="bg-white/10 text-maxir-white border-0 text-xs">
                       {(n as any).products?.name ?? "—"}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-maxir-gray">{n.variant_name}</TableCell>
-                  <TableCell className="text-maxir-gray font-mono text-xs">{n.variant_sku ?? "—"}</TableCell>
-                  <TableCell className="text-maxir-gray text-sm whitespace-nowrap">
+                  <TableCell className="text-maxir-gray hidden md:table-cell">{n.variant_name}</TableCell>
+                  <TableCell className="text-maxir-gray font-mono text-xs hidden lg:table-cell">{n.variant_sku ?? "—"}</TableCell>
+                  <TableCell className="text-maxir-gray text-sm whitespace-nowrap hidden md:table-cell">
                     {format(new Date(n.created_at), "MMM d, yyyy")}
                   </TableCell>
                   <TableCell>
