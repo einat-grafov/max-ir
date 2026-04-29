@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import { SortableHeader, SortState } from "./SortableHeader";
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   applied: { label: "Applied", className: "bg-blue-100 text-blue-800 border-blue-200" },
