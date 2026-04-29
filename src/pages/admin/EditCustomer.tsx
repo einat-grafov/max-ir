@@ -182,7 +182,7 @@ const EditCustomer = () => {
       if (c.first_name !== ec.first_name || c.last_name !== (ec.last_name || "") || c.role !== (ec.role || "") || c.phone !== (ec.phone || "") || c.email !== (ec.email || "")) return true;
     }
     return false;
-  }, [customer, existingContacts, companyName, country, address, apartment, city, postalCode, contacts]);
+  }, [customer, existingContacts, companyName, country, address, apartment, city, postalCode, stateValue, contacts]);
 
   useEffect(() => {
     if (!hasUnsavedChanges) return;
