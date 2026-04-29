@@ -120,6 +120,13 @@ const ProductForm = ({
     initialData?.variants ?? [{ name: "", price: "", stock: "", sku: "", stripePriceId: "" }]
   );
 
+  // Live Stripe prices for variants (Stripe is the source of truth)
+  const variantPriceIds = useMemo(
+    () => variants.map((v) => v.stripePriceId?.trim()).filter((s): s is string => !!s && /^price_[A-Za-z0-9]+$/.test(s)),
+    [variants]
+  );
+  const { data: stripePrices } = useStripePrices(variantPriceIds);
+
   // Multiple images support
   const [images, setImages] = useState<{ file?: File; url: string; isExisting: boolean }[]>(
     () => {
