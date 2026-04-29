@@ -90,7 +90,7 @@ const ShippingRateModal = ({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-sm font-medium text-foreground mb-1.5 block">
-                Country
+                Country <span className="text-destructive">*</span>
               </label>
               <Select value={country} onValueChange={setCountry}>
                 <SelectTrigger>
@@ -107,34 +107,37 @@ const ShippingRateModal = ({
             </div>
             <div>
               <label className="text-sm font-medium text-foreground mb-1.5 block">
-                Postal code
+                Postal code <span className="text-destructive">*</span>
               </label>
               <Input
                 value={postalCode}
                 onChange={(e) => setPostalCode(e.target.value)}
                 placeholder="e.g. 10001"
+                required
               />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-sm font-medium text-foreground mb-1.5 block">
-                City
+                City <span className="text-destructive">*</span>
               </label>
               <Input
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                placeholder="Optional"
+                placeholder="e.g. Austin"
+                required
               />
             </div>
             <div>
               <label className="text-sm font-medium text-foreground mb-1.5 block">
-                State
+                State / Region <span className="text-destructive">*</span>
               </label>
               <Input
                 value={state}
                 onChange={(e) => setState(e.target.value)}
-                placeholder="Optional"
+                placeholder="e.g. Texas"
+                required
               />
             </div>
           </div>
