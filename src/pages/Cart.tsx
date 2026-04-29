@@ -295,12 +295,25 @@ const Cart = () => {
                       </div>
                       <div>
                         <label className="text-xs font-medium text-muted-foreground mb-1 block">State / Province</label>
-                        <input
-                          value={shipState}
-                          onChange={(e) => setShipState(e.target.value)}
-                          placeholder="Optional"
-                          className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground"
-                        />
+                        {shipCountry.toLowerCase() === "us" ? (
+                          <select
+                            value={shipState}
+                            onChange={(e) => { setShipState(e.target.value); setSelectedRate(null); }}
+                            className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground"
+                          >
+                            <option value="">Select state</option>
+                            {US_STATES.map((s) => (
+                              <option key={s} value={s}>{s}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            value={shipState}
+                            onChange={(e) => setShipState(e.target.value)}
+                            placeholder="Optional"
+                            className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground"
+                          />
+                        )}
                       </div>
                       <button
                         onClick={handleFetchRates}
