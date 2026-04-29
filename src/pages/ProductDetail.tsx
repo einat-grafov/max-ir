@@ -481,6 +481,7 @@ const ProductDetail = () => {
                               sku: v.sku || undefined,
                               price: getVariantPrice(v),
                               quantity: selectedVariants[i] ?? 0,
+                              weightKg: Number((product as any).weight_kg ?? 0) || 0,
                               stripePriceId: v.stripe_price_id ?? null,
                             }));
                           addItems(cartItems);
@@ -495,6 +496,7 @@ const ProductDetail = () => {
                             sku: product.sku || undefined,
                             price: typeof livePrice === "number" ? livePrice : product.price,
                             quantity: 1,
+                            weightKg: Number((product as any).weight_kg ?? 0) || 0,
                             stripePriceId,
                           }]);
                         }
