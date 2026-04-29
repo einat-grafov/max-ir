@@ -78,6 +78,7 @@ const Cart = () => {
       toast.error("Please enter a valid email address");
       return;
     }
+    trackCommerce("reached_checkout", { amount: orderTotal });
     setShowCheckout(true);
     setTimeout(() => {
       document.getElementById("payment-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
