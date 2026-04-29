@@ -79,6 +79,42 @@ const CareerApplicationsTable = () => {
     return enriched;
   }, [enriched, filter]);
 
+  const STATUS_ORDER = ["applied", "under_review", "interview", "offer_extended", "offer_accepted", "hired", "rejected"];
+  const normalizeStatus = (s: string | null | undefined) => {
+    const v = s || "applied";
+    if (v === "new") return "applied";
+    if (v === "reviewing") return "under_review";
+    if (v === "interviewing") return "interview";
+    return v;
+  };
+
+  type SortKey = "name" | "status" | "email" | "country" | "education" | "date";
+  const [sort, setSort] = useState<SortState<SortKey>>({ key: "date", dir: "desc" });
+
+  const sorted = useMemo(() => {
+    const dir = sort.dir === "asc" ? 1 : -1;
+    return [...filtered].sort((a, b) => {
+      switch (sort.key) {
+        case "name":
+          return (a.full_name || "").localeCompare(b.full_name || "") * dir;
+        case "status": {
+          const ia = STATUS_ORDER.indexOf(normalizeStatus(a.status));
+          const ib = STATUS_ORDER.indexOf(normalizeStatus(b.status));
+          return ((ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib)) * dir;
+        }
+        case "email":
+          return (a.email || "").localeCompare(b.email || "") * dir;
+        case "country":
+          return (a.country || "").localeCompare(b.country || "") * dir;
+        case "education":
+          return (a.education || "").localeCompare(b.education || "") * dir;
+        case "date":
+        default:
+          return (new Date(a.created_at).getTime() - new Date(b.created_at).getTime()) * dir;
+      }
+    });
+  }, [filtered, sort]);
+
   return (
     <div>
       <div className="flex items-center gap-3 mb-4">
@@ -103,12 +139,12 @@ const CareerApplicationsTable = () => {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border">
-                <th className="text-left text-muted-foreground font-medium px-6 py-3">Name</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3">Status</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden md:table-cell">Email</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden lg:table-cell">Country</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden lg:table-cell">Education</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden md:table-cell">Date</th>
+                <th className="text-left font-medium px-6 py-3"><SortableHeader label="Name" sortKey="name" state={sort} onChange={setSort} /></th>
+                <th className="text-left font-medium px-6 py-3"><SortableHeader label="Status" sortKey="status" state={sort} onChange={setSort} /></th>
+                <th className="text-left font-medium px-6 py-3 hidden md:table-cell"><SortableHeader label="Email" sortKey="email" state={sort} onChange={setSort} /></th>
+                <th className="text-left font-medium px-6 py-3 hidden lg:table-cell"><SortableHeader label="Country" sortKey="country" state={sort} onChange={setSort} /></th>
+                <th className="text-left font-medium px-6 py-3 hidden lg:table-cell"><SortableHeader label="Education" sortKey="education" state={sort} onChange={setSort} /></th>
+                <th className="text-left font-medium px-6 py-3 hidden md:table-cell"><SortableHeader label="Date" sortKey="date" state={sort} onChange={setSort} /></th>
               </tr>
             </thead>
             <tbody>
