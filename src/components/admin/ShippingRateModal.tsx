@@ -114,7 +114,7 @@ const ShippingRateModal = ({
               />
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-sm font-medium text-foreground mb-1.5 block">
                 City
@@ -135,18 +135,11 @@ const ShippingRateModal = ({
                 placeholder="Optional"
               />
             </div>
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1.5 block">
-                Weight (kg)
-              </label>
-              <Input
-                type="number"
-                min={0.1}
-                step={0.1}
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
-              />
-            </div>
+          </div>
+
+          <div className="rounded-md border border-border bg-muted/40 px-3 py-2 text-sm text-foreground flex items-center justify-between">
+            <span className="text-muted-foreground">Total weight</span>
+            <span className="font-medium">{effectiveWeight.toFixed(2)} kg</span>
           </div>
 
           <Button
