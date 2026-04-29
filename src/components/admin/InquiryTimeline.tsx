@@ -50,7 +50,7 @@ const iconElements: Record<TimelineEvent["type"], React.ReactNode> = {
   note: <MessageSquare className="h-2 w-2 text-white" />,
 };
 
-const InquiryTimeline = ({ inquiryId, inquiryCreatedAt, productName, defaultContact }: Props) => {
+const InquiryTimeline = ({ inquiryId, inquiryCreatedAt, productName, defaultContact, source = "sales" }: Props) => {
   const queryClient = useQueryClient();
   const [modalOpen, setModalOpen] = useState(false);
   const [editingNote, setEditingNote] = useState<InquiryNote | null>(null);
