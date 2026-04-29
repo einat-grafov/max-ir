@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { Mail, MailOpen } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 type Inquiry = {
   id: string;
@@ -25,6 +26,22 @@ type Inquiry = {
 interface Props {
   source: "sales" | "support";
 }
+
+const statusStyles: Record<string, string> = {
+  // Sales
+  "New": "bg-slate-500 text-white border-transparent",
+  "Outreach": "bg-blue-500 text-white border-transparent",
+  "Connected": "bg-cyan-500 text-white border-transparent",
+  "Qualified": "bg-emerald-500 text-white border-transparent",
+  "Unqualified": "bg-orange-500 text-white border-transparent",
+  "Active buying process": "bg-primary text-primary-foreground border-transparent",
+  "Closed Won": "bg-green-600 text-white border-transparent",
+  "Closed Lost": "bg-destructive text-destructive-foreground border-transparent",
+  // Support
+  "In Progress": "bg-amber-500 text-white border-transparent",
+  "Resolved": "bg-green-600 text-white border-transparent",
+  "Closed": "bg-slate-600 text-white border-transparent",
+};
 
 const InquiriesTable = ({ source }: Props) => {
   const navigate = useNavigate();
@@ -56,6 +73,30 @@ const InquiriesTable = ({ source }: Props) => {
     },
   });
 
+  // Fetch latest status per inquiry from inquiry_notes
+  const inquiryIds = (inquiries || []).map((i) => i.id);
+  const { data: statusMap = {} } = useQuery({
+    queryKey: ["admin-inquiry-statuses", inquiryIds.join(",")],
+    enabled: inquiryIds.length > 0,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("inquiry_notes")
+        .select("inquiry_id, lead_status, created_at")
+        .in("inquiry_id", inquiryIds)
+        .not("lead_status", "is", null)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      const map: Record<string, string> = {};
+      for (const note of data || []) {
+        const nid = (note as { inquiry_id: string }).inquiry_id;
+        if (!map[nid] && (note as { lead_status: string | null }).lead_status) {
+          map[nid] = (note as { lead_status: string }).lead_status;
+        }
+      }
+      return map;
+    },
+  });
+
   const subjectLabel = source === "support" ? "Subject" : "Product";
 
   return (
@@ -65,6 +106,7 @@ const InquiriesTable = ({ source }: Props) => {
           <TableRow className="hover:bg-transparent">
             <TableHead className="w-10"></TableHead>
             <TableHead>Name</TableHead>
+            <TableHead>Status</TableHead>
             <TableHead>Customer</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>{subjectLabel}</TableHead>
@@ -75,61 +117,69 @@ const InquiriesTable = ({ source }: Props) => {
         <TableBody>
           {isLoading ? (
             <TableRow>
-              <TableCell colSpan={7} className="text-center text-muted-foreground py-12">
+              <TableCell colSpan={8} className="text-center text-muted-foreground py-12">
                 Loading…
               </TableCell>
             </TableRow>
           ) : !inquiries?.length ? (
             <TableRow>
-              <TableCell colSpan={7} className="text-center text-muted-foreground py-12">
+              <TableCell colSpan={8} className="text-center text-muted-foreground py-12">
                 {source === "support" ? "No support messages yet" : "No sales inquiries yet"}
               </TableCell>
             </TableRow>
           ) : (
-            inquiries.map((inq) => (
-              <TableRow
-                key={inq.id}
-                className="cursor-pointer hover:bg-muted/50"
-                onClick={() => navigate(`/admin/inquiries/${inq.id}`)}
-              >
-                <TableCell>
-                  {inq.read ? (
-                    <MailOpen className="w-4 h-4 text-muted-foreground" />
-                  ) : (
-                    <Mail className="w-4 h-4 text-primary" />
-                  )}
-                </TableCell>
-                <TableCell className={!inq.read ? "text-foreground font-semibold" : "text-foreground"}>
-                  {inq.name}
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {inq.customers ? (
-                    <Link
-                      to={`/admin/customers/${inq.customers.id}`}
-                      className="text-primary hover:underline"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {inq.customers.company ||
-                        `${inq.customers.first_name} ${inq.customers.last_name || ""}`.trim()}
-                    </Link>
-                  ) : (
-                    "—"
-                  )}
-                </TableCell>
-                <TableCell className="text-muted-foreground">{inq.email}</TableCell>
-                <TableCell>
-                  <Badge variant="secondary" className="text-xs">
-                    {inq.product_name}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-muted-foreground max-w-[300px] truncate">
-                  {inq.message}
-                </TableCell>
-                <TableCell className="text-muted-foreground text-sm whitespace-nowrap">
-                  {format(new Date(inq.created_at), "MMM d, yyyy")}
-                </TableCell>
-              </TableRow>
-            ))
+            inquiries.map((inq) => {
+              const status = (statusMap as Record<string, string>)[inq.id] || "New";
+              return (
+                <TableRow
+                  key={inq.id}
+                  className="cursor-pointer hover:bg-muted/50"
+                  onClick={() => navigate(`/admin/inquiries/${inq.id}`)}
+                >
+                  <TableCell>
+                    {inq.read ? (
+                      <MailOpen className="w-4 h-4 text-muted-foreground" />
+                    ) : (
+                      <Mail className="w-4 h-4 text-primary" />
+                    )}
+                  </TableCell>
+                  <TableCell className={!inq.read ? "text-foreground font-semibold" : "text-foreground"}>
+                    {inq.name}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className={cn("font-medium", statusStyles[status])}>
+                      {status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {inq.customers ? (
+                      <Link
+                        to={`/admin/customers/${inq.customers.id}`}
+                        className="text-primary hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {inq.customers.company ||
+                          `${inq.customers.first_name} ${inq.customers.last_name || ""}`.trim()}
+                      </Link>
+                    ) : (
+                      "—"
+                    )}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">{inq.email}</TableCell>
+                  <TableCell>
+                    <Badge variant="secondary" className="text-xs">
+                      {inq.product_name}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground max-w-[300px] truncate">
+                    {inq.message}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground text-sm whitespace-nowrap">
+                    {format(new Date(inq.created_at), "MMM d, yyyy")}
+                  </TableCell>
+                </TableRow>
+              );
+            })
           )}
         </TableBody>
       </Table>
