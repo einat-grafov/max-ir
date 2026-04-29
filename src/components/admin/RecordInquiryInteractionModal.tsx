@@ -68,6 +68,7 @@ interface Props {
   inquiryId: string;
   defaultContact?: string;
   editNote?: InquiryNote | null;
+  source?: string;
 }
 
 const RecordInquiryInteractionModal = ({
@@ -76,6 +77,7 @@ const RecordInquiryInteractionModal = ({
   inquiryId,
   defaultContact = "",
   editNote,
+  source = "sales",
 }: Props) => {
   const queryClient = useQueryClient();
   const isEditing = !!editNote;
