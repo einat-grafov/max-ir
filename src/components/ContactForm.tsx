@@ -22,6 +22,7 @@ const ContactForm = () => {
     try {
       const id = crypto.randomUUID();
       const subjectForDb = formData.subject || "General Inquiry";
+      const inquirySource = formData.subject === "Product Purchase" ? "sales" : "support";
       await supabase.from("inquiries").insert({
         id,
         product_name: subjectForDb,
@@ -30,7 +31,7 @@ const ContactForm = () => {
         message: formData.message,
         first_name: formData.name.split(" ")[0],
         last_name: formData.name.split(" ").slice(1).join(" ") || null,
-        source: "support",
+        source: inquirySource,
       } as any);
 
       // Confirmation to the visitor
