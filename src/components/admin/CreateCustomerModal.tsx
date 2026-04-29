@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "flag-icons/css/flag-icons.min.css";
-import { COUNTRIES, getCountryCode } from "@/lib/countries";
+import { COUNTRIES, US_STATES, getCountryCode } from "@/lib/countries";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Search, Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -25,6 +28,7 @@ interface CreateCustomerModalProps {
 
 const CreateCustomerModal = ({ open, onOpenChange, onCustomerCreated }: CreateCustomerModalProps) => {
   const [saving, setSaving] = useState(false);
+  const [stateOpen, setStateOpen] = useState(false);
   const [form, setForm] = useState({
     first_name: "",
     last_name: "",
@@ -33,6 +37,7 @@ const CreateCustomerModal = ({ open, onOpenChange, onCustomerCreated }: CreateCu
     accepts_marketing: false,
     tax_exempt: false,
     country: "Israel",
+    state: "",
     company: "",
     address: "",
     apartment: "",
@@ -53,6 +58,7 @@ const CreateCustomerModal = ({ open, onOpenChange, onCustomerCreated }: CreateCu
       accepts_marketing: false,
       tax_exempt: false,
       country: "Israel",
+      state: "",
       company: "",
       address: "",
       apartment: "",
@@ -75,6 +81,7 @@ const CreateCustomerModal = ({ open, onOpenChange, onCustomerCreated }: CreateCu
       accepts_marketing: form.accepts_marketing,
       tax_exempt: form.tax_exempt,
       country: form.country,
+      state: form.country === "United States" ? (form.state.trim() || null) : null,
       company: form.company.trim() || null,
       address: form.address.trim() || null,
       apartment: form.apartment.trim() || null,
@@ -150,7 +157,10 @@ const CreateCustomerModal = ({ open, onOpenChange, onCustomerCreated }: CreateCu
           {/* Country */}
           <div>
             <Label className="text-sm font-medium text-foreground">Country/region</Label>
-            <Select value={form.country} onValueChange={(v) => update("country", v)}>
+            <Select
+              value={form.country}
+              onValueChange={(v) => setForm((prev) => ({ ...prev, country: v, state: v === "United States" ? prev.state : "" }))}
+            >
               <SelectTrigger className="mt-1.5">
                 <SelectValue>
                   <span className="inline-flex items-center gap-2">
@@ -171,6 +181,52 @@ const CreateCustomerModal = ({ open, onOpenChange, onCustomerCreated }: CreateCu
               </SelectContent>
             </Select>
           </div>
+
+          {/* State (US only) */}
+          {form.country === "United States" && (
+            <div>
+              <Label className="text-sm font-medium text-foreground">State</Label>
+              <Popover open={stateOpen} onOpenChange={setStateOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    role="combobox"
+                    aria-expanded={stateOpen}
+                    className="mt-1.5 w-full h-10 rounded-md border border-input bg-background px-3 text-sm text-foreground flex items-center justify-between"
+                  >
+                    <span className={cn(!form.state && "text-muted-foreground")}>
+                      {form.state || "Select state"}
+                    </span>
+                    <ChevronsUpDown className="h-4 w-4 opacity-50 shrink-0" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search state…" />
+                    <CommandList>
+                      <CommandEmpty>No state found.</CommandEmpty>
+                      <CommandGroup>
+                        {US_STATES.map((s) => (
+                          <CommandItem
+                            key={s}
+                            value={s}
+                            onSelect={(val) => {
+                              const match = US_STATES.find((x) => x.toLowerCase() === val.toLowerCase()) || "";
+                              update("state", match === form.state ? "" : match);
+                              setStateOpen(false);
+                            }}
+                          >
+                            <Check className={cn("mr-2 h-4 w-4", form.state === s ? "opacity-100" : "opacity-0")} />
+                            {s}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
+          )}
 
           {/* Company */}
           <div>
