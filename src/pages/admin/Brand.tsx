@@ -567,6 +567,25 @@ function DesignSystemPanel() {
           <Button variant="link">Link</Button>
         </div>
       </section>
+
+      {/* Status Tags */}
+      <section className="space-y-4">
+        <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wide">
+          Status Tags
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Lifecycle status pills used in the Career Applications and Sales/Support Inquiries tables.
+        </p>
+        <div className="rounded-lg border border-border bg-card p-6 flex flex-wrap gap-3">
+          <span className="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 border-blue-200">Applied</span>
+          <span className="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-medium bg-amber-100 text-amber-800 border-amber-200">Under Review</span>
+          <span className="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-medium bg-purple-100 text-purple-800 border-purple-200">Interview Stage</span>
+          <span className="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-medium bg-cyan-100 text-cyan-800 border-cyan-200">Offer Extended</span>
+          <span className="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-medium bg-teal-100 text-teal-800 border-teal-200">Offer Accepted</span>
+          <span className="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-medium bg-emerald-100 text-emerald-800 border-emerald-200">Hired</span>
+          <span className="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-medium bg-red-100 text-red-700 border-red-200">Rejected</span>
+        </div>
+      </section>
     </div>
   );
 }
