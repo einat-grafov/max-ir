@@ -110,10 +110,33 @@ const InquiryTimeline = ({ inquiryId, inquiryCreatedAt, productName, defaultCont
     }
   }
 
+  // Latest lead status — most recent note with a lead_status set, defaults to "New"
+  const latestStatus = (() => {
+    const sorted = [...(notes || [])].sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+    const found = sorted.find((n) => n.lead_status);
+    return found?.lead_status || "New";
+  })();
+
+  const statusStyles: Record<string, string> = {
+    "New": "bg-muted text-foreground",
+    "Outreach": "bg-blue-500/15 text-blue-600 dark:text-blue-400",
+    "Connected": "bg-cyan-500/15 text-cyan-600 dark:text-cyan-400",
+    "Qualified": "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+    "Unqualified": "bg-orange-500/15 text-orange-600 dark:text-orange-400",
+    "Active buying process": "bg-primary/15 text-primary",
+    "Closed Won": "bg-green-500/15 text-green-600 dark:text-green-400",
+    "Closed Lost": "bg-destructive/15 text-destructive",
+  };
+
   return (
     <Card className="p-5">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-base font-semibold text-foreground">Timeline</h2>
+        <Badge variant="outline" className={cn("font-medium", statusStyles[latestStatus])}>
+          {latestStatus}
+        </Badge>
       </div>
 
       <Button variant="outline" className="w-full mb-5" onClick={() => { setEditingNote(null); setModalOpen(true); }}>
