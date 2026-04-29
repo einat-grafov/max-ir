@@ -77,6 +77,8 @@ const RecordInquiryInteractionModal = ({
   const [contact, setContact] = useState(defaultContact);
   const [interactionType, setInteractionType] = useState("");
   const [interactionTypeOther, setInteractionTypeOther] = useState("");
+  const [leadStatus, setLeadStatus] = useState("");
+  const [leadStatusReason, setLeadStatusReason] = useState("");
   const [summary, setSummary] = useState("");
   const [actionItems, setActionItems] = useState("");
   const [customerFeedback, setCustomerFeedback] = useState("");
@@ -89,6 +91,8 @@ const RecordInquiryInteractionModal = ({
     setContact(defaultContact);
     setInteractionType("");
     setInteractionTypeOther("");
+    setLeadStatus("");
+    setLeadStatusReason("");
     setSummary("");
     setActionItems("");
     setCustomerFeedback("");
