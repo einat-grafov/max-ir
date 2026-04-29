@@ -92,6 +92,7 @@ const EditProduct = () => {
         stock: product.stock.toString(),
         trackInventory: true,
         requiresShipping: product.requires_shipping,
+        weightKg: ((product as any).weight_kg ?? 0).toString(),
         taxExempt: product.tax_exempt,
         status: (product as any).status ?? "active",
         ctaAddToCart: (product as any).cta_add_to_cart ?? true,
