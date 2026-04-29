@@ -133,10 +133,10 @@ const Customers = () => {
               <tr className="border-b border-border">
                 <th className="text-left text-muted-foreground font-medium px-6 py-3">Name</th>
                 <th className="text-left text-muted-foreground font-medium px-6 py-3">Status</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3">Email</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3">Country</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3">Company</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3">Created</th>
+                <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden md:table-cell">Email</th>
+                <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden lg:table-cell">Country</th>
+                <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden lg:table-cell">Company</th>
+                <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden md:table-cell">Created</th>
               </tr>
             </thead>
             <tbody>
@@ -170,10 +170,10 @@ const Customers = () => {
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-3 text-muted-foreground">{c.email || "—"}</td>
-                    <td className="px-6 py-3 text-muted-foreground">{c.country || "—"}</td>
-                    <td className="px-6 py-3 text-muted-foreground">{c.company || "—"}</td>
-                    <td className="px-6 py-3 text-muted-foreground">
+                    <td className="px-6 py-3 text-muted-foreground hidden md:table-cell">{c.email || "—"}</td>
+                    <td className="px-6 py-3 text-muted-foreground hidden lg:table-cell">{c.country || "—"}</td>
+                    <td className="px-6 py-3 text-muted-foreground hidden lg:table-cell">{c.company || "—"}</td>
+                    <td className="px-6 py-3 text-muted-foreground hidden md:table-cell">
                       {new Date(c.created_at).toLocaleDateString()}
                     </td>
                   </tr>

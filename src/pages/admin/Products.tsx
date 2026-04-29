@@ -66,9 +66,9 @@ const Products = () => {
               <tr className="border-b border-border">
                 <th className="text-left text-muted-foreground font-medium px-6 py-3">Product</th>
                 <th className="text-left text-muted-foreground font-medium px-6 py-3">Status</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3">SKU</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3">Category</th>
-                <th className="text-right text-muted-foreground font-medium px-6 py-3">Price</th>
+                <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden md:table-cell">SKU</th>
+                <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden lg:table-cell">Category</th>
+                <th className="text-right text-muted-foreground font-medium px-6 py-3 hidden sm:table-cell">Price</th>
                 <th className="text-right text-muted-foreground font-medium px-6 py-3">Stock</th>
               </tr>
             </thead>
@@ -119,9 +119,9 @@ const Products = () => {
                         {(product as any).status === "archived" ? "Archived" : "Active"}
                       </span>
                     </td>
-                    <td className="px-6 py-3 text-muted-foreground">{product.sku || "—"}</td>
-                    <td className="px-6 py-3 text-muted-foreground">{product.category || "—"}</td>
-                    <td className="px-6 py-3 text-right text-foreground">{fmt(product.price)}</td>
+                    <td className="px-6 py-3 text-muted-foreground hidden md:table-cell">{product.sku || "—"}</td>
+                    <td className="px-6 py-3 text-muted-foreground hidden lg:table-cell">{product.category || "—"}</td>
+                    <td className="px-6 py-3 text-right text-foreground hidden sm:table-cell">{fmt(product.price)}</td>
                     <td className="px-6 py-3 text-right">
                       {(() => {
                         const variantData = getVariantStock(product);

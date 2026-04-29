@@ -108,10 +108,10 @@ const UsersSettings = () => {
               <thead>
                 <tr className="border-b border-border">
                   <th className="text-left text-muted-foreground font-medium px-6 py-3">User</th>
-                  <th className="text-left text-muted-foreground font-medium px-6 py-3">Email</th>
-                  <th className="text-left text-muted-foreground font-medium px-6 py-3">Role</th>
+                  <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden md:table-cell">Email</th>
+                  <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden sm:table-cell">Role</th>
                   <th className="text-left text-muted-foreground font-medium px-6 py-3">Status</th>
-                  <th className="text-left text-muted-foreground font-medium px-6 py-3">Last sign in</th>
+                  <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden lg:table-cell">Last sign in</th>
                 </tr>
               </thead>
               <tbody>
@@ -144,8 +144,8 @@ const UsersSettings = () => {
                             <span className="font-medium text-foreground">{fullName}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-muted-foreground">{u.email ?? "—"}</td>
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-4 text-muted-foreground hidden md:table-cell">{u.email ?? "—"}</td>
+                        <td className="px-6 py-4 hidden sm:table-cell">
                           <div className="flex flex-wrap gap-1">
                             {u.roles.length === 0 ? (
                               <span className="text-muted-foreground">—</span>
@@ -176,7 +176,7 @@ const UsersSettings = () => {
                             {isPending ? "Pending" : "Active"}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-muted-foreground">
+                        <td className="px-6 py-4 text-muted-foreground hidden lg:table-cell">
                           {u.last_sign_in_at
                             ? new Date(u.last_sign_in_at).toLocaleString()
                             : "Never"}

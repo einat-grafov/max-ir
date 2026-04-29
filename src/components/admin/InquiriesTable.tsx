@@ -119,11 +119,11 @@ const InquiriesTable = ({ source }: Props) => {
             <TableHead className="w-10"></TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Customer</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>{subjectLabel}</TableHead>
-            <TableHead>Message</TableHead>
-            <TableHead>Date</TableHead>
+            <TableHead className="hidden lg:table-cell">Customer</TableHead>
+            <TableHead className="hidden md:table-cell">Email</TableHead>
+            <TableHead className="hidden lg:table-cell">{subjectLabel}</TableHead>
+            <TableHead className="hidden xl:table-cell">Message</TableHead>
+            <TableHead className="hidden md:table-cell">Date</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -163,7 +163,7 @@ const InquiriesTable = ({ source }: Props) => {
                       {status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">
+                  <TableCell className="text-muted-foreground hidden lg:table-cell">
                     {inq.customers ? (
                       <Link
                         to={`/admin/customers/${inq.customers.id}`}
@@ -177,16 +177,16 @@ const InquiriesTable = ({ source }: Props) => {
                       "—"
                     )}
                   </TableCell>
-                  <TableCell className="text-muted-foreground">{inq.email}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-muted-foreground hidden md:table-cell">{inq.email}</TableCell>
+                  <TableCell className="hidden lg:table-cell">
                     <Badge variant="secondary" className="text-xs">
                       {inq.product_name}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-muted-foreground max-w-[300px] truncate">
+                  <TableCell className="text-muted-foreground max-w-[300px] truncate hidden xl:table-cell">
                     {inq.message}
                   </TableCell>
-                  <TableCell className="text-muted-foreground text-sm whitespace-nowrap">
+                  <TableCell className="text-muted-foreground text-sm whitespace-nowrap hidden md:table-cell">
                     {format(new Date(inq.created_at), "MMM d, yyyy")}
                   </TableCell>
                 </TableRow>
