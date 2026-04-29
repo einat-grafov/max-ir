@@ -21,6 +21,7 @@ interface ProductRow {
   image_url: string | null;
   requires_shipping: boolean;
   tax_exempt: boolean;
+  weight_kg: number | null;
   variants: any;
 }
 
@@ -36,6 +37,7 @@ export interface SelectableProduct {
   image_url: string | null;
   requires_shipping: boolean;
   tax_exempt: boolean;
+  weight_kg: number;
 }
 
 interface ProductSearchModalProps {
@@ -65,6 +67,7 @@ const expandRows = (rows: ProductRow[]): SelectableProduct[] => {
           image_url: r.image_url,
           requires_shipping: r.requires_shipping,
           tax_exempt: r.tax_exempt,
+          weight_kg: Number(r.weight_kg ?? 0) || 0,
         });
       }
     } else {
@@ -78,6 +81,7 @@ const expandRows = (rows: ProductRow[]): SelectableProduct[] => {
         image_url: r.image_url,
         requires_shipping: r.requires_shipping,
         tax_exempt: r.tax_exempt,
+        weight_kg: Number(r.weight_kg ?? 0) || 0,
       });
     }
   }
@@ -108,7 +112,7 @@ const ProductSearchModal = ({ open, onOpenChange, onAddProducts }: ProductSearch
     setLoading(true);
     let query = supabase
       .from("products")
-      .select("id, name, price, stock, sku, image_url, requires_shipping, tax_exempt, variants");
+      .select("id, name, price, stock, sku, image_url, requires_shipping, tax_exempt, weight_kg, variants");
     if (search.trim()) {
       query = query.ilike("name", `%${search.trim()}%`);
     }

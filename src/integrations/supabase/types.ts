@@ -995,6 +995,7 @@ export type Database = {
           tax_exempt: boolean
           updated_at: string
           variants: Json | null
+          weight_kg: number
         }
         Insert: {
           category?: string | null
@@ -1017,6 +1018,7 @@ export type Database = {
           tax_exempt?: boolean
           updated_at?: string
           variants?: Json | null
+          weight_kg?: number
         }
         Update: {
           category?: string | null
@@ -1039,6 +1041,7 @@ export type Database = {
           tax_exempt?: boolean
           updated_at?: string
           variants?: Json | null
+          weight_kg?: number
         }
         Relationships: []
       }

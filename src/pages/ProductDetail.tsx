@@ -98,7 +98,7 @@ const ProductDetail = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id, name, image_url, images, price, description, overview, specifications, variants, category, sku, status, cta_add_to_cart, cta_request_quote, tax_exempt, pdf_url")
+        .select("id, name, image_url, images, price, description, overview, specifications, variants, category, sku, status, cta_add_to_cart, cta_request_quote, tax_exempt, weight_kg, pdf_url")
         .eq("id", id!)
         .eq("status", "active")
         .maybeSingle();
@@ -481,6 +481,7 @@ const ProductDetail = () => {
                               sku: v.sku || undefined,
                               price: getVariantPrice(v),
                               quantity: selectedVariants[i] ?? 0,
+                              weightKg: Number((product as any).weight_kg ?? 0) || 0,
                               stripePriceId: v.stripe_price_id ?? null,
                             }));
                           addItems(cartItems);
@@ -495,6 +496,7 @@ const ProductDetail = () => {
                             sku: product.sku || undefined,
                             price: typeof livePrice === "number" ? livePrice : product.price,
                             quantity: 1,
+                            weightKg: Number((product as any).weight_kg ?? 0) || 0,
                             stripePriceId,
                           }]);
                         }

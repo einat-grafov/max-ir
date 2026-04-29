@@ -59,6 +59,7 @@ export interface ProductFormData {
   stock: string;
   trackInventory: boolean;
   requiresShipping: boolean;
+  weightKg: string;
   taxExempt: boolean;
   status: string;
   ctaAddToCart: boolean;
@@ -109,6 +110,7 @@ const ProductForm = ({
   const [stock, setStock] = useState(initialData?.stock ?? "0");
   const [trackInventory, setTrackInventory] = useState(initialData?.trackInventory ?? true);
   const [requiresShipping, setRequiresShipping] = useState(initialData?.requiresShipping ?? true);
+  const [weightKg, setWeightKg] = useState(initialData?.weightKg ?? "0");
   const [taxExempt, setTaxExempt] = useState(initialData?.taxExempt ?? false);
   const [status, setStatus] = useState(initialData?.status ?? "active");
   const [ctaAddToCart, setCtaAddToCart] = useState(initialData?.ctaAddToCart ?? true);
@@ -226,7 +228,7 @@ const ProductForm = ({
       const primaryImageUrl = allImageUrls.length > 0 ? allImageUrls[0] : null;
 
       await onSubmit(
-        { title, overview, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, ctaAddToCart, ctaRequestQuote, existingImageUrl: null, existingImages: [], existingPdfUrl: null, specifications: specifications.filter(s => s.label.trim() && s.value.trim()), variants: variants.filter(v => v.name.trim()) },
+        { title, overview, description, category, price, sku, stock, trackInventory, requiresShipping, weightKg, taxExempt, status, ctaAddToCart, ctaRequestQuote, existingImageUrl: null, existingImages: [], existingPdfUrl: null, specifications: specifications.filter(s => s.label.trim() && s.value.trim()), variants: variants.filter(v => v.name.trim()) },
         primaryImageUrl,
         allImageUrls,
         finalPdfUrl
@@ -682,7 +684,19 @@ const ProductForm = ({
               </div>
             </div>
             {requiresShipping && (
-              <p className="text-xs text-muted-foreground mt-3">Customers will need to enter their shipping address at checkout.</p>
+              <div className="mt-4 space-y-2">
+                <Label htmlFor="weight-kg">Weight (kg)</Label>
+                <Input
+                  id="weight-kg"
+                  type="number"
+                  min={0}
+                  step={0.01}
+                  value={weightKg}
+                  onChange={(e) => setWeightKg(e.target.value)}
+                  placeholder="0.00"
+                />
+                <p className="text-xs text-muted-foreground">Used to automatically calculate shipping rates based on quantity.</p>
+              </div>
             )}
           </Card>
         </div>

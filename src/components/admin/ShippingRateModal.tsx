@@ -27,6 +27,7 @@ interface ShippingRateModalProps {
   defaultPostalCode?: string;
   defaultCity?: string;
   defaultState?: string;
+  totalWeightKg?: number;
 }
 
 const ShippingRateModal = ({
@@ -37,13 +38,15 @@ const ShippingRateModal = ({
   defaultPostalCode,
   defaultCity,
   defaultState,
+  totalWeightKg,
 }: ShippingRateModalProps) => {
   const [country, setCountry] = useState(defaultCountry || "US");
   const [postalCode, setPostalCode] = useState(defaultPostalCode || "");
   const [city, setCity] = useState(defaultCity || "");
   const [state, setState] = useState(defaultState || "");
-  const [weight, setWeight] = useState("1");
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+
+  const effectiveWeight = Math.max(0.1, Number(totalWeightKg ?? 0) || 0.1);
 
   const { rates, loading, error, fetchRates, reset } = useShippingRates();
 
@@ -53,7 +56,6 @@ const ShippingRateModal = ({
       setPostalCode(defaultPostalCode || "");
       setCity(defaultCity || "");
       setState(defaultState || "");
-      setWeight("1");
       setSelectedIdx(null);
       reset();
     }
@@ -64,7 +66,7 @@ const ShippingRateModal = ({
     setSelectedIdx(null);
     fetchRates(
       { postalCode, country, city: city || undefined, state: state || undefined },
-      [{ weight: parseFloat(weight) || 1 }]
+      [{ weight: effectiveWeight }]
     );
   };
 
@@ -112,7 +114,7 @@ const ShippingRateModal = ({
               />
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-sm font-medium text-foreground mb-1.5 block">
                 City
@@ -133,18 +135,11 @@ const ShippingRateModal = ({
                 placeholder="Optional"
               />
             </div>
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1.5 block">
-                Weight (kg)
-              </label>
-              <Input
-                type="number"
-                min={0.1}
-                step={0.1}
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
-              />
-            </div>
+          </div>
+
+          <div className="rounded-md border border-border bg-muted/40 px-3 py-2 text-sm text-foreground flex items-center justify-between">
+            <span className="text-muted-foreground">Total weight</span>
+            <span className="font-medium">{effectiveWeight.toFixed(2)} kg</span>
           </div>
 
           <Button
