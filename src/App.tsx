@@ -32,7 +32,6 @@ import BillingSettings from "./pages/admin/settings/BillingSettings";
 import IntegrationsSettings from "./pages/admin/settings/IntegrationsSettings";
 import EmailSettings from "./pages/admin/settings/EmailSettings";
 import EmailTemplateEditor from "./pages/admin/settings/EmailTemplateEditor";
-import CareerApplications from "./pages/admin/CareerApplications";
 import CareerApplicationDetail from "./pages/admin/CareerApplicationDetail";
 import Contact from "./pages/admin/Contact";
 import InquiryDetail from "./pages/admin/InquiryDetail";
