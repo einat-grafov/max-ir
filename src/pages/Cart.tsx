@@ -3,12 +3,15 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
-import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft, Loader2, Truck } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft, Loader2, Truck, Check, ChevronsUpDown } from "lucide-react";
 import { toast } from "sonner";
 import { COUNTRIES, US_STATES } from "@/lib/countries";
 import { useShippingRates, type ShippingRate } from "@/hooks/useShippingRates";
 import { StripeEmbeddedCheckoutInline } from "@/components/StripeEmbeddedCheckout";
 import { useStripePrices } from "@/hooks/useStripePrices";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 
 const Cart = () => {
   const { items: rawItems, updateQuantity, removeItem, clearCart } = useCart();
