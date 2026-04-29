@@ -156,6 +156,7 @@ const InquiryTimeline = ({ inquiryId, inquiryCreatedAt, productName, defaultCont
         inquiryId={inquiryId}
         defaultContact={defaultContact}
         editNote={editingNote}
+        source={source}
       />
 
       <div className="relative">
