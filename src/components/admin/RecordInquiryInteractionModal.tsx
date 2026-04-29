@@ -27,7 +27,7 @@ const INTERACTION_TYPES = [
   "Other",
 ];
 
-const LEAD_STATUSES = [
+const SALES_LEAD_STATUSES = [
   "New",
   "Outreach",
   "Connected",
@@ -36,6 +36,13 @@ const LEAD_STATUSES = [
   "Active buying process",
   "Closed Won",
   "Closed Lost",
+];
+
+const SUPPORT_STATUSES = [
+  "New",
+  "In Progress",
+  "Resolved",
+  "Closed",
 ];
 
 const UNQUALIFIED_REASONS = [
