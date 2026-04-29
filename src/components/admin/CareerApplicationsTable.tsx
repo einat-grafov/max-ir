@@ -154,14 +154,14 @@ const CareerApplicationsTable = () => {
                     Loading…
                   </td>
                 </tr>
-              ) : !filtered.length ? (
+              ) : !sorted.length ? (
                 <tr className="border-b border-border/50">
                   <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
                     {filter !== "all" ? "No applications match the selected filter" : "No career applications yet"}
                   </td>
                 </tr>
               ) : (
-                filtered.map((app) => {
+                sorted.map((app) => {
                   const config = statusConfig[app.status || "applied"] || statusConfig.applied;
                   return (
                     <tr
