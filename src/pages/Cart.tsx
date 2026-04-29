@@ -265,7 +265,7 @@ const Cart = () => {
                         <label className="text-xs font-medium text-muted-foreground mb-1 block">Country</label>
                         <select
                           value={shipCountry}
-                          onChange={(e) => { setShipCountry(e.target.value); setSelectedRate(null); }}
+                          onChange={(e) => { setShipCountry(e.target.value); setShipState(""); setSelectedRate(null); }}
                           className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground"
                         >
                           {COUNTRIES.map((c) => (
