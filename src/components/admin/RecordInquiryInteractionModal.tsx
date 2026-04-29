@@ -142,6 +142,11 @@ const RecordInquiryInteractionModal = ({
         summary: summary || null,
         action_items: actionItems || null,
         customer_feedback: customerFeedback || null,
+        lead_status: leadStatus || null,
+        lead_status_reason:
+          (leadStatus === "Unqualified" || leadStatus === "Closed Lost")
+            ? leadStatusReason || null
+            : null,
         follow_up_required: followUpRequired,
         follow_up_details: followUpRequired ? followUpDetails || null : null,
         next_follow_up_date: nextFollowUpDate ? format(nextFollowUpDate, "yyyy-MM-dd") : null,
