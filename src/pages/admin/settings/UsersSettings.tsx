@@ -176,7 +176,7 @@ const UsersSettings = () => {
                             {isPending ? "Pending" : "Active"}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-muted-foreground">
+                        <td className="px-6 py-4 text-muted-foreground hidden lg:table-cell">
                           {u.last_sign_in_at
                             ? new Date(u.last_sign_in_at).toLocaleString()
                             : "Never"}
