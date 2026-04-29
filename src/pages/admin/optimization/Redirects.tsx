@@ -273,17 +273,17 @@ const Redirects = () => {
               redirects.map((r) => (
                 <TableRow key={r.id}>
                   <TableCell className="font-mono text-sm text-foreground">{r.source_path}</TableCell>
-                  <TableCell className="w-6 text-muted-foreground">
+                  <TableCell className="w-6 text-muted-foreground hidden sm:table-cell">
                     <ArrowRight className="w-4 h-4" />
                   </TableCell>
-                  <TableCell className="font-mono text-sm text-foreground">{r.destination_path}</TableCell>
-                  <TableCell>
+                  <TableCell className="font-mono text-sm text-foreground hidden md:table-cell">{r.destination_path}</TableCell>
+                  <TableCell className="hidden lg:table-cell">
                     <Badge variant="secondary">{r.status_code}</Badge>
                   </TableCell>
                   <TableCell>
                     <Switch checked={r.enabled} onCheckedChange={() => toggleEnabled(r)} />
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground max-w-xs truncate">
+                  <TableCell className="text-sm text-muted-foreground max-w-xs truncate hidden lg:table-cell">
                     {r.notes || "—"}
                   </TableCell>
                   <TableCell className="text-right">
