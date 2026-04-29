@@ -55,10 +55,10 @@ const StockNotifications = () => {
           <TableHeader>
             <TableRow className="border-white/10 hover:bg-transparent">
               <TableHead className="text-maxir-gray">Email</TableHead>
-              <TableHead className="text-maxir-gray">Product</TableHead>
-              <TableHead className="text-maxir-gray">Variant</TableHead>
-              <TableHead className="text-maxir-gray">SKU</TableHead>
-              <TableHead className="text-maxir-gray">Date</TableHead>
+              <TableHead className="text-maxir-gray hidden md:table-cell">Product</TableHead>
+              <TableHead className="text-maxir-gray hidden md:table-cell">Variant</TableHead>
+              <TableHead className="text-maxir-gray hidden lg:table-cell">SKU</TableHead>
+              <TableHead className="text-maxir-gray hidden md:table-cell">Date</TableHead>
               <TableHead className="text-maxir-gray w-10"></TableHead>
             </TableRow>
           </TableHeader>
