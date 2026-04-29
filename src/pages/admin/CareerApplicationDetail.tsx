@@ -198,8 +198,9 @@ const CareerApplicationDetail = () => {
     );
   }
 
-  const currentStatus = (application.status as string) || "new";
-  const config = statusConfig[currentStatus] || statusConfig.new;
+  const rawStatus = (application.status as string) || "applied";
+  const currentStatus = legacyStatusMap[rawStatus] || rawStatus;
+  const config = statusConfig[currentStatus] || statusConfig.applied;
 
   return (
     <div>
