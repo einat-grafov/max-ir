@@ -7,6 +7,7 @@ export interface CartItem {
   sku?: string;
   price: number;
   quantity: number;
+  weightKg?: number;
   stripePriceId?: string | null;
 }
 
