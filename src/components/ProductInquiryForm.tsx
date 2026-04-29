@@ -187,6 +187,7 @@ const ProductInquiryForm = ({ open, onOpenChange, productName, productId, select
         phone: result.data!.phone || null,
         country: result.data!.country,
         state: formData.country === "United States" ? formData.state : null,
+        source: "sales",
       } as any);
       if (error) throw error;
 
