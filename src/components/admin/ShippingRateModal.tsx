@@ -61,11 +61,13 @@ const ShippingRateModal = ({
     }
   }, [open, defaultCountry, defaultPostalCode, defaultCity, defaultState, reset]);
 
+  const canFetch = !!country && !!postalCode.trim() && !!city.trim() && !!state.trim();
+
   const handleFetch = () => {
-    if (!postalCode || !country) return;
+    if (!canFetch) return;
     setSelectedIdx(null);
     fetchRates(
-      { postalCode, country, city: city || undefined, state: state || undefined },
+      { postalCode: postalCode.trim(), country, city: city.trim(), state: state.trim() },
       [{ weight: effectiveWeight }]
     );
   };
