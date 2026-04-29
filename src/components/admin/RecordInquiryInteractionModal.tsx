@@ -248,7 +248,7 @@ const RecordInquiryInteractionModal = ({
           )}
 
           <div>
-            <Label className="text-sm font-medium">Lead Status</Label>
+            <Label className="text-sm font-medium">{source === "support" ? "Status" : "Lead Status"}</Label>
             <Select
               value={leadStatus}
               onValueChange={(v) => {
@@ -260,7 +260,7 @@ const RecordInquiryInteractionModal = ({
                 <SelectValue placeholder="Select status..." />
               </SelectTrigger>
               <SelectContent>
-                {LEAD_STATUSES.map((s) => (
+                {(source === "support" ? SUPPORT_STATUSES : SALES_LEAD_STATUSES).map((s) => (
                   <SelectItem key={s} value={s}>{s}</SelectItem>
                 ))}
               </SelectContent>
