@@ -21,6 +21,7 @@ interface ProductRow {
   image_url: string | null;
   requires_shipping: boolean;
   tax_exempt: boolean;
+  weight_kg: number | null;
   variants: any;
 }
 
