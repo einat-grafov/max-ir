@@ -27,6 +27,7 @@ interface ShippingRateModalProps {
   defaultPostalCode?: string;
   defaultCity?: string;
   defaultState?: string;
+  totalWeightKg?: number;
 }
 
 const ShippingRateModal = ({
@@ -37,13 +38,15 @@ const ShippingRateModal = ({
   defaultPostalCode,
   defaultCity,
   defaultState,
+  totalWeightKg,
 }: ShippingRateModalProps) => {
   const [country, setCountry] = useState(defaultCountry || "US");
   const [postalCode, setPostalCode] = useState(defaultPostalCode || "");
   const [city, setCity] = useState(defaultCity || "");
   const [state, setState] = useState(defaultState || "");
-  const [weight, setWeight] = useState("1");
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+
+  const effectiveWeight = Math.max(0.1, Number(totalWeightKg ?? 0) || 0.1);
 
   const { rates, loading, error, fetchRates, reset } = useShippingRates();
 
@@ -53,7 +56,6 @@ const ShippingRateModal = ({
       setPostalCode(defaultPostalCode || "");
       setCity(defaultCity || "");
       setState(defaultState || "");
-      setWeight("1");
       setSelectedIdx(null);
       reset();
     }
@@ -64,7 +66,7 @@ const ShippingRateModal = ({
     setSelectedIdx(null);
     fetchRates(
       { postalCode, country, city: city || undefined, state: state || undefined },
-      [{ weight: parseFloat(weight) || 1 }]
+      [{ weight: effectiveWeight }]
     );
   };
 
