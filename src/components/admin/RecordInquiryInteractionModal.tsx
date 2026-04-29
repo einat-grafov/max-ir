@@ -239,6 +239,44 @@ const RecordInquiryInteractionModal = ({
           )}
 
           <div>
+            <Label className="text-sm font-medium">Lead Status</Label>
+            <Select
+              value={leadStatus}
+              onValueChange={(v) => {
+                setLeadStatus(v);
+                if (v !== "Unqualified" && v !== "Closed Lost") setLeadStatusReason("");
+              }}
+            >
+              <SelectTrigger className="mt-1.5">
+                <SelectValue placeholder="Select status..." />
+              </SelectTrigger>
+              <SelectContent>
+                {LEAD_STATUSES.map((s) => (
+                  <SelectItem key={s} value={s}>{s}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {(leadStatus === "Unqualified" || leadStatus === "Closed Lost") && (
+            <div>
+              <Label className="text-sm font-medium">
+                {leadStatus === "Unqualified" ? "Reason (Unqualified)" : "Reason (Closed Lost)"}
+              </Label>
+              <Select value={leadStatusReason} onValueChange={setLeadStatusReason}>
+                <SelectTrigger className="mt-1.5">
+                  <SelectValue placeholder="Select reason..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {(leadStatus === "Unqualified" ? UNQUALIFIED_REASONS : CLOSED_LOST_REASONS).map((r) => (
+                    <SelectItem key={r} value={r}>{r}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          <div>
             <Label className="text-sm font-medium">
               Summary of Interaction <span className="text-destructive">*</span>
             </Label>
