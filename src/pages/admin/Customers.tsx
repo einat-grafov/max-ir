@@ -170,10 +170,10 @@ const Customers = () => {
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-3 text-muted-foreground">{c.email || "—"}</td>
-                    <td className="px-6 py-3 text-muted-foreground">{c.country || "—"}</td>
-                    <td className="px-6 py-3 text-muted-foreground">{c.company || "—"}</td>
-                    <td className="px-6 py-3 text-muted-foreground">
+                    <td className="px-6 py-3 text-muted-foreground hidden md:table-cell">{c.email || "—"}</td>
+                    <td className="px-6 py-3 text-muted-foreground hidden lg:table-cell">{c.country || "—"}</td>
+                    <td className="px-6 py-3 text-muted-foreground hidden lg:table-cell">{c.company || "—"}</td>
+                    <td className="px-6 py-3 text-muted-foreground hidden md:table-cell">
                       {new Date(c.created_at).toLocaleDateString()}
                     </td>
                   </tr>
