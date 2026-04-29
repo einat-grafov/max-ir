@@ -97,6 +97,18 @@ const InquiriesTable = ({ source }: Props) => {
     },
   });
 
+  const SALES_ORDER = ["New", "Outreach", "Connected", "Qualified", "Active buying process", "Unqualified", "Closed Won", "Closed Lost"];
+  const SUPPORT_ORDER = ["New", "In Progress", "Resolved", "Closed"];
+  const statusOrder = source === "support" ? SUPPORT_ORDER : SALES_ORDER;
+  const sortedInquiries = [...(inquiries || [])].sort((a, b) => {
+    const sa = (statusMap as Record<string, string>)[a.id] || "New";
+    const sb = (statusMap as Record<string, string>)[b.id] || "New";
+    const ia = statusOrder.indexOf(sa); const ib = statusOrder.indexOf(sb);
+    const ra = ia === -1 ? 999 : ia; const rb = ib === -1 ? 999 : ib;
+    if (ra !== rb) return ra - rb;
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
+
   const subjectLabel = source === "support" ? "Subject" : "Product";
 
   return (
