@@ -28,11 +28,20 @@ import CareerApplicationTimeline from "@/components/admin/CareerApplicationTimel
 import CareerApplicationFiles from "@/components/admin/CareerApplicationFiles";
 
 const statusConfig: Record<string, { label: string; className: string }> = {
-  new: { label: "New", className: "bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200 cursor-pointer" },
-  reviewing: { label: "Reviewing", className: "bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-200 cursor-pointer" },
-  interviewing: { label: "Interviewing", className: "bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-200 cursor-pointer" },
+  applied: { label: "Applied", className: "bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200 cursor-pointer" },
+  under_review: { label: "Under Review", className: "bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-200 cursor-pointer" },
+  interview: { label: "Interview Stage", className: "bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-200 cursor-pointer" },
+  offer_extended: { label: "Offer Extended", className: "bg-cyan-100 text-cyan-800 border-cyan-200 hover:bg-cyan-200 cursor-pointer" },
+  offer_accepted: { label: "Offer Accepted", className: "bg-teal-100 text-teal-800 border-teal-200 hover:bg-teal-200 cursor-pointer" },
   hired: { label: "Hired", className: "bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-200 cursor-pointer" },
   rejected: { label: "Rejected", className: "bg-red-100 text-red-700 border-red-200 hover:bg-red-200 cursor-pointer" },
+};
+
+// Map legacy status values to new keys
+const legacyStatusMap: Record<string, string> = {
+  new: "applied",
+  reviewing: "under_review",
+  interviewing: "interview",
 };
 
 const CareerApplicationDetail = () => {
