@@ -31,7 +31,7 @@ const CheckoutSuccess = () => {
         if (data?.paymentStatus === "paid" || data?.paymentStatus === "no_payment_required") {
           trackCommerce("purchased", {
             order_id: data?.orderId,
-            amount: typeof data?.amountTotal === "number" ? data.amountTotal : undefined,
+            amount: typeof data?.amountTotal === "number" ? data.amountTotal / 100 : undefined,
           });
           clearCart();
           setStatus("paid");
@@ -39,7 +39,7 @@ const CheckoutSuccess = () => {
           // Async payment method (e.g. bank debit) — payment confirmed later.
           trackCommerce("purchased", {
             order_id: data?.orderId,
-            amount: typeof data?.amountTotal === "number" ? data.amountTotal : undefined,
+            amount: typeof data?.amountTotal === "number" ? data.amountTotal / 100 : undefined,
           });
           clearCart();
           setStatus("pending");
