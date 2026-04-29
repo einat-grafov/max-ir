@@ -1,0 +1,1 @@
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS weight_kg numeric(10,3) NOT NULL DEFAULT 0;
