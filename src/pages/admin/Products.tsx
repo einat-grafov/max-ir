@@ -66,9 +66,9 @@ const Products = () => {
               <tr className="border-b border-border">
                 <th className="text-left text-muted-foreground font-medium px-6 py-3">Product</th>
                 <th className="text-left text-muted-foreground font-medium px-6 py-3">Status</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3">SKU</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3">Category</th>
-                <th className="text-right text-muted-foreground font-medium px-6 py-3">Price</th>
+                <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden md:table-cell">SKU</th>
+                <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden lg:table-cell">Category</th>
+                <th className="text-right text-muted-foreground font-medium px-6 py-3 hidden sm:table-cell">Price</th>
                 <th className="text-right text-muted-foreground font-medium px-6 py-3">Stock</th>
               </tr>
             </thead>
