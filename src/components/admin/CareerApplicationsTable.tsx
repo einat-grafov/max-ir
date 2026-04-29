@@ -58,10 +58,23 @@ const CareerApplicationsTable = () => {
     }));
   }, [applications, suppressedSet]);
 
+  const statusEquivalents: Record<string, string[]> = {
+    applied: ["applied", "new"],
+    under_review: ["under_review", "reviewing"],
+    interview: ["interview", "interviewing"],
+    offer_extended: ["offer_extended"],
+    offer_accepted: ["offer_accepted"],
+    hired: ["hired"],
+    rejected: ["rejected"],
+  };
+
   const filtered = useMemo(() => {
     if (filter === "unread") return enriched.filter((a) => !a.read);
     if (filter === "unsubscribed") return enriched.filter((a) => a.unsubscribed);
-    if (filter !== "all") return enriched.filter((a) => (a.status || "new") === filter);
+    if (filter !== "all") {
+      const equivs = statusEquivalents[filter] || [filter];
+      return enriched.filter((a) => equivs.includes(a.status || "applied"));
+    }
     return enriched;
   }, [enriched, filter]);
 
@@ -76,11 +89,9 @@ const CareerApplicationsTable = () => {
           <SelectContent>
             <SelectItem value="all">All applications</SelectItem>
             <SelectItem value="unread">Unread only</SelectItem>
-            <SelectItem value="new">New</SelectItem>
-            <SelectItem value="reviewing">Reviewing</SelectItem>
-            <SelectItem value="interviewing">Interviewing</SelectItem>
-            <SelectItem value="hired">Hired</SelectItem>
-            <SelectItem value="rejected">Rejected</SelectItem>
+            {FILTER_STATUSES.map((s) => (
+              <SelectItem key={s} value={s}>{statusConfig[s].label}</SelectItem>
+            ))}
             <SelectItem value="unsubscribed">Unsubscribed</SelectItem>
           </SelectContent>
         </Select>
