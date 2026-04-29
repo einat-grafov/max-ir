@@ -248,11 +248,11 @@ const Redirects = () => {
           <TableHeader>
             <TableRow>
               <TableHead>Source</TableHead>
-              <TableHead></TableHead>
-              <TableHead>Destination</TableHead>
-              <TableHead>Code</TableHead>
+              <TableHead className="hidden sm:table-cell"></TableHead>
+              <TableHead className="hidden md:table-cell">Destination</TableHead>
+              <TableHead className="hidden lg:table-cell">Code</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Notes</TableHead>
+              <TableHead className="hidden lg:table-cell">Notes</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
