@@ -103,6 +103,8 @@ const EditCustomer = () => {
   const [apartment, setApartment] = useState("");
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
+  const [stateValue, setStateValue] = useState("");
+  const [stateOpen, setStateOpen] = useState(false);
   const [contacts, setContacts] = useState<ContactState[]>([]);
 
   const { data: customer, isLoading } = useQuery({
