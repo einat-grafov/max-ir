@@ -17,13 +17,20 @@ const Contact = () => {
   const { data: counts } = useQuery({
     queryKey: ["contact-unread-counts"],
     queryFn: async () => {
-      const [sales, support, careers] = await Promise.all([
-        supabase.from("inquiries").select("id", { count: "exact", head: true }).eq("read", false).eq("source", "sales"),
+      const [salesRows, support, careers, orderRows] = await Promise.all([
+        supabase.from("inquiries").select("id, customer_id").eq("read", false).eq("source", "sales"),
         supabase.from("inquiries").select("id", { count: "exact", head: true }).eq("read", false).eq("source", "support"),
         supabase.from("career_applications").select("id", { count: "exact", head: true }).eq("read", false),
+        supabase.from("orders").select("customer_id").not("customer_id", "is", null),
       ]);
+      const customersWithOrders = new Set(
+        (orderRows.data ?? []).map((o: { customer_id: string | null }) => o.customer_id).filter(Boolean) as string[]
+      );
+      const salesUnread = (salesRows.data ?? []).filter(
+        (i: { customer_id: string | null }) => !(i.customer_id && customersWithOrders.has(i.customer_id))
+      ).length;
       return {
-        sales: sales.count ?? 0,
+        sales: salesUnread,
         support: support.count ?? 0,
         careers: careers.count ?? 0,
       };

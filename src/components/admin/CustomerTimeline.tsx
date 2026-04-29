@@ -92,17 +92,44 @@ const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, company
   });
 
   const { data: inquiries } = useQuery({
-    queryKey: ["customer-inquiries", customerName],
+    queryKey: ["customer-inquiries", customerId, customerName],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Match inquiries linked by customer_id OR by name/company fallback (legacy rows)
+      const { data: byId, error: e1 } = await supabase
         .from("inquiries")
-        .select("id, product_name, created_at, company_name")
-        .or(`company_name.eq.${customerName},name.eq.${customerName}`)
+        .select("id, product_name, created_at, company_name, source")
+        .eq("customer_id", customerId);
+      if (e1) throw e1;
+
+      const { data: byName, error: e2 } = await supabase
+        .from("inquiries")
+        .select("id, product_name, created_at, company_name, source")
+        .is("customer_id", null)
+        .or(`company_name.eq.${customerName},name.eq.${customerName}`);
+      if (e2) throw e2;
+
+      const merged = [...(byId ?? []), ...(byName ?? [])];
+      const seen = new Set<string>();
+      return merged.filter((i) => (seen.has(i.id) ? false : (seen.add(i.id), true)));
+    },
+    enabled: !!customerId,
+  });
+
+  const inquiryIds = (inquiries ?? []).map((i) => i.id);
+
+  const { data: inquiryNotes } = useQuery({
+    queryKey: ["customer-inquiry-notes", inquiryIds],
+    queryFn: async () => {
+      if (!inquiryIds.length) return [];
+      const { data, error } = await supabase
+        .from("inquiry_notes")
+        .select("*")
+        .in("inquiry_id", inquiryIds)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
-    enabled: !!customerName,
+    enabled: inquiryIds.length > 0,
   });
 
   const { data: notes } = useQuery({
@@ -144,7 +171,20 @@ const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, company
       type: "inquiry",
       message: `Inquiry received for ${inquiry.product_name}`,
       date: new Date(inquiry.created_at),
-      link: `/admin/inquiries`,
+      link: `/admin/inquiries/${inquiry.id}`,
+    });
+  });
+
+  inquiryNotes?.forEach((note) => {
+    const displayMessage = note.summary || note.content;
+    events.push({
+      id: `inquiry-note-${note.id}`,
+      type: "note",
+      message: displayMessage,
+      date: new Date(note.created_at),
+      attachmentName: note.attachment_name || undefined,
+      attachmentUrl: note.attachment_url || undefined,
+      link: `/admin/inquiries/${note.inquiry_id}`,
     });
   });
 
