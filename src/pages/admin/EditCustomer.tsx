@@ -224,6 +224,7 @@ const EditCustomer = () => {
           apartment: apartment.trim() || null,
           city: city.trim() || null,
           postal_code: postalCode.trim() || null,
+          state: country === "United States" ? (stateValue.trim() || null) : null,
         })
         .eq("id", id!);
       if (customerError) throw customerError;
