@@ -27,6 +27,32 @@ const INTERACTION_TYPES = [
   "Other",
 ];
 
+const LEAD_STATUSES = [
+  "New",
+  "Outreach",
+  "Connected",
+  "Qualified",
+  "Unqualified",
+  "Active buying process",
+  "Closed Won",
+  "Closed Lost",
+];
+
+const UNQUALIFIED_REASONS = [
+  "No budget",
+  "Wrong industry",
+  "Too small",
+  "Too large",
+  "Not decision maker",
+];
+
+const CLOSED_LOST_REASONS = [
+  "Chose competitor",
+  "No decision",
+  "Timing not right",
+  "Lost to internal solution",
+];
+
 type InquiryNote = Tables<"inquiry_notes">;
 
 interface Props {
@@ -51,6 +77,8 @@ const RecordInquiryInteractionModal = ({
   const [contact, setContact] = useState(defaultContact);
   const [interactionType, setInteractionType] = useState("");
   const [interactionTypeOther, setInteractionTypeOther] = useState("");
+  const [leadStatus, setLeadStatus] = useState("");
+  const [leadStatusReason, setLeadStatusReason] = useState("");
   const [summary, setSummary] = useState("");
   const [actionItems, setActionItems] = useState("");
   const [customerFeedback, setCustomerFeedback] = useState("");
@@ -63,6 +91,8 @@ const RecordInquiryInteractionModal = ({
     setContact(defaultContact);
     setInteractionType("");
     setInteractionTypeOther("");
+    setLeadStatus("");
+    setLeadStatusReason("");
     setSummary("");
     setActionItems("");
     setCustomerFeedback("");
@@ -86,6 +116,8 @@ const RecordInquiryInteractionModal = ({
       setSummary(editNote.summary || "");
       setActionItems(editNote.action_items || "");
       setCustomerFeedback(editNote.customer_feedback || "");
+      setLeadStatus((editNote as any).lead_status || "");
+      setLeadStatusReason((editNote as any).lead_status_reason || "");
       setFollowUpRequired(editNote.follow_up_required);
       setFollowUpDetails(editNote.follow_up_details || "");
       setNextFollowUpDate(editNote.next_follow_up_date ? new Date(editNote.next_follow_up_date) : undefined);
@@ -110,6 +142,11 @@ const RecordInquiryInteractionModal = ({
         summary: summary || null,
         action_items: actionItems || null,
         customer_feedback: customerFeedback || null,
+        lead_status: leadStatus || null,
+        lead_status_reason:
+          (leadStatus === "Unqualified" || leadStatus === "Closed Lost")
+            ? leadStatusReason || null
+            : null,
         follow_up_required: followUpRequired,
         follow_up_details: followUpRequired ? followUpDetails || null : null,
         next_follow_up_date: nextFollowUpDate ? format(nextFollowUpDate, "yyyy-MM-dd") : null,
@@ -198,6 +235,44 @@ const RecordInquiryInteractionModal = ({
                 placeholder="e.g. Trade show, Conference"
                 className="mt-1.5"
               />
+            </div>
+          )}
+
+          <div>
+            <Label className="text-sm font-medium">Lead Status</Label>
+            <Select
+              value={leadStatus}
+              onValueChange={(v) => {
+                setLeadStatus(v);
+                if (v !== "Unqualified" && v !== "Closed Lost") setLeadStatusReason("");
+              }}
+            >
+              <SelectTrigger className="mt-1.5">
+                <SelectValue placeholder="Select status..." />
+              </SelectTrigger>
+              <SelectContent>
+                {LEAD_STATUSES.map((s) => (
+                  <SelectItem key={s} value={s}>{s}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {(leadStatus === "Unqualified" || leadStatus === "Closed Lost") && (
+            <div>
+              <Label className="text-sm font-medium">
+                {leadStatus === "Unqualified" ? "Reason (Unqualified)" : "Reason (Closed Lost)"}
+              </Label>
+              <Select value={leadStatusReason} onValueChange={setLeadStatusReason}>
+                <SelectTrigger className="mt-1.5">
+                  <SelectValue placeholder="Select reason..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {(leadStatus === "Unqualified" ? UNQUALIFIED_REASONS : CLOSED_LOST_REASONS).map((r) => (
+                    <SelectItem key={r} value={r}>{r}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           )}
 

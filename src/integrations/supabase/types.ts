@@ -641,6 +641,8 @@ export type Database = {
           inquiry_id: string
           interaction_type: string | null
           interaction_type_other: string | null
+          lead_status: string | null
+          lead_status_reason: string | null
           next_follow_up_date: string | null
           summary: string | null
         }
@@ -659,6 +661,8 @@ export type Database = {
           inquiry_id: string
           interaction_type?: string | null
           interaction_type_other?: string | null
+          lead_status?: string | null
+          lead_status_reason?: string | null
           next_follow_up_date?: string | null
           summary?: string | null
         }
@@ -677,6 +681,8 @@ export type Database = {
           inquiry_id?: string
           interaction_type?: string | null
           interaction_type_other?: string | null
+          lead_status?: string | null
+          lead_status_reason?: string | null
           next_follow_up_date?: string | null
           summary?: string | null
         }
