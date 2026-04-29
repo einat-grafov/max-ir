@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
+import { trackCommerce } from "@/lib/analytics-tracker";
 
 export interface CartItem {
   productId: string;
@@ -56,6 +57,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       }
       return next;
     });
+    for (const item of newItems) {
+      trackCommerce("add_to_cart", {
+        product_id: item.productId,
+        amount: item.price * item.quantity,
+      });
+    }
   }, []);
 
   const removeItem = useCallback((productId: string, variantName: string) => {

@@ -52,6 +52,7 @@ import Brand from "./pages/admin/Brand";
 import AccessibilityWidget from "./components/AccessibilityWidget";
 import CookieConsentProvider from "@/components/cookies/CookieConsentProvider";
 import { startSiteInjector } from "@/lib/site-injector";
+import { trackPageView } from "@/lib/analytics-tracker";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +70,7 @@ const ScrollToTop = () => {
     } else {
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
+    trackPageView(pathname);
   }, [pathname, hash]);
   return null;
 };

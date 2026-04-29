@@ -12,6 +12,7 @@ import { useStripePrices } from "@/hooks/useStripePrices";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
+import { trackCommerce } from "@/lib/analytics-tracker";
 
 const Cart = () => {
   const { items: rawItems, updateQuantity, removeItem, clearCart } = useCart();
@@ -78,6 +79,7 @@ const Cart = () => {
       toast.error("Please enter a valid email address");
       return;
     }
+    trackCommerce("reached_checkout", { amount: orderTotal });
     setShowCheckout(true);
     setTimeout(() => {
       document.getElementById("payment-section")?.scrollIntoView({ behavior: "smooth", block: "start" });

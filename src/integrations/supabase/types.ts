@@ -198,6 +198,36 @@ export type Database = {
         }
         Relationships: []
       }
+      commerce_events: {
+        Row: {
+          amount: number
+          created_at: string
+          event_type: string
+          id: string
+          order_id: string | null
+          product_id: string | null
+          session_id: string | null
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          event_type: string
+          id?: string
+          order_id?: string | null
+          product_id?: string | null
+          session_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          event_type?: string
+          id?: string
+          order_id?: string | null
+          product_id?: string | null
+          session_id?: string | null
+        }
+        Relationships: []
+      }
       custom_code_snippets: {
         Row: {
           code: string
@@ -883,6 +913,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      page_views: {
+        Row: {
+          country: string | null
+          country_code: string | null
+          created_at: string
+          id: string
+          path: string | null
+          session_id: string | null
+        }
+        Insert: {
+          country?: string | null
+          country_code?: string | null
+          created_at?: string
+          id?: string
+          path?: string | null
+          session_id?: string | null
+        }
+        Update: {
+          country?: string | null
+          country_code?: string | null
+          created_at?: string
+          id?: string
+          path?: string | null
+          session_id?: string | null
+        }
+        Relationships: []
       }
       product_seo: {
         Row: {
