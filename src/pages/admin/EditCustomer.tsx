@@ -171,8 +171,9 @@ const EditCustomer = () => {
       apartment: customer.apartment || "",
       city: customer.city || "",
       postal: customer.postal_code || "",
+      state: customer.state || "",
     };
-    if (companyName !== saved.company || country !== saved.country || address !== saved.address || apartment !== saved.apartment || city !== saved.city || postalCode !== saved.postal) return true;
+    if (companyName !== saved.company || country !== saved.country || address !== saved.address || apartment !== saved.apartment || city !== saved.city || postalCode !== saved.postal || stateValue !== saved.state) return true;
     if (contacts.length !== existingContacts.length) return true;
     for (let i = 0; i < existingContacts.length; i++) {
       const ec = existingContacts[i];
