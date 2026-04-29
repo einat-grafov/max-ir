@@ -98,7 +98,7 @@ const ProductDetail = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id, name, image_url, images, price, description, overview, specifications, variants, category, sku, status, cta_add_to_cart, cta_request_quote, tax_exempt, pdf_url")
+        .select("id, name, image_url, images, price, description, overview, specifications, variants, category, sku, status, cta_add_to_cart, cta_request_quote, tax_exempt, weight_kg, pdf_url")
         .eq("id", id!)
         .eq("status", "active")
         .maybeSingle();
