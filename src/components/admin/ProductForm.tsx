@@ -228,7 +228,7 @@ const ProductForm = ({
       const primaryImageUrl = allImageUrls.length > 0 ? allImageUrls[0] : null;
 
       await onSubmit(
-        { title, overview, description, category, price, sku, stock, trackInventory, requiresShipping, taxExempt, status, ctaAddToCart, ctaRequestQuote, existingImageUrl: null, existingImages: [], existingPdfUrl: null, specifications: specifications.filter(s => s.label.trim() && s.value.trim()), variants: variants.filter(v => v.name.trim()) },
+        { title, overview, description, category, price, sku, stock, trackInventory, requiresShipping, weightKg, taxExempt, status, ctaAddToCart, ctaRequestQuote, existingImageUrl: null, existingImages: [], existingPdfUrl: null, specifications: specifications.filter(s => s.label.trim() && s.value.trim()), variants: variants.filter(v => v.name.trim()) },
         primaryImageUrl,
         allImageUrls,
         finalPdfUrl
