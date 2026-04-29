@@ -119,9 +119,9 @@ const Products = () => {
                         {(product as any).status === "archived" ? "Archived" : "Active"}
                       </span>
                     </td>
-                    <td className="px-6 py-3 text-muted-foreground">{product.sku || "—"}</td>
-                    <td className="px-6 py-3 text-muted-foreground">{product.category || "—"}</td>
-                    <td className="px-6 py-3 text-right text-foreground">{fmt(product.price)}</td>
+                    <td className="px-6 py-3 text-muted-foreground hidden md:table-cell">{product.sku || "—"}</td>
+                    <td className="px-6 py-3 text-muted-foreground hidden lg:table-cell">{product.category || "—"}</td>
+                    <td className="px-6 py-3 text-right text-foreground hidden sm:table-cell">{fmt(product.price)}</td>
                     <td className="px-6 py-3 text-right">
                       {(() => {
                         const variantData = getVariantStock(product);
