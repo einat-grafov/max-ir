@@ -684,7 +684,19 @@ const ProductForm = ({
               </div>
             </div>
             {requiresShipping && (
-              <p className="text-xs text-muted-foreground mt-3">Customers will need to enter their shipping address at checkout.</p>
+              <div className="mt-4 space-y-2">
+                <Label htmlFor="weight-kg">Weight (kg)</Label>
+                <Input
+                  id="weight-kg"
+                  type="number"
+                  min={0}
+                  step={0.01}
+                  value={weightKg}
+                  onChange={(e) => setWeightKg(e.target.value)}
+                  placeholder="0.00"
+                />
+                <p className="text-xs text-muted-foreground">Used to automatically calculate shipping rates based on quantity.</p>
+              </div>
             )}
           </Card>
         </div>
