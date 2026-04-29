@@ -120,14 +120,14 @@ const InquiryTimeline = ({ inquiryId, inquiryCreatedAt, productName, defaultCont
   })();
 
   const statusStyles: Record<string, string> = {
-    "New": "bg-muted text-foreground",
-    "Outreach": "bg-blue-500/15 text-blue-600 dark:text-blue-400",
-    "Connected": "bg-cyan-500/15 text-cyan-600 dark:text-cyan-400",
-    "Qualified": "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
-    "Unqualified": "bg-orange-500/15 text-orange-600 dark:text-orange-400",
-    "Active buying process": "bg-primary/15 text-primary",
-    "Closed Won": "bg-green-500/15 text-green-600 dark:text-green-400",
-    "Closed Lost": "bg-destructive/15 text-destructive",
+    "New": "bg-slate-500 text-white border-transparent hover:bg-slate-500",
+    "Outreach": "bg-blue-500 text-white border-transparent hover:bg-blue-500",
+    "Connected": "bg-cyan-500 text-white border-transparent hover:bg-cyan-500",
+    "Qualified": "bg-emerald-500 text-white border-transparent hover:bg-emerald-500",
+    "Unqualified": "bg-orange-500 text-white border-transparent hover:bg-orange-500",
+    "Active buying process": "bg-primary text-primary-foreground border-transparent hover:bg-primary",
+    "Closed Won": "bg-green-600 text-white border-transparent hover:bg-green-600",
+    "Closed Lost": "bg-destructive text-destructive-foreground border-transparent hover:bg-destructive",
   };
 
   return (
