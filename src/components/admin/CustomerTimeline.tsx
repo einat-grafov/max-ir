@@ -171,7 +171,20 @@ const CustomerTimeline = ({ customerId, customerName, customerCreatedAt, company
       type: "inquiry",
       message: `Inquiry received for ${inquiry.product_name}`,
       date: new Date(inquiry.created_at),
-      link: `/admin/inquiries`,
+      link: `/admin/inquiries/${inquiry.id}`,
+    });
+  });
+
+  inquiryNotes?.forEach((note) => {
+    const displayMessage = note.summary || note.content;
+    events.push({
+      id: `inquiry-note-${note.id}`,
+      type: "note",
+      message: displayMessage,
+      date: new Date(note.created_at),
+      attachmentName: note.attachment_name || undefined,
+      attachmentUrl: note.attachment_url || undefined,
+      link: `/admin/inquiries/${note.inquiry_id}`,
     });
   });
 
