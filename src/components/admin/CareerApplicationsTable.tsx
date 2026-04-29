@@ -10,12 +10,19 @@ import {
 } from "@/components/ui/select";
 
 const statusConfig: Record<string, { label: string; className: string }> = {
-  new: { label: "New", className: "bg-blue-100 text-blue-800 border-blue-200" },
-  reviewing: { label: "Reviewing", className: "bg-amber-100 text-amber-800 border-amber-200" },
-  interviewing: { label: "Interviewing", className: "bg-purple-100 text-purple-800 border-purple-200" },
+  applied: { label: "Applied", className: "bg-blue-100 text-blue-800 border-blue-200" },
+  new: { label: "Applied", className: "bg-blue-100 text-blue-800 border-blue-200" },
+  under_review: { label: "Under Review", className: "bg-amber-100 text-amber-800 border-amber-200" },
+  reviewing: { label: "Under Review", className: "bg-amber-100 text-amber-800 border-amber-200" },
+  interview: { label: "Interview Stage", className: "bg-purple-100 text-purple-800 border-purple-200" },
+  interviewing: { label: "Interview Stage", className: "bg-purple-100 text-purple-800 border-purple-200" },
+  offer_extended: { label: "Offer Extended", className: "bg-cyan-100 text-cyan-800 border-cyan-200" },
+  offer_accepted: { label: "Offer Accepted", className: "bg-teal-100 text-teal-800 border-teal-200" },
   hired: { label: "Hired", className: "bg-emerald-100 text-emerald-800 border-emerald-200" },
   rejected: { label: "Rejected", className: "bg-red-100 text-red-700 border-red-200" },
 };
+
+const FILTER_STATUSES = ["applied", "under_review", "interview", "offer_extended", "offer_accepted", "hired", "rejected"];
 
 const CareerApplicationsTable = () => {
   const navigate = useNavigate();
