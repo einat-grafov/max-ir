@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import RichTextEditor from "@/components/admin/RichTextEditor";
 import { Switch } from "@/components/ui/switch";
 import { Card } from "@/components/ui/card";
+import { useStripePrices } from "@/hooks/useStripePrices";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -118,6 +119,13 @@ const ProductForm = ({
   const [variants, setVariants] = useState<ProductVariant[]>(
     initialData?.variants ?? [{ name: "", price: "", stock: "", sku: "", stripePriceId: "" }]
   );
+
+  // Live Stripe prices for variants (Stripe is the source of truth)
+  const variantPriceIds = useMemo(
+    () => variants.map((v) => v.stripePriceId?.trim()).filter((s): s is string => !!s && /^price_[A-Za-z0-9]+$/.test(s)),
+    [variants]
+  );
+  const { data: stripePrices } = useStripePrices(variantPriceIds);
 
   // Multiple images support
   const [images, setImages] = useState<{ file?: File; url: string; isExisting: boolean }[]>(
@@ -479,22 +487,35 @@ const ProductForm = ({
                         setVariants(updated);
                       }}
                     />
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">$</span>
-                      <Input
-                        type="number"
-                        placeholder="0.00"
-                        value={variant.price}
-                        onChange={(e) => {
-                          const updated = [...variants];
-                          updated[index] = { ...updated[index], price: e.target.value };
-                          setVariants(updated);
-                        }}
-                        className="pl-6"
-                        min="0"
-                        step="0.01"
-                      />
-                    </div>
+                    {(() => {
+                      const pid = variant.stripePriceId?.trim();
+                      const validPid = pid && /^price_[A-Za-z0-9]+$/.test(pid);
+                      const sp = validPid ? stripePrices?.[pid] : undefined;
+                      const displayValue = sp ? sp.unitAmount.toFixed(2) : variant.price;
+                      const locked = !!validPid;
+                      return (
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">$</span>
+                          <Input
+                            type="number"
+                            placeholder={locked ? (sp ? "" : "—") : "0.00"}
+                            value={displayValue}
+                            readOnly={locked}
+                            disabled={locked}
+                            title={locked ? "Price is managed in Stripe and synced via the Stripe Price ID" : undefined}
+                            onChange={(e) => {
+                              if (locked) return;
+                              const updated = [...variants];
+                              updated[index] = { ...updated[index], price: e.target.value };
+                              setVariants(updated);
+                            }}
+                            className={`pl-6 ${locked ? "bg-muted/50 cursor-not-allowed" : ""}`}
+                            min="0"
+                            step="0.01"
+                          />
+                        </div>
+                      );
+                    })()}
                     <Input
                       type="number"
                       placeholder="Qty"
@@ -527,7 +548,7 @@ const ProductForm = ({
                       className={priceIdInvalid ? "border-destructive" : ""}
                     />
                     <p className="text-[11px] text-muted-foreground mt-1">
-                      Required for "Add to Cart". In Stripe: Products → select product → Pricing → click the price → copy the API ID. Must start with <code>price_</code>.
+                      Required for "Add to Cart". When set, the variant price is fetched live from Stripe and is not editable here. In Stripe: Products → select product → Pricing → click the price → copy the API ID. Must start with <code>price_</code>.
                     </p>
                   </div>
                 </div>
