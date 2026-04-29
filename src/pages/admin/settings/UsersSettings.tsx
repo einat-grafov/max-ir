@@ -144,7 +144,7 @@ const UsersSettings = () => {
                             <span className="font-medium text-foreground">{fullName}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-muted-foreground">{u.email ?? "—"}</td>
+                        <td className="px-6 py-4 text-muted-foreground hidden md:table-cell">{u.email ?? "—"}</td>
                         <td className="px-6 py-4">
                           <div className="flex flex-wrap gap-1">
                             {u.roles.length === 0 ? (
