@@ -110,6 +110,7 @@ const ProductForm = ({
   const [stock, setStock] = useState(initialData?.stock ?? "0");
   const [trackInventory, setTrackInventory] = useState(initialData?.trackInventory ?? true);
   const [requiresShipping, setRequiresShipping] = useState(initialData?.requiresShipping ?? true);
+  const [weightKg, setWeightKg] = useState(initialData?.weightKg ?? "0");
   const [taxExempt, setTaxExempt] = useState(initialData?.taxExempt ?? false);
   const [status, setStatus] = useState(initialData?.status ?? "active");
   const [ctaAddToCart, setCtaAddToCart] = useState(initialData?.ctaAddToCart ?? true);
