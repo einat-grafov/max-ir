@@ -65,22 +65,23 @@ const Customers = () => {
     }
 
     list.sort((a, b) => {
-      let aVal: string, bVal: string;
-      if (sortField === "first_name") {
-        aVal = a.first_name.toLowerCase();
-        bVal = b.first_name.toLowerCase();
-      } else if (sortField === "status") {
-        aVal = a.status || "new_lead";
-        bVal = b.status || "new_lead";
-      } else {
-        aVal = a.created_at;
-        bVal = b.created_at;
-      }
-      const cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
-      return sortDir === "asc" ? cmp : -cmp;
+      const dir = sort.dir === "asc" ? 1 : -1;
+      const get = (c: typeof list[number]) => {
+        switch (sort.key) {
+          case "name": return `${c.first_name} ${c.last_name || ""}`.toLowerCase();
+          case "status": return (c.status || "new_lead").toLowerCase();
+          case "email": return (c.email || "").toLowerCase();
+          case "country": return (c.country || "").toLowerCase();
+          case "company": return (c.company || "").toLowerCase();
+          case "created_at":
+          default: return c.created_at;
+        }
+      };
+      const aVal = get(a); const bVal = get(b);
+      return (aVal < bVal ? -1 : aVal > bVal ? 1 : 0) * dir;
     });
     return list;
-  }, [customers, suppressedSet, statusFilter, sortField, sortDir]);
+  }, [customers, suppressedSet, statusFilter, sort]);
 
   return (
     <div>
