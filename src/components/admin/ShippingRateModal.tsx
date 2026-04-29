@@ -149,7 +149,7 @@ const ShippingRateModal = ({
 
           <Button
             onClick={handleFetch}
-            disabled={loading || !postalCode}
+            disabled={loading || !canFetch}
             className="w-full"
           >
             {loading ? (
