@@ -81,6 +81,7 @@ const CreateCustomerModal = ({ open, onOpenChange, onCustomerCreated }: CreateCu
       accepts_marketing: form.accepts_marketing,
       tax_exempt: form.tax_exempt,
       country: form.country,
+      state: form.country === "United States" ? (form.state.trim() || null) : null,
       company: form.company.trim() || null,
       address: form.address.trim() || null,
       apartment: form.apartment.trim() || null,
