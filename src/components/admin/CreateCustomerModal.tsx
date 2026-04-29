@@ -28,6 +28,7 @@ interface CreateCustomerModalProps {
 
 const CreateCustomerModal = ({ open, onOpenChange, onCustomerCreated }: CreateCustomerModalProps) => {
   const [saving, setSaving] = useState(false);
+  const [stateOpen, setStateOpen] = useState(false);
   const [form, setForm] = useState({
     first_name: "",
     last_name: "",
@@ -36,6 +37,7 @@ const CreateCustomerModal = ({ open, onOpenChange, onCustomerCreated }: CreateCu
     accepts_marketing: false,
     tax_exempt: false,
     country: "Israel",
+    state: "",
     company: "",
     address: "",
     apartment: "",
