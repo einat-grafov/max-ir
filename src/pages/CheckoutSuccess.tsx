@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
+import { trackCommerce } from "@/lib/analytics-tracker";
 
 type Status = "loading" | "paid" | "pending" | "failed" | "missing";
 
@@ -28,10 +29,18 @@ const CheckoutSuccess = () => {
           return;
         }
         if (data?.paymentStatus === "paid" || data?.paymentStatus === "no_payment_required") {
+          trackCommerce("purchased", {
+            order_id: data?.orderId,
+            amount: typeof data?.amountTotal === "number" ? data.amountTotal : undefined,
+          });
           clearCart();
           setStatus("paid");
         } else if (data?.status === "complete") {
           // Async payment method (e.g. bank debit) — payment confirmed later.
+          trackCommerce("purchased", {
+            order_id: data?.orderId,
+            amount: typeof data?.amountTotal === "number" ? data.amountTotal : undefined,
+          });
           clearCart();
           setStatus("pending");
         } else {
