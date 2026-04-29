@@ -548,7 +548,7 @@ const ProductForm = ({
                       className={priceIdInvalid ? "border-destructive" : ""}
                     />
                     <p className="text-[11px] text-muted-foreground mt-1">
-                      Required for "Add to Cart". In Stripe: Products → select product → Pricing → click the price → copy the API ID. Must start with <code>price_</code>.
+                      Required for "Add to Cart". When set, the variant price is fetched live from Stripe and is not editable here. In Stripe: Products → select product → Pricing → click the price → copy the API ID. Must start with <code>price_</code>.
                     </p>
                   </div>
                 </div>
