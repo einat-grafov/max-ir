@@ -3,7 +3,11 @@ import IconTooltipButton from "@/components/admin/IconTooltipButton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import "flag-icons/css/flag-icons.min.css";
-import { COUNTRIES, getCountryCode } from "@/lib/countries";
+import { COUNTRIES, US_STATES, getCountryCode } from "@/lib/countries";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -99,6 +103,8 @@ const EditCustomer = () => {
   const [apartment, setApartment] = useState("");
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
+  const [stateValue, setStateValue] = useState("");
+  const [stateOpen, setStateOpen] = useState(false);
   const [contacts, setContacts] = useState<ContactState[]>([]);
 
   const { data: customer, isLoading } = useQuery({
@@ -137,6 +143,7 @@ const EditCustomer = () => {
       setApartment(customer.apartment || "");
       setCity(customer.city || "");
       setPostalCode(customer.postal_code || "");
+      setStateValue(customer.state || "");
     }
   }, [customer]);
 
@@ -164,8 +171,9 @@ const EditCustomer = () => {
       apartment: customer.apartment || "",
       city: customer.city || "",
       postal: customer.postal_code || "",
+      state: customer.state || "",
     };
-    if (companyName !== saved.company || country !== saved.country || address !== saved.address || apartment !== saved.apartment || city !== saved.city || postalCode !== saved.postal) return true;
+    if (companyName !== saved.company || country !== saved.country || address !== saved.address || apartment !== saved.apartment || city !== saved.city || postalCode !== saved.postal || stateValue !== saved.state) return true;
     if (contacts.length !== existingContacts.length) return true;
     for (let i = 0; i < existingContacts.length; i++) {
       const ec = existingContacts[i];
@@ -174,7 +182,7 @@ const EditCustomer = () => {
       if (c.first_name !== ec.first_name || c.last_name !== (ec.last_name || "") || c.role !== (ec.role || "") || c.phone !== (ec.phone || "") || c.email !== (ec.email || "")) return true;
     }
     return false;
-  }, [customer, existingContacts, companyName, country, address, apartment, city, postalCode, contacts]);
+  }, [customer, existingContacts, companyName, country, address, apartment, city, postalCode, stateValue, contacts]);
 
   useEffect(() => {
     if (!hasUnsavedChanges) return;
@@ -216,6 +224,7 @@ const EditCustomer = () => {
           apartment: apartment.trim() || null,
           city: city.trim() || null,
           postal_code: postalCode.trim() || null,
+          state: country === "United States" ? (stateValue.trim() || null) : null,
         })
         .eq("id", id!);
       if (customerError) throw customerError;
@@ -379,6 +388,7 @@ const EditCustomer = () => {
                 setApartment(customer.apartment || "");
                 setCity(customer.city || "");
                 setPostalCode(customer.postal_code || "");
+                setStateValue(customer.state || "");
               }
               if (existingContacts) {
                 setContacts(
@@ -478,7 +488,7 @@ const EditCustomer = () => {
             <div className="space-y-4">
               <div>
                 <Label className="text-sm font-medium text-foreground">Country / region</Label>
-                <Select value={country} onValueChange={setCountry}>
+                <Select value={country} onValueChange={(v) => { setCountry(v); if (v !== "United States") setStateValue(""); }}>
                   <SelectTrigger className="mt-1.5">
                     <SelectValue>
                       <span className="inline-flex items-center gap-2">
@@ -499,6 +509,50 @@ const EditCustomer = () => {
                   </SelectContent>
                 </Select>
               </div>
+              {country === "United States" && (
+                <div>
+                  <Label className="text-sm font-medium text-foreground">State</Label>
+                  <Popover open={stateOpen} onOpenChange={setStateOpen}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        role="combobox"
+                        aria-expanded={stateOpen}
+                        className="mt-1.5 w-full h-10 rounded-md border border-input bg-background px-3 text-sm text-foreground flex items-center justify-between"
+                      >
+                        <span className={cn(!stateValue && "text-muted-foreground")}>
+                          {stateValue || "Select state"}
+                        </span>
+                        <ChevronsUpDown className="h-4 w-4 opacity-50 shrink-0" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                      <Command>
+                        <CommandInput placeholder="Search state…" />
+                        <CommandList>
+                          <CommandEmpty>No state found.</CommandEmpty>
+                          <CommandGroup>
+                            {US_STATES.map((s) => (
+                              <CommandItem
+                                key={s}
+                                value={s}
+                                onSelect={(val) => {
+                                  const match = US_STATES.find((x) => x.toLowerCase() === val.toLowerCase()) || "";
+                                  setStateValue(match === stateValue ? "" : match);
+                                  setStateOpen(false);
+                                }}
+                              >
+                                <Check className={cn("mr-2 h-4 w-4", stateValue === s ? "opacity-100" : "opacity-0")} />
+                                {s}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              )}
               <div>
                 <Label className="text-sm font-medium text-foreground">Address</Label>
                 <Input value={address} onChange={(e) => setAddress(e.target.value)} className="mt-1.5" />
