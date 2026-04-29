@@ -20,14 +20,12 @@ const statusConfig: Record<string, { label: string; className: string }> = {
   new_inquiry: { label: "New Inquiry", className: "bg-amber-100 text-amber-800 border-amber-200" },
 };
 
-type SortField = "created_at" | "first_name" | "status";
-type SortDir = "asc" | "desc";
+type SortKey = "name" | "status" | "email" | "country" | "company" | "created_at";
 
 const Customers = () => {
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [sortField, setSortField] = useState<SortField>("created_at");
-  const [sortDir, setSortDir] = useState<SortDir>("desc");
+  const [sort, setSort] = useState<SortState<SortKey>>({ key: "created_at", dir: "desc" });
 
   const { data: customers = [] } = useQuery({
     queryKey: ["customers"],
