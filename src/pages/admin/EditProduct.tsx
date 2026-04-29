@@ -36,6 +36,7 @@ const EditProduct = () => {
         sku: data.sku || null,
         stock: parseInt(data.stock) || 0,
         requires_shipping: data.requiresShipping,
+        weight_kg: parseFloat(data.weightKg) || 0,
         tax_exempt: data.taxExempt,
         status: data.status,
         cta_add_to_cart: data.ctaAddToCart,
