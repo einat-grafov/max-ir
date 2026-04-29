@@ -112,18 +112,6 @@ const Customers = () => {
             <SelectItem value="unsubscribed">Unsubscribed</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={`${sortField}:${sortDir}`} onValueChange={(v) => { const [f, d] = v.split(":"); setSortField(f as SortField); setSortDir(d as SortDir); }}>
-          <SelectTrigger className="w-[180px] h-9 text-sm">
-            <SelectValue placeholder="Sort by" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="created_at:desc">Newest first</SelectItem>
-            <SelectItem value="created_at:asc">Oldest first</SelectItem>
-            <SelectItem value="first_name:asc">Name A–Z</SelectItem>
-            <SelectItem value="first_name:desc">Name Z–A</SelectItem>
-            <SelectItem value="status:asc">Status A–Z</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
 
       <div className="bg-background border border-border rounded-lg overflow-hidden shadow-sm">
