@@ -27,6 +27,32 @@ const INTERACTION_TYPES = [
   "Other",
 ];
 
+const LEAD_STATUSES = [
+  "New",
+  "Outreach",
+  "Connected",
+  "Qualified",
+  "Unqualified",
+  "Active buying process",
+  "Closed Won",
+  "Closed Lost",
+];
+
+const UNQUALIFIED_REASONS = [
+  "No budget",
+  "Wrong industry",
+  "Too small",
+  "Too large",
+  "Not decision maker",
+];
+
+const CLOSED_LOST_REASONS = [
+  "Chose competitor",
+  "No decision",
+  "Timing not right",
+  "Lost to internal solution",
+];
+
 type InquiryNote = Tables<"inquiry_notes">;
 
 interface Props {
