@@ -103,6 +103,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { cn } from "@/lib/utils";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
 import WebsiteAnalytics from "@/components/admin/WebsiteAnalytics";
+import DashboardOverviewCards from "@/components/admin/DashboardOverviewCards";
 import type { DateRange } from "react-day-picker";
 
 const PERIOD_OPTIONS = [
