@@ -149,10 +149,10 @@ const CareerApplicationsTable = () => {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-3 text-muted-foreground">{app.email}</td>
-                      <td className="px-6 py-3 text-muted-foreground">{app.country || "—"}</td>
-                      <td className="px-6 py-3 text-muted-foreground">{app.education || "—"}</td>
-                      <td className="px-6 py-3 text-muted-foreground text-sm whitespace-nowrap">
+                      <td className="px-6 py-3 text-muted-foreground hidden md:table-cell">{app.email}</td>
+                      <td className="px-6 py-3 text-muted-foreground hidden lg:table-cell">{app.country || "—"}</td>
+                      <td className="px-6 py-3 text-muted-foreground hidden lg:table-cell">{app.education || "—"}</td>
+                      <td className="px-6 py-3 text-muted-foreground text-sm whitespace-nowrap hidden md:table-cell">
                         {format(new Date(app.created_at), "MMM d, yyyy")}
                       </td>
                     </tr>
