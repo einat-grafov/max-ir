@@ -140,7 +140,7 @@ const InquiriesTable = ({ source }: Props) => {
               </TableCell>
             </TableRow>
           ) : (
-            inquiries.map((inq) => {
+            sortedInquiries.map((inq) => {
               const status = (statusMap as Record<string, string>)[inq.id] || "New";
               return (
                 <TableRow
