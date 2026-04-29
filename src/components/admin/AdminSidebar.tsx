@@ -75,11 +75,19 @@ export function AdminSidebar() {
   useEffect(() => {
     let active = true;
     const fetchUnread = async () => {
-      const [inq, careers] = await Promise.all([
-        supabase.from("inquiries").select("id", { count: "exact", head: true }).eq("read", false),
+      const [inqRows, careers, orderRows] = await Promise.all([
+        supabase.from("inquiries").select("id, source, customer_id").eq("read", false),
         supabase.from("career_applications").select("id", { count: "exact", head: true }).eq("read", false),
+        supabase.from("orders").select("customer_id").not("customer_id", "is", null),
       ]);
-      if (active) setUnreadInquiries((inq.count ?? 0) + (careers.count ?? 0));
+      const customersWithOrders = new Set(
+        (orderRows.data ?? []).map((o: { customer_id: string | null }) => o.customer_id).filter(Boolean) as string[]
+      );
+      const unreadInq = (inqRows.data ?? []).filter(
+        (i: { source: string; customer_id: string | null }) =>
+          !(i.source === "sales" && i.customer_id && customersWithOrders.has(i.customer_id))
+      ).length;
+      if (active) setUnreadInquiries(unreadInq + (careers.count ?? 0));
     };
     fetchUnread();
     const channel = supabase
