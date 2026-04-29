@@ -143,6 +143,7 @@ const EditCustomer = () => {
       setApartment(customer.apartment || "");
       setCity(customer.city || "");
       setPostalCode(customer.postal_code || "");
+      setStateValue(customer.state || "");
     }
   }, [customer]);
 
