@@ -38,7 +38,21 @@ const InquiriesTable = ({ source }: Props) => {
         .eq("source", source)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data as unknown as Inquiry[];
+      let rows = (data ?? []) as unknown as Inquiry[];
+
+      // For Sales tab: hide inquiries from customers who already have an order (they're customers now, not leads)
+      if (source === "sales") {
+        const { data: orderRows } = await supabase
+          .from("orders")
+          .select("customer_id")
+          .not("customer_id", "is", null);
+        const customerIdsWithOrders = new Set(
+          (orderRows ?? []).map((o: { customer_id: string | null }) => o.customer_id).filter(Boolean) as string[]
+        );
+        rows = rows.filter((inq) => !inq.customers?.id || !customerIdsWithOrders.has(inq.customers.id));
+      }
+
+      return rows;
     },
   });
 
