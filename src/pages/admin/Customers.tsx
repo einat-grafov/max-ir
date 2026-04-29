@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SortableHeader, SortState } from "@/components/admin/SortableHeader";
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   active: { label: "Active", className: "bg-emerald-100 text-emerald-800 border-emerald-200" },
@@ -19,14 +20,12 @@ const statusConfig: Record<string, { label: string; className: string }> = {
   new_inquiry: { label: "New Inquiry", className: "bg-amber-100 text-amber-800 border-amber-200" },
 };
 
-type SortField = "created_at" | "first_name" | "status";
-type SortDir = "asc" | "desc";
+type SortKey = "name" | "status" | "email" | "country" | "company" | "created_at";
 
 const Customers = () => {
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [sortField, setSortField] = useState<SortField>("created_at");
-  const [sortDir, setSortDir] = useState<SortDir>("desc");
+  const [sort, setSort] = useState<SortState<SortKey>>({ key: "created_at", dir: "desc" });
 
   const { data: customers = [] } = useQuery({
     queryKey: ["customers"],
@@ -66,22 +65,23 @@ const Customers = () => {
     }
 
     list.sort((a, b) => {
-      let aVal: string, bVal: string;
-      if (sortField === "first_name") {
-        aVal = a.first_name.toLowerCase();
-        bVal = b.first_name.toLowerCase();
-      } else if (sortField === "status") {
-        aVal = a.status || "new_lead";
-        bVal = b.status || "new_lead";
-      } else {
-        aVal = a.created_at;
-        bVal = b.created_at;
-      }
-      const cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
-      return sortDir === "asc" ? cmp : -cmp;
+      const dir = sort.dir === "asc" ? 1 : -1;
+      const get = (c: typeof list[number]) => {
+        switch (sort.key) {
+          case "name": return `${c.first_name} ${c.last_name || ""}`.toLowerCase();
+          case "status": return (c.status || "new_lead").toLowerCase();
+          case "email": return (c.email || "").toLowerCase();
+          case "country": return (c.country || "").toLowerCase();
+          case "company": return (c.company || "").toLowerCase();
+          case "created_at":
+          default: return c.created_at;
+        }
+      };
+      const aVal = get(a); const bVal = get(b);
+      return (aVal < bVal ? -1 : aVal > bVal ? 1 : 0) * dir;
     });
     return list;
-  }, [customers, suppressedSet, statusFilter, sortField, sortDir]);
+  }, [customers, suppressedSet, statusFilter, sort]);
 
   return (
     <div>
@@ -112,18 +112,6 @@ const Customers = () => {
             <SelectItem value="unsubscribed">Unsubscribed</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={`${sortField}:${sortDir}`} onValueChange={(v) => { const [f, d] = v.split(":"); setSortField(f as SortField); setSortDir(d as SortDir); }}>
-          <SelectTrigger className="w-[180px] h-9 text-sm">
-            <SelectValue placeholder="Sort by" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="created_at:desc">Newest first</SelectItem>
-            <SelectItem value="created_at:asc">Oldest first</SelectItem>
-            <SelectItem value="first_name:asc">Name A–Z</SelectItem>
-            <SelectItem value="first_name:desc">Name Z–A</SelectItem>
-            <SelectItem value="status:asc">Status A–Z</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
 
       <div className="bg-background border border-border rounded-lg overflow-hidden shadow-sm">
@@ -131,12 +119,12 @@ const Customers = () => {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border">
-                <th className="text-left text-muted-foreground font-medium px-6 py-3">Name</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3">Status</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden md:table-cell">Email</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden lg:table-cell">Country</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden lg:table-cell">Company</th>
-                <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden md:table-cell">Created</th>
+                <th className="text-left font-medium px-6 py-3"><SortableHeader label="Name" sortKey="name" state={sort} onChange={setSort} /></th>
+                <th className="text-left font-medium px-6 py-3"><SortableHeader label="Status" sortKey="status" state={sort} onChange={setSort} /></th>
+                <th className="text-left font-medium px-6 py-3 hidden md:table-cell"><SortableHeader label="Email" sortKey="email" state={sort} onChange={setSort} /></th>
+                <th className="text-left font-medium px-6 py-3 hidden lg:table-cell"><SortableHeader label="Country" sortKey="country" state={sort} onChange={setSort} /></th>
+                <th className="text-left font-medium px-6 py-3 hidden lg:table-cell"><SortableHeader label="Company" sortKey="company" state={sort} onChange={setSort} /></th>
+                <th className="text-left font-medium px-6 py-3 hidden md:table-cell"><SortableHeader label="Created" sortKey="created_at" state={sort} onChange={setSort} /></th>
               </tr>
             </thead>
             <tbody>
