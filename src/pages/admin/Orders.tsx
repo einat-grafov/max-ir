@@ -284,8 +284,8 @@ const Orders = () => {
                   <Checkbox checked={allSelected} onCheckedChange={toggleAll} />
                 </TableHead>
                 <TableHead>Order ID</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Customer</TableHead>
+                <TableHead className="hidden md:table-cell">Date</TableHead>
+                <TableHead className="hidden lg:table-cell">Customer</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right pr-5">Total</TableHead>
               </TableRow>
@@ -302,8 +302,8 @@ const Orders = () => {
                       />
                     </TableCell>
                     <TableCell className="font-medium">#D{order.order_number}</TableCell>
-                    <TableCell className="text-muted-foreground">{formatDate(order.created_at)}</TableCell>
-                    <TableCell className="text-muted-foreground">—</TableCell>
+                    <TableCell className="text-muted-foreground hidden md:table-cell">{formatDate(order.created_at)}</TableCell>
+                    <TableCell className="text-muted-foreground hidden lg:table-cell">—</TableCell>
                     <TableCell>
                       <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${s.style}`}>
                         <span className={`h-1.5 w-1.5 rounded-full ${s.text === "Invoice sent" ? "bg-yellow-600" : "bg-muted-foreground/60"}`} />
