@@ -58,6 +58,7 @@ const CreateCustomerModal = ({ open, onOpenChange, onCustomerCreated }: CreateCu
       accepts_marketing: false,
       tax_exempt: false,
       country: "Israel",
+      state: "",
       company: "",
       address: "",
       apartment: "",
