@@ -557,6 +557,7 @@ export type Database = {
           product_id: string | null
           product_name: string
           read: boolean
+          source: string
           state: string | null
         }
         Insert: {
@@ -580,6 +581,7 @@ export type Database = {
           product_id?: string | null
           product_name: string
           read?: boolean
+          source?: string
           state?: string | null
         }
         Update: {
@@ -603,6 +605,7 @@ export type Database = {
           product_id?: string | null
           product_name?: string
           read?: boolean
+          source?: string
           state?: string | null
         }
         Relationships: [

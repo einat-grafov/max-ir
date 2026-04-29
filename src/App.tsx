@@ -32,9 +32,8 @@ import BillingSettings from "./pages/admin/settings/BillingSettings";
 import IntegrationsSettings from "./pages/admin/settings/IntegrationsSettings";
 import EmailSettings from "./pages/admin/settings/EmailSettings";
 import EmailTemplateEditor from "./pages/admin/settings/EmailTemplateEditor";
-import CareerApplications from "./pages/admin/CareerApplications";
 import CareerApplicationDetail from "./pages/admin/CareerApplicationDetail";
-import Inquiries from "./pages/admin/Inquiries";
+import Contact from "./pages/admin/Contact";
 import InquiryDetail from "./pages/admin/InquiryDetail";
 import NotFound from "./pages/NotFound";
 import DesignSystem from "./pages/DesignSystem";
@@ -142,9 +141,9 @@ const router = createBrowserRouter([
           { path: "website", element: <Website /> },
           { path: "settings/brand", element: <Brand /> },
           { path: "brand", element: <Navigate to="/admin/settings/brand" replace /> },
-          { path: "inquiries", element: <Inquiries /> },
+          { path: "inquiries", element: <Contact /> },
           { path: "inquiries/:id", element: <InquiryDetail /> },
-          { path: "careers", element: <CareerApplications /> },
+          { path: "careers", element: <Navigate to="/admin/inquiries?tab=careers" replace /> },
           { path: "careers/:id", element: <CareerApplicationDetail /> },
           { path: "settings/users", element: <UsersSettings /> },
           { path: "settings/billing", element: <BillingSettings /> },

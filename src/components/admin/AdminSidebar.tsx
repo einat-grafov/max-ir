@@ -39,12 +39,11 @@ import {
 
 const mainItems = [
   { title: "Overview", url: "/admin/home", icon: Home },
-  { title: "Leads", url: "/admin/inquiries", icon: MessageSquare },
+  { title: "Contact", url: "/admin/inquiries", icon: MessageSquare },
   { title: "Orders", url: "/admin/orders", icon: ShoppingCart },
   { title: "Products", url: "/admin/products", icon: Package },
   { title: "Customers", url: "/admin/customers", icon: Users },
   { title: "Website", url: "/admin/website", icon: Globe },
-  { title: "Careers", url: "/admin/careers", icon: Briefcase },
 ];
 
 const optimizationItems = [
@@ -76,20 +75,17 @@ export function AdminSidebar() {
   useEffect(() => {
     let active = true;
     const fetchUnread = async () => {
-      const { count } = await supabase
-        .from("inquiries")
-        .select("id", { count: "exact", head: true })
-        .eq("read", false);
-      if (active) setUnreadInquiries(count ?? 0);
+      const [inq, careers] = await Promise.all([
+        supabase.from("inquiries").select("id", { count: "exact", head: true }).eq("read", false),
+        supabase.from("career_applications").select("id", { count: "exact", head: true }).eq("read", false),
+      ]);
+      if (active) setUnreadInquiries((inq.count ?? 0) + (careers.count ?? 0));
     };
     fetchUnread();
     const channel = supabase
-      .channel("admin-sidebar-inquiries")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "inquiries" },
-        () => fetchUnread(),
-      )
+      .channel("admin-sidebar-contact")
+      .on("postgres_changes", { event: "*", schema: "public", table: "inquiries" }, () => fetchUnread())
+      .on("postgres_changes", { event: "*", schema: "public", table: "career_applications" }, () => fetchUnread())
       .subscribe();
     return () => {
       active = false;

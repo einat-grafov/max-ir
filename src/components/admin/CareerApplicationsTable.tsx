@@ -1,14 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
-import { Briefcase, MailX, Filter } from "lucide-react";
+import { MailX, Filter } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import NotificationEmailCard from "@/components/admin/NotificationEmailCard";
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   new: { label: "New", className: "bg-blue-100 text-blue-800 border-blue-200" },
@@ -18,7 +17,7 @@ const statusConfig: Record<string, { label: string; className: string }> = {
   rejected: { label: "Rejected", className: "bg-red-100 text-red-700 border-red-200" },
 };
 
-const CareerApplications = () => {
+const CareerApplicationsTable = () => {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<string>("all");
 
@@ -59,28 +58,8 @@ const CareerApplications = () => {
     return enriched;
   }, [enriched, filter]);
 
-  const unreadCount = enriched.filter((a) => !a.read).length;
-
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <Briefcase className="h-6 w-6 text-primary" />
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Career Applications</h1>
-            <p className="text-muted-foreground text-sm mt-0.5">
-              {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <NotificationEmailCard
-        column="careers_notification_email"
-        title="Career application notification email"
-        description="A copy of every job application submitted on the public careers page will also be sent to this address."
-      />
-
       <div className="flex items-center gap-3 mb-4">
         <Filter className="h-4 w-4 text-muted-foreground" />
         <Select value={filter} onValueChange={setFilter}>
@@ -135,7 +114,7 @@ const CareerApplications = () => {
                       className="border-b border-border/50 hover:bg-muted/50 transition-colors cursor-pointer"
                       onClick={() => navigate(`/admin/careers/${app.id}`)}
                     >
-                      <td className={`px-6 py-3 font-medium ${!app.read ? "text-foreground" : "text-foreground"}`}>
+                      <td className="px-6 py-3 font-medium text-foreground">
                         <span className="flex items-center gap-2">
                           {!app.read && <span className="h-2 w-2 rounded-full bg-primary shrink-0" aria-label="Unread" />}
                           {app.full_name}
@@ -170,4 +149,4 @@ const CareerApplications = () => {
   );
 };
 
-export default CareerApplications;
+export default CareerApplicationsTable;

@@ -30,6 +30,7 @@ const ContactForm = () => {
         message: formData.message,
         first_name: formData.name.split(" ")[0],
         last_name: formData.name.split(" ").slice(1).join(" ") || null,
+        source: "support",
       } as any);
 
       // Confirmation to the visitor
