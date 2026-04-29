@@ -38,6 +38,7 @@ const Cart = () => {
   const [shipCity, setShipCity] = useState("");
   const [shipState, setShipState] = useState("");
   const [selectedRate, setSelectedRate] = useState<ShippingRate | null>(null);
+  const [stateOpen, setStateOpen] = useState(false);
 
   const { rates, loading: ratesLoading, error: ratesError, fetchRates } = useShippingRates();
 
