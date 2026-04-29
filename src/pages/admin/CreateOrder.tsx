@@ -865,6 +865,7 @@ const CreateOrder = () => {
         onSelect={(rate) => setShippingRate(rate)}
         defaultCountry={selectedCustomer ? undefined : undefined}
         defaultPostalCode=""
+        totalWeightKg={products.reduce((s, p) => s + (p.weightKg ?? 0) * p.quantity, 0)}
       />
 
       {/* Tax address modal */}
