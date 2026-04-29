@@ -116,6 +116,8 @@ const RecordInquiryInteractionModal = ({
       setSummary(editNote.summary || "");
       setActionItems(editNote.action_items || "");
       setCustomerFeedback(editNote.customer_feedback || "");
+      setLeadStatus((editNote as any).lead_status || "");
+      setLeadStatusReason((editNote as any).lead_status_reason || "");
       setFollowUpRequired(editNote.follow_up_required);
       setFollowUpDetails(editNote.follow_up_details || "");
       setNextFollowUpDate(editNote.next_follow_up_date ? new Date(editNote.next_follow_up_date) : undefined);
