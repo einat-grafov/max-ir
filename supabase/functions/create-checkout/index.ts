@@ -141,6 +141,7 @@ Deno.serve(async (req) => {
       ui_mode: "embedded",
       mode: "payment",
       return_url: body.returnUrl,
+      payment_method_types: ["card"],
       line_items: lineItems,
       automatic_tax: { enabled: true },
       billing_address_collection: "required",
