@@ -157,7 +157,10 @@ const CreateCustomerModal = ({ open, onOpenChange, onCustomerCreated }: CreateCu
           {/* Country */}
           <div>
             <Label className="text-sm font-medium text-foreground">Country/region</Label>
-            <Select value={form.country} onValueChange={(v) => update("country", v)}>
+            <Select
+              value={form.country}
+              onValueChange={(v) => setForm((prev) => ({ ...prev, country: v, state: v === "United States" ? prev.state : "" }))}
+            >
               <SelectTrigger className="mt-1.5">
                 <SelectValue>
                   <span className="inline-flex items-center gap-2">
@@ -178,6 +181,52 @@ const CreateCustomerModal = ({ open, onOpenChange, onCustomerCreated }: CreateCu
               </SelectContent>
             </Select>
           </div>
+
+          {/* State (US only) */}
+          {form.country === "United States" && (
+            <div>
+              <Label className="text-sm font-medium text-foreground">State</Label>
+              <Popover open={stateOpen} onOpenChange={setStateOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    role="combobox"
+                    aria-expanded={stateOpen}
+                    className="mt-1.5 w-full h-10 rounded-md border border-input bg-background px-3 text-sm text-foreground flex items-center justify-between"
+                  >
+                    <span className={cn(!form.state && "text-muted-foreground")}>
+                      {form.state || "Select state"}
+                    </span>
+                    <ChevronsUpDown className="h-4 w-4 opacity-50 shrink-0" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search state…" />
+                    <CommandList>
+                      <CommandEmpty>No state found.</CommandEmpty>
+                      <CommandGroup>
+                        {US_STATES.map((s) => (
+                          <CommandItem
+                            key={s}
+                            value={s}
+                            onSelect={(val) => {
+                              const match = US_STATES.find((x) => x.toLowerCase() === val.toLowerCase()) || "";
+                              update("state", match === form.state ? "" : match);
+                              setStateOpen(false);
+                            }}
+                          >
+                            <Check className={cn("mr-2 h-4 w-4", form.state === s ? "opacity-100" : "opacity-0")} />
+                            {s}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
+          )}
 
           {/* Company */}
           <div>
