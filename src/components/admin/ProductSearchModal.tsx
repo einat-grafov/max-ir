@@ -67,6 +67,7 @@ const expandRows = (rows: ProductRow[]): SelectableProduct[] => {
           image_url: r.image_url,
           requires_shipping: r.requires_shipping,
           tax_exempt: r.tax_exempt,
+          weight_kg: Number(r.weight_kg ?? 0) || 0,
         });
       }
     } else {
