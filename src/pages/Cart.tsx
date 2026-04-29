@@ -42,6 +42,11 @@ const Cart = () => {
 
   const { rates, loading: ratesLoading, error: ratesError, fetchRates } = useShippingRates();
 
+  const totalWeightKg = useMemo(
+    () => Math.max(0.1, items.reduce((s, i) => s + (i.weightKg ?? 0) * i.quantity, 0) || 0.1),
+    [items]
+  );
+
   const handleFetchRates = () => {
     if (!shipPostal) {
       toast.error("Please enter a postal code");
@@ -50,7 +55,7 @@ const Cart = () => {
     setSelectedRate(null);
     fetchRates(
       { postalCode: shipPostal, country: shipCountry, city: shipCity || undefined, state: shipState || undefined },
-      [{ weight: 1 }]
+      [{ weight: totalWeightKg }]
     );
   };
 
