@@ -37,6 +37,7 @@ export interface SelectableProduct {
   image_url: string | null;
   requires_shipping: boolean;
   tax_exempt: boolean;
+  weight_kg: number;
 }
 
 interface ProductSearchModalProps {
