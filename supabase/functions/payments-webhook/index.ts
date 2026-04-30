@@ -205,6 +205,43 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Handle admin-created Stripe Invoices being paid / failed
+    if (event.type === "invoice.paid" || event.type === "invoice.payment_failed") {
+      const invoice = event.data.object as any;
+      const invoiceId = invoice.id as string;
+      const invoiceStatus = invoice.status as string; // 'paid' | 'open' | 'uncollectible' | ...
+      const newPaymentStatus = event.type === "invoice.paid" ? "paid" : "failed";
+
+      const { data: order, error: findErr } = await admin
+        .from("orders")
+        .select("id, order_number, customer_email, customer_name, total")
+        .eq("stripe_invoice_id", invoiceId)
+        .maybeSingle();
+
+      if (findErr) {
+        console.error("Failed to look up order by invoice:", findErr);
+      } else if (!order) {
+        console.log(`No matching order for invoice ${invoiceId}`);
+      } else {
+        const { error: updErr } = await admin
+          .from("orders")
+          .update({
+            payment_status: newPaymentStatus,
+            stripe_invoice_status: invoiceStatus,
+            stripe_invoice_url: invoice.hosted_invoice_url ?? undefined,
+          })
+          .eq("id", order.id);
+
+        if (updErr) {
+          console.error("Failed to update order from invoice event:", updErr);
+        } else {
+          console.log(
+            `Order ${order.order_number} updated → payment_status=${newPaymentStatus} (invoice ${invoiceId})`,
+          );
+        }
+      }
+    }
+
     return json(200, { received: true });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unexpected error";
