@@ -149,18 +149,19 @@ const UsersSettings = () => {
                   <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden sm:table-cell">Role</th>
                   <th className="text-left text-muted-foreground font-medium px-6 py-3">Status</th>
                   <th className="text-left text-muted-foreground font-medium px-6 py-3 hidden lg:table-cell">Last sign in</th>
+                  <th className="text-right text-muted-foreground font-medium px-6 py-3 w-16">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
+                    <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
                       <Loader2 className="h-5 w-5 animate-spin inline-block" />
                     </td>
                   </tr>
                 ) : users.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
+                    <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
                       No users yet. Invite team members to collaborate.
                     </td>
                   </tr>
@@ -218,6 +219,18 @@ const UsersSettings = () => {
                             ? new Date(u.last_sign_in_at).toLocaleString()
                             : "Never"}
                         </td>
+                        <td className="px-6 py-4 text-right">
+                          {u.id !== currentUserId && (
+                            <IconTooltipButton
+                              label="Delete user"
+                              variant="ghost"
+                              className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                              onClick={() => setUserToDelete(u)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </IconTooltipButton>
+                          )}
+                        </td>
                       </tr>
                     );
                   })
@@ -233,6 +246,28 @@ const UsersSettings = () => {
       </Tabs>
 
       <InviteUserModal open={inviteOpen} onOpenChange={handleInviteClose} />
+
+      <AlertDialog open={!!userToDelete} onOpenChange={(o) => !o && !deleting && setUserToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete user?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently remove <strong>{userToDelete?.email ?? "this user"}</strong> and revoke all their access. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); handleDelete(); }}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
