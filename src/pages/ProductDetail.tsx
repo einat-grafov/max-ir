@@ -303,7 +303,7 @@ const ProductDetail = () => {
                           <img
                             src={images[selectedImage]}
                             alt={product.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain"
                           />
                         </div>
                         {images.length > 1 && (
@@ -318,7 +318,7 @@ const ProductDetail = () => {
                                     : "border-transparent hover:border-muted-foreground/30"
                                 }`}
                               >
-                                <img src={img} alt="" className="w-full h-full object-cover" />
+                                <img src={img} alt="" className="w-full h-full object-contain" />
                               </button>
                             ))}
                           </div>
