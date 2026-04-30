@@ -299,7 +299,7 @@ const ProductDetail = () => {
                     }
                     return (
                       <>
-                        <div className="aspect-square rounded-lg overflow-hidden bg-muted">
+                        <div className="aspect-square rounded-lg overflow-hidden bg-white">
                           <img
                             src={images[selectedImage]}
                             alt={product.name}
