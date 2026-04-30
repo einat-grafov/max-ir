@@ -3,10 +3,13 @@ import { Outlet, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AdminSidebar } from "./AdminSidebar";
+import { useUserRole } from "@/hooks/useUserRole";
+import { Eye } from "lucide-react";
 
 const AdminLayout = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { isViewer } = useUserRole();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -61,8 +64,20 @@ const AdminLayout = () => {
             </Link>
             <span className="w-8" />
           </header>
+          {isViewer && (
+            <div className="sticky top-0 md:top-0 z-20 flex items-center justify-center gap-2 px-4 py-2 bg-amber-500/15 text-amber-700 dark:text-amber-400 border-b border-amber-500/30 text-xs font-medium">
+              <Eye className="h-3.5 w-3.5" />
+              <span>View-only access — you can browse data but cannot make changes.</span>
+            </div>
+          )}
           <main className="flex-1 p-3 sm:p-4 md:p-6 overflow-auto">
-            <Outlet />
+            {isViewer ? (
+              <fieldset disabled className="viewer-readonly border-0 p-0 m-0 min-w-0">
+                <Outlet />
+              </fieldset>
+            ) : (
+              <Outlet />
+            )}
           </main>
         </div>
       </div>
@@ -71,3 +86,4 @@ const AdminLayout = () => {
 };
 
 export default AdminLayout;
+
