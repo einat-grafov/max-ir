@@ -64,8 +64,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const redirectTo = `${new URL(req.url).origin.replace(/\/functions\/v1.*/, "")}`;
-    const siteRedirect = req.headers.get("origin") || redirectTo;
+    const siteRedirect = "https://max-ir.lovable.app";
 
     const { data: invited, error: inviteErr } = await admin.auth.admin.inviteUserByEmail(email, {
       data: { first_name: firstName, last_name: lastName ?? "" },
