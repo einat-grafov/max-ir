@@ -26,16 +26,16 @@ const AdminLogin = () => {
       return;
     }
 
-    // Check admin role
+    // Check user has any platform role (admin, editor, or viewer)
     const { data: roles, error: roleError } = await supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", data.user.id)
-      .eq("role", "admin");
+      .in("role", ["admin", "editor", "viewer"]);
 
     if (roleError || !roles || roles.length === 0) {
       await supabase.auth.signOut();
-      setError("Access denied. Admin privileges required.");
+      setError("Access denied. You don't have permission to access this dashboard.");
       setLoading(false);
       return;
     }
