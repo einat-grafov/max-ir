@@ -7,6 +7,7 @@ const ResetPassword = () => {
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [verificationError, setVerificationError] = useState("");
   const [success, setSuccess] = useState(false);
   const [ready, setReady] = useState(false);
   const navigate = useNavigate();
@@ -20,19 +21,74 @@ const ResetPassword = () => {
     hash.includes("type=signup");
 
   useEffect(() => {
-    // Listen for auth events (invite signs user in via SIGNED_IN; reset uses PASSWORD_RECOVERY)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN" || event === "USER_UPDATED") {
+    let cancelled = false;
+
+    const markReady = () => {
+      if (!cancelled) {
         setReady(true);
+        setVerificationError("");
+      }
+    };
+
+    const failVerification = (message: string) => {
+      if (!cancelled) {
+        setReady(false);
+        setVerificationError(message);
+      }
+    };
+
+    // Listen for auth events (invite signs user in via SIGNED_IN; reset uses PASSWORD_RECOVERY)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session || event === "PASSWORD_RECOVERY" || event === "SIGNED_IN" || event === "USER_UPDATED") {
+        markReady();
       }
     });
 
-    // Also check if we already have a session (user clicked link)
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) setReady(true);
-    });
+    const verifyLink = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+      const linkError = params.get("error_description") || hashParams.get("error_description");
+      const code = params.get("code");
 
-    return () => subscription.unsubscribe();
+      if (linkError) {
+        failVerification(decodeURIComponent(linkError.replace(/\+/g, " ")));
+        return;
+      }
+
+      if (code) {
+        const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+        if (exchangeError) {
+          failVerification(exchangeError.message);
+          return;
+        }
+        markReady();
+        return;
+      }
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        markReady();
+        return;
+      }
+
+      // Give the auth client a moment to consume hash-based invite/recovery tokens.
+      window.setTimeout(async () => {
+        if (cancelled) return;
+        const { data: { session: delayedSession } } = await supabase.auth.getSession();
+        if (delayedSession) {
+          markReady();
+        } else {
+          failVerification("This invitation or password reset link could not be verified. It may have expired or already been used.");
+        }
+      }, 1200);
+    };
+
+    verifyLink();
+
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -81,10 +137,20 @@ const ResetPassword = () => {
             </div>
           ) : !ready ? (
             <div className="text-center">
-              <h1 className="text-maxir-white text-2xl font-bold mb-2">Verifying...</h1>
-              <p className="text-maxir-gray text-sm">
-                Please wait while we verify your link.
+              <h1 className="text-maxir-white text-2xl font-bold mb-2">
+                {verificationError ? "Link Verification Failed" : "Verifying..."}
+              </h1>
+              <p className="text-maxir-gray text-sm mb-6">
+                {verificationError || "Please wait while we verify your link."}
               </p>
+              {verificationError && (
+                <Link
+                  to="/admin/login"
+                  className="text-primary hover:text-primary/80 text-sm transition-colors"
+                >
+                  ← Back to login
+                </Link>
+              )}
             </div>
           ) : (
             <>
