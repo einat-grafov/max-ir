@@ -1,11 +1,22 @@
 import { useEffect, useState } from "react";
-import { UserCog, Plus, Users, KeyRound, Loader2 } from "lucide-react";
+import { UserCog, Plus, Users, KeyRound, Loader2, Trash2 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import InviteUserModal from "@/components/admin/InviteUserModal";
 import RolePermissionsMatrix from "@/components/admin/RolePermissionsMatrix";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { IconTooltipButton } from "@/components/admin/IconTooltipButton";
 
 type AdminUser = {
   id: string;
