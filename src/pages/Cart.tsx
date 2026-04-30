@@ -331,8 +331,8 @@ const Cart = () => {
                                       <CommandItem
                                         key={s}
                                         value={s}
-                                        onSelect={(val) => {
-                                          setShipState(val === shipState.toLowerCase() ? "" : US_STATES.find((x) => x.toLowerCase() === val) || "");
+                                        onSelect={() => {
+                                          setShipState((prev) => (prev === s ? "" : s));
                                           setSelectedRate(null);
                                           setStateOpen(false);
                                         }}
