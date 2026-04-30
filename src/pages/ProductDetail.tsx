@@ -303,7 +303,7 @@ const ProductDetail = () => {
                           <img
                             src={images[selectedImage]}
                             alt={product.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain"
                           />
                         </div>
                         {images.length > 1 && (
