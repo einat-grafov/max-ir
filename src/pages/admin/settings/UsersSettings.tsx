@@ -47,6 +47,9 @@ const UsersSettings = () => {
   const [inviteOpen, setInviteOpen] = useState(false);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [userToDelete, setUserToDelete] = useState<AdminUser | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -67,11 +70,34 @@ const UsersSettings = () => {
 
   useEffect(() => {
     fetchUsers();
+    supabase.auth.getSession().then(({ data }) => {
+      setCurrentUserId(data.session?.user.id ?? null);
+    });
   }, []);
 
   const handleInviteClose = (open: boolean) => {
     setInviteOpen(open);
     if (!open) fetchUsers();
+  };
+
+  const handleDelete = async () => {
+    if (!userToDelete) return;
+    setDeleting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("delete-user", {
+        body: { user_id: userToDelete.id },
+      });
+      if (error || (data as any)?.error) {
+        throw new Error((data as any)?.error || error?.message || "Failed to delete user");
+      }
+      toast({ title: "User deleted", description: `${userToDelete.email ?? "User"} has been removed.` });
+      setUserToDelete(null);
+      fetchUsers();
+    } catch (e: any) {
+      toast({ title: "Delete failed", description: e.message, variant: "destructive" });
+    } finally {
+      setDeleting(false);
+    }
   };
 
   return (
