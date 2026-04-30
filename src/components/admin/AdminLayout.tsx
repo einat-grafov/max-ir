@@ -20,7 +20,7 @@ const AdminLayout = () => {
         .from("user_roles")
         .select("role")
         .eq("user_id", session.user.id)
-        .eq("role", "admin");
+        .in("role", ["admin", "editor", "viewer"]);
 
       if (!roles || roles.length === 0) {
         await supabase.auth.signOut();
