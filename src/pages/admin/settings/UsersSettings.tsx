@@ -16,7 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { IconTooltipButton } from "@/components/admin/IconTooltipButton";
+import IconTooltipButton from "@/components/admin/IconTooltipButton";
 
 type AdminUser = {
   id: string;
