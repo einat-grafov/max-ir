@@ -71,16 +71,39 @@ const ResetPassword = () => {
         return;
       }
 
-      // Give the auth client a moment to consume hash-based invite/recovery tokens.
-      window.setTimeout(async () => {
-        if (cancelled) return;
-        const { data: { session: delayedSession } } = await supabase.auth.getSession();
-        if (delayedSession) {
+      // If hash contains tokens, manually set the session (some email clients / browsers
+      // can race with supabase-js's automatic detectSessionInUrl handling).
+      const accessToken = hashParams.get("access_token");
+      const refreshToken = hashParams.get("refresh_token");
+      if (accessToken && refreshToken) {
+        const { error: setErr } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+        if (!setErr) {
           markReady();
-        } else {
-          failVerification("This invitation or password reset link could not be verified. It may have expired or already been used.");
+          return;
         }
-      }, 1200);
+      }
+
+      // Poll for a session for up to 8 seconds (supabase-js may still be processing the URL).
+      let attempts = 0;
+      const maxAttempts = 16; // 16 * 500ms = 8s
+      const poll = window.setInterval(async () => {
+        if (cancelled) {
+          window.clearInterval(poll);
+          return;
+        }
+        attempts++;
+        const { data: { session: polledSession } } = await supabase.auth.getSession();
+        if (polledSession) {
+          window.clearInterval(poll);
+          markReady();
+        } else if (attempts >= maxAttempts) {
+          window.clearInterval(poll);
+          failVerification("This invitation or password reset link could not be verified. It may have expired or already been used. Please ask an administrator to resend the invitation.");
+        }
+      }, 500);
     };
 
     verifyLink();
