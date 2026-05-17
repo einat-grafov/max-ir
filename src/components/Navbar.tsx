@@ -1,22 +1,22 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ShoppingCart } from "lucide-react";
+import { Menu, X, ShoppingCart, ChevronDown } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 
 type MainMenuItem = "home" | "about" | "team";
 
-const anchorLinks: Record<MainMenuItem, { label: string; id: string }[]> = {
+const anchorLinks: Record<MainMenuItem, { label: string; id: string; description?: string }[]> = {
   home: [],
   about: [
-    { label: "Technology", id: "Technology" },
-    { label: "The Sensor", id: "Sensor" },
-    { label: "Applications", id: "Applications" },
-    { label: "Awards & Patents", id: "Awards" },
+    { label: "Technology", id: "Technology", description: "Our proprietary infrared sensing platform" },
+    { label: "The Sensor", id: "Sensor", description: "How the sensor works in detail" },
+    { label: "Applications", id: "Applications", description: "Where our technology is used today" },
+    { label: "Awards & Patents", id: "Awards", description: "Recognition and intellectual property" },
   ],
   team: [
-    { label: "Publications", id: "Publications" },
-    { label: "FCOI", id: "FCOI" },
-    { label: "Careers", id: "Careers" },
+    { label: "Publications", id: "Publications", description: "Peer-reviewed research and papers" },
+    { label: "FCOI", id: "FCOI", description: "Financial Conflict of Interest policy" },
+    { label: "Careers", id: "Careers", description: "Join the Max-IR Labs team" },
   ],
 };
 
@@ -29,6 +29,8 @@ const mainMenuRoutes: Record<MainMenuItem, string> = {
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeAnchor, setActiveAnchor] = useState<string | null>(null);
+  const [openMenu, setOpenMenu] = useState<MainMenuItem | null>(null);
+  const closeTimer = useRef<number | null>(null);
   const location = useLocation();
   const { totalItems } = useCart();
 
@@ -38,46 +40,39 @@ const Navbar = () => {
     return "home";
   }, [location.pathname]);
 
-  // Reset active anchor when page changes; default to first anchor only for home
   useEffect(() => {
-    if (activeMain === "home" || activeMain === "about") {
-      const anchors = anchorLinks[activeMain];
-      setActiveAnchor(anchors.length > 0 ? anchors[0].id : null);
+    if (activeMain === "about") {
+      setActiveAnchor(anchorLinks.about[0].id);
     } else {
       setActiveAnchor(null);
     }
   }, [activeMain]);
 
-  // Scroll spy: observe sections and update active anchor
+  // Scroll spy
   useEffect(() => {
     const currentAnchors = anchorLinks[activeMain];
     if (currentAnchors.length === 0) return;
-
     const ids = currentAnchors.map((a) => a.id);
     const elements = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
     if (elements.length === 0) return;
-
     const observer = new IntersectionObserver(
       (entries) => {
-        // Find the topmost visible section
         const visible = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        if (visible.length > 0) {
-          setActiveAnchor(visible[0].target.id);
-        }
+        if (visible.length > 0) setActiveAnchor(visible[0].target.id);
       },
       { rootMargin: "-80px 0px -40% 0px", threshold: 0 }
     );
-
     elements.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, [activeMain, location.pathname]);
 
-  const scrollTo = (id: string) => {
+  const scrollTo = (id: string, item: MainMenuItem) => {
     setMobileOpen(false);
+    setOpenMenu(null);
     setActiveAnchor(id);
-    const basePath = mainMenuRoutes[activeMain];
+    const basePath = mainMenuRoutes[item];
     if (location.pathname !== basePath) {
       window.location.href = `${basePath}#${id}`;
       return;
@@ -86,7 +81,25 @@ const Navbar = () => {
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
-  const currentAnchors = anchorLinks[activeMain];
+  const scrollToContact = () => {
+    setMobileOpen(false);
+    const el = document.getElementById("Contact");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    } else {
+      window.location.href = `${mainMenuRoutes[activeMain]}#Contact`;
+    }
+  };
+
+  const handleEnter = (key: MainMenuItem) => {
+    if (closeTimer.current) window.clearTimeout(closeTimer.current);
+    if (anchorLinks[key].length > 0) setOpenMenu(key);
+  };
+
+  const handleLeave = () => {
+    if (closeTimer.current) window.clearTimeout(closeTimer.current);
+    closeTimer.current = window.setTimeout(() => setOpenMenu(null), 120);
+  };
 
   const mainItems: { key: MainMenuItem; label: string }[] = [
     { key: "home", label: "Home" },
@@ -97,55 +110,83 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-maxir-dark/90 backdrop-blur-sm">
       <div className="max-w-[1400px] mx-auto px-6 lg:px-10 flex items-center h-[70px]">
-        {/* Logo */}
         <Link to="/" className="shrink-0 mr-8">
           <img src="/images/maxir-logo.svg" alt="MAX-IR Labs" className="h-[28px] w-auto" />
         </Link>
 
         {/* Desktop Nav */}
         <div className="hidden lg:flex items-center flex-1">
-          {/* Main menu items + contextual anchors */}
-          <div className="flex items-center gap-1">
-            {mainItems.map((item) => (
-              <div key={item.key} className="flex items-center">
-                {/* Main menu link */}
-                <Link
-                  to={mainMenuRoutes[item.key]}
-                  className={`px-3 py-1.5 text-sm font-semibold transition-colors ${
-                    activeMain === item.key
-                      ? "text-primary"
-                      : "text-maxir-white/80 hover:text-maxir-white"
-                  }`}
+          <div className="flex items-center gap-2">
+            {mainItems.map((item) => {
+              const hasMenu = anchorLinks[item.key].length > 0;
+              const isOpen = openMenu === item.key;
+              return (
+                <div
+                  key={item.key}
+                  className="relative"
+                  onMouseEnter={() => handleEnter(item.key)}
+                  onMouseLeave={handleLeave}
                 >
-                  {item.label}
-                </Link>
+                  <Link
+                    to={mainMenuRoutes[item.key]}
+                    className={`inline-flex items-center gap-1 px-3 py-1.5 text-sm font-semibold transition-colors ${
+                      activeMain === item.key
+                        ? "text-primary"
+                        : "text-maxir-white/80 hover:text-maxir-white"
+                    }`}
+                  >
+                    {item.label}
+                    {hasMenu && (
+                      <ChevronDown
+                        size={14}
+                        className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                      />
+                    )}
+                  </Link>
 
-                {/* Anchor links appear right after the active main item */}
-                {activeMain === item.key && currentAnchors.length > 0 && (
-                  <div className="flex items-center gap-1 ml-1">
-                    {currentAnchors.map((anchor) => (
-                      <button
-                        key={anchor.id}
-                        onClick={() => scrollTo(anchor.id)}
-                        className={`relative px-3 py-1.5 text-sm font-medium transition-colors ${
-                          activeAnchor === anchor.id
-                            ? "text-maxir-white"
-                            : "text-maxir-white/60 hover:text-maxir-white"
-                        }`}
-                      >
-                        {anchor.label}
-                        {activeAnchor === anchor.id && (
-                          <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[36px] h-[2px] bg-primary rounded-full" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
+                  {/* Mega menu */}
+                  {hasMenu && isOpen && (
+                    <div
+                      className="absolute left-0 top-full pt-3"
+                      onMouseEnter={() => handleEnter(item.key)}
+                      onMouseLeave={handleLeave}
+                    >
+                      <div className="w-[460px] bg-maxir-dark/95 backdrop-blur-md border border-maxir-white/10 rounded-2xl shadow-2xl p-3 grid grid-cols-1 gap-1">
+                        {anchorLinks[item.key].map((anchor) => {
+                          const isActive = activeMain === item.key && activeAnchor === anchor.id;
+                          return (
+                            <button
+                              key={anchor.id}
+                              onClick={() => scrollTo(anchor.id, item.key)}
+                              className={`group text-left px-4 py-3 rounded-xl transition-colors ${
+                                isActive
+                                  ? "bg-primary/10"
+                                  : "hover:bg-maxir-white/5"
+                              }`}
+                            >
+                              <div
+                                className={`text-sm font-semibold ${
+                                  isActive ? "text-primary" : "text-maxir-white group-hover:text-primary"
+                                }`}
+                              >
+                                {anchor.label}
+                              </div>
+                              {anchor.description && (
+                                <div className="text-xs text-maxir-white/60 mt-0.5">
+                                  {anchor.description}
+                                </div>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
-          {/* Contact Us button - pushed to right */}
           <div className="ml-auto flex items-center gap-3">
             <Link to="/cart" className="relative text-maxir-white/80 hover:text-maxir-white transition-colors p-2">
               <ShoppingCart size={20} />
@@ -156,7 +197,7 @@ const Navbar = () => {
               )}
             </Link>
             <button
-              onClick={() => scrollTo("Contact")}
+              onClick={scrollToContact}
               className="bg-primary hover:bg-maxir-red-hover text-primary-foreground px-6 py-2 rounded-full text-sm font-semibold transition-colors"
             >
               Contact Us
@@ -194,20 +235,19 @@ const Navbar = () => {
               >
                 {item.label}
               </Link>
-              {activeMain === item.key &&
-                anchorLinks[item.key].map((anchor) => (
-                  <button
-                    key={anchor.id}
-                    onClick={() => scrollTo(anchor.id)}
-                    className="text-maxir-white/60 text-left text-sm pl-4"
-                  >
-                    {anchor.label}
-                  </button>
-                ))}
+              {anchorLinks[item.key].map((anchor) => (
+                <button
+                  key={anchor.id}
+                  onClick={() => scrollTo(anchor.id, item.key)}
+                  className="text-maxir-white/60 text-left text-sm pl-4"
+                >
+                  {anchor.label}
+                </button>
+              ))}
             </div>
           ))}
           <button
-            onClick={() => scrollTo("Contact")}
+            onClick={scrollToContact}
             className="bg-primary text-primary-foreground px-6 py-2 rounded-full text-sm font-semibold w-fit"
           >
             Contact Us
