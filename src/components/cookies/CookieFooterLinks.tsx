@@ -56,7 +56,7 @@ export default function CookieFooterLinks({ className }: { className?: string })
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className={className ?? "flex flex-col gap-3"}>
       <button
         type="button"
         onClick={handleOpenPreferences}
