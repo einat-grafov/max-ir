@@ -229,7 +229,7 @@ const IntegrationsInfrastructure = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
+      <div className="admin-sticky-header flex items-center justify-between flex-wrap gap-2">
         <div>
           <h2 className="text-lg font-semibold text-foreground">Infrastructure</h2>
           <p className="text-xs text-muted-foreground">

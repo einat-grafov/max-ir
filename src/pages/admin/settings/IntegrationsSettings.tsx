@@ -274,7 +274,7 @@ const IntegrationsSettings = () => {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-start justify-between mb-6 gap-4 flex-wrap">
+      <div className="admin-sticky-header flex items-start justify-between gap-4 flex-wrap">
         <div className="flex items-start gap-3">
           <Plug className="h-6 w-6 text-primary mt-1" />
           <div>

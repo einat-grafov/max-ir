@@ -150,7 +150,7 @@ const Redirects = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
+      <div className="admin-sticky-header flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Redirects</h1>
           <p className="text-sm text-muted-foreground mt-1">

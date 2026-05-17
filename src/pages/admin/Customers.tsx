@@ -85,7 +85,7 @@ const Customers = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="admin-sticky-header flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Users className="h-6 w-6 text-primary" />
           <h1 className="text-2xl font-bold text-foreground">Customers</h1>

@@ -225,7 +225,7 @@ const EmailTemplateEditor = () => {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div className="flex items-center justify-between mb-6">
+      <div className="admin-sticky-header flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => navigate("/admin/settings/emails")}>
             <ArrowLeft className="h-4 w-4" />

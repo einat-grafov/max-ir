@@ -290,7 +290,7 @@ const EditCustomer = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="admin-sticky-header flex items-center justify-between">
         <div>
           <Breadcrumb className="mb-2">
             <BreadcrumbList>

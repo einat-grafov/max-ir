@@ -149,6 +149,47 @@
   outline-offset: 2px;
 }
 
+/* Admin platform: sticky page headers
+   Extends to scroll container edges via negative horizontal margins.
+   When the sticky header is the first child of its scroll-area wrapper,
+   negative top margin cancels the main container's top padding so the
+   header sits flush against the viewport top when stuck. */
+.admin-scope .admin-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background-color: hsl(var(--muted));
+  margin-left: -0.75rem;
+  margin-right: -0.75rem;
+  padding: 0.75rem 0.75rem 1rem 0.75rem;
+  margin-bottom: 1.5rem;
+}
+.admin-scope .admin-sticky-header:first-child {
+  margin-top: -0.75rem;
+}
+@media (min-width: 640px) {
+  .admin-scope .admin-sticky-header {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding: 1rem 1rem 1rem 1rem;
+  }
+  .admin-scope .admin-sticky-header:first-child {
+    margin-top: -1rem;
+  }
+}
+@media (min-width: 768px) {
+  .admin-scope .admin-sticky-header {
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    padding: 1.5rem 1.5rem 1rem 1.5rem;
+  }
+  .admin-scope .admin-sticky-header:first-child {
+    margin-top: -1.5rem;
+  }
+}
+/* When sticky header wraps breadcrumb + title row, neutralize inner margins */
+.admin-scope .admin-sticky-header > .admin-sticky-header-inner > * { margin-bottom: 0 !important; }
+
 /* Admin platform: black checkboxes (overrides primary/pink default) */
 .admin-scope [data-slot="checkbox"],
 .admin-scope button[role="checkbox"] {

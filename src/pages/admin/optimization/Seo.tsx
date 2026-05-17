@@ -92,7 +92,7 @@ const Seo = () => {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
-      <div>
+      <div className="admin-sticky-header">
         <h1 className="text-2xl font-bold text-foreground">SEO</h1>
         <p className="text-sm text-muted-foreground mt-1">
           Manage per-page meta tags, social sharing, structured data, and site-wide SEO defaults.

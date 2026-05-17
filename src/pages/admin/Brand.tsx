@@ -84,7 +84,7 @@ export default function Brand() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between mb-6">
+      <div className="admin-sticky-header flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Palette className="h-6 w-6 text-primary" />
           <div>

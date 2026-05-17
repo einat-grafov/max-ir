@@ -213,7 +213,7 @@ const Performance = () => {
 
   return (
     <div className="space-y-6">
-      <div>
+      <div className="admin-sticky-header">
         <h1 className="text-2xl font-semibold">Performance</h1>
         <p className="text-sm text-muted-foreground mt-1">
           Run a Google PageSpeed Insights audit on any public URL. Results include Lighthouse scores, Core
