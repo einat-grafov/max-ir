@@ -470,7 +470,7 @@ const CreateOrder = () => {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div className="flex items-center justify-between mb-6">
+      <div className="admin-sticky-header flex items-center justify-between">
         <h1 className="text-2xl font-bold text-foreground">Create order</h1>
         <div className="flex gap-3">
           <Button variant="outline" disabled={!canSubmit} onClick={() => setInvoiceModalOpen(true)}>{invoiceSent ? "Resend invoice" : "Send invoice"}</Button>

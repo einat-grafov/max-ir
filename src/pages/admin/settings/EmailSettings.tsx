@@ -82,7 +82,7 @@ const EmailSettings = () => {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div className="flex items-center justify-between mb-6">
+      <div className="admin-sticky-header flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Email Templates</h1>
           <p className="text-sm text-muted-foreground mt-1">
