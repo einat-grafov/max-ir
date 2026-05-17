@@ -100,7 +100,7 @@ const Team = () => {
       </section>
 
       {/* Our Story */}
-      <section className="section-white py-16 lg:py-24 pb-[100px] md:pb-[130px]">
+      <section id="OurStory" className="section-white py-16 lg:py-24 pb-[100px] md:pb-[130px]">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
           <div className="accent-line mb-6" />
           <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold mb-12 leading-none">Our Story</h2>
