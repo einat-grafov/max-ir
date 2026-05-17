@@ -134,7 +134,7 @@ const UsersSettings = () => {
           <div className="flex justify-end mb-4">
             <button
               onClick={() => setInviteOpen(true)}
-              className="flex items-center gap-2 bg-primary hover:bg-maxir-red-hover text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold transition-colors"
+              className="flex items-center gap-2 bg-primary hover:bg-maxir-red-hover text-primary-foreground px-4 py-2 rounded-[10px] text-sm font-semibold transition-colors"
             >
               <Plus className="h-4 w-4" />
               Invite User
