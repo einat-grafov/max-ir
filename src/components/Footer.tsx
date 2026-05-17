@@ -1,10 +1,24 @@
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import ContactForm from "./ContactForm";
 import CookieFooterLinks from "@/components/cookies/CookieFooterLinks";
+import { supabase } from "@/integrations/supabase/client";
 
 const Footer = () => {
   const location = useLocation();
   const hideContactForm = location.pathname === "/customer-service";
+  const [products, setProducts] = useState<{ id: string; name: string }[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("products")
+      .select("id, name")
+      .eq("status", "active")
+      .order("name")
+      .then(({ data }) => {
+        if (data) setProducts(data);
+      });
+  }, []);
 
   return (
     <footer id="Contact" className="section-dark relative mt-[120px] md:mt-[180px]" style={{ backgroundImage: 'url(/images/footer-bg.png)', backgroundSize: 'cover', backgroundPosition: 'center bottom' }}>
@@ -29,7 +43,9 @@ const Footer = () => {
             <div className="grid grid-cols-3 gap-8 mb-12">
               <div className="flex flex-col gap-3">
                 <h4 className="text-maxir-white text-[18px] leading-[25px] font-bold mb-1">Products</h4>
-                <Link to="/" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Home</Link>
+                {products.map((p) => (
+                  <Link key={p.id} to={`/products/${p.id}`} className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">{p.name}</Link>
+                ))}
               </div>
               <div className="flex flex-col gap-3">
                 <h4 className="text-maxir-white text-[18px] leading-[25px] font-bold mb-1">About Us</h4>
