@@ -42,7 +42,7 @@ const Footer = () => {
           <div>
             <div className="grid grid-cols-3 gap-8 mb-12">
               <div className="flex flex-col gap-3">
-                <h4 className="text-maxir-white text-[18px] leading-[25px] font-bold mb-1">Products</h4>
+                <Link to="/" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-bold mb-1">Products</Link>
                 {products.map((p) => (
                   <Link key={p.id} to={`/products/${p.id}`} className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">{p.name}</Link>
                 ))}
