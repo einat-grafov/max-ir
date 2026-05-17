@@ -438,47 +438,48 @@ const CreateOrder = () => {
 
   return (
     <div>
-      <Breadcrumb className="mb-4">
-        <BreadcrumbList>
-          {returnToCustomer ? (
-            <>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link to={returnToCustomer}>
-                    {(location.state as any)?.preselectedCustomer?.company || (location.state as any)?.preselectedCustomer?.first_name}
-                  </Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Create order</BreadcrumbPage>
-              </BreadcrumbItem>
-            </>
-          ) : (
-            <>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link to="/admin/orders">Orders</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Create order</BreadcrumbPage>
-              </BreadcrumbItem>
-            </>
-          )}
-        </BreadcrumbList>
-      </Breadcrumb>
-
-      <div className="admin-sticky-header flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Create order</h1>
-        <div className="flex gap-3">
-          <Button variant="outline" disabled={!canSubmit} onClick={() => setInvoiceModalOpen(true)}>{invoiceSent ? "Resend invoice" : "Send invoice"}</Button>
-          {createdOrderId ? (
-            <Button disabled={saving} onClick={handleMarkAsPaid}>{saving ? "Updating..." : "Mark as paid"}</Button>
-          ) : (
-            <Button disabled={!canSubmit || saving} onClick={handleCreateOrder}>{saving ? "Creating..." : "Create order"}</Button>
-          )}
+      <div className="admin-sticky-header">
+        <Breadcrumb >
+          <BreadcrumbList>
+            {returnToCustomer ? (
+              <>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={returnToCustomer}>
+                      {(location.state as any)?.preselectedCustomer?.company || (location.state as any)?.preselectedCustomer?.first_name}
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Create order</BreadcrumbPage>
+                </BreadcrumbItem>
+              </>
+            ) : (
+              <>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to="/admin/orders">Orders</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Create order</BreadcrumbPage>
+                </BreadcrumbItem>
+              </>
+            )}
+          </BreadcrumbList>
+        </Breadcrumb>
+        <div className="admin-sticky-header-inner flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-foreground">Create order</h1>
+          <div className="flex gap-3">
+            <Button variant="outline" disabled={!canSubmit} onClick={() => setInvoiceModalOpen(true)}>{invoiceSent ? "Resend invoice" : "Send invoice"}</Button>
+            {createdOrderId ? (
+              <Button disabled={saving} onClick={handleMarkAsPaid}>{saving ? "Updating..." : "Mark as paid"}</Button>
+            ) : (
+              <Button disabled={!canSubmit || saving} onClick={handleCreateOrder}>{saving ? "Creating..." : "Create order"}</Button>
+            )}
+          </div>
         </div>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -211,41 +211,42 @@ const EmailTemplateEditor = () => {
 
   return (
     <div>
-      <Breadcrumb className="mb-4">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link to="/admin/settings/emails">Email Templates</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{meta.name}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
-      <div className="admin-sticky-header flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/admin/settings/emails")}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <h1 className="text-2xl font-bold text-foreground">{meta.name}</h1>
-          {existingTemplate && (
-            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
-              Customized
-            </Badge>
-          )}
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={handleReset}>
-            <RotateCcw className="h-4 w-4 mr-2" />
-            Reset to default
-          </Button>
-          <Button onClick={() => saveMutation.mutate()} disabled={saveMutation.isPending}>
-            <Save className="h-4 w-4 mr-2" />
-            {saveMutation.isPending ? "Saving..." : "Save"}
-          </Button>
+      <div className="admin-sticky-header">
+        <Breadcrumb >
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to="/admin/settings/emails">Email Templates</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{meta.name}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <div className="admin-sticky-header-inner flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" onClick={() => navigate("/admin/settings/emails")}>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <h1 className="text-2xl font-bold text-foreground">{meta.name}</h1>
+            {existingTemplate && (
+              <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                Customized
+              </Badge>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleReset}>
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Reset to default
+            </Button>
+            <Button onClick={() => saveMutation.mutate()} disabled={saveMutation.isPending}>
+              <Save className="h-4 w-4 mr-2" />
+              {saveMutation.isPending ? "Saving..." : "Save"}
+            </Button>
+          </div>
         </div>
       </div>
 
