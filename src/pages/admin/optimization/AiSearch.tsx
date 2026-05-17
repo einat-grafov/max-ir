@@ -10,7 +10,7 @@ const AiSearch = () => {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
-      <div>
+      <div className="admin-sticky-header">
         <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
           <Sparkles className="h-5 w-5" /> AI Search & GEO
         </h1>
