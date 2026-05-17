@@ -26,17 +26,26 @@ const Footer = () => {
         <div className={`grid grid-cols-1 ${hideContactForm ? "" : "lg:grid-cols-2"} gap-16`}>
           {/* Left - Links & Address */}
           <div>
-            <div className="grid grid-cols-2 gap-8 mb-12">
+            <div className="grid grid-cols-3 gap-8 mb-12">
               <div className="flex flex-col gap-3">
-                <Link to="/" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-semibold">Home</Link>
-                <Link to="/about-us#Technology" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-semibold">Technology</Link>
-                <Link to="/about-us#Sensor" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-semibold">The Sensor</Link>
-                
+                <h4 className="text-maxir-white text-[18px] leading-[25px] font-bold mb-1">Products</h4>
+                <Link to="/" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Home</Link>
               </div>
               <div className="flex flex-col gap-3">
-                <Link to="/about-us#Applications" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-semibold">Applications</Link>
-                <Link to="/about-us#Awards" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-semibold">Awards & Patents</Link>
-                <Link to="/team" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-semibold">The Team</Link>
+                <h4 className="text-maxir-white text-[18px] leading-[25px] font-bold mb-1">About Us</h4>
+                <Link to="/about-us#Technology" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Technology</Link>
+                <Link to="/about-us#Sensor" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">The Sensor</Link>
+                <Link to="/about-us#Applications" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Applications</Link>
+                <Link to="/about-us#Awards" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Awards & Patents</Link>
+              </div>
+              <div className="flex flex-col gap-3">
+                <h4 className="text-maxir-white text-[18px] leading-[25px] font-bold mb-1">Team</h4>
+                <Link to="/team#OurStory" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Our Story</Link>
+                <Link to="/team#OurTeam" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Our Team</Link>
+                <Link to="/team#AdvisoryBoard" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Advisory Board</Link>
+                <Link to="/team#Publications" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Publications</Link>
+                <Link to="/team#FCOI" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">FCOI</Link>
+                <Link to="/team#Careers" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Careers</Link>
               </div>
             </div>
             <div className="text-maxir-white text-[14px] leading-[20px] font-normal">
