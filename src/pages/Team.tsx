@@ -100,7 +100,7 @@ const Team = () => {
       </section>
 
       {/* Our Story */}
-      <section className="section-white py-16 lg:py-24 pb-[100px] md:pb-[130px]">
+      <section id="OurStory" className="section-white py-16 lg:py-24 pb-[100px] md:pb-[130px]">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
           <div className="accent-line mb-6" />
           <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold mb-12 leading-none">Our Story</h2>
@@ -121,7 +121,7 @@ const Team = () => {
       </section>
 
       {/* Our Team */}
-      <section className="relative section-dark pt-[80px] md:pt-[120px] pb-[100px] md:pb-[140px]">
+      <section id="OurTeam" className="relative section-dark pt-[80px] md:pt-[120px] pb-[100px] md:pb-[140px]">
         {/* Top wave divider */}
         <div className="absolute top-0 left-0 right-0 z-10 h-[72px] md:h-[108px] -translate-y-full overflow-hidden">
           <svg
@@ -187,7 +187,7 @@ const Team = () => {
       </section>
 
       {/* Advisory Board */}
-      <section className="section-white pt-[100px] md:pt-[130px] pb-16 lg:pb-24">
+      <section id="AdvisoryBoard" className="section-white pt-[100px] md:pt-[130px] pb-16 lg:pb-24">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
           <div className="accent-line mb-6 mx-auto" />
           <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold mb-12 leading-none text-center">Advisory Board</h2>

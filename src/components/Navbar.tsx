@@ -14,6 +14,9 @@ const anchorLinks: Record<MainMenuItem, { label: string; id: string; description
     { label: "Awards & Patents", id: "Awards", description: "Recognition and intellectual property" },
   ],
   team: [
+    { label: "Our Story", id: "OurStory", description: "The history behind Max-IR Labs" },
+    { label: "Our Team", id: "OurTeam", description: "Meet the people driving our mission" },
+    { label: "Advisory Board", id: "AdvisoryBoard", description: "Expert guidance and leadership" },
     { label: "Publications", id: "Publications", description: "Peer-reviewed research and papers" },
     { label: "FCOI", id: "FCOI", description: "Financial Conflict of Interest policy" },
     { label: "Careers", id: "Careers", description: "Join the Max-IR Labs team" },
