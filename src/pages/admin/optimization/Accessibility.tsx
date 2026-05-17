@@ -63,7 +63,7 @@ const Accessibility = () => {
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-6">
+      <div className="admin-sticky-header flex items-center gap-3">
         <AccessibilityIcon className="h-6 w-6 text-primary" />
         <div>
           <h1 className="text-2xl font-bold text-foreground">Accessibility Widget</h1>
