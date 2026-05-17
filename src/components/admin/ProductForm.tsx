@@ -326,6 +326,20 @@ const ProductForm = ({
               <Label>Description</Label>
               <RichTextEditor value={description} onChange={setDescription} placeholder="Add a description for this product..." />
             </div>
+            <div className="space-y-2 pt-2 border-t border-border">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <Checkbox checked={infoBannerEnabled} onCheckedChange={(v) => setInfoBannerEnabled(!!v)} />
+                <span className="text-sm font-medium">Show info banner on product page</span>
+              </label>
+              {infoBannerEnabled && (
+                <Textarea
+                  value={infoBannerText}
+                  onChange={(e) => setInfoBannerText(e.target.value)}
+                  placeholder="Banner text shown under the product overview / PDF link..."
+                  rows={3}
+                />
+              )}
+            </div>
           </Card>
 
           <Card className="p-5">
