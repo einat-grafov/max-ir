@@ -42,20 +42,20 @@ const Footer = () => {
           <div>
             <div className="grid grid-cols-3 gap-8 mb-12">
               <div className="flex flex-col gap-3">
-                <h4 className="text-maxir-white text-[18px] leading-[25px] font-bold mb-1">Products</h4>
+                <Link to="/" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-bold mb-1">Products</Link>
                 {products.map((p) => (
                   <Link key={p.id} to={`/products/${p.id}`} className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">{p.name}</Link>
                 ))}
               </div>
               <div className="flex flex-col gap-3">
-                <h4 className="text-maxir-white text-[18px] leading-[25px] font-bold mb-1">About Us</h4>
+                <Link to="/about-us" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-bold mb-1">About Us</Link>
                 <Link to="/about-us#Technology" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Technology</Link>
                 <Link to="/about-us#Sensor" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">The Sensor</Link>
                 <Link to="/about-us#Applications" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Applications</Link>
                 <Link to="/about-us#Awards" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Awards & Patents</Link>
               </div>
               <div className="flex flex-col gap-3">
-                <h4 className="text-maxir-white text-[18px] leading-[25px] font-bold mb-1">Team</h4>
+                <Link to="/team" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-bold mb-1">Team</Link>
                 <Link to="/team#OurStory" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Our Story</Link>
                 <Link to="/team#OurTeam" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Our Team</Link>
                 <Link to="/team#AdvisoryBoard" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Advisory Board</Link>
