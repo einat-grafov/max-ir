@@ -70,7 +70,7 @@ const AdminLayout = () => {
               <span>View-only access — you can browse data but cannot make changes.</span>
             </div>
           )}
-          <main className="flex-1 p-3 sm:p-4 md:p-6 overflow-auto">
+          <main className="flex-1 px-3 sm:px-4 md:px-6 pb-3 sm:pb-4 md:pb-6 overflow-auto">
             {isViewer ? (
               <fieldset disabled className="viewer-readonly border-0 p-0 m-0 min-w-0">
                 <Outlet />
