@@ -15,7 +15,7 @@ const DEFAULT_POLICY: BannerPolicy = {
   showDoNotSellLink: false,
 };
 
-export default function CookieFooterLinks() {
+export default function CookieFooterLinks({ className }: { className?: string }) {
   const [policy, setPolicy] = useState<BannerPolicy>(DEFAULT_POLICY);
 
   useEffect(() => {
@@ -56,7 +56,7 @@ export default function CookieFooterLinks() {
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className={className ?? "flex flex-col gap-3"}>
       <button
         type="button"
         onClick={handleOpenPreferences}
