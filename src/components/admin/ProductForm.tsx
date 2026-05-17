@@ -117,6 +117,8 @@ const ProductForm = ({
   const [status, setStatus] = useState(initialData?.status ?? "active");
   const [ctaAddToCart, setCtaAddToCart] = useState(initialData?.ctaAddToCart ?? true);
   const [ctaRequestQuote, setCtaRequestQuote] = useState(initialData?.ctaRequestQuote ?? true);
+  const [infoBannerEnabled, setInfoBannerEnabled] = useState(initialData?.infoBannerEnabled ?? false);
+  const [infoBannerText, setInfoBannerText] = useState(initialData?.infoBannerText ?? "");
   const [specifications, setSpecifications] = useState<ProductSpecification[]>(
     initialData?.specifications ?? [{ label: "", value: "" }]
   );
