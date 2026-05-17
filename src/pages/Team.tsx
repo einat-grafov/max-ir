@@ -187,7 +187,7 @@ const Team = () => {
       </section>
 
       {/* Advisory Board */}
-      <section className="section-white pt-[100px] md:pt-[130px] pb-16 lg:pb-24">
+      <section id="AdvisoryBoard" className="section-white pt-[100px] md:pt-[130px] pb-16 lg:pb-24">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
           <div className="accent-line mb-6 mx-auto" />
           <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-semibold mb-12 leading-none text-center">Advisory Board</h2>
