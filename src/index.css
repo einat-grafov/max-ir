@@ -178,7 +178,10 @@
     padding: 1.5rem 1.5rem 1rem 1.5rem;
   }
 }
-/* When sticky header wraps breadcrumb + title row, neutralize inner margins */
+/* When sticky header wraps breadcrumb + title row, add spacing between them */
+.admin-scope .admin-sticky-header > nav[aria-label="breadcrumb"] {
+  margin-bottom: 1rem;
+}
 .admin-scope .admin-sticky-header > .admin-sticky-header-inner > * { margin-bottom: 0 !important; }
 
 /* Admin platform: black checkboxes (overrides primary/pink default) */
