@@ -53,9 +53,9 @@ const AdminLayout = () => {
 
   return (
     <SidebarProvider>
-      <div className="admin-scope min-h-screen flex w-full bg-muted">
+      <div className="admin-scope h-screen flex w-full bg-muted overflow-hidden">
         <AdminSidebar />
-        <div className="flex-1 flex flex-col min-h-screen min-w-0">
+        <div className="flex-1 flex flex-col h-screen min-w-0">
           {/* Mobile header */}
           <header className="md:hidden sticky top-0 z-30 flex items-center justify-between gap-2 h-12 px-3 bg-maxir-dark border-b border-white/10">
             <SidebarTrigger className="text-maxir-gray hover:text-maxir-white h-8 w-8" />
