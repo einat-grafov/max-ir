@@ -68,26 +68,27 @@ const EmailSettings = () => {
 
   return (
     <div>
-      <Breadcrumb className="mb-4">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link to="/admin/home">Settings</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Email Templates</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
-      <div className="admin-sticky-header flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Email Templates</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Customize the emails sent to your customers
-          </p>
+      <div className="admin-sticky-header">
+        <Breadcrumb >
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to="/admin/home">Settings</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Email Templates</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <div className="admin-sticky-header-inner flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Email Templates</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Customize the emails sent to your customers
+            </p>
+          </div>
         </div>
       </div>
 

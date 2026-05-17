@@ -242,67 +242,68 @@ const ProductForm = ({
 
   return (
     <div>
-      <Breadcrumb className="mb-4">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link to="/admin/products">Products</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{breadcrumbLabel}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
-      <div className="admin-sticky-header flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">{pageTitle}</h1>
-        <div className="flex gap-3">
-          {onDelete && (
-             <Tooltip>
-                <AlertDialog>
-                  <TooltipTrigger asChild>
-                    <AlertDialogTrigger asChild>
-                       <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:bg-destructive hover:text-white" disabled={deleting}>
-                         <Trash2 className="h-4 w-4" />
-                       </Button>
-                    </AlertDialogTrigger>
-                  </TooltipTrigger>
-                  <TooltipContent>Delete</TooltipContent>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Delete product</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Are you sure you want to delete this product? This action cannot be undone.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        onClick={async () => {
-                          setDeleting(true);
-                          try {
-                            await onDelete();
-                          } finally {
-                            setDeleting(false);
-                          }
-                        }}
-                      >
-                        Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </Tooltip>
-          )}
-          <Button variant="outline" asChild>
-            <Link to="/admin/products">Discard</Link>
-          </Button>
-          <Button disabled={!canSubmit || saving} onClick={handleSave}>
-            {saving ? savingLabel : submitLabel}
-          </Button>
+      <div className="admin-sticky-header">
+        <Breadcrumb >
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to="/admin/products">Products</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{breadcrumbLabel}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <div className="admin-sticky-header-inner flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-foreground">{pageTitle}</h1>
+          <div className="flex gap-3">
+            {onDelete && (
+               <Tooltip>
+                  <AlertDialog>
+                    <TooltipTrigger asChild>
+                      <AlertDialogTrigger asChild>
+                         <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:bg-destructive hover:text-white" disabled={deleting}>
+                           <Trash2 className="h-4 w-4" />
+                         </Button>
+                      </AlertDialogTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>Delete</TooltipContent>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete product</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to delete this product? This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          onClick={async () => {
+                            setDeleting(true);
+                            try {
+                              await onDelete();
+                            } finally {
+                              setDeleting(false);
+                            }
+                          }}
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </Tooltip>
+            )}
+            <Button variant="outline" asChild>
+              <Link to="/admin/products">Discard</Link>
+            </Button>
+            <Button disabled={!canSubmit || saving} onClick={handleSave}>
+              {saving ? savingLabel : submitLabel}
+            </Button>
+          </div>
         </div>
       </div>
 
