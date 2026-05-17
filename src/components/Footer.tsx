@@ -55,7 +55,7 @@ const Footer = () => {
                 <Link to="/about-us#Awards" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Awards & Patents</Link>
               </div>
               <div className="flex flex-col gap-3">
-                <h4 className="text-maxir-white text-[18px] leading-[25px] font-bold mb-1">Team</h4>
+                <Link to="/team" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-bold mb-1">Team</Link>
                 <Link to="/team#OurStory" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Our Story</Link>
                 <Link to="/team#OurTeam" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Our Team</Link>
                 <Link to="/team#AdvisoryBoard" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Advisory Board</Link>
