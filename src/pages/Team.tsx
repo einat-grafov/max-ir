@@ -121,7 +121,7 @@ const Team = () => {
       </section>
 
       {/* Our Team */}
-      <section className="relative section-dark pt-[80px] md:pt-[120px] pb-[100px] md:pb-[140px]">
+      <section id="OurTeam" className="relative section-dark pt-[80px] md:pt-[120px] pb-[100px] md:pb-[140px]">
         {/* Top wave divider */}
         <div className="absolute top-0 left-0 right-0 z-10 h-[72px] md:h-[108px] -translate-y-full overflow-hidden">
           <svg
