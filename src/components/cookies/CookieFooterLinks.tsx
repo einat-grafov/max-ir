@@ -15,7 +15,7 @@ const DEFAULT_POLICY: BannerPolicy = {
   showDoNotSellLink: false,
 };
 
-export default function CookieFooterLinks() {
+export default function CookieFooterLinks({ className }: { className?: string }) {
   const [policy, setPolicy] = useState<BannerPolicy>(DEFAULT_POLICY);
 
   useEffect(() => {
