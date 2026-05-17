@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Upload, X, Trash2, FileText } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -64,6 +65,8 @@ export interface ProductFormData {
   status: string;
   ctaAddToCart: boolean;
   ctaRequestQuote: boolean;
+  infoBannerEnabled: boolean;
+  infoBannerText: string;
   existingImageUrl: string | null;
   existingImages: string[];
   existingPdfUrl: string | null;
@@ -115,6 +118,8 @@ const ProductForm = ({
   const [status, setStatus] = useState(initialData?.status ?? "active");
   const [ctaAddToCart, setCtaAddToCart] = useState(initialData?.ctaAddToCart ?? true);
   const [ctaRequestQuote, setCtaRequestQuote] = useState(initialData?.ctaRequestQuote ?? true);
+  const [infoBannerEnabled, setInfoBannerEnabled] = useState(initialData?.infoBannerEnabled ?? false);
+  const [infoBannerText, setInfoBannerText] = useState(initialData?.infoBannerText ?? "");
   const [specifications, setSpecifications] = useState<ProductSpecification[]>(
     initialData?.specifications ?? [{ label: "", value: "" }]
   );
@@ -228,7 +233,7 @@ const ProductForm = ({
       const primaryImageUrl = allImageUrls.length > 0 ? allImageUrls[0] : null;
 
       await onSubmit(
-        { title, overview, description, category, price, sku, stock, trackInventory, requiresShipping, weightKg, taxExempt, status, ctaAddToCart, ctaRequestQuote, existingImageUrl: null, existingImages: [], existingPdfUrl: null, specifications: specifications.filter(s => s.label.trim() && s.value.trim()), variants: variants.filter(v => v.name.trim()) },
+        { title, overview, description, category, price, sku, stock, trackInventory, requiresShipping, weightKg, taxExempt, status, ctaAddToCart, ctaRequestQuote, infoBannerEnabled, infoBannerText, existingImageUrl: null, existingImages: [], existingPdfUrl: null, specifications: specifications.filter(s => s.label.trim() && s.value.trim()), variants: variants.filter(v => v.name.trim()) },
         primaryImageUrl,
         allImageUrls,
         finalPdfUrl
@@ -321,6 +326,20 @@ const ProductForm = ({
             <div className="space-y-2">
               <Label>Description</Label>
               <RichTextEditor value={description} onChange={setDescription} placeholder="Add a description for this product..." />
+            </div>
+            <div className="space-y-2 pt-2 border-t border-border">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <Checkbox checked={infoBannerEnabled} onCheckedChange={(v) => setInfoBannerEnabled(!!v)} />
+                <span className="text-sm font-medium">Show info banner on product page</span>
+              </label>
+              {infoBannerEnabled && (
+                <Textarea
+                  value={infoBannerText}
+                  onChange={(e) => setInfoBannerText(e.target.value)}
+                  placeholder="Banner text shown under the product overview / PDF link..."
+                  rows={3}
+                />
+              )}
             </div>
           </Card>
 

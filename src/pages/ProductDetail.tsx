@@ -98,7 +98,7 @@ const ProductDetail = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id, name, image_url, images, price, description, overview, specifications, variants, category, sku, status, cta_add_to_cart, cta_request_quote, tax_exempt, weight_kg, pdf_url")
+        .select("id, name, image_url, images, price, description, overview, specifications, variants, category, sku, status, cta_add_to_cart, cta_request_quote, tax_exempt, weight_kg, pdf_url, info_banner_enabled, info_banner_text")
         .eq("id", id!)
         .eq("status", "active")
         .maybeSingle();
@@ -351,6 +351,12 @@ const ProductDetail = () => {
                       <Download className="w-3.5 h-3.5" />
                       Product Information (PDF)
                     </a>
+                  )}
+
+                  {(product as any).info_banner_enabled && (product as any).info_banner_text && (
+                    <div className="rounded-[10px] border border-primary/30 bg-primary/5 text-foreground text-sm px-4 py-3 whitespace-pre-wrap">
+                      {(product as any).info_banner_text}
+                    </div>
                   )}
 
                   {/* Price / Variants */}

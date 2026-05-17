@@ -1040,6 +1040,8 @@ export type Database = {
           id: string
           image_url: string | null
           images: Json | null
+          info_banner_enabled: boolean
+          info_banner_text: string | null
           name: string
           overview: string | null
           pdf_url: string | null
@@ -1063,6 +1065,8 @@ export type Database = {
           id?: string
           image_url?: string | null
           images?: Json | null
+          info_banner_enabled?: boolean
+          info_banner_text?: string | null
           name: string
           overview?: string | null
           pdf_url?: string | null
@@ -1086,6 +1090,8 @@ export type Database = {
           id?: string
           image_url?: string | null
           images?: Json | null
+          info_banner_enabled?: boolean
+          info_banner_text?: string | null
           name?: string
           overview?: string | null
           pdf_url?: string | null

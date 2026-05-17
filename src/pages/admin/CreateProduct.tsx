@@ -22,6 +22,8 @@ const CreateProduct = () => {
       status: data.status,
       cta_add_to_cart: data.ctaAddToCart,
       cta_request_quote: data.ctaRequestQuote,
+      info_banner_enabled: data.infoBannerEnabled,
+      info_banner_text: data.infoBannerText || null,
       image_url: imageUrl,
       images: allImageUrls as unknown as Json,
       specifications: (data.specifications.length > 0 ? data.specifications : []) as unknown as Json,
