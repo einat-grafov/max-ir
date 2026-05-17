@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Upload, X, Trash2, FileText } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
