@@ -99,6 +99,8 @@ const EditProduct = () => {
         status: (product as any).status ?? "active",
         ctaAddToCart: (product as any).cta_add_to_cart ?? true,
         ctaRequestQuote: (product as any).cta_request_quote ?? true,
+        infoBannerEnabled: (product as any).info_banner_enabled ?? false,
+        infoBannerText: (product as any).info_banner_text ?? "",
         existingImageUrl: product.image_url,
         existingImages: Array.isArray((product as any).images) ? (product as any).images as string[] : [],
         existingPdfUrl: (product as any).pdf_url ?? null,
