@@ -70,7 +70,8 @@ export function AdminSidebar() {
   const [unreadInquiries, setUnreadInquiries] = useState(0);
   // Sidebar groups are always expanded — no collapse state.
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) =>
+    location.pathname === path || location.pathname.startsWith(path + "/");
 
   useEffect(() => {
     let active = true;
