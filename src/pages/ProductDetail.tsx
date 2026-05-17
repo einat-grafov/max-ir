@@ -353,6 +353,12 @@ const ProductDetail = () => {
                     </a>
                   )}
 
+                  {(product as any).info_banner_enabled && (product as any).info_banner_text && (
+                    <div className="rounded-[10px] border border-primary/30 bg-primary/5 text-foreground text-sm px-4 py-3 whitespace-pre-wrap">
+                      {(product as any).info_banner_text}
+                    </div>
+                  )}
+
                   {/* Price / Variants */}
                   {(() => {
                     const variants = getVariants(product);
