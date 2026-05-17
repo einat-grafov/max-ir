@@ -59,7 +59,7 @@ const ProductGrid = ({ subtitle }: { subtitle?: string }) => {
               const img = getProductImage(product);
               return (
                 <Link key={product.id} to={`/products/${product.id}`} className="group flex flex-col">
-                  <div className="aspect-square rounded-lg overflow-hidden bg-muted mb-4">
+                  <div className="aspect-square rounded-lg overflow-hidden bg-white mb-4">
                     {img ? (
                       <img
                         src={img}
