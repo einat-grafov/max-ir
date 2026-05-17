@@ -48,7 +48,7 @@ const Footer = () => {
                 ))}
               </div>
               <div className="flex flex-col gap-3">
-                <h4 className="text-maxir-white text-[18px] leading-[25px] font-bold mb-1">About Us</h4>
+                <Link to="/about-us" className="text-maxir-white hover:text-primary transition-colors text-[18px] leading-[25px] font-bold mb-1">About Us</Link>
                 <Link to="/about-us#Technology" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Technology</Link>
                 <Link to="/about-us#Sensor" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">The Sensor</Link>
                 <Link to="/about-us#Applications" className="text-maxir-white hover:text-primary transition-colors text-[14px] leading-[20px] font-normal">Applications</Link>
