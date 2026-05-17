@@ -64,6 +64,8 @@ export interface ProductFormData {
   status: string;
   ctaAddToCart: boolean;
   ctaRequestQuote: boolean;
+  infoBannerEnabled: boolean;
+  infoBannerText: string;
   existingImageUrl: string | null;
   existingImages: string[];
   existingPdfUrl: string | null;
